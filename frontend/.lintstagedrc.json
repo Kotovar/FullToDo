@@ -1,0 +1,10 @@
+{
+  "*.{js,ts,tsx}": [
+    "prettier --write",
+    "eslint --ignore-pattern .gitignore --fix",
+    "bash -c tsc --noEmit",
+    "vitest related --run --environment=jsdom",
+    "bash -c 'npx steiger ./src'"
+  ],
+  "*.{json,md}": ["prettier --write"]
+}
