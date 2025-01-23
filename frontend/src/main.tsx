@@ -1,8 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import App from '@/app/App';
-import '@/shared/i18n';
-import '@/app/styles';
+import App from '@app/App';
+import '@shared/i18n';
+import '@app/styles';
 
 const rootElement = document.getElementById('root');
 
