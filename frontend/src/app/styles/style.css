@@ -2,7 +2,9 @@
 
 @theme {
   --color-accent: #0057a8;
+  --color-accent-hover: #d5e2fa;
   --color-background: #eaeaea;
+  --color-text: #212121;
 
   --font-display: 'Jost', 'sans-serif';
 }
