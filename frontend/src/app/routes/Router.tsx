@@ -7,11 +7,12 @@ export const Router = () => {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route
-            path='/'
-            element={<Main title='Не выбран ни один блокнот' />}
-          />
-          <Route path='/today' element={<Main title='Сегодня' />} />
+          <Route index element={<Main isEmptyPage />} />
+          <Route path='notepad' element={<Main isEmptyPage />} />
+          <Route path='notepad/all' element={<Main />} />
+          <Route path='notepad/:notepadId' element={<Main />} />
+          <Route path='notepad/today' element={<Main />} />
+          <Route path='notepad/:notepadId/task/:taskIds' element={<Main />} />
         </Route>
         <Route path='*' element={<div>Ошибка 404</div>} />
       </Routes>

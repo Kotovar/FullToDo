@@ -1,18 +1,21 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import DotsIcon from './three-dots-vertical.svg?react';
+import { Link } from 'react-router';
 
 interface Props extends ComponentPropsWithoutRef<'li'> {
   name: string;
-  classname?: string;
+  path: string;
 }
 
-export const Notebook = (props: Props) => {
-  const { name, classname = '' } = props;
+export const Notepad = (props: Props) => {
+  const { name, path, ...rest } = props;
 
   return (
-    <li className={classname}>
-      <button className='grid w-full grid-cols-[1fr_2rem] grid-rows-1 items-center'>
+    <li {...rest}>
+      <Link to={path} className='w-full'>
         <span className='text-3xl'>{name}</span>
+      </Link>
+      <button>
         <DotsIcon className='' />
       </button>
     </li>
