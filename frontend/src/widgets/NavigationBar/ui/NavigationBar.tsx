@@ -1,21 +1,32 @@
+import type { ComponentPropsWithoutRef } from 'react';
+import { clsx } from 'clsx';
+import { useLocation, useParams } from 'react-router';
 import { NOTEPADS } from '@shared/mock';
 import { Notepad } from './Notepad';
-import { useLocation } from 'react-router';
-import { clsx } from 'clsx';
 
-export const NavigationBar = () => {
+type Props = ComponentPropsWithoutRef<'nav'>;
+
+export const NavigationBar = (props: Props) => {
+  const { ...rest } = props;
+
   const location = useLocation().pathname;
-  const title = NOTEPADS.find(notepad => notepad.path === location)?.taskName;
+  const { notepadId } = useParams();
+
+  const pathToNotepadId = `/notepad/${notepadId}`;
+
+  const title = NOTEPADS.find(
+    notepad => notepad.path === pathToNotepadId || notepad.path === location,
+  )?.taskName;
 
   return (
-    <nav className='hidden bg-white p-4 sm:col-span-1 sm:block sm:p-2'>
+    <nav {...rest}>
       <ul className='flex flex-col gap-1'>
         {NOTEPADS.map(({ taskName, path, id }) => (
           <Notepad
             className={clsx(
-              'text-text hover:bg-accent-hover grid grid-cols-[1fr_2rem] justify-items-start rounded-lg break-words',
+              'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] items-center justify-items-end rounded-lg p-2 break-words',
               {
-                ['bg-background']: taskName === title,
+                ['bg-grey-light']: taskName === title,
               },
             )}
             name={taskName}

@@ -1,6 +1,7 @@
+import { useParams } from 'react-router';
 import { clsx } from 'clsx';
 import { TaskCard } from '@widgets/Main/ui';
-import { useParams } from 'react-router';
+import type { ComponentPropsWithoutRef } from 'react';
 
 interface Task {
   name: string;
@@ -8,22 +9,23 @@ interface Task {
   id: number;
 }
 
-interface Props {
+interface Props extends ComponentPropsWithoutRef<'ul'> {
   tasks: Task[];
 }
 
 export const TaskList = (props: Props) => {
-  const { tasks } = props;
-  const { taskId } = useParams();
+  const { tasks, ...rest } = props;
+  const { taskIds } = useParams();
 
   return (
-    <ul className='flex flex-col gap-1'>
+    <ul {...rest}>
       {tasks.map(({ name, progress, id }) => (
         <TaskCard
           className={clsx(
-            'b grid grid-cols-[1fr_2rem] grid-rows-1 items-center gap-2 rounded-lg text-2xl hover:bg-white',
+            'hover:bg-accent-light grid grid-cols-[1fr_2rem] grid-rows-1 items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]',
             {
-              ['bg-gray-300']: id === Number(taskId),
+              ['bg-bg-second']: id === Number(taskIds),
+              ['bg-white']: id !== Number(taskIds),
             },
           )}
           name={name}

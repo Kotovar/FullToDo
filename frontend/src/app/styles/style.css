@@ -2,9 +2,11 @@
 
 @theme {
   --color-accent: #0057a8;
-  --color-accent-hover: #d5e2fa;
-  --color-background: #eaeaea;
-  --color-text: #212121;
+  --color-accent-light: #d5e2fa;
+  --color-grey: #595959;
+  --color-grey-light: #eaeaea;
+  --color-dark: #212121;
+  --color-bg-second: #d9d9d9;
 
   --font-display: 'Jost', 'sans-serif';
 }
