@@ -1,11 +1,7 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import { useNavigate } from 'react-router';
 import { TASKS1 } from '@shared/mock';
-import EmptyCircleIcon from './circle-empty.svg?react';
-import FilledCircleIcon from './circle-filled.svg?react';
-import CrossIcon from './cross.svg?react';
-import PlusIcon from './plus.svg?react';
-import CalendarIcon from './calendar.svg?react';
+import { COLORS, Icon } from '@shared/ui/Icon';
 
 interface Props extends ComponentPropsWithoutRef<'div'> {
   taskId: string;
@@ -20,7 +16,7 @@ export const TaskDetail = (props: Props) => {
   };
 
   return (
-    <div {...rest} className='flex h-full list-none flex-col gap-1 p-1'>
+    <div {...rest} className='flex flex-col gap-1 p-1'>
       <button
         onClick={handleGoBack}
         className='bg-accent rounded px-4 py-2 text-white'
@@ -28,7 +24,7 @@ export const TaskDetail = (props: Props) => {
         Назад
       </button>
       <span className='flex gap-2 p-1'>
-        <EmptyCircleIcon className='h-6 w-6' />
+        <Icon name='circleEmpty' stroke={COLORS.ACCENT} />
         {TASKS1.at(0)?.name}
       </span>
       <p className='p-1'>{`Это детали задачи ${taskId}`}</p>
@@ -41,25 +37,25 @@ export const TaskDetail = (props: Props) => {
             >
               <span>
                 {completed ? (
-                  <FilledCircleIcon className='h-6 w-6' />
+                  <Icon name='circleFilled' fill={COLORS.ACCENT} />
                 ) : (
-                  <EmptyCircleIcon className='h-6 w-6' />
+                  <Icon name='circleEmpty' stroke={COLORS.ACCENT} />
                 )}
               </span>
               <span>{title}</span>
               <button type='button'>
-                <CrossIcon className='h-6 w-6' />
+                <Icon name='cross' fill={COLORS.ACCENT} />
               </button>
             </li>
           );
         })}
       </ul>
       <div className='flex gap-2 p-1'>
-        <PlusIcon className='h-6 w-6' />
+        <Icon name='plus' stroke={COLORS.ACCENT} />
         <input type='text' placeholder='Следующий шаг' />
       </div>
       <div className='flex gap-2 p-1'>
-        <CalendarIcon className='h-6 w-6' />
+        <Icon name='calendar' stroke={COLORS.ACCENT} />
         <button type='button'>Указать дату</button>
       </div>
       <textarea

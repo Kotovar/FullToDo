@@ -1,7 +1,6 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import { Link, useParams } from 'react-router';
-import CircleEmptyIcon from './circle-empty.svg?react';
-import DotsIcon from './three-dots-vertical.svg?react';
+import { COLORS, Icon } from '@shared/ui/Icon';
 
 interface Props extends ComponentPropsWithoutRef<'li'> {
   name: string;
@@ -15,6 +14,9 @@ export const TaskCard = (props: Props) => {
 
   return (
     <li {...rest}>
+      <div>
+        <Icon name='circleEmpty' size={32} stroke={COLORS.ACCENT} />
+      </div>
       <Link
         to={
           taskIds && Number(taskIds) === taskId
@@ -23,16 +25,13 @@ export const TaskCard = (props: Props) => {
         }
         className='flex items-center gap-x-2'
       >
-        <div>
-          <CircleEmptyIcon />
-        </div>
         <div className='flex flex-col'>
           <span>{name}</span>
           <span className='text-sm'>{progress}</span>
         </div>
       </Link>
       <div>
-        <DotsIcon />
+        <Icon name='threeDots' size={38} fill={COLORS.ACCENT} />
       </div>
     </li>
   );

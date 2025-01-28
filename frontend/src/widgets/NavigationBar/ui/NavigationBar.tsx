@@ -3,11 +3,14 @@ import { clsx } from 'clsx';
 import { useLocation, useParams } from 'react-router';
 import { NOTEPADS } from '@shared/mock';
 import { Notepad } from './Notepad';
+import { COLORS, Icon } from '@shared/ui/Icon';
 
-type Props = ComponentPropsWithoutRef<'nav'>;
+interface Props extends ComponentPropsWithoutRef<'nav'> {
+  changeVisibility?: () => void;
+}
 
 export const NavigationBar = (props: Props) => {
-  const { ...rest } = props;
+  const { changeVisibility, ...rest } = props;
 
   const location = useLocation().pathname;
   const { notepadId } = useParams();
@@ -20,11 +23,11 @@ export const NavigationBar = (props: Props) => {
 
   return (
     <nav {...rest}>
-      <ul className='flex flex-col gap-1'>
+      <ul className='w-full'>
         {NOTEPADS.map(({ taskName, path, id }) => (
           <Notepad
             className={clsx(
-              'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] items-center justify-items-end rounded-lg p-2 break-words',
+              'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] items-center justify-items-start rounded-lg p-2 break-words',
               {
                 ['bg-grey-light']: taskName === title,
               },
@@ -32,8 +35,17 @@ export const NavigationBar = (props: Props) => {
             name={taskName}
             path={path}
             key={id}
+            changeVisibility={changeVisibility}
           />
         ))}
+        <div className='flex gap-2 bg-white p-4'>
+          <Icon name='plus' size={32} stroke={COLORS.ACCENT} />
+          <input
+            className='w-full outline-0'
+            type='text'
+            placeholder='Добавить список'
+          />
+        </div>
       </ul>
     </nav>
   );

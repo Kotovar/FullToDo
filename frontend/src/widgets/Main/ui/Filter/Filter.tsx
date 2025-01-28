@@ -1,4 +1,4 @@
-import FilterIcon from './task-filter.svg?react';
+import { COLORS, Icon } from '@shared/ui/Icon';
 
 type Status = 'completed' | 'expired' | 'active' | 'all';
 
@@ -20,7 +20,7 @@ export const Filter = (props: Props) => {
     <>
       <div className='flex items-center justify-center gap-2'>
         <button>{status[type]}</button>
-        <FilterIcon className='stroke-accent h-8 w-8' />
+        <Icon name='filter' size={32} stroke={COLORS.ACCENT} />
       </div>
     </>
   );

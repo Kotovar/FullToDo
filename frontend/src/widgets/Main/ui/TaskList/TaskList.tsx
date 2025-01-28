@@ -22,7 +22,7 @@ export const TaskList = (props: Props) => {
       {tasks.map(({ name, progress, id }) => (
         <TaskCard
           className={clsx(
-            'hover:bg-accent-light grid grid-cols-[1fr_2rem] grid-rows-1 items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]',
+            'hover:bg-accent-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]',
             {
               ['bg-bg-second']: id === Number(taskIds),
               ['bg-white']: id !== Number(taskIds),
