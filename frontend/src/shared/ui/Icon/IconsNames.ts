@@ -6,7 +6,9 @@ import CircleEmpty from './icons/circle-empty.svg?react';
 import CircleFilled from './icons/circle-filled.svg?react';
 import Cross from './icons/cross.svg?react';
 import FlagRu from './icons/flag-ru.svg?react';
+import FlagEn from './icons/flag-en.svg?react';
 import ThemeLight from './icons/light-theme.svg?react';
+import ThemeDark from './icons/dark-theme.svg?react';
 import Loupe from './icons/loupe-search.svg?react';
 import Plus from './icons/plus.svg?react';
 import Filter from './icons/task-filter.svg?react';
@@ -21,7 +23,9 @@ export const iconsNames = {
   circleFilled: CircleFilled,
   cross: Cross,
   flagRu: FlagRu,
+  flagEn: FlagEn,
   themeLight: ThemeLight,
+  themeDark: ThemeDark,
   loupe: Loupe,
   plus: Plus,
   filter: Filter,

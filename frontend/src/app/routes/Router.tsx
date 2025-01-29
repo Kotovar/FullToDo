@@ -1,20 +1,26 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Layout } from '@app/layout';
-import { Main } from '@widgets/Main';
+import { Tasks } from '@pages/Tasks';
+import { TaskDetail } from '@pages/TaskDetail';
+import { Error } from '@pages/Error';
 
 export const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route index element={<Main isEmptyPage />} />
-          <Route path='notepad' element={<Main isEmptyPage />} />
-          <Route path='notepad/all' element={<Main />} />
-          <Route path='notepad/:notepadId' element={<Main />} />
-          <Route path='notepad/today' element={<Main />} />
-          <Route path='notepad/:notepadId/task/:taskIds' element={<Main />} />
+          <Route element={<Tasks />} />
+          <Route path='/' element={<Error />} />
+          <Route path='notepad' element={<Error />} />
+          <Route path='notepad/all' element={<Tasks />} />
+          <Route path='notepad/:notepadId' element={<Tasks />} />
+          <Route path='notepad/today' element={<Tasks />} />
+          <Route
+            path='notepad/:notepadId/task/:taskIds'
+            element={<TaskDetail />}
+          />
         </Route>
-        <Route path='*' element={<div>Ошибка 404</div>} />
+        <Route path='*' element={<Error />} />
       </Routes>
     </BrowserRouter>
   );
