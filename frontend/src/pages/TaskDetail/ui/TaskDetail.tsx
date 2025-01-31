@@ -35,16 +35,25 @@ export const TaskDetail = (props: Props) => {
       <Input
         placeholder='Следующий шаг'
         type='text'
-        iconName='plus'
-        containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden'
-        className='min-w-0 outline-0'
+        containerClassName='flex items-center gap-2 p-1'
+        className='w-full outline-0'
+        leftContent={
+          <Button appearance='ghost'>
+            <Icon name='plus' stroke={COLORS.ACCENT} />
+          </Button>
+        }
       />
-      <div className='flex items-center gap-2 p-1'>
-        <button type='button'>
-          {<Icon name='calendar' stroke={COLORS.ACCENT} />}
-        </button>
-        <input type='datetime-local' className='outline-0' />
-      </div>
+      <Input
+        placeholder='Укажите дату'
+        type='text'
+        containerClassName='flex items-center gap-2 p-1'
+        className='w-full outline-0'
+        leftContent={
+          <Button appearance='ghost'>
+            <Icon name='calendar' stroke={COLORS.ACCENT} />
+          </Button>
+        }
+      />
       <Textarea placeholder='Описание'></Textarea>
     </div>
   );

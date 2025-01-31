@@ -3,7 +3,7 @@ import { useLocation, useParams } from 'react-router';
 
 const TITLE_WITHOUT_TASKS = 'Не выбран ни один блокнот';
 
-export const useTask = () => {
+export const useTitle = () => {
   const { notepadId } = useParams();
   const location = useLocation().pathname;
 

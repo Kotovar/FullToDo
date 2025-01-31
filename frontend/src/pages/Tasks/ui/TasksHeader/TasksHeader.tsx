@@ -1,10 +1,10 @@
 import { clsx } from 'clsx';
 import { Sort, Filter } from '..';
-import { useTask } from './useTitle';
 import { AddTask } from '../AddTask.tsx';
+import { useTitle } from '@features/notepad/index.ts';
 
 export const TasksHeader = () => {
-  const [title] = useTask();
+  const [title] = useTitle();
 
   return (
     <div className={clsx('bg-grey-light flex flex-col gap-2 pb-2')}>

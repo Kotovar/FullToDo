@@ -12,6 +12,7 @@ export const Button = (props: ButtonProps) => {
   const { appearance = 'primary', className, children, ...rest } = props;
 
   const baseStyles = 'rounded p-2';
+
   const variantStyles: Record<ButtonAppearance, string> = {
     primary: 'bg-accent hover:bg-accent-lighter text-white',
     secondary:

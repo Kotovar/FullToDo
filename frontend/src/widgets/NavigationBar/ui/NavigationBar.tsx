@@ -1,9 +1,11 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import { useLocation, useParams } from 'react-router';
 import { clsx } from 'clsx';
 import { NOTEPADS } from '@entities/Task';
 import { LinkCard } from '@shared/ui/LinkCard';
 import { Input } from '@shared/ui/Input';
+import { COLORS, Icon } from '@shared/ui/Icon';
+import { Button } from '@shared/ui/Button';
+import { useTitle } from '@features/notepad';
 
 interface Props extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
@@ -12,14 +14,7 @@ interface Props extends ComponentPropsWithoutRef<'nav'> {
 export const NavigationBar = (props: Props) => {
   const { turnOffVisibility, ...rest } = props;
 
-  const location = useLocation().pathname;
-  const { notepadId } = useParams();
-
-  const pathToNotepadId = `/notepad/${notepadId}`;
-
-  const title = NOTEPADS.find(
-    notepad => notepad.path === pathToNotepadId || notepad.path === location,
-  )?.taskName;
+  const [title] = useTitle();
 
   return (
     <nav {...rest}>
@@ -39,11 +34,15 @@ export const NavigationBar = (props: Props) => {
           />
         ))}
         <Input
-          containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden'
+          containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden gap-2'
           className='min-w-0 outline-0'
           placeholder='Добавить список'
           type='text'
-          iconName='plus'
+          leftContent={
+            <Button appearance='ghost'>
+              <Icon name='plus' stroke={COLORS.ACCENT} />
+            </Button>
+          }
         />
       </ul>
     </nav>

@@ -1,26 +1,24 @@
-import type { ComponentProps } from 'react';
+import type { ComponentProps, JSX } from 'react';
 import { clsx } from 'clsx';
-import { COLORS, Icon } from '../Icon';
-import { IconName } from '@shared/config';
 
 export interface InputProps extends ComponentProps<'input'> {
-  iconName?: IconName;
   type: 'text' | 'data';
   containerClassName?: string;
-  handleClick?: () => void;
+  leftContent?: JSX.Element;
+  rightContent?: JSX.Element;
 }
 
 export const Input = (props: InputProps) => {
-  const { handleClick, containerClassName, type, iconName, ...rest } = props;
+  const { leftContent, rightContent, containerClassName, type, ...rest } =
+    props;
 
-  const baseStyles = 'w-full p-2';
+  const baseStyles = 'w-full';
 
   return (
     <div className={clsx(baseStyles, containerClassName)}>
-      <button type='button' onClick={handleClick}>
-        {iconName && <Icon name={iconName} stroke={COLORS.ACCENT} />}
-      </button>
+      {leftContent}
       <input type={type} {...rest} />
+      {rightContent}
     </div>
   );
 };

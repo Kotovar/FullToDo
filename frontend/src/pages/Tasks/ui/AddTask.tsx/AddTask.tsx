@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { clsx } from 'clsx';
 import { Input } from '@shared/ui/Input';
 import { Button } from '@shared/ui/Button';
+import { COLORS, Icon } from '@shared/ui/Icon';
 
 interface TaskOptions {
   title: string;
@@ -23,36 +24,50 @@ export const AddTask = () => {
     setValue({ title: '', date: '' });
   };
 
-  const baseStyles = 'flex p-2 rounded shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]';
+  const baseWrapperContainerStyles =
+    'shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] bg-grey-light justify-between gap-2 p-2 rounded grid';
+
+  const inputStyles = 'min-w-0 outline-0';
 
   return (
     <>
-      <div className={clsx(baseStyles, 'bg-white')}>
-        <Input
-          value={value.title}
-          onChange={handleValueTitle}
-          handleClick={handleClick}
-          placeholder='Добавить задачу'
-          type='text'
-          iconName='plus'
-          containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden'
-          className='min-w-0 outline-0'
-        />
-      </div>
-      <div className={clsx(baseStyles, 'bg-grey-light justify-between')}>
-        <Input
-          type='text'
-          placeholder='Дата выполнения'
-          value={value.date}
-          onChange={handleValueDate}
-          iconName='calendar'
-          containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden'
-          className='min-w-0 outline-0'
-        />
-        <Button onClick={handleClick} appearance='secondary'>
-          Добавить
-        </Button>
-      </div>
+      <Input
+        value={value.title}
+        onChange={handleValueTitle}
+        placeholder='Добавить задачу'
+        type='text'
+        containerClassName={clsx(
+          baseWrapperContainerStyles,
+          'bg-white grid-cols-[auto_1fr]',
+        )}
+        leftContent={
+          <Button appearance='ghost'>
+            <Icon name='plus' stroke={COLORS.ACCENT} />
+          </Button>
+        }
+        className={inputStyles}
+      />
+      <Input
+        type='text'
+        placeholder='Дата выполнения'
+        value={value.date}
+        onChange={handleValueDate}
+        containerClassName={clsx(
+          baseWrapperContainerStyles,
+          'grid-cols-[auto_1fr_auto]',
+        )}
+        className={inputStyles}
+        leftContent={
+          <Button appearance='ghost'>
+            <Icon name='calendar' stroke={COLORS.ACCENT} />
+          </Button>
+        }
+        rightContent={
+          <Button onClick={handleClick} appearance='secondary'>
+            Добавить
+          </Button>
+        }
+      />
     </>
   );
 };
