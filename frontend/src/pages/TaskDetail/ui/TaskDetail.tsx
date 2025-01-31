@@ -22,13 +22,23 @@ export const TaskDetail = (props: Props) => {
 
   return (
     <div {...rest} className='flex flex-col gap-1 p-1'>
-      <Button appearance='primary' onClick={handleGoBack}>
+      <Button
+        className='self-start'
+        appearance='primary'
+        onClick={handleGoBack}
+      >
         Назад
       </Button>
       <SubtaskTitle task={TASKS1[0]} />
       <P size='l'>{`Это детали задачи ${taskIds}`}</P>
       <Subtasks subtasks={TASKS1[1]?.subtasks} />
-      <Input placeholder='Следующий шаг' iconName='plus' type='text' />
+      <Input
+        placeholder='Следующий шаг'
+        type='text'
+        iconName='plus'
+        containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden'
+        className='min-w-0 outline-0'
+      />
       <div className='flex items-center gap-2 p-1'>
         <button type='button'>
           {<Icon name='calendar' stroke={COLORS.ACCENT} />}

@@ -1,21 +1,28 @@
-import type { ComponentPropsWithoutRef } from 'react';
+import type { ComponentProps } from 'react';
 import { clsx } from 'clsx';
 
-interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
-  appearance: 'primary' | 'ghost';
-  arrow?: 'right' | 'down' | 'none';
+type ButtonAppearance = 'primary' | 'secondary' | 'ghost';
+
+interface ButtonProps extends ComponentProps<'button'> {
+  appearance: ButtonAppearance;
+  className?: string;
 }
 
-export const Button = ({ appearance, children, ...rest }: ButtonProps) => {
+export const Button = (props: ButtonProps) => {
+  const { appearance = 'primary', className, children, ...rest } = props;
+
+  const baseStyles = 'rounded p-2';
+  const variantStyles: Record<ButtonAppearance, string> = {
+    primary: 'bg-accent hover:bg-accent-lighter text-white',
+    secondary:
+      'hover:bg-accent-light bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]',
+    ghost: '',
+  };
+
   return (
     <button
       type='button'
-      className={clsx('', {
-        ['bg-accent hover:bg-accent-lighter rounded px-4 py-2 text-white']:
-          appearance === 'primary',
-        ['hover:bg-accent-light rounded-lg bg-white px-4 py-2 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]']:
-          appearance === 'ghost',
-      })}
+      className={clsx(baseStyles, variantStyles[appearance], className)}
       {...rest}
     >
       {children}

@@ -1,6 +1,6 @@
-import { ComponentPropsWithoutRef } from 'react';
+import type { ComponentProps } from 'react';
 
-export type TextareaProps = ComponentPropsWithoutRef<'textarea'>;
+export type TextareaProps = ComponentProps<'textarea'>;
 
 export const Textarea = ({ ...rest }: TextareaProps) => {
   return (

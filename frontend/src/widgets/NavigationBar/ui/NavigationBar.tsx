@@ -38,9 +38,13 @@ export const NavigationBar = (props: Props) => {
             cardTitle={<span className='text-3xl'>{taskName}</span>}
           />
         ))}
-        <div className='flex gap-2 bg-white p-4'>
-          <Input placeholder='Добавить список' type='text' iconName='plus' />
-        </div>
+        <Input
+          containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden'
+          className='min-w-0 outline-0'
+          placeholder='Добавить список'
+          type='text'
+          iconName='plus'
+        />
       </ul>
     </nav>
   );

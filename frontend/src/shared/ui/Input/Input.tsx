@@ -1,34 +1,26 @@
-import { useState, type ComponentPropsWithoutRef } from 'react';
+import type { ComponentProps } from 'react';
+import { clsx } from 'clsx';
 import { COLORS, Icon } from '../Icon';
 import { IconName } from '@shared/config';
 
-export interface InputProps extends ComponentPropsWithoutRef<'input'> {
+export interface InputProps extends ComponentProps<'input'> {
   iconName?: IconName;
+  type: 'text' | 'data';
+  containerClassName?: string;
+  handleClick?: () => void;
 }
 
-export const Input = ({ iconName, ...rest }: InputProps) => {
-  const [value, setValue] = useState<string>('');
+export const Input = (props: InputProps) => {
+  const { handleClick, containerClassName, type, iconName, ...rest } = props;
 
-  const handleValue: React.ChangeEventHandler<HTMLInputElement> = e => {
-    setValue(e.target.value);
-  };
-
-  const handleClick = () => {
-    setValue('');
-  };
+  const baseStyles = 'w-full p-2';
 
   return (
-    <div className='flex items-center gap-2 p-1'>
+    <div className={clsx(baseStyles, containerClassName)}>
       <button type='button' onClick={handleClick}>
         {iconName && <Icon name={iconName} stroke={COLORS.ACCENT} />}
       </button>
-      <input
-        value={value}
-        onChange={handleValue}
-        type='text'
-        className='outline-0'
-        {...rest}
-      />
+      <input type={type} {...rest} />
     </div>
   );
 };

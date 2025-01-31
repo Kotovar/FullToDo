@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { COLORS, Icon } from '@shared/ui/Icon';
+import { clsx } from 'clsx';
 import { Input } from '@shared/ui/Input';
 import { Button } from '@shared/ui/Button';
 
@@ -23,27 +23,33 @@ export const AddTask = () => {
     setValue({ title: '', date: '' });
   };
 
+  const baseStyles = 'flex p-2 rounded shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]';
+
   return (
     <>
-      <div className='flex gap-2 bg-white p-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]'>
+      <div className={clsx(baseStyles, 'bg-white')}>
         <Input
-          value={value.date}
-          onChange={handleValueDate}
+          value={value.title}
+          onChange={handleValueTitle}
+          handleClick={handleClick}
           placeholder='Добавить задачу'
           type='text'
           iconName='plus'
+          containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden'
+          className='min-w-0 outline-0'
         />
       </div>
-      <div className='bg-grey-light flex items-center gap-2 p-4 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]'>
-        <Icon name='calendar' size={32} stroke={COLORS.ACCENT} />
-        <input
-          className='w-full outline-0'
-          type='datetime-local'
+      <div className={clsx(baseStyles, 'bg-grey-light justify-between')}>
+        <Input
+          type='text'
           placeholder='Дата выполнения'
-          value={value.title}
-          onChange={handleValueTitle}
+          value={value.date}
+          onChange={handleValueDate}
+          iconName='calendar'
+          containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden'
+          className='min-w-0 outline-0'
         />
-        <Button onClick={handleClick} appearance='ghost'>
+        <Button onClick={handleClick} appearance='secondary'>
           Добавить
         </Button>
       </div>
