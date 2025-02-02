@@ -1,11 +1,9 @@
-import type { ComponentPropsWithoutRef } from 'react';
+import { useState, type ComponentPropsWithoutRef } from 'react';
+import { useLocation } from 'react-router';
 import { clsx } from 'clsx';
 import { NOTEPADS } from '@entities/Task';
-import { LinkCard } from '@shared/ui/LinkCard';
-import { Input } from '@shared/ui/Input';
-import { COLORS, Icon } from '@shared/ui/Icon';
-import { Button } from '@shared/ui/Button';
-import { useTitle } from '@features/notepad';
+import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
+import { ROUTES } from '@shared/config';
 
 interface Props extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
@@ -13,18 +11,26 @@ interface Props extends ComponentPropsWithoutRef<'nav'> {
 
 export const NavigationBar = (props: Props) => {
   const { turnOffVisibility, ...rest } = props;
+  const [currentModalId, setCurrentModalId] = useState('');
 
-  const [title] = useTitle();
+  const location = useLocation().pathname;
+  const basePath = location.split(ROUTES.TASK)[0];
+
+  const handleModalId = (id: string) => {
+    setCurrentModalId(id);
+  };
 
   return (
     <nav {...rest}>
       <ul className='w-full'>
         {NOTEPADS.map(({ taskName, path, id }) => (
           <LinkCard
+            currentModalId={currentModalId}
+            handleModalId={handleModalId}
             className={clsx(
               'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] items-center justify-items-start rounded-lg p-2 break-words',
               {
-                ['bg-grey-light']: taskName === title,
+                ['bg-grey-light']: path === basePath,
               },
             )}
             handleLinkClick={turnOffVisibility}

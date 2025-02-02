@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
-import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-export interface PProps extends ComponentProps<'p'> {
+export interface PProps extends ComponentPropsWithoutRef<'p'> {
   size?: 's' | 'm' | 'l';
 }
 

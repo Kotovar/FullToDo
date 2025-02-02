@@ -1,8 +1,8 @@
-import { COLORS, Icon } from '@shared/ui/Icon';
+import { COLORS, Icon } from '@shared/ui';
 
 type Sort = 'date' | 'deadline' | 'priority';
 
-interface Props {
+interface SortProps {
   sort?: Sort;
   direction?: 'up' | 'down';
 }
@@ -13,7 +13,7 @@ const sortType: Record<Sort, string> = {
   priority: 'По приоритету',
 };
 
-export const Sort = (props: Props) => {
+export const Sort = (props: SortProps) => {
   const { sort = 'date', direction = 'down' } = props;
 
   return (

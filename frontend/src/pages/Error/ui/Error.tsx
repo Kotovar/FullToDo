@@ -1,4 +1,4 @@
-import { Button } from '@shared/ui/Button';
+import { Button } from '@shared/ui';
 import { useNavigate } from 'react-router';
 
 export const Error = () => {

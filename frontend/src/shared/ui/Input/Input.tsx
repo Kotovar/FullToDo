@@ -1,7 +1,7 @@
-import type { ComponentProps, JSX } from 'react';
+import type { ComponentPropsWithoutRef, JSX } from 'react';
 import { clsx } from 'clsx';
 
-export interface InputProps extends ComponentProps<'input'> {
+export interface InputProps extends ComponentPropsWithoutRef<'input'> {
   type: 'text' | 'data';
   containerClassName?: string;
   leftContent?: JSX.Element;

@@ -1,9 +1,9 @@
-import type { ComponentProps } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { clsx } from 'clsx';
 
 type ButtonAppearance = 'primary' | 'secondary' | 'ghost';
 
-interface ButtonProps extends ComponentProps<'button'> {
+interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   appearance: ButtonAppearance;
   className?: string;
 }

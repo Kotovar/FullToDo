@@ -1,12 +1,12 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import { COLORS, Icon } from '@shared/ui/Icon';
 import type { Subtask } from '@entities/Task';
+import { COLORS, Icon } from '@shared/ui';
 
-interface Props extends ComponentPropsWithoutRef<'ul'> {
+interface SubtasksProps extends ComponentPropsWithoutRef<'ul'> {
   subtasks: Subtask[];
 }
 
-export const Subtasks = (props: Props) => {
+export const Subtasks = (props: SubtasksProps) => {
   const { subtasks, ...rest } = props;
 
   return (

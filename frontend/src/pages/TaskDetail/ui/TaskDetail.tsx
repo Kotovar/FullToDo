@@ -1,19 +1,14 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { TASKS1 } from '@entities/Task';
-import { Button } from '@shared/ui/Button';
+import { Button, COLORS, Icon, Input, Textarea } from '@shared/ui';
 import { Subtasks } from './Subtasks';
-import { P } from '@shared/ui/P';
-import { Input } from '@shared/ui/Input';
-import { Textarea } from '@shared/ui/Textarea';
 import { SubtaskTitle } from './SubtaskTitle';
-import { COLORS, Icon } from '@shared/ui/Icon';
 
-type Props = ComponentPropsWithoutRef<'div'>;
+type TaskDetailProps = ComponentPropsWithoutRef<'div'>;
 
-export const TaskDetail = (props: Props) => {
+export const TaskDetail = (props: TaskDetailProps) => {
   const { ...rest } = props;
-  const { taskIds } = useParams();
   const navigate = useNavigate();
 
   const handleGoBack = () => {
@@ -30,7 +25,6 @@ export const TaskDetail = (props: Props) => {
         Назад
       </Button>
       <SubtaskTitle task={TASKS1[0]} />
-      <P size='l'>{`Это детали задачи ${taskIds}`}</P>
       <Subtasks subtasks={TASKS1[1]?.subtasks} />
       <Input
         placeholder='Следующий шаг'

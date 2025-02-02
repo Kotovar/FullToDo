@@ -1,7 +1,5 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import { COLORS, Icon } from '@shared/ui/Icon';
-import { Input } from '@shared/ui/Input';
-import { Button } from '@shared/ui/Button';
+import { COLORS, Icon, Input, Button } from '@shared/ui';
 
 interface Props extends ComponentPropsWithoutRef<'header'> {
   changeVisibility: () => void;
@@ -13,7 +11,11 @@ export const Header = (props: Props) => {
   return (
     <header {...rest}>
       <div>
-        <button type='button' className='flex p-1' onClick={changeVisibility}>
+        <button
+          type='button'
+          className='hover:border-accent-light flex items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
+          onClick={changeVisibility}
+        >
           <Icon name='burger' fill={COLORS.WHITE} size={32} />
         </button>
       </div>
@@ -29,7 +31,10 @@ export const Header = (props: Props) => {
         className='w-full outline-0'
       />
       <div className='flex gap-x-2'>
-        <button type='button' className='flex items-center gap-x-1 px-1'>
+        <button
+          type='button'
+          className='hover:border-accent-light flex items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
+        >
           <Icon name='flagRu' />
           <span className='text-white'>Русский</span>
         </button>

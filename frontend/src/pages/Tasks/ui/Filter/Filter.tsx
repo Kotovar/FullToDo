@@ -1,8 +1,8 @@
-import { COLORS, Icon } from '@shared/ui/Icon';
+import { COLORS, Icon } from '@shared/ui';
 
 type Status = 'completed' | 'expired' | 'active' | 'all';
 
-interface Props {
+interface FilterProps {
   type?: Status;
 }
 
@@ -13,7 +13,7 @@ const status: Record<Status, string> = {
   all: 'Все',
 };
 
-export const Filter = (props: Props) => {
+export const Filter = (props: FilterProps) => {
   const { type = 'active' } = props;
 
   return (

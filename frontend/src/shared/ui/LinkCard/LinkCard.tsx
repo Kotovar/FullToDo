@@ -1,17 +1,34 @@
-import type { ComponentPropsWithoutRef, JSX } from 'react';
-import { COLORS, Icon } from '@shared/ui/Icon';
+import { useRef, type ComponentPropsWithoutRef, JSX } from 'react';
 import { Link } from 'react-router';
+import { COLORS, Icon, OptionsMenu } from '@shared/ui';
 
-interface CardProps extends ComponentPropsWithoutRef<'li'> {
+interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   path: string;
   cardTitle: string | JSX.Element;
   header?: JSX.Element;
   body?: JSX.Element;
   handleLinkClick?: () => void;
+  handleModalId: (id: string) => void;
+  currentModalId: string;
 }
 
-export const LinkCard = (props: CardProps) => {
-  const { header, cardTitle, path, body, handleLinkClick, ...rest } = props;
+export const LinkCard = (props: LinkCardProps) => {
+  const {
+    header,
+    cardTitle,
+    path,
+    body,
+    handleLinkClick,
+    currentModalId,
+    handleModalId,
+    ...rest
+  } = props;
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const handleClick = () => {
+    handleModalId(path);
+    menuRef.current?.togglePopover();
+  };
 
   return (
     <li {...rest}>
@@ -27,9 +44,12 @@ export const LinkCard = (props: CardProps) => {
           {body}
         </Link>
       )}
-      <button>
-        <Icon name='threeDots' size={38} fill={COLORS.ACCENT} />
-      </button>
+      <div className='relative'>
+        <button onClick={handleClick}>
+          <Icon name='threeDots' size={38} fill={COLORS.ACCENT} />
+        </button>
+        {currentModalId === path && <OptionsMenu ref={menuRef} />}
+      </div>
     </li>
   );
 };
