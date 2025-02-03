@@ -1,0 +1,8 @@
+{
+  "*.{js,ts}": [
+    "prettier --write",
+    "eslint --ignore-pattern .gitignore --fix",
+    "bash -c tsc --noEmit"
+  ],
+  "*.{json,md}": ["prettier --write"]
+}
