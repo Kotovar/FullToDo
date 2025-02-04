@@ -4,7 +4,7 @@ export enum Priority {
   High = 'high',
 }
 
-export interface Notebook {
+export interface Notepad {
   id: string;
   name: string;
   createdDate: Date;

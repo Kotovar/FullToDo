@@ -1,6 +1,6 @@
-import { Notebook, Priority, Task } from '../src/models/Task';
+import { type Task, type Notepad, Priority } from '../../models/Task';
 
-export const TASKS1: Task[] = [
+const TASKS1: Task[] = [
   {
     id: '1',
     notebookId: '1',
@@ -149,7 +149,7 @@ export const TASKS1: Task[] = [
   },
 ];
 
-export const TASKS2: Task[] = [
+const TASKS2: Task[] = [
   {
     id: '12',
     notebookId: '2',
@@ -176,7 +176,7 @@ export const TASKS2: Task[] = [
     ],
   },
 ];
-export const TASKS3: Task[] = [
+const TASKS3: Task[] = [
   {
     id: '14',
     notebookId: '3',
@@ -217,10 +217,11 @@ export const TASKS3: Task[] = [
   },
 ];
 
-export const NOTEPADS: Notebook[] = [
+const TASKS4: Task[] = [];
+
+export const NOTEPADS: Notepad[] = [
   { name: 'Рабочее', createdDate: new Date(), id: '1', tasks: TASKS1 },
   { name: 'Дом', createdDate: new Date(), id: '2', tasks: TASKS2 },
   { name: 'Быт', createdDate: new Date(), id: '3', tasks: TASKS3 },
+  { name: 'Временный', createdDate: new Date(), id: '4', tasks: TASKS4 },
 ];
-
-export const ALL_TASKS = [...TASKS1, ...TASKS2, ...TASKS3];
