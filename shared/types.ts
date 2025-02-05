@@ -27,3 +27,11 @@ interface Subtask {
   completed: boolean;
   title: string;
 }
+
+export interface Response<T> {
+  status: 200 | 201 | 404 | 409 | 500;
+  message: string;
+  data?: T;
+}
+
+export type NotepadNameAndId = Omit<Notepad, 'createdDate' | 'tasks'>;

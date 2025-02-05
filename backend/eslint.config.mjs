@@ -17,6 +17,12 @@ export default tseslint.config(
       'no-unused-expressions': 'error',
       'no-console': 'error',
       '@typescript-eslint/no-empty-function': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+        },
+      ],
     },
     ignores: ['coverage/'],
   },

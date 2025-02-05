@@ -3,8 +3,10 @@ import MockTaskRepository from './MockTaskRepository';
 
 config();
 
+const DB_TYPE = process.env.DB_TYPE || 'mock';
+
 export const taskRepository = (() => {
-  switch (process.env.DB_TYPE) {
+  switch (DB_TYPE) {
     case 'mongo':
       return MockTaskRepository;
     case 'postgres':

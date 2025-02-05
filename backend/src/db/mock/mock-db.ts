@@ -1,4 +1,4 @@
-import { type Task, type Notepad, Priority } from '../../models/Task';
+import { type Task, type Notepad, Priority } from '../../../../shared/types';
 
 const TASKS1: Task[] = [
   {

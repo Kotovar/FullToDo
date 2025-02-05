@@ -1,13 +1,11 @@
-import type { Task } from '../models/Task';
+import { Task, Notepad, NotepadNameAndId, Response } from '@shared/types';
 
-export interface Response<T> {
-  status: 200 | 404 | 500;
-  message: string;
-  data: T;
-}
+// import { NotepadNameAndId } from "shared/types";
 
 export interface TaskRepository {
+  getAllNotepads(): Promise<Response<NotepadNameAndId[]>>;
   getAllTasks(): Promise<Response<Task[]>>;
   getTasksByNotepad(notebookId: string): Promise<Response<Task[]>>;
   getTasksWithDueDate(date: Date): Promise<Response<Task[]>>;
+  createNotepad(title: string): Promise<Response<Notepad[]>>;
 }

@@ -2,6 +2,7 @@ import { useLocation, useParams } from 'react-router';
 import { TasksHeader } from './TasksHeader';
 import { TasksBody } from './TasksBody';
 import { NOTEPADS } from '@entities/Task';
+import { ROUTES } from '@sharedCommon/';
 
 export const Tasks = () => {
   const { notepadId } = useParams();
@@ -9,8 +10,11 @@ export const Tasks = () => {
   const locationPath = useLocation().pathname;
 
   const title =
-    NOTEPADS.find(notepad => notepad.path === locationPath)?.taskName ??
-    'Неизвестный блокнот';
+    NOTEPADS.find(notepad => {
+      const path = ROUTES.getNotepadPath(notepad.id);
+
+      return path === locationPath;
+    })?.name ?? 'Неизвестный блокнот';
 
   const currentNotepadPathname = location.pathname;
 
