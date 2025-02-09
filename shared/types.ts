@@ -7,9 +7,10 @@ export enum Priority {
 export interface Notepad {
   id: string;
   name: string;
-  createdDate: Date;
   tasks: Task[];
 }
+
+export type NotepadWithoutTasks = Omit<Notepad, 'tasks'>
 
 export interface Task {
   id: string;
@@ -20,18 +21,16 @@ export interface Task {
   isCompleted: boolean;
   priority?: Priority;
   subtasks?: Subtask[];
-  notebookId?: string;
+  notebookId: string;
 }
 
-interface Subtask {
+export interface Subtask {
   completed: boolean;
   title: string;
 }
 
 export interface Response<T> {
-  status: 200 | 201 | 404 | 409 | 500;
-  message: string;
+  status: 200 | 201 | 204 | 404 | 409 | 500;
+  message?: string;
   data?: T;
 }
-
-export type NotepadNameAndId = Omit<Notepad, 'createdDate' | 'tasks'>;
