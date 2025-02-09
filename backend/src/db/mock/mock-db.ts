@@ -220,8 +220,8 @@ const TASKS3: Task[] = [
 const TASKS4: Task[] = [];
 
 export const NOTEPADS: Notepad[] = [
-  { name: 'Рабочее', createdDate: new Date(), id: '1', tasks: TASKS1 },
-  { name: 'Дом', createdDate: new Date(), id: '2', tasks: TASKS2 },
-  { name: 'Быт', createdDate: new Date(), id: '3', tasks: TASKS3 },
-  { name: 'Временный', createdDate: new Date(), id: '4', tasks: TASKS4 },
+  { name: 'Рабочее', id: '1', tasks: TASKS1 },
+  { name: 'Дом', id: '2', tasks: TASKS2 },
+  { name: 'Быт', id: '3', tasks: TASKS3 },
+  { name: 'Временный', id: '4', tasks: TASKS4 },
 ];

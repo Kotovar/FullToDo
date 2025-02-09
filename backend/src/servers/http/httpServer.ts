@@ -1,34 +1,69 @@
-import http from 'http';
+import http, { IncomingMessage, ServerResponse } from 'http';
+import { taskRepository } from '../../repositories';
+import { ROUTES } from '@shared/routes';
 import {
   getAllTasks,
   getTodayTasks,
-  handleNotFound,
   getSingleNotepadTasks,
-} from '../../controllers/requestTasks';
-import { taskRepository } from '../../repositories';
+  createNotepad,
+  getAllNotepads,
+  handleNotFound,
+  createTask,
+  deleteTask,
+  updateTask,
+  getSingleTask,
+} from '../../controllers';
 
-import { ROUTES } from '@shared/routes';
-import { getAllNotepads } from '../../controllers/requestNotepads';
+export const routes: Record<
+  string,
+  (context: { req: IncomingMessage; res: ServerResponse }) => Promise<unknown>
+> = {
+  [`GET ${ROUTES.ALL_TASKS}`]: context => getAllTasks(context, taskRepository),
+  [`GET ${ROUTES.NOTEPADS}`]: context =>
+    getAllNotepads(context, taskRepository),
+  [`GET ${ROUTES.TODAY_TASKS}`]: context =>
+    getTodayTasks(context, taskRepository),
+  [`POST ${ROUTES.NOTEPADS}`]: context =>
+    createNotepad(context, taskRepository),
+};
 
 export const createHttpServer = (port: number) => {
   const server = http.createServer((req, res) => {
-    if (req.method === 'GET' && req.url === ROUTES.NOTEPADS) {
-      return getAllNotepads({ serverType: 'http', req, res }, taskRepository);
+    const key = `${req.method} ${req.url}`;
+
+    if (routes[key]) {
+      return routes[key]({ req, res });
     }
 
-    if (req.method === 'GET' && req.url === ROUTES.ALL_TASKS) {
-      return getAllTasks({ serverType: 'http', req, res }, taskRepository);
+    const notepadMatch = req.url?.match(
+      new RegExp(`^${ROUTES.NOTEPAD_ID.replace(':notepadId', '([^/]+)')}$`),
+    );
+
+    if (notepadMatch) {
+      return req.method === 'GET'
+        ? getSingleNotepadTasks({ req, res }, taskRepository)
+        : handleNotFound(res);
     }
 
-    if (req.method === 'GET' && req.url === ROUTES.TODAY_TASKS) {
-      return getTodayTasks({ serverType: 'http', req, res }, taskRepository);
-    }
+    const taskMatch = req.url?.match(
+      new RegExp(
+        `^${ROUTES.TASK_ID.replace(':notepadId', '([^/]+)').replace(':taskId', '([^/]+)')}$`,
+      ),
+    );
 
-    if (req.method === 'GET' && req.url?.startsWith(ROUTES.NOTEPADS)) {
-      return getSingleNotepadTasks(
-        { serverType: 'http', req, res },
-        taskRepository,
-      );
+    if (taskMatch) {
+      switch (req.method) {
+        case 'GET':
+          return getSingleTask({ req, res }, taskRepository);
+        case 'POST':
+          return createTask({ req, res }, taskRepository);
+        case 'DELETE':
+          return deleteTask({ req, res }, taskRepository);
+        case 'PUT':
+          return updateTask({ req, res }, taskRepository);
+        default:
+          return handleNotFound(res);
+      }
     }
 
     handleNotFound(res);
