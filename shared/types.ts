@@ -21,7 +21,7 @@ export interface Task {
   isCompleted: boolean;
   priority?: Priority;
   subtasks?: Subtask[];
-  notebookId: string;
+  notepadId: string;
 }
 
 export interface Subtask {
