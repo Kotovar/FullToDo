@@ -3,7 +3,7 @@ import { type Task, type Notepad, Priority } from '../../../../shared/types';
 const TASKS1: Task[] = [
   {
     id: '1',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 1',
     description: 'Описание для задачи 1',
     dueDate: new Date(),
@@ -19,7 +19,7 @@ const TASKS1: Task[] = [
   },
   {
     id: '2',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 2',
     description: 'Описание для задачи 2',
     isCompleted: false,
@@ -33,7 +33,7 @@ const TASKS1: Task[] = [
   },
   {
     id: '3',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 3',
     isCompleted: false,
     createdDate: new Date(),
@@ -45,7 +45,7 @@ const TASKS1: Task[] = [
   },
   {
     id: '4',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 4',
     description: 'Описание для задачи 4',
     isCompleted: false,
@@ -58,7 +58,7 @@ const TASKS1: Task[] = [
   },
   {
     id: '5',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 4',
     description: 'Описание для задачи 4',
     isCompleted: false,
@@ -71,7 +71,7 @@ const TASKS1: Task[] = [
   },
   {
     id: '6',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 4',
     description: 'Описание для задачи 4',
     isCompleted: false,
@@ -84,7 +84,7 @@ const TASKS1: Task[] = [
   },
   {
     id: '7',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 4',
     description: 'Описание для задачи 4',
     isCompleted: false,
@@ -97,7 +97,7 @@ const TASKS1: Task[] = [
   },
   {
     id: '8',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 4',
     description: 'Описание для задачи 4',
     isCompleted: false,
@@ -110,7 +110,7 @@ const TASKS1: Task[] = [
   },
   {
     id: '9',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 4',
     description: 'Описание для задачи 4',
     isCompleted: false,
@@ -123,7 +123,7 @@ const TASKS1: Task[] = [
   },
   {
     id: '10',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 4',
     description: 'Описание для задачи 4',
     isCompleted: false,
@@ -136,7 +136,7 @@ const TASKS1: Task[] = [
   },
   {
     id: '11',
-    notebookId: '1',
+    notepadId: '1',
     title: 'Задача 4',
     description: 'Описание для задачи 4',
     isCompleted: false,
@@ -152,7 +152,7 @@ const TASKS1: Task[] = [
 const TASKS2: Task[] = [
   {
     id: '12',
-    notebookId: '2',
+    notepadId: '2',
     title: 'Задача 3',
     description: 'Описание для задачи 3',
     isCompleted: false,
@@ -165,7 +165,7 @@ const TASKS2: Task[] = [
   },
   {
     id: '13',
-    notebookId: '2',
+    notepadId: '2',
     title: 'Задача 4',
     isCompleted: false,
     createdDate: new Date(),
@@ -179,7 +179,7 @@ const TASKS2: Task[] = [
 const TASKS3: Task[] = [
   {
     id: '14',
-    notebookId: '3',
+    notepadId: '3',
     title: 'Задача 1',
     description: 'Описание для задачи 5',
     isCompleted: false,
@@ -192,7 +192,7 @@ const TASKS3: Task[] = [
   },
   {
     id: '15',
-    notebookId: '3',
+    notepadId: '3',
     title: 'Задача 3',
     isCompleted: false,
     createdDate: new Date(),
@@ -204,7 +204,7 @@ const TASKS3: Task[] = [
   },
   {
     id: '16',
-    notebookId: '3',
+    notepadId: '3',
     title: 'Задача 5',
     description: 'Описание для задачи 5',
     isCompleted: true,

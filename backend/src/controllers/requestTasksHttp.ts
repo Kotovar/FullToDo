@@ -1,6 +1,6 @@
 import { Task } from '@shared/types';
 import { TaskRepository } from '../repositories/TaskRepository';
-import { errorHandler, parseJsonBody, type HttpContext } from './utils';
+import { errorHandler, getId, parseJsonBody, type HttpContext } from './utils';
 
 export const getAllTasks = async (
   { res }: HttpContext,
@@ -21,15 +21,17 @@ export const getSingleTask = async (
   repository: TaskRepository,
 ) => {
   try {
-    const url = req.url?.split('/') ?? '';
-    const taskId = url[4];
+    const notepadId = getId(req, 'notepad');
+    const taskId = getId(req, 'task');
 
-    if (!taskId) {
+    if (!taskId || !notepadId) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Task ID is required' }));
+      return res.end(
+        JSON.stringify({ message: 'Task and Notepad IDs are required' }),
+      );
     }
 
-    const result = await repository.getSingleTask(taskId);
+    const result = await repository.getSingleTask(taskId, notepadId);
 
     if (result.status === 404) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
@@ -62,11 +64,10 @@ export const getSingleNotepadTasks = async (
   { req, res }: HttpContext,
   repository: TaskRepository,
 ) => {
-  const url = req.url?.split('/') ?? '';
-  const id = url[2];
+  const notepadId = getId(req, 'notepad');
 
   try {
-    const result = await repository.getTasksByNotepad(id);
+    const result = await repository.getTasksByNotepad(notepadId);
     res.statusCode = result.status;
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(result));
@@ -80,13 +81,15 @@ export const createTask = async (
   repository: TaskRepository,
 ) => {
   try {
-    if (req.headers['content-type'] !== 'application/json') {
-      res.writeHead(400);
-      return res.end('Invalid Content-Type');
+    const notepadId = getId(req, 'notepad');
+
+    if (!notepadId) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ message: 'Notepad ID is required' }));
     }
 
     const task = await parseJsonBody<Task>(req);
-    const result = await repository.createTask(task);
+    const result = await repository.createTask(task, notepadId);
 
     res.writeHead(result.status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));
@@ -100,8 +103,7 @@ export const deleteTask = async (
   repository: TaskRepository,
 ) => {
   try {
-    const url = req.url?.split('/') ?? '';
-    const taskId = url[4];
+    const taskId = getId(req, 'task');
 
     if (!taskId) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -127,22 +129,18 @@ export const updateTask = async (
   repository: TaskRepository,
 ) => {
   try {
-    const url = req.url?.split('/') ?? '';
-    const taskId = url[4];
+    const taskId = getId(req, 'task');
+    const notepadId = getId(req, 'notepad');
 
-    if (!taskId) {
+    if (!taskId || !notepadId) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Task ID is required' }));
+      return res.end(
+        JSON.stringify({ message: 'Task and Notepad IDs are required' }),
+      );
     }
 
     const updatedTask = await parseJsonBody<Task>(req);
-
-    if (!updatedTask.title) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Title is required' }));
-    }
-
-    const result = await repository.updateTask(taskId, updatedTask);
+    const result = await repository.updateTask(taskId, notepadId, updatedTask);
 
     if (result.status === 404) {
       res.writeHead(404, { 'Content-Type': 'application/json' });

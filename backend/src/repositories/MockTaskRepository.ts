@@ -39,8 +39,13 @@ class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getSingleTask(taskId: string): Promise<Response<Task>> {
-    const task = this.tasks.find(task => task.id === taskId);
+  async getSingleTask(
+    taskId: string,
+    notepadId: string,
+  ): Promise<Response<Task>> {
+    const task = this.tasks.find(
+      task => task.id === taskId && task.notepadId === notepadId,
+    );
 
     if (task) {
       return {
@@ -56,17 +61,17 @@ class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getTasksByNotepad(notebookId: string): Promise<Response<Task[]>> {
-    if (!this.notepads.some(notepad => notepad.id === notebookId)) {
+  async getTasksByNotepad(notepadId: string): Promise<Response<Task[]>> {
+    if (!this.notepads.some(notepad => notepad.id === notepadId)) {
       return {
         status: 404,
-        message: `Notepad ${notebookId} not found`,
+        message: `Notepad ${notepadId} not found`,
         data: [],
       };
     }
 
     const filteredByNotebook = this.tasks.filter(
-      task => task.notebookId === notebookId,
+      task => task.notepadId === notepadId,
     );
 
     return {
@@ -108,15 +113,15 @@ class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async createTask(task: Task): Promise<Response<never>> {
-    const { title, notebookId, dueDate, description } = task;
+  async createTask(task: Task, notepadId: string): Promise<Response<never>> {
+    const { title, dueDate, description } = task;
 
     const newTask = {
       title: title,
       id: uuidv4(),
       createdDate: new Date(),
       isCompleted: false,
-      notebookId: notebookId,
+      notepadId: notepadId,
       dueDate: dueDate,
       description: description,
       subtasks: [],
@@ -124,7 +129,7 @@ class MockTaskRepository implements TaskRepository {
 
     this.tasks.push(newTask);
     this.notepads
-      .find(notepad => notepad.id === notebookId)
+      .find(notepad => notepad.id === notepadId)
       ?.tasks.push(newTask);
 
     return {
@@ -145,22 +150,74 @@ class MockTaskRepository implements TaskRepository {
     return { status: 200, message: 'Task deleted successfully' };
   }
 
+  async deleteNotepad(notepadId: string): Promise<Response<never>> {
+    const notepadIndex = this.notepads.findIndex(
+      notepad => notepad.id === notepadId,
+    );
+
+    if (notepadIndex === -1) {
+      return { status: 404, message: 'Notepad not found' };
+    }
+
+    this.notepads.splice(notepadIndex, 1);
+    this.tasks = this.tasks.filter(task => task.notepadId !== notepadId);
+
+    return { status: 200, message: 'Notepad deleted successfully' };
+  }
+
   async updateTask(
     taskId: string,
-    updatedTask: Task,
+    notepadId: string,
+    updatedTaskFields: Partial<Task>,
   ): Promise<Response<Task | null>> {
-    const taskIndex = this.tasks.findIndex(task => task.id === taskId);
+    const taskIndex = this.tasks.findIndex(
+      task => task.id === taskId && task.notepadId === notepadId,
+    );
 
     if (taskIndex === -1) {
       return { status: 404, message: 'Task not found', data: null };
     }
 
-    this.tasks[taskIndex] = { ...this.tasks[taskIndex], ...updatedTask };
+    this.tasks[taskIndex] = { ...this.tasks[taskIndex], ...updatedTaskFields };
 
     return {
       status: 200,
       message: `A task with the id ${taskId} has been successfully updated`,
-      data: updatedTask,
+      data: this.tasks[taskIndex],
+    };
+  }
+
+  async updateNotepad(
+    notepadId: string,
+    updatedNotepadFields: Partial<Notepad>,
+  ): Promise<Response<Notepad | null>> {
+    if (
+      updatedNotepadFields.name &&
+      this.notepads.some(notepad => notepad.name === updatedNotepadFields.name)
+    ) {
+      return {
+        status: 409,
+        message: `The name ${updatedNotepadFields.name} is already in use`,
+      };
+    }
+
+    const notepadIndex = this.notepads.findIndex(
+      notepad => notepad.id === notepadId,
+    );
+
+    if (notepadIndex === -1) {
+      return { status: 404, message: 'Notepad not found', data: null };
+    }
+
+    this.notepads[notepadIndex] = {
+      ...this.notepads[notepadIndex],
+      ...updatedNotepadFields,
+    };
+
+    return {
+      status: 200,
+      message: `A notepad with the id ${notepadId} has been successfully updated`,
+      data: this.notepads[notepadIndex],
     };
   }
 }

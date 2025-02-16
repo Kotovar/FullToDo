@@ -35,3 +35,13 @@ export const handleNotFound = async (res: ServerResponse) => {
   res.setHeader('Content-Type', 'text/plain');
   res.end('Route not found');
 };
+
+export const getId = (req: IncomingMessage, idType: 'notepad' | 'task') => {
+  const url = req.url?.split('/') ?? '';
+
+  if (idType === 'notepad') {
+    return url[2];
+  }
+
+  return url[4];
+};
