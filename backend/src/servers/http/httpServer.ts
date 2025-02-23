@@ -1,4 +1,4 @@
-import http, { IncomingMessage, ServerResponse } from 'http';
+import http, { type IncomingMessage, type ServerResponse } from 'http';
 import { taskRepository } from '../../repositories';
 import { ROUTES } from '@shared/routes';
 import {
