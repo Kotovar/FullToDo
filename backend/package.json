@@ -3,7 +3,16 @@
   "version": "0.0.0",
   "main": "src/app.ts",
   "scripts": {
-    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts"
+    "build": "tsc",
+    "start": "node -r tsconfig-paths/register dist/app.js",
+    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "prepare": "cd .. && husky backend/.husky",
+    "lint-staged": "lint-staged",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "Kotovar",

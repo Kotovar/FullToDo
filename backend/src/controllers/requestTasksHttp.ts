@@ -1,15 +1,36 @@
-import { Task } from '@shared/types';
+import { createTaskSchema, updateTaskSchema } from '@shared/schemas';
 import { TaskRepository } from '../repositories/TaskRepository';
 import { errorHandler, getId, parseJsonBody, type HttpContext } from './utils';
 
-export const getAllTasks = async (
-  { res }: HttpContext,
+export const createTask = async (
+  { req, res }: HttpContext,
   repository: TaskRepository,
 ) => {
   try {
-    const result = await repository.getAllTasks();
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
+    const notepadId = getId(req, 'notepad');
+
+    if (!notepadId) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ message: 'Notepad ID is required' }));
+    }
+
+    const rawTask = await parseJsonBody<unknown>(req);
+    const validationResult = createTaskSchema.safeParse(rawTask);
+
+    if (!validationResult.success) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(
+        JSON.stringify({
+          message: 'Invalid task data',
+          errors: validationResult.error.errors,
+        }),
+      );
+    }
+
+    const task = validationResult.data;
+    const result = await repository.createTask(task, notepadId);
+
+    res.writeHead(result.status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));
   } catch (error) {
     errorHandler(res, error);
@@ -38,6 +59,20 @@ export const getSingleTask = async (
       return res.end(JSON.stringify({ message: 'Task not found' }));
     }
 
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(result));
+  } catch (error) {
+    errorHandler(res, error);
+  }
+};
+
+export const getAllTasks = async (
+  { res }: HttpContext,
+  repository: TaskRepository,
+) => {
+  try {
+    const result = await repository.getAllTasks();
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(result));
@@ -76,20 +111,41 @@ export const getSingleNotepadTasks = async (
   }
 };
 
-export const createTask = async (
+export const updateTask = async (
   { req, res }: HttpContext,
   repository: TaskRepository,
 ) => {
   try {
+    const taskId = getId(req, 'task');
     const notepadId = getId(req, 'notepad');
 
-    if (!notepadId) {
+    if (!taskId || !notepadId) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Notepad ID is required' }));
+      return res.end(
+        JSON.stringify({ message: 'Task and Notepad IDs are required' }),
+      );
     }
 
-    const task = await parseJsonBody<Task>(req);
-    const result = await repository.createTask(task, notepadId);
+    const rawTask = await parseJsonBody<unknown>(req);
+    const validationResult = updateTaskSchema.safeParse(rawTask);
+
+    if (!validationResult.success) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(
+        JSON.stringify({
+          message: 'Invalid task data',
+          errors: validationResult.error.errors,
+        }),
+      );
+    }
+
+    const updatedTask = validationResult.data;
+    const result = await repository.updateTask(taskId, notepadId, updatedTask);
+
+    if (result.status === 404) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ message: 'Task not found' }));
+    }
 
     res.writeHead(result.status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));
@@ -119,36 +175,6 @@ export const deleteTask = async (
 
     res.writeHead(result.status);
     res.end();
-  } catch (error) {
-    errorHandler(res, error);
-  }
-};
-
-export const updateTask = async (
-  { req, res }: HttpContext,
-  repository: TaskRepository,
-) => {
-  try {
-    const taskId = getId(req, 'task');
-    const notepadId = getId(req, 'notepad');
-
-    if (!taskId || !notepadId) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(
-        JSON.stringify({ message: 'Task and Notepad IDs are required' }),
-      );
-    }
-
-    const updatedTask = await parseJsonBody<Task>(req);
-    const result = await repository.updateTask(taskId, notepadId, updatedTask);
-
-    if (result.status === 404) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Task not found' }));
-    }
-
-    res.writeHead(result.status, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(result));
   } catch (error) {
     errorHandler(res, error);
   }

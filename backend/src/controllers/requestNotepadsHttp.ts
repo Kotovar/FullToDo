@@ -1,6 +1,39 @@
 import { TaskRepository } from '../repositories/TaskRepository';
 import { errorHandler, getId, type HttpContext, parseJsonBody } from './utils';
-import { Notepad } from '@shared/types';
+import { createNotepadSchema } from '@shared/schemas';
+
+export const createNotepad = async (
+  { req, res }: HttpContext,
+  repository: TaskRepository,
+) => {
+  try {
+    if (req.headers['content-type'] !== 'application/json') {
+      res.writeHead(400);
+      return res.end('Invalid Content-Type');
+    }
+
+    const rawNotepad = await parseJsonBody<unknown>(req);
+    const validationResult = createNotepadSchema.safeParse(rawNotepad);
+
+    if (!validationResult.success) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(
+        JSON.stringify({
+          message: 'Invalid Notepad data',
+          errors: validationResult.error.errors,
+        }),
+      );
+    }
+
+    const notepad = validationResult.data;
+    const result = await repository.createNotepad(notepad);
+
+    res.writeHead(result.status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(result));
+  } catch (error) {
+    errorHandler(res, error);
+  }
+};
 
 export const getAllNotepads = async (
   { res }: HttpContext,
@@ -17,18 +50,38 @@ export const getAllNotepads = async (
   }
 };
 
-export const createNotepad = async (
+export const updateNotepad = async (
   { req, res }: HttpContext,
   repository: TaskRepository,
 ) => {
   try {
-    if (req.headers['content-type'] !== 'application/json') {
-      res.writeHead(400);
-      return res.end('Invalid Content-Type');
+    const notepadId = getId(req, 'notepad');
+
+    if (!notepadId) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ message: 'Notepad ID is required' }));
     }
 
-    const { name } = await parseJsonBody<Notepad>(req);
-    const result = await repository.createNotepad(name);
+    const rawNotepad = await parseJsonBody<unknown>(req);
+    const validationResult = createNotepadSchema.safeParse(rawNotepad);
+
+    if (!validationResult.success) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(
+        JSON.stringify({
+          message: 'Invalid Notepad data',
+          errors: validationResult.error.errors,
+        }),
+      );
+    }
+
+    const updatedNotepad = validationResult.data;
+    const result = await repository.updateNotepad(notepadId, updatedNotepad);
+
+    if (result.status === 404) {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ message: 'Notepad not found' }));
+    }
 
     res.writeHead(result.status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(result));
@@ -58,33 +111,6 @@ export const deleteNotepad = async (
 
     res.writeHead(result.status);
     res.end();
-  } catch (error) {
-    errorHandler(res, error);
-  }
-};
-
-export const updateNotepad = async (
-  { req, res }: HttpContext,
-  repository: TaskRepository,
-) => {
-  try {
-    const notepadId = getId(req, 'notepad');
-
-    if (!notepadId) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Notepad ID is required' }));
-    }
-
-    const updatedNotepad = await parseJsonBody<Notepad>(req);
-    const result = await repository.updateNotepad(notepadId, updatedNotepad);
-
-    if (result.status === 404) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Notepad not found' }));
-    }
-
-    res.writeHead(result.status, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(result));
   } catch (error) {
     errorHandler(res, error);
   }
