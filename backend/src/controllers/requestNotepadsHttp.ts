@@ -1,6 +1,6 @@
 import { TaskRepository } from '../repositories/TaskRepository';
 import { errorHandler, getId, type HttpContext, parseJsonBody } from './utils';
-import { createNotepadSchema } from '@shared/schemas';
+import { createNotepadSchema, TaskNotepadResponse } from '@shared/schemas';
 
 export const createNotepad = async (
   { req, res }: HttpContext,
@@ -40,13 +40,24 @@ export const getAllNotepads = async (
   repository: TaskRepository,
 ) => {
   try {
-    const result = await repository.getAllNotepads();
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(result));
+    const rawData = await repository.getAllNotepads();
+
+    const validationResult = TaskNotepadResponse.safeParse(rawData);
+
+    if (!validationResult.success) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      return res.end(
+        JSON.stringify({
+          message: 'Invalid notepad data',
+          errors: validationResult.error.errors,
+        }),
+      );
+    }
+
+    res.writeHead(rawData.status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(rawData));
   } catch (error) {
-    res.statusCode = 500;
-    res.end('Error 500 ' + error);
+    errorHandler(res, error);
   }
 };
 
