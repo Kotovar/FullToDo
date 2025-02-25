@@ -3,7 +3,7 @@
     "prettier --write",
     "eslint --ignore-pattern .gitignore --fix",
     "bash -c tsc --noEmit",
-    "vitest run"
+    "vitest related --run --environment=node"
   ],
   "*.{json,md}": ["prettier --write"]
 }
