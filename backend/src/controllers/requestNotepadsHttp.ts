@@ -1,6 +1,9 @@
 import { TaskRepository } from '../repositories/TaskRepository';
 import { errorHandler, getId, type HttpContext, parseJsonBody } from './utils';
-import { createNotepadSchema, TaskNotepadResponse } from '@shared/schemas';
+import {
+  createNotepadSchema,
+  NotepadWithoutTasksResponse,
+} from '@shared/schemas';
 
 export const createNotepad = async (
   { req, res }: HttpContext,
@@ -42,7 +45,7 @@ export const getAllNotepads = async (
   try {
     const rawData = await repository.getAllNotepads();
 
-    const validationResult = TaskNotepadResponse.safeParse(rawData);
+    const validationResult = NotepadWithoutTasksResponse.safeParse(rawData);
 
     if (!validationResult.success) {
       res.writeHead(400, { 'Content-Type': 'application/json' });

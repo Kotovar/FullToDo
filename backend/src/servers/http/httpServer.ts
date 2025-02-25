@@ -39,7 +39,7 @@ export const routes: Record<
     createNotepad(context, taskRepository),
 };
 
-export const createHttpServer = (port: number) => {
+export const createHttpServer = () => {
   const server = http.createServer((req, res) => {
     const key = `${req.method} ${req.url}`;
 
@@ -86,5 +86,5 @@ export const createHttpServer = (port: number) => {
     handleNotFound(res);
   });
 
-  server.listen(port);
+  return server;
 };

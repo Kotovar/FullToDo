@@ -1,7 +1,8 @@
 import express from 'express';
 
-export const createExpressServer = (port: number) => {
+export const createExpressServer = () => {
   const app = express();
 
-  app.listen(port);
+  // app.listen(port);
+  return app;
 };

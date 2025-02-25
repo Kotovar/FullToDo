@@ -6,12 +6,7 @@ config();
 const SERVER_TYPE = process.env.SERVER_TYPE || 'http';
 const PORT = Number(process.env.PORT) || 3000;
 
-const startServer = async () => {
-  if (SERVER_TYPE === 'express') {
-    createExpressServer(PORT);
-  } else {
-    createHttpServer(PORT);
-  }
-};
+const server =
+  SERVER_TYPE === 'express' ? createExpressServer() : createHttpServer();
 
-startServer();
+server.listen(PORT);

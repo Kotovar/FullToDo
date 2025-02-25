@@ -11,10 +11,10 @@ export const Tasks = () => {
 
   const title =
     NOTEPADS.find(notepad => {
-      const path = ROUTES.getNotepadPath(notepad.id);
+      const path = ROUTES.getNotepadPath(notepad._id);
 
       return path === locationPath;
-    })?.name ?? 'Неизвестный блокнот';
+    })?.title ?? 'Неизвестный блокнот';
 
   const currentNotepadPathname = location.pathname;
 

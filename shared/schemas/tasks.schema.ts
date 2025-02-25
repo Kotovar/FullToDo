@@ -19,7 +19,11 @@ export type Subtask = z.infer<typeof createSubtaskSchema>;
 export type CreateNotepad = z.infer<typeof createNotepadSchema>;
 export type CreateTask = z.infer<typeof createTaskSchema>;
 export type UpdateTask = z.infer<typeof updateTaskSchema>;
-export type Response = z.infer<typeof TaskNotepadResponse>;
+export type TaskResponse = z.infer<typeof TaskResponse>;
+export type NotepadResponse = z.infer<typeof NotepadResponse>;
+export type NotepadWithoutTasksResponse = z.infer<
+  typeof NotepadWithoutTasksResponse
+>;
 
 export const createNotepadSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -55,18 +59,25 @@ const notepadWithoutTasksSchema = z.object({
   title: z.string().min(1, 'Title is required'),
 });
 
-export const notepadsWithoutTasksSchema = z.array(notepadWithoutTasksSchema);
-
 export const updateTaskSchema = createTaskSchema
   .partial()
   .refine(data => Object.keys(data).length > 0, {
     message: 'At least one field must be provided for update',
   });
 
-export const TaskNotepadResponse = z.object({
+const ResponseWithoutData = z.object({
   status: StatusResponseEnum,
   message: z.string().optional(),
-  data: z
-    .union([dbNotepadSchema, dbTaskSchema, notepadsWithoutTasksSchema])
-    .optional(),
+});
+
+export const TaskResponse = ResponseWithoutData.extend({
+  data: z.array(dbTaskSchema).optional(),
+});
+
+export const NotepadResponse = ResponseWithoutData.extend({
+  data: z.array(dbNotepadSchema).optional(),
+});
+
+export const NotepadWithoutTasksResponse = ResponseWithoutData.extend({
+  data: z.array(notepadWithoutTasksSchema).optional(),
 });

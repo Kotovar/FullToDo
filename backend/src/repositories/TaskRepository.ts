@@ -1,24 +1,29 @@
 import {
-  Response,
+  TaskResponse,
   CreateTask,
   UpdateTask,
   CreateNotepad,
+  NotepadResponse,
+  NotepadWithoutTasksResponse,
 } from '@shared/schemas';
 
 export interface TaskRepository {
-  createNotepad(notepad: CreateNotepad): Promise<Response>;
-  createTask(task: CreateTask, notepadId: string): Promise<Response>;
-  getAllNotepads(): Promise<Response>;
-  getAllTasks(): Promise<Response>;
-  getSingleTask(taskId: string, notepadId: string): Promise<Response>;
-  getTasksByNotepad(notepadId: string): Promise<Response>;
-  getTasksWithDueDate(date: Date): Promise<Response>;
-  updateNotepad(notepadId: string, notepad: CreateNotepad): Promise<Response>;
+  createNotepad(notepad: CreateNotepad): Promise<NotepadResponse>;
+  createTask(task: CreateTask, notepadId: string): Promise<TaskResponse>;
+  getAllNotepads(): Promise<NotepadWithoutTasksResponse>;
+  getAllTasks(): Promise<TaskResponse>;
+  getSingleTask(taskId: string, notepadId: string): Promise<TaskResponse>;
+  getSingleNotepadTasks(notepadId: string): Promise<TaskResponse>;
+  getTodayTasks(date: Date): Promise<TaskResponse>;
+  updateNotepad(
+    notepadId: string,
+    notepad: CreateNotepad,
+  ): Promise<NotepadResponse>;
   updateTask(
     taskId: string,
     notepadId: string,
     task: UpdateTask,
-  ): Promise<Response>;
-  deleteNotepad(notepadId: string): Promise<Response>;
-  deleteTask(taskId: string): Promise<Response>;
+  ): Promise<TaskResponse>;
+  deleteNotepad(notepadId: string): Promise<NotepadResponse>;
+  deleteTask(taskId: string): Promise<TaskResponse>;
 }

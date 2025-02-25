@@ -1,8 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { NOTEPADS } from '../db/mock/mock-db';
-import type { Task, Notepad, Response, CreateNotepad } from '@shared/schemas';
-import { TaskRepository } from './TaskRepository';
+import type {
+  Task,
+  Notepad,
+  TaskResponse,
+  NotepadWithoutTasksResponse,
+  NotepadResponse,
+  CreateNotepad,
+} from '@shared/schemas';
+import type { TaskRepository } from './TaskRepository';
 
 class MockTaskRepository implements TaskRepository {
   private tasks: Task[];
@@ -13,7 +20,7 @@ class MockTaskRepository implements TaskRepository {
     this.tasks = notepads.flatMap(notepad => notepad.tasks);
   }
 
-  async createNotepad({ title }: CreateNotepad): Promise<Response> {
+  async createNotepad({ title }: CreateNotepad): Promise<NotepadResponse> {
     if (this.notepads.some(notepad => notepad.title === title)) {
       return {
         status: 409,
@@ -33,7 +40,7 @@ class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async createTask(task: Task, notepadId: string): Promise<Response> {
+  async createTask(task: Task, notepadId: string): Promise<TaskResponse> {
     const { title, dueDate, description, subtasks = [] } = task;
 
     const newTask = {
@@ -58,7 +65,7 @@ class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getAllNotepads(): Promise<Response> {
+  async getAllNotepads(): Promise<NotepadWithoutTasksResponse> {
     const notepadsWithoutTasks = [
       { title: 'Сегодня', _id: 'today' },
       { title: 'Задачи', _id: 'all' },
@@ -71,7 +78,7 @@ class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getAllTasks(): Promise<Response> {
+  async getAllTasks(): Promise<TaskResponse> {
     return {
       status: 200,
       message: 'Success',
@@ -79,7 +86,10 @@ class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getSingleTask(taskId: string, notepadId: string): Promise<Response> {
+  async getSingleTask(
+    taskId: string,
+    notepadId: string,
+  ): Promise<TaskResponse> {
     const task = this.tasks.find(
       task => task._id === taskId && task.notepadId === notepadId,
     );
@@ -88,7 +98,7 @@ class MockTaskRepository implements TaskRepository {
       return {
         status: 200,
         message: 'Success',
-        data: task,
+        data: [task],
       };
     }
 
@@ -98,7 +108,7 @@ class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getTasksByNotepad(notepadId: string): Promise<Response> {
+  async getSingleNotepadTasks(notepadId: string): Promise<TaskResponse> {
     if (!this.notepads.some(notepad => notepad._id === notepadId)) {
       return {
         status: 404,
@@ -118,7 +128,7 @@ class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getTasksWithDueDate(date: Date): Promise<Response> {
+  async getTodayTasks(date: Date): Promise<TaskResponse> {
     const filteredDueDate = this.tasks.filter(
       task => task.dueDate?.toDateString() === date.toDateString(),
     );
@@ -132,8 +142,8 @@ class MockTaskRepository implements TaskRepository {
 
   async updateNotepad(
     notepadId: string,
-    updatedNotepadFields: Partial<Notepad>,
-  ): Promise<Response> {
+    updatedNotepadFields: Partial<CreateNotepad>,
+  ): Promise<NotepadResponse> {
     if (
       updatedNotepadFields.title &&
       this.notepads.some(
@@ -162,7 +172,7 @@ class MockTaskRepository implements TaskRepository {
     return {
       status: 200,
       message: `A notepad with the id ${notepadId} has been successfully updated`,
-      data: this.notepads[notepadIndex],
+      data: [this.notepads[notepadIndex]],
     };
   }
 
@@ -170,7 +180,7 @@ class MockTaskRepository implements TaskRepository {
     taskId: string,
     notepadId: string,
     updatedTaskFields: Partial<Task>,
-  ): Promise<Response> {
+  ): Promise<TaskResponse> {
     const taskIndex = this.tasks.findIndex(
       task => task._id === taskId && task.notepadId === notepadId,
     );
@@ -184,11 +194,11 @@ class MockTaskRepository implements TaskRepository {
     return {
       status: 200,
       message: `A task with the _id ${taskId} has been successfully updated`,
-      data: this.tasks[taskIndex],
+      data: [this.tasks[taskIndex]],
     };
   }
 
-  async deleteNotepad(notepadId: string): Promise<Response> {
+  async deleteNotepad(notepadId: string): Promise<NotepadResponse> {
     const notepadIndex = this.notepads.findIndex(
       notepad => notepad._id === notepadId,
     );
@@ -203,7 +213,7 @@ class MockTaskRepository implements TaskRepository {
     return { status: 200, message: 'Notepad deleted successfully' };
   }
 
-  async deleteTask(taskId: string): Promise<Response> {
+  async deleteTask(taskId: string): Promise<TaskResponse> {
     const taskIndex = this.tasks.findIndex(task => task._id === taskId);
 
     if (taskIndex === -1) {

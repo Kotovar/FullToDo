@@ -1,7 +1,7 @@
 import {
   createTaskSchema,
   updateTaskSchema,
-  TaskNotepadResponse,
+  TaskResponse,
 } from '@shared/schemas';
 import { TaskRepository } from '../repositories/TaskRepository';
 import { errorHandler, getId, parseJsonBody, type HttpContext } from './utils';
@@ -63,7 +63,7 @@ export const getSingleTask = async (
       return res.end(JSON.stringify({ message: 'Task not found' }));
     }
 
-    const validationResult = TaskNotepadResponse.safeParse(rawData);
+    const validationResult = TaskResponse.safeParse(rawData);
 
     if (!validationResult.success) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -89,7 +89,7 @@ export const getAllTasks = async (
   try {
     const rawData = await repository.getAllTasks();
 
-    const validationResult = TaskNotepadResponse.safeParse(rawData);
+    const validationResult = TaskResponse.safeParse(rawData);
 
     if (!validationResult.success) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -113,9 +113,9 @@ export const getTodayTasks = async (
   repository: TaskRepository,
 ) => {
   try {
-    const rawData = await repository.getTasksWithDueDate(new Date());
+    const rawData = await repository.getTodayTasks(new Date());
 
-    const validationResult = TaskNotepadResponse.safeParse(rawData);
+    const validationResult = TaskResponse.safeParse(rawData);
 
     if (!validationResult.success) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -141,9 +141,9 @@ export const getSingleNotepadTasks = async (
   const notepadId = getId(req, 'notepad');
 
   try {
-    const rawData = await repository.getTasksByNotepad(notepadId);
+    const rawData = await repository.getSingleNotepadTasks(notepadId);
 
-    const validationResult = TaskNotepadResponse.safeParse(rawData);
+    const validationResult = TaskResponse.safeParse(rawData);
 
     if (!validationResult.success) {
       res.writeHead(400, { 'Content-Type': 'application/json' });

@@ -1,6 +1,6 @@
 import type { Task, Notepad } from '@shared/schemas';
 
-const TASKS1: Task[] = [
+export const TASKS1: Task[] = [
   {
     _id: '1',
     notepadId: '1',
