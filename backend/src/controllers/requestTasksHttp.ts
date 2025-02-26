@@ -11,6 +11,11 @@ export const createTask = async (
   repository: TaskRepository,
 ) => {
   try {
+    if (req.headers['content-type'] !== 'application/json') {
+      res.writeHead(400);
+      return res.end('Invalid Content-Type');
+    }
+
     const notepadId = getId(req, 'notepad');
 
     if (!notepadId) {
@@ -25,7 +30,7 @@ export const createTask = async (
       res.writeHead(400, { 'Content-Type': 'application/json' });
       return res.end(
         JSON.stringify({
-          message: 'Invalid task data',
+          message: 'Invalid Task data',
           errors: validationResult.error.errors,
         }),
       );

@@ -26,16 +26,22 @@ export type NotepadWithoutTasksResponse = z.infer<
 >;
 
 export const createNotepadSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+  title: z
+    .union([z.string().min(1, 'Title is required'), z.number()])
+    .transform(value => String(value)),
 });
 
 export const createSubtaskSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+  title: z
+    .union([z.string().min(1, 'Title is required'), z.number()])
+    .transform(value => String(value)),
   isCompleted: z.boolean().optional().default(false),
 });
 
 export const createTaskSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+  title: z
+    .union([z.string().min(1, 'Title is required'), z.number()])
+    .transform(value => String(value)),
   isCompleted: z.boolean().default(false),
   description: z.string().optional(),
   dueDate: z.date().optional(),

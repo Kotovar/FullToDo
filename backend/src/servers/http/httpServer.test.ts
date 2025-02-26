@@ -1,9 +1,14 @@
 import http from 'http';
+import request from 'supertest';
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ZodError, type ZodIssue } from 'zod';
 import { ROUTES } from '@shared/routes';
-import type {
-  TaskResponse,
-  NotepadWithoutTasksResponse,
+import {
+  type TaskResponse,
+  type NotepadWithoutTasksResponse,
+  type NotepadResponse,
+  createNotepadSchema,
+  createTaskSchema,
 } from '@shared/schemas';
 import { createHttpServer, routes } from './httpServer';
 import { taskRepository } from '../../repositories';
@@ -31,43 +36,32 @@ const validNotepadWithoutTasksData: NotepadWithoutTasksResponse = {
   ],
 };
 
-const notepadBadResponse = {
-  error: {},
-};
+const port = 3000;
+const server = createHttpServer();
 
 const res = {
   writeHead: vi.fn(),
   end: vi.fn(),
 } as unknown as http.ServerResponse;
 
-describe('httpServer', () => {
-  const port = 3000;
-  const server = createHttpServer();
-
-  beforeEach(() => {
-    server.listen(port);
-  });
-
-  afterEach(() => {
-    server.close();
-  });
-
+describe('httpServer start/close', () => {
   test('should start and stop the server', async () => {
+    server.listen(port);
     expect(server.listening).toBe(true);
 
     server.close();
     expect(server.listening).toBe(false);
   });
+});
 
-  test('should handle POST /notepad', async () => {
-    const req = {
-      method: 'POST',
-      url: ROUTES.NOTEPADS,
-    } as http.IncomingMessage;
+describe('httpServer GET', () => {
+  beforeEach(() => {
+    server.listen(port);
+    vi.clearAllMocks();
+  });
 
-    await routes[`POST ${ROUTES.NOTEPADS}`]({ req, res });
-
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify(notepadBadResponse));
+  afterEach(() => {
+    server.close();
   });
 
   test('should handle GET /notepad/all', async () => {
@@ -162,5 +156,231 @@ describe('httpServer', () => {
     });
 
     expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTaskData));
+  });
+});
+
+describe('httpServer POST', () => {
+  beforeEach(() => {
+    server.listen(port);
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    server.close();
+  });
+
+  describe('should handle POST /notepad', () => {
+    test('should handle POST /notepad and return 201 status', async () => {
+      const notepadData = { title: 'New Notepad' };
+      const notepadResponse: NotepadResponse = {
+        status: 201,
+        message: `A notebook with the title ${notepadData.title} has been successfully created`,
+      };
+
+      vi.spyOn(taskRepository, 'createNotepad').mockResolvedValue(
+        notepadResponse,
+      );
+
+      const response = await request(server)
+        .post(ROUTES.NOTEPADS)
+        .send(notepadData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual(notepadResponse);
+      expect(taskRepository.createNotepad).toHaveBeenCalledWith(notepadData);
+    });
+
+    test('should return 400 if Content-Type is not application/json', async () => {
+      const notepadData = { title: 'New Notepad' };
+
+      const response = await request(server)
+        .post(ROUTES.NOTEPADS)
+        .send(JSON.stringify(notepadData))
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'text/plain');
+
+      expect(response.status).toBe(400);
+      expect(response.text).toBe('Invalid Content-Type');
+    });
+
+    test('should return 400 if notepad data is invalid', async () => {
+      const invalidNotepadData = { title: null };
+      const errors: ZodIssue[] = [
+        {
+          message: 'Title is required',
+          code: 'invalid_type',
+          path: ['title'],
+          expected: 'string',
+          received: 'null',
+        },
+      ];
+
+      const validationError = {
+        message: 'Invalid Notepad data',
+        errors: errors,
+      };
+
+      const zodError = new ZodError(errors);
+
+      vi.spyOn(createNotepadSchema, 'safeParse').mockReturnValue({
+        success: false,
+        error: zodError,
+      });
+
+      const response = await request(server)
+        .post(ROUTES.NOTEPADS)
+        .send(invalidNotepadData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual(validationError);
+    });
+
+    test('should return 409 if notepad with the same title already exists', async () => {
+      const notepadData = { title: 'Existing Notepad' };
+      const notepadResponse: NotepadResponse = {
+        status: 409,
+        message: `A notebook with the title ${notepadData.title} already exists`,
+      };
+
+      vi.spyOn(taskRepository, 'createNotepad').mockResolvedValue(
+        notepadResponse,
+      );
+
+      const response = await request(server)
+        .post(ROUTES.NOTEPADS)
+        .send(notepadData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(409);
+      expect(response.body).toEqual(notepadResponse);
+    });
+
+    test('should return 500 if an internal server error occurs', async () => {
+      const notepadData = { title: 'New Notepad' };
+      const error = new Error('Internal Server Error');
+
+      vi.spyOn(taskRepository, 'createNotepad').mockRejectedValue(error);
+
+      const response = await request(server)
+        .post(ROUTES.NOTEPADS)
+        .send(notepadData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: {} });
+    });
+  });
+
+  describe('should handle POST /notepad/1/task', () => {
+    const notepadId = '1';
+    const taskData = {
+      title: '1',
+      isCompleted: false,
+      description: 'Созданная',
+    };
+
+    test(`should handle POST /notepad/${notepadId}/task and return 201 status`, async () => {
+      const taskResponse: TaskResponse = {
+        status: 201,
+        message: `A task with the title ${taskData.title} has been successfully created`,
+      };
+
+      vi.spyOn(taskRepository, 'createTask').mockResolvedValue(taskResponse);
+
+      const response = await request(server)
+        .post(`${ROUTES.getNotepadPath(notepadId)}/task`)
+        .send(taskData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(taskResponse.status);
+      expect(response.body).toEqual(taskResponse);
+      expect(taskRepository.createTask).toHaveBeenCalledWith(
+        taskData,
+        notepadId,
+      );
+    });
+
+    test('should return 400 if Content-Type is not application/json', async () => {
+      const response = await request(server)
+        .post(`${ROUTES.getNotepadPath(notepadId)}/task`)
+        .send(JSON.stringify(taskData))
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'text/plain');
+
+      expect(response.status).toBe(400);
+      expect(response.text).toBe('Invalid Content-Type');
+    });
+
+    test('should return 400 if task data is invalid', async () => {
+      const invalidTaskData = {
+        title: null,
+        description: 'Созданная',
+      };
+
+      const errors: ZodIssue[] = [
+        {
+          message: 'Title is required',
+          code: 'invalid_type',
+          path: ['title'],
+          expected: 'string',
+          received: 'null',
+        },
+      ];
+
+      const validationError = {
+        message: 'Invalid Task data',
+        errors: errors,
+      };
+
+      const zodError = new ZodError(errors);
+
+      vi.spyOn(createTaskSchema, 'safeParse').mockReturnValue({
+        success: false,
+        error: zodError,
+      });
+
+      const response = await request(server)
+        .post(`${ROUTES.getNotepadPath(notepadId)}/task`)
+        .send(invalidTaskData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual(validationError);
+    });
+
+    test('should return 500 if an internal server error occurs', async () => {
+      const taskData = { title: 'New Task' };
+      const error = new Error('Internal Server Error');
+
+      vi.spyOn(taskRepository, 'createTask').mockRejectedValue(error);
+
+      const response = await request(server)
+        .post(`${ROUTES.getNotepadPath(notepadId)}/task`)
+        .send(taskData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: {} });
+    });
+  });
+});
+
+describe('httpServer PATH', () => {
+  beforeEach(() => {
+    server.listen(port);
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    server.close();
   });
 });
