@@ -69,6 +69,11 @@ export const updateNotepad = async (
   repository: TaskRepository,
 ) => {
   try {
+    if (req.headers['content-type'] !== 'application/json') {
+      res.writeHead(400);
+      return res.end('Invalid Content-Type');
+    }
+
     const notepadId = getId(req, 'notepad');
 
     if (!notepadId) {

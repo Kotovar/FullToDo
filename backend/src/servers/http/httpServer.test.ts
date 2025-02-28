@@ -125,7 +125,7 @@ describe('httpServer GET', () => {
   test('should handle GET /notepad/1', async () => {
     const req = {
       method: 'GET',
-      url: ROUTES.getNotepadPath('16'),
+      url: ROUTES.getNotepadPath('1'),
     } as http.IncomingMessage;
 
     vi.spyOn(taskRepository, 'getSingleNotepadTasks').mockResolvedValue(
@@ -375,6 +375,9 @@ describe('httpServer POST', () => {
 });
 
 describe('httpServer PATH', () => {
+  const notepadId = '1';
+  const taskId = '1';
+
   beforeEach(() => {
     server.listen(port);
     vi.clearAllMocks();
@@ -382,5 +385,189 @@ describe('httpServer PATH', () => {
 
   afterEach(() => {
     server.close();
+  });
+
+  describe(`should handle PATCH /notepad/${notepadId}`, () => {
+    const updatedNotepadData = { title: 'New Notepad Title' };
+    const notepadResponse: NotepadResponse = {
+      status: 200,
+      message: `A notepad with the id ${notepadId} has been successfully updated`,
+    };
+
+    test(`should handle PATCH /notepad/${notepadId} and return 200 status`, async () => {
+      vi.spyOn(taskRepository, 'updateNotepad').mockResolvedValue(
+        notepadResponse,
+      );
+
+      const response = await request(server)
+        .patch(ROUTES.getNotepadPath(notepadId))
+        .send(updatedNotepadData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(notepadResponse.status);
+      expect(response.body).toEqual(notepadResponse);
+      expect(taskRepository.updateNotepad).toHaveBeenCalledWith(
+        notepadId,
+        updatedNotepadData,
+      );
+    });
+
+    test('should return 400 if Content-Type is not application/json', async () => {
+      const response = await request(server)
+        .patch(ROUTES.getNotepadPath(notepadId))
+        .send(JSON.stringify(updatedNotepadData))
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'text/plain');
+
+      expect(response.status).toBe(400);
+      expect(response.text).toBe('Invalid Content-Type');
+    });
+
+    test('should return 400 if notepad data is invalid', async () => {
+      const invalidNotepadData = { title: null };
+      const errors: ZodIssue[] = [
+        {
+          message: 'Title is required',
+          code: 'invalid_type',
+          path: ['title'],
+          expected: 'string',
+          received: 'null',
+        },
+      ];
+
+      const validationError = {
+        message: 'Invalid Notepad data',
+        errors: errors,
+      };
+
+      const zodError = new ZodError(errors);
+
+      vi.spyOn(createNotepadSchema, 'safeParse').mockReturnValue({
+        success: false,
+        error: zodError,
+      });
+
+      const response = await request(server)
+        .patch(ROUTES.getNotepadPath(notepadId))
+        .send(invalidNotepadData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual(validationError);
+    });
+
+    test('should return 500 if an internal server error occurs', async () => {
+      const notepadData = { title: 'New Notepad' };
+      const error = new Error('Internal Server Error');
+
+      vi.spyOn(taskRepository, 'updateNotepad').mockRejectedValue(error);
+
+      const response = await request(server)
+        .patch(ROUTES.getNotepadPath(notepadId))
+        .send(notepadData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: {} });
+    });
+  });
+
+  describe(`should handle PATCH /notepad/${notepadId}/task/${taskId}`, () => {
+    const updatedTaskData = {
+      title: '1',
+      isCompleted: true,
+      subtasks: [{ title: 'abc3111', isCompleted: false }],
+    };
+
+    const taskResponse: TaskResponse = {
+      status: 200,
+      message: `A task with the _id ${taskId} has been successfully updated`,
+    };
+
+    test(`should handle PATCH /notepad/${notepadId}/task/${taskId} and return 200 status`, async () => {
+      vi.spyOn(taskRepository, 'updateTask').mockResolvedValue(taskResponse);
+
+      const response = await request(server)
+        .patch(`${ROUTES.getTaskDetailPath(`/notepad/${notepadId}`, taskId)}`)
+        .send(updatedTaskData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(taskResponse.status);
+      expect(response.body).toEqual(taskResponse);
+      expect(taskRepository.updateTask).toHaveBeenCalledWith(
+        notepadId,
+        taskId,
+        updatedTaskData,
+      );
+    });
+
+    test('should return 400 if Content-Type is not application/json', async () => {
+      const response = await request(server)
+        .patch(`${ROUTES.getTaskDetailPath(`/notepad/${notepadId}`, taskId)}`)
+        .send(JSON.stringify(updatedTaskData))
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'text/plain');
+
+      expect(response.status).toBe(400);
+      expect(response.text).toBe('Invalid Content-Type');
+    });
+
+    test('should return 400 if task data is invalid', async () => {
+      const invalidTaskData = {
+        title: 'title',
+        description: 'Созданная',
+        subtasks: [{ title: 'abc3111', isCompleted: 2 }],
+      };
+
+      const errors: ZodIssue[] = [
+        {
+          message: 'Expected boolean, received number',
+          code: 'invalid_type',
+          path: ['subtasks', 0, 'isCompleted'],
+          expected: 'boolean',
+          received: 'number',
+        },
+      ];
+
+      const validationError = {
+        message: 'Invalid task data',
+        errors: errors,
+      };
+
+      const zodError = new ZodError(errors);
+
+      vi.spyOn(createTaskSchema, 'safeParse').mockReturnValue({
+        success: false,
+        error: zodError,
+      });
+
+      const response = await request(server)
+        .patch(`${ROUTES.getTaskDetailPath(`/notepad/${notepadId}`, taskId)}`)
+        .send(invalidTaskData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual(validationError);
+    });
+
+    test('should return 500 if an internal server error occurs', async () => {
+      const error = new Error('Internal Server Error');
+
+      vi.spyOn(taskRepository, 'updateTask').mockRejectedValue(error);
+
+      const response = await request(server)
+        .patch(`${ROUTES.getTaskDetailPath(`/notepad/${notepadId}`, taskId)}`)
+        .send(updatedTaskData)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json');
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: {} });
+    });
   });
 });
