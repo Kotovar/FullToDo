@@ -32,16 +32,19 @@ export const errorHandler = (res: ServerResponse, error: unknown) => {
 
 export const handleNotFound = async (res: ServerResponse) => {
   res.statusCode = 404;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Route not found');
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify({ message: 'Route not found' }));
 };
 
-export const getId = (req: IncomingMessage, idType: 'notepad' | 'task') => {
+export const getId = (
+  req: IncomingMessage,
+  idType: 'notepad' | 'task',
+): string => {
   const url = req.url?.split('/') ?? '';
 
   if (idType === 'notepad') {
-    return url[2];
+    return url[2] ?? '';
   }
 
-  return url[4];
+  return url[4] ?? '';
 };

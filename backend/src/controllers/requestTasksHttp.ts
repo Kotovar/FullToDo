@@ -1,8 +1,4 @@
-import {
-  createTaskSchema,
-  updateTaskSchema,
-  TaskResponse,
-} from '@shared/schemas';
+import { createTaskSchema, updateTaskSchema } from '@shared/schemas';
 import { TaskRepository } from '../repositories/TaskRepository';
 import { errorHandler, getId, parseJsonBody, type HttpContext } from './utils';
 
@@ -17,12 +13,6 @@ export const createTask = async (
     }
 
     const notepadId = getId(req, 'notepad');
-
-    if (!notepadId) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Notepad ID is required' }));
-    }
-
     const rawTask = await parseJsonBody<unknown>(req);
     const validationResult = createTaskSchema.safeParse(rawTask);
 
@@ -53,31 +43,11 @@ export const getSingleTask = async (
   try {
     const notepadId = getId(req, 'notepad');
     const taskId = getId(req, 'task');
-
-    if (!taskId || !notepadId) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(
-        JSON.stringify({ message: 'Task and Notepad IDs are required' }),
-      );
-    }
-
     const rawData = await repository.getSingleTask(taskId, notepadId);
 
     if (rawData.status === 404) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Task not found' }));
-    }
-
-    const validationResult = TaskResponse.safeParse(rawData);
-
-    if (!validationResult.success) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(
-        JSON.stringify({
-          message: 'Invalid task data',
-          errors: validationResult.error.errors,
-        }),
-      );
+      res.writeHead(rawData.status, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(rawData));
     }
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -94,18 +64,6 @@ export const getAllTasks = async (
   try {
     const rawData = await repository.getAllTasks();
 
-    const validationResult = TaskResponse.safeParse(rawData);
-
-    if (!validationResult.success) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(
-        JSON.stringify({
-          message: 'Invalid task data',
-          errors: validationResult.error.errors,
-        }),
-      );
-    }
-
     res.writeHead(rawData.status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(rawData));
   } catch (error) {
@@ -119,18 +77,6 @@ export const getTodayTasks = async (
 ) => {
   try {
     const rawData = await repository.getTodayTasks(new Date());
-
-    const validationResult = TaskResponse.safeParse(rawData);
-
-    if (!validationResult.success) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(
-        JSON.stringify({
-          message: 'Invalid task data',
-          errors: validationResult.error.errors,
-        }),
-      );
-    }
 
     res.writeHead(rawData.status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(rawData));
@@ -147,19 +93,6 @@ export const getSingleNotepadTasks = async (
 
   try {
     const rawData = await repository.getSingleNotepadTasks(notepadId);
-
-    const validationResult = TaskResponse.safeParse(rawData);
-
-    if (!validationResult.success) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(
-        JSON.stringify({
-          message: 'Invalid task data',
-          errors: validationResult.error.errors,
-        }),
-      );
-    }
-
     res.writeHead(rawData.status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(rawData));
   } catch (error) {
@@ -179,14 +112,6 @@ export const updateTask = async (
 
     const taskId = getId(req, 'task');
     const notepadId = getId(req, 'notepad');
-
-    if (!taskId || !notepadId) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(
-        JSON.stringify({ message: 'Task and Notepad IDs are required' }),
-      );
-    }
-
     const rawTask = await parseJsonBody<unknown>(req);
     const validationResult = updateTaskSchema.safeParse(rawTask);
 
@@ -205,7 +130,7 @@ export const updateTask = async (
 
     if (result.status === 404) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Task not found' }));
+      return res.end(JSON.stringify(result));
     }
 
     res.writeHead(result.status, { 'Content-Type': 'application/json' });
@@ -221,21 +146,15 @@ export const deleteTask = async (
 ) => {
   try {
     const taskId = getId(req, 'task');
-
-    if (!taskId) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Task ID is required' }));
-    }
-
     const result = await repository.deleteTask(taskId);
 
     if (result.status === 404) {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ message: 'Task not found' }));
+      res.writeHead(result.status, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify(result));
     }
 
-    res.writeHead(result.status);
-    res.end();
+    res.writeHead(result.status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(result));
   } catch (error) {
     errorHandler(res, error);
   }
