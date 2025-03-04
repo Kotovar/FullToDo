@@ -3,7 +3,9 @@ import MockTaskRepository from './MockTaskRepository';
 
 config();
 
-const DB_TYPE = process.env.DB_TYPE || 'mock';
+export const getDbType = () => process.env.DB_TYPE || 'mock';
+
+const DB_TYPE = getDbType();
 
 export const taskRepository = (() => {
   switch (DB_TYPE) {

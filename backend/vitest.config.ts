@@ -10,7 +10,7 @@ export default defineConfig({
     mockReset: true,
     coverage: {
       provider: 'istanbul',
-      exclude: [...coverageConfigDefaults.exclude],
+      exclude: [...coverageConfigDefaults.exclude, 'src/app.ts'],
     },
   },
   resolve: {

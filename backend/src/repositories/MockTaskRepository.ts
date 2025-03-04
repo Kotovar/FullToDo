@@ -11,7 +11,7 @@ import type {
 } from '@shared/schemas';
 import type { TaskRepository } from './TaskRepository';
 
-class MockTaskRepository implements TaskRepository {
+export class MockTaskRepository implements TaskRepository {
   private tasks: Task[];
   private notepads: Notepad[];
 
