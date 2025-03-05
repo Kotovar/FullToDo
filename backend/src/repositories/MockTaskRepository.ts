@@ -15,9 +15,9 @@ export class MockTaskRepository implements TaskRepository {
   private tasks: Task[];
   private notepads: Notepad[];
 
-  constructor(notepads: Notepad[]) {
-    this.notepads = notepads;
-    this.tasks = notepads.flatMap(notepad => notepad.tasks);
+  constructor(initialNotepads: Notepad[]) {
+    this.notepads = structuredClone(initialNotepads);
+    this.tasks = initialNotepads.flatMap(notepad => notepad.tasks);
   }
 
   async createNotepad({ title }: CreateNotepad): Promise<NotepadResponse> {
@@ -105,6 +105,7 @@ export class MockTaskRepository implements TaskRepository {
     return {
       status: 404,
       message: `Task ${taskId} not found`,
+      data: [],
     };
   }
 
@@ -128,9 +129,11 @@ export class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getTodayTasks(date: Date): Promise<TaskResponse> {
+  async getTodayTasks(): Promise<TaskResponse> {
+    const currentDay = new Date();
+
     const filteredDueDate = this.tasks.filter(
-      task => task.dueDate?.toDateString() === date.toDateString(),
+      task => task.dueDate?.toDateString() === currentDay.toDateString(),
     );
 
     return {
@@ -144,6 +147,14 @@ export class MockTaskRepository implements TaskRepository {
     notepadId: string,
     updatedNotepadFields: Partial<CreateNotepad>,
   ): Promise<NotepadResponse> {
+    const notepadIndex = this.notepads.findIndex(
+      notepad => notepad._id === notepadId,
+    );
+
+    if (notepadIndex === -1) {
+      return { status: 404, message: 'Notepad not found' };
+    }
+
     if (
       updatedNotepadFields.title &&
       this.notepads.some(
@@ -154,14 +165,6 @@ export class MockTaskRepository implements TaskRepository {
         status: 409,
         message: `The title ${updatedNotepadFields.title} is already in use`,
       };
-    }
-
-    const notepadIndex = this.notepads.findIndex(
-      notepad => notepad._id === notepadId,
-    );
-
-    if (notepadIndex === -1) {
-      return { status: 404, message: 'Notepad not found' };
     }
 
     this.notepads[notepadIndex] = {

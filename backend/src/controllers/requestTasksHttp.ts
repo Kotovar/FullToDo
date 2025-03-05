@@ -76,7 +76,7 @@ export const getTodayTasks = async (
   repository: TaskRepository,
 ) => {
   try {
-    const rawData = await repository.getTodayTasks(new Date());
+    const rawData = await repository.getTodayTasks();
 
     res.writeHead(rawData.status, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(rawData));

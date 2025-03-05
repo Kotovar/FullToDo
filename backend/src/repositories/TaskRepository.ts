@@ -14,7 +14,7 @@ export interface TaskRepository {
   getAllTasks(): Promise<TaskResponse>;
   getSingleTask(taskId: string, notepadId: string): Promise<TaskResponse>;
   getSingleNotepadTasks(notepadId: string): Promise<TaskResponse>;
-  getTodayTasks(date: Date): Promise<TaskResponse>;
+  getTodayTasks(): Promise<TaskResponse>;
   updateNotepad(
     notepadId: string,
     notepad: CreateNotepad,
