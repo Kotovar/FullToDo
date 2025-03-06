@@ -1,9 +1,10 @@
 import { useState, type ComponentPropsWithoutRef } from 'react';
 import { useLocation } from 'react-router';
 import { clsx } from 'clsx';
-import { NOTEPADS } from '@entities/Task';
 import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
+import { useQuery } from '@tanstack/react-query';
+import { fetchNotepads } from '@entities/Notepad/api';
 
 interface Props extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
@@ -20,10 +21,21 @@ export const NavigationBar = (props: Props) => {
     setCurrentModalId(id);
   };
 
+  const { data, isError } = useQuery({
+    queryKey: ['notepads'],
+    queryFn: fetchNotepads,
+  });
+
+  if (isError) {
+    return <div>Error fetching data</div>;
+  }
+
+  const notepadsDate = data?.data ?? [];
+
   return (
     <nav {...rest}>
       <ul className='w-full'>
-        {NOTEPADS.map(({ title, _id }) => {
+        {notepadsDate.map(({ title, _id }) => {
           const path = ROUTES.getNotepadPath(_id);
 
           return (

@@ -1,5 +1,5 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import type { Task } from '@entities/Task';
+import type { Task } from '@sharedCommon/*';
 import { COLORS, Icon } from '@shared/ui';
 
 interface SubtaskTitleProps extends ComponentPropsWithoutRef<'span'> {
@@ -11,13 +11,13 @@ export const SubtaskTitle = (props: SubtaskTitleProps) => {
 
   return (
     <span className='flex gap-2 p-1' {...rest}>
-      {task.subtasksCompleted ? (
+      {task.isCompleted ? (
         <Icon name='circleFilled' fill={COLORS.ACCENT} />
       ) : (
         <Icon name='circleEmpty' stroke={COLORS.ACCENT} />
       )}
 
-      {task.name}
+      {task.title}
     </span>
   );
 };

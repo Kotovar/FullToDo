@@ -1,19 +1,36 @@
 import type { ComponentPropsWithoutRef } from 'react';
-import { useNavigate } from 'react-router';
-import { TASKS1 } from '@entities/Task';
+import { useNavigate, useParams } from 'react-router';
 import { Button, COLORS, Icon, Input, Textarea } from '@shared/ui';
 import { Subtasks } from './Subtasks';
 import { SubtaskTitle } from './SubtaskTitle';
+import { useQuery } from '@tanstack/react-query';
+import { fetchSingleTask } from '@entities/Task/api';
 
 type TaskDetailProps = ComponentPropsWithoutRef<'div'>;
 
 export const TaskDetail = (props: TaskDetailProps) => {
   const { ...rest } = props;
+  const { notepadId = '', taskId = '' } = useParams();
   const navigate = useNavigate();
 
   const handleGoBack = () => {
     navigate(-1);
   };
+
+  const { data, isError } = useQuery({
+    queryKey: ['task', taskId, notepadId],
+    queryFn: () => fetchSingleTask(taskId, notepadId),
+  });
+
+  if (isError) {
+    return <div>Error fetching data</div>;
+  }
+
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
+  const tasksDate = data?.data ?? [];
 
   return (
     <div {...rest} className='flex flex-col gap-1 p-1'>
@@ -24,8 +41,8 @@ export const TaskDetail = (props: TaskDetailProps) => {
       >
         Назад
       </Button>
-      <SubtaskTitle task={TASKS1[0]} />
-      <Subtasks subtasks={TASKS1[1]?.subtasks} />
+      <SubtaskTitle task={tasksDate[0]} />
+      <Subtasks subtasks={tasksDate[0].subtasks ?? []} />
       <Input
         placeholder='Следующий шаг'
         type='text'
@@ -48,7 +65,10 @@ export const TaskDetail = (props: TaskDetailProps) => {
           </Button>
         }
       />
-      <Textarea placeholder='Описание'></Textarea>
+      <Textarea
+        className='outline-bg-second w-full rounded-sm bg-white p-2'
+        placeholder='Описание'
+      ></Textarea>
     </div>
   );
 };

@@ -44,6 +44,12 @@ export const routes: Record<
 
 export const createHttpServer = () => {
   const server = http.createServer((req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader(
+      'Access-Control-Allow-Methods',
+      'GET, POST, PATCH, DELETE, OPTIONS',
+    );
+
     logger(req, res, () => {});
 
     const key = `${req.method} ${req.url}`;

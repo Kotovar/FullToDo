@@ -4,14 +4,19 @@ import App from '@app/App';
 import '@shared/i18n';
 import '@app/styles';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 const rootElement = document.getElementById('root');
+const queryClient = new QueryClient();
 
 if (rootElement) {
   const root = createRoot(rootElement);
 
   root.render(
     <StrictMode>
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
     </StrictMode>,
   );
 } else {
