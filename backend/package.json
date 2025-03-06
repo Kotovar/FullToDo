@@ -1,20 +1,37 @@
 {
   "name": "fulltodo_backend",
   "version": "0.0.0",
-  "main": "dist/index.ts",
+  "main": "src/app.ts",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts"
+    "start": "node -r tsconfig-paths/register dist/app.js",
+    "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/app.ts",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "prepare": "cd .. && husky backend/.husky",
+    "lint-staged": "lint-staged",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "Kotovar",
   "license": "ISC",
   "description": "",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^5.0.1",
+    "morgan": "^1.10.0",
+    "shared": "file:../shared",
+    "uuid": "^11.1.0"
+  },
   "devDependencies": {
-    "@types/node": "^22.10.7",
+    "@types/express": "^5.0.0",
+    "@types/morgan": "^1.9.9",
+    "@types/supertest": "^6.0.2",
     "nodemon": "^3.1.9",
+    "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "tsconfig-paths": "^4.2.0"
   }
 }
