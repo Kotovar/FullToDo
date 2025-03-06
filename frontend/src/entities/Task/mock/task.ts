@@ -2,11 +2,11 @@ import { Task } from '@entities/Task/model';
 import { Notepad } from '@sharedCommon/*';
 
 export const NOTEPADS: Notepad[] = [
-  { name: 'Сегодня', id: 'today', tasks: [] },
-  { name: 'Задачи', id: 'all', tasks: [] },
-  { name: 'Рабочее', id: '1', tasks: [] },
-  { name: 'Дом', id: '2', tasks: [] },
-  { name: 'Быт', id: '3', tasks: [] },
+  { title: 'Сегодня', _id: 'today', tasks: [] },
+  { title: 'Задачи', _id: 'all', tasks: [] },
+  { title: 'Рабочее', _id: '1', tasks: [] },
+  { title: 'Дом', _id: '2', tasks: [] },
+  { title: 'Быт', _id: '3', tasks: [] },
 ];
 
 export const TASKS1: Task[] = [

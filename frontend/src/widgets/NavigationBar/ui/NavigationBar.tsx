@@ -23,8 +23,8 @@ export const NavigationBar = (props: Props) => {
   return (
     <nav {...rest}>
       <ul className='w-full'>
-        {NOTEPADS.map(({ name, id }) => {
-          const path = ROUTES.getNotepadPath(id);
+        {NOTEPADS.map(({ title, _id }) => {
+          const path = ROUTES.getNotepadPath(_id);
 
           return (
             <LinkCard
@@ -37,9 +37,9 @@ export const NavigationBar = (props: Props) => {
                 },
               )}
               handleLinkClick={turnOffVisibility}
-              key={id}
+              key={_id}
               path={path}
-              cardTitle={<span className='text-3xl'>{name}</span>}
+              cardTitle={<span className='text-3xl'>{title}</span>}
             />
           );
         })}
