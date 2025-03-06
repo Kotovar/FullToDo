@@ -43,6 +43,28 @@ export class MockTaskRepository implements TaskRepository {
   async createTask(task: Task, notepadId: string): Promise<TaskResponse> {
     const { title, dueDate, description, subtasks = [] } = task;
 
+    const currentNotepad = this.notepads.find(
+      notepad => notepad._id === notepadId,
+    );
+
+    if (!currentNotepad) {
+      return {
+        status: 404,
+        message: 'Notepad not found',
+      };
+    }
+
+    const filteredByNotebook = this.tasks.filter(
+      task => task.notepadId === notepadId,
+    );
+
+    if (filteredByNotebook.some(task => task.title === title)) {
+      return {
+        status: 409,
+        message: `A task with the title ${title} already exists in notepad '${currentNotepad?.title}'`,
+      };
+    }
+
     const newTask = {
       title: title,
       _id: uuidv4(),

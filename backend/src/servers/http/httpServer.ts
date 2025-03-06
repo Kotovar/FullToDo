@@ -1,4 +1,5 @@
 import http, { type IncomingMessage, type ServerResponse } from 'http';
+import morgan from 'morgan';
 import { taskRepository } from '../../repositories';
 import { ROUTES } from '@shared/routes';
 import {
@@ -26,6 +27,8 @@ const TASK_ID_REGEX = new RegExp(
   `^${ROUTES.TASK_ID.replace(':notepadId', '([^/]+)').replace(':taskId', '([^/]+)')}$`,
 );
 
+const logger = morgan('tiny');
+
 export const routes: Record<
   string,
   (context: { req: IncomingMessage; res: ServerResponse }) => Promise<unknown>
@@ -41,6 +44,8 @@ export const routes: Record<
 
 export const createHttpServer = () => {
   const server = http.createServer((req, res) => {
+    logger(req, res, () => {});
+
     const key = `${req.method} ${req.url}`;
 
     if (routes[key]) {

@@ -6,6 +6,7 @@ const newTitleNotepad = { title: 'Test Notepad' };
 const notepadId = '999';
 const taskId = '999';
 const realNotepadId = '1';
+const realNotepadTitle = 'Рабочее';
 const realTaskId = '1';
 const newTask = {
   title: 'Task title',
@@ -42,11 +43,28 @@ describe('MockTaskRepository', () => {
   });
 
   test('method createTask', async () => {
-    const responseCreate = await repository.createTask(newTask, notepadId);
+    const responseCreate = await repository.createTask(newTask, realNotepadId);
 
     expect(responseCreate).toStrictEqual({
       status: 201,
       message: `A task with the title ${newTask.title} has been successfully created`,
+    });
+
+    const badResponseCreate = await repository.createTask(newTask, notepadId);
+
+    expect(badResponseCreate).toStrictEqual({
+      status: 404,
+      message: 'Notepad not found',
+    });
+
+    const doubleResponseCreate = await repository.createTask(
+      newTask,
+      realNotepadId,
+    );
+
+    expect(doubleResponseCreate).toStrictEqual({
+      status: 409,
+      message: `A task with the title ${newTask.title} already exists in notepad '${realNotepadTitle}'`,
     });
   });
 
