@@ -1,11 +1,12 @@
 import { Task } from '@entities/Task/model';
+import { Notepad } from '@sharedCommon/*';
 
-export const NOTEPADS = [
-  { taskName: 'Сегодня', path: '/notepad/today', id: 1 },
-  { taskName: 'Задачи', path: '/notepad/all', id: 2 },
-  { taskName: 'Рабочее', path: '/notepad/1', id: 3 },
-  { taskName: 'Дом', path: '/notepad/2', id: 4 },
-  { taskName: 'Быт', path: '/notepad/3', id: 5 },
+export const NOTEPADS: Notepad[] = [
+  { name: 'Сегодня', id: 'today', tasks: [] },
+  { name: 'Задачи', id: 'all', tasks: [] },
+  { name: 'Рабочее', id: '1', tasks: [] },
+  { name: 'Дом', id: '2', tasks: [] },
+  { name: 'Быт', id: '3', tasks: [] },
 ];
 
 export const TASKS1: Task[] = [

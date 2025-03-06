@@ -1,7 +1,7 @@
+import { useState } from 'react';
 import { TASKS1, TASKS2, TASKS3 } from '@entities/Task';
 import { COLORS, Icon, LinkCard } from '@shared/ui';
-import { ROUTES } from '@shared/config';
-import { useState } from 'react';
+import { ROUTES } from '@sharedCommon/';
 
 interface TasksBodyProps {
   notepadId?: string;
