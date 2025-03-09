@@ -4,7 +4,7 @@ import { Button, COLORS, Icon, Input, Textarea } from '@shared/ui';
 import { Subtasks } from './Subtasks';
 import { SubtaskTitle } from './SubtaskTitle';
 import { useQuery } from '@tanstack/react-query';
-import { fetchSingleTask } from '@entities/Task/api';
+import { taskService } from '@features/Tasks';
 
 type TaskDetailProps = ComponentPropsWithoutRef<'div'>;
 
@@ -18,8 +18,9 @@ export const TaskDetail = (props: TaskDetailProps) => {
   };
 
   const { data, isError } = useQuery({
-    queryKey: ['task', taskId, notepadId],
-    queryFn: () => fetchSingleTask(taskId, notepadId),
+    queryKey: ['task', notepadId, taskId],
+    queryFn: () => taskService.getSingleTask(notepadId, taskId),
+    select: data => data.data,
   });
 
   if (isError) {
@@ -30,8 +31,6 @@ export const TaskDetail = (props: TaskDetailProps) => {
     return <div>Loading...</div>;
   }
 
-  const tasksDate = data?.data ?? [];
-
   return (
     <div {...rest} className='flex flex-col gap-1 p-1'>
       <Button
@@ -41,8 +40,8 @@ export const TaskDetail = (props: TaskDetailProps) => {
       >
         Назад
       </Button>
-      <SubtaskTitle task={tasksDate[0]} />
-      <Subtasks subtasks={tasksDate[0].subtasks ?? []} />
+      {data && <SubtaskTitle task={data ?? 'Без имени'} />}
+      {data && <Subtasks subtasks={data.subtasks ?? []} />}
       <Input
         placeholder='Следующий шаг'
         type='text'

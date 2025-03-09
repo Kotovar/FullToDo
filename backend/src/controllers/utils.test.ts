@@ -1,7 +1,7 @@
 import { describe, test, expect, vi } from 'vitest';
-import { parseJsonBody, errorHandler, getId } from './utils';
-import type { IncomingMessage, ServerResponse } from 'http';
 import { Readable } from 'stream';
+import type { IncomingMessage, ServerResponse } from 'http';
+import { parseJsonBody, errorHandler, getId } from './utils';
 
 describe('parseJsonBody tests', () => {
   test('should reject JSON Error if catch Error', async () => {

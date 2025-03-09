@@ -6,7 +6,8 @@ import path from 'path';
 import svgr from 'vite-plugin-svgr';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const envDir = path.resolve(__dirname, '..');
+  const env = loadEnv(mode, envDir, '');
 
   return {
     define: {

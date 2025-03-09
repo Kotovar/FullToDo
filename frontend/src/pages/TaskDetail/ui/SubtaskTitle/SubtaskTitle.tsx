@@ -16,7 +16,6 @@ export const SubtaskTitle = (props: SubtaskTitleProps) => {
       ) : (
         <Icon name='circleEmpty' stroke={COLORS.ACCENT} />
       )}
-
       {task.title}
     </span>
   );

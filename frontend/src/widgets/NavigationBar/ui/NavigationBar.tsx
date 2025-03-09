@@ -4,7 +4,7 @@ import { clsx } from 'clsx';
 import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
 import { useQuery } from '@tanstack/react-query';
-import { fetchNotepads } from '@entities/Notepad/api';
+import { notepadService } from '@entities/Notepad';
 
 interface Props extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
@@ -23,38 +23,38 @@ export const NavigationBar = (props: Props) => {
 
   const { data, isError } = useQuery({
     queryKey: ['notepads'],
-    queryFn: fetchNotepads,
+    queryFn: notepadService.getNotepads,
+    select: data => data.data,
   });
 
   if (isError) {
     return <div>Error fetching data</div>;
   }
 
-  const notepadsDate = data?.data ?? [];
-
   return (
     <nav {...rest}>
       <ul className='w-full'>
-        {notepadsDate.map(({ title, _id }) => {
-          const path = ROUTES.getNotepadPath(_id);
+        {data &&
+          data.map(({ title, _id }) => {
+            const path = ROUTES.getNotepadPath(_id);
 
-          return (
-            <LinkCard
-              currentModalId={currentModalId}
-              handleModalId={handleModalId}
-              className={clsx(
-                'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] items-center justify-items-start rounded-lg p-2 break-words',
-                {
-                  ['bg-grey-light']: path === basePath,
-                },
-              )}
-              handleLinkClick={turnOffVisibility}
-              key={_id}
-              path={path}
-              cardTitle={<span className='text-3xl'>{title}</span>}
-            />
-          );
-        })}
+            return (
+              <LinkCard
+                currentModalId={currentModalId}
+                handleModalId={handleModalId}
+                className={clsx(
+                  'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] items-center justify-items-start rounded-lg p-2 break-words',
+                  {
+                    ['bg-grey-light']: path === basePath,
+                  },
+                )}
+                handleLinkClick={turnOffVisibility}
+                key={_id}
+                path={path}
+                cardTitle={<span className='text-3xl'>{title}</span>}
+              />
+            );
+          })}
         <Input
           containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden gap-2'
           className='min-w-0 outline-0'

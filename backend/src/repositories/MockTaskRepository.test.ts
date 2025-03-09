@@ -104,7 +104,7 @@ describe('MockTaskRepository', () => {
     expect(responseGet).toStrictEqual({
       status: 200,
       message: 'Success',
-      data: [NOTEPADS[0].tasks[0]],
+      data: NOTEPADS[0].tasks[0],
     });
 
     const incorrectResponseGet = await repository.getSingleTask(
@@ -115,7 +115,7 @@ describe('MockTaskRepository', () => {
     expect(incorrectResponseGet).toStrictEqual({
       status: 404,
       message: `Task ${taskId} not found`,
-      data: [],
+      data: null,
     });
   });
 
@@ -199,7 +199,7 @@ describe('MockTaskRepository', () => {
     expect(responseUpdate).toStrictEqual({
       status: 200,
       message: `A task with the _id ${realTaskId} has been successfully updated`,
-      data: [{ ...NOTEPADS[0].tasks[0], title: updatedTask.title }],
+      data: { ...NOTEPADS[0].tasks[0], title: updatedTask.title },
     });
 
     const badResponseUpdateDouble = await repository.updateTask(

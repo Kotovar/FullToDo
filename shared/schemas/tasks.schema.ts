@@ -19,6 +19,7 @@ export type Subtask = z.infer<typeof createSubtaskSchema>;
 export type CreateNotepad = z.infer<typeof createNotepadSchema>;
 export type CreateTask = z.infer<typeof createTaskSchema>;
 export type UpdateTask = z.infer<typeof updateTaskSchema>;
+export type TasksResponse = z.infer<typeof TasksResponse>;
 export type TaskResponse = z.infer<typeof TaskResponse>;
 export type NotepadResponse = z.infer<typeof NotepadResponse>;
 export type NotepadWithoutTasksResponse = z.infer<
@@ -76,8 +77,12 @@ const ResponseWithoutData = z.object({
   message: z.string().optional(),
 });
 
-export const TaskResponse = ResponseWithoutData.extend({
+export const TasksResponse = ResponseWithoutData.extend({
   data: z.array(dbTaskSchema).optional(),
+});
+
+export const TaskResponse = ResponseWithoutData.extend({
+  data: z.union([dbTaskSchema, z.null()]).optional(),
 });
 
 export const NotepadResponse = ResponseWithoutData.extend({

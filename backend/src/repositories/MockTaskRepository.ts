@@ -5,6 +5,7 @@ import type {
   Task,
   Notepad,
   TaskResponse,
+  TasksResponse,
   NotepadWithoutTasksResponse,
   NotepadResponse,
   CreateNotepad,
@@ -100,7 +101,7 @@ export class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getAllTasks(): Promise<TaskResponse> {
+  async getAllTasks(): Promise<TasksResponse> {
     return {
       status: 200,
       message: 'Success',
@@ -120,18 +121,18 @@ export class MockTaskRepository implements TaskRepository {
       return {
         status: 200,
         message: 'Success',
-        data: [task],
+        data: task,
       };
     }
 
     return {
       status: 404,
       message: `Task ${taskId} not found`,
-      data: [],
+      data: null,
     };
   }
 
-  async getSingleNotepadTasks(notepadId: string): Promise<TaskResponse> {
+  async getSingleNotepadTasks(notepadId: string): Promise<TasksResponse> {
     if (!this.notepads.some(notepad => notepad._id === notepadId)) {
       return {
         status: 404,
@@ -151,7 +152,7 @@ export class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getTodayTasks(): Promise<TaskResponse> {
+  async getTodayTasks(): Promise<TasksResponse> {
     const currentDay = new Date();
 
     const filteredDueDate = this.tasks.filter(
@@ -219,7 +220,7 @@ export class MockTaskRepository implements TaskRepository {
     return {
       status: 200,
       message: `A task with the _id ${taskId} has been successfully updated`,
-      data: [this.tasks[taskIndex]],
+      data: this.tasks[taskIndex],
     };
   }
 
