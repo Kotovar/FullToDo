@@ -31,7 +31,7 @@ export const TasksBody = (props: TasksBodyProps) => {
   return (
     <ul className='flex flex-col gap-2 overflow-y-auto bg-white'>
       {data &&
-        data.map(({ title, _id }) => {
+        data.map(({ title, progress, isCompleted, _id }) => {
           return (
             <LinkCard
               currentModalId={currentModalId}
@@ -41,12 +41,16 @@ export const TasksBody = (props: TasksBodyProps) => {
               cardTitle={title}
               header={
                 <div>
-                  <Icon name='circleEmpty' size={32} stroke={COLORS.ACCENT} />
+                  {isCompleted ? (
+                    <Icon name='circleFilled' fill={COLORS.ACCENT} />
+                  ) : (
+                    <Icon name='circleEmpty' stroke={COLORS.ACCENT} />
+                  )}
                 </div>
               }
               body={
                 <div className='flex flex-col'>
-                  <span className='text-sm'>{'1 из 5'}</span>
+                  <span className='text-sm'>{progress}</span>
                 </div>
               }
               key={_id}

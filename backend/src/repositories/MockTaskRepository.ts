@@ -11,6 +11,7 @@ import type {
   CreateNotepad,
 } from '@shared/schemas';
 import type { TaskRepository } from './TaskRepository';
+import { commonNotepads } from './const';
 
 export class MockTaskRepository implements TaskRepository {
   private tasks: Task[];
@@ -66,6 +67,13 @@ export class MockTaskRepository implements TaskRepository {
       };
     }
 
+    const finishedSubtasks = subtasks.reduce((acc, el) => {
+      return acc + Number(el.isCompleted);
+    }, 0);
+
+    const progress =
+      subtasks.length === 0 ? '' : `${finishedSubtasks} из ${subtasks.length}`;
+
     const newTask = {
       title: title,
       _id: uuidv4(),
@@ -75,6 +83,7 @@ export class MockTaskRepository implements TaskRepository {
       dueDate: dueDate,
       description: description,
       subtasks: subtasks,
+      progress: progress,
     };
 
     this.tasks.push(newTask);
@@ -89,10 +98,9 @@ export class MockTaskRepository implements TaskRepository {
   }
 
   async getAllNotepads(): Promise<NotepadWithoutTasksResponse> {
-    const notepadsWithoutTasks = [
-      { title: 'Сегодня', _id: 'today' },
-      { title: 'Задачи', _id: 'all' },
-    ].concat(this.notepads.map(({ tasks: _, ...rest }) => rest));
+    const notepadsWithoutTasks = commonNotepads.concat(
+      this.notepads.map(({ tasks: _, ...rest }) => rest),
+    );
 
     return {
       status: 200,

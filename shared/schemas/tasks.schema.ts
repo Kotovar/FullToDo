@@ -13,39 +13,20 @@ const StatusResponseEnum = z.union([
 type StatusResponseEnum = z.infer<typeof StatusResponseEnum>;
 type PriorityEnum = z.infer<typeof PriorityEnum>;
 
-export type Notepad = z.infer<typeof dbNotepadSchema>;
-export type Task = z.infer<typeof dbTaskSchema>;
-export type Subtask = z.infer<typeof createSubtaskSchema>;
-export type CreateNotepad = z.infer<typeof createNotepadSchema>;
-export type CreateTask = z.infer<typeof createTaskSchema>;
-export type UpdateTask = z.infer<typeof updateTaskSchema>;
-export type TasksResponse = z.infer<typeof TasksResponse>;
-export type TaskResponse = z.infer<typeof TaskResponse>;
-export type NotepadResponse = z.infer<typeof NotepadResponse>;
-export type NotepadWithoutTasksResponse = z.infer<
-  typeof NotepadWithoutTasksResponse
->;
-
 export const createNotepadSchema = z.object({
-  title: z
-    .union([z.string().min(1, 'Title is required'), z.number()])
-    .transform(value => String(value)),
+  title: z.coerce.string().min(1, 'Title is required'),
 });
 
 export const createSubtaskSchema = z.object({
-  title: z
-    .union([z.string().min(1, 'Title is required'), z.number()])
-    .transform(value => String(value)),
+  title: z.coerce.string().min(1, 'Title is required'),
   isCompleted: z.boolean().optional().default(false),
 });
 
 export const createTaskSchema = z.object({
-  title: z
-    .union([z.string().min(1, 'Title is required'), z.number()])
-    .transform(value => String(value)),
+  title: z.coerce.string().min(1, 'Title is required'),
   isCompleted: z.boolean().default(false),
   description: z.string().optional(),
-  dueDate: z.date().optional(),
+  dueDate: z.coerce.date().optional(),
   priority: PriorityEnum.optional(),
   subtasks: z.array(createSubtaskSchema).optional(),
 });
@@ -54,6 +35,7 @@ export const dbTaskSchema = createTaskSchema.extend({
   createdDate: z.date(),
   notepadId: z.string(),
   _id: z.string(),
+  progress: z.string(),
 });
 
 export const dbNotepadSchema = createNotepadSchema.extend({
@@ -61,9 +43,9 @@ export const dbNotepadSchema = createNotepadSchema.extend({
   _id: z.string(),
 });
 
-const notepadWithoutTasksSchema = z.object({
-  _id: z.string(),
-  title: z.string().min(1, 'Title is required'),
+const notepadWithoutTasksSchema = dbNotepadSchema.pick({
+  _id: true,
+  title: true,
 });
 
 export const updateTaskSchema = createTaskSchema
@@ -92,3 +74,16 @@ export const NotepadResponse = ResponseWithoutData.extend({
 export const NotepadWithoutTasksResponse = ResponseWithoutData.extend({
   data: z.array(notepadWithoutTasksSchema).optional(),
 });
+
+export type Notepad = z.infer<typeof dbNotepadSchema>;
+export type Task = z.infer<typeof dbTaskSchema>;
+export type Subtask = z.infer<typeof createSubtaskSchema>;
+export type CreateNotepad = z.infer<typeof createNotepadSchema>;
+export type CreateTask = z.infer<typeof createTaskSchema>;
+export type UpdateTask = z.infer<typeof updateTaskSchema>;
+export type TasksResponse = z.infer<typeof TasksResponse>;
+export type TaskResponse = z.infer<typeof TaskResponse>;
+export type NotepadResponse = z.infer<typeof NotepadResponse>;
+export type NotepadWithoutTasksResponse = z.infer<
+  typeof NotepadWithoutTasksResponse
+>;
