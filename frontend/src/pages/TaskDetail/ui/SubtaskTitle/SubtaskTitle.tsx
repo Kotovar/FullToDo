@@ -10,7 +10,7 @@ export const SubtaskTitle = (props: SubtaskTitleProps) => {
   const { task, ...rest } = props;
 
   return (
-    <span className='flex gap-2 p-1' {...rest}>
+    <span className='flex items-center gap-2 p-2' {...rest}>
       {task.isCompleted ? (
         <Icon name='circleFilled' fill={COLORS.ACCENT} />
       ) : (
