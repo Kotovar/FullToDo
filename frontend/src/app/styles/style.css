@@ -19,3 +19,9 @@
   font-style: normal;
   font-display: swap;
 }
+
+@layer utilities {
+  .scrollbar-custom {
+    scrollbar-color: var(--color-accent-lighter) var(--color-grey-light);
+  }
+}

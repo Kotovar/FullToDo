@@ -9,6 +9,7 @@ import type {
   NotepadWithoutTasksResponse,
   NotepadResponse,
   CreateNotepad,
+  CreateTask,
 } from '@shared/schemas';
 import type { TaskRepository } from './TaskRepository';
 import { commonNotepads } from './const';
@@ -42,7 +43,7 @@ export class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async createTask(task: Task, notepadId: string): Promise<TaskResponse> {
+  async createTask(task: CreateTask, notepadId: string): Promise<TaskResponse> {
     const { title, dueDate, description, subtasks = [] } = task;
 
     const currentNotepad = this.notepads.find(
@@ -121,8 +122,14 @@ export class MockTaskRepository implements TaskRepository {
     taskId: string,
     notepadId: string,
   ): Promise<TaskResponse> {
+    const isCommonNotepad = commonNotepads.some(
+      notepad => notepad._id === notepadId,
+    );
+
     const task = this.tasks.find(
-      task => task._id === taskId && task.notepadId === notepadId,
+      task =>
+        task._id === taskId &&
+        (isCommonNotepad || task.notepadId === notepadId),
     );
 
     if (task) {
