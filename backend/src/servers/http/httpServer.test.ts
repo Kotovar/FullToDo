@@ -33,6 +33,7 @@ const validTaskData: TaskResponse = {
     dueDate: new Date(),
     createdDate: new Date(),
     isCompleted: false,
+    progress: '1 из 5',
     subtasks: [
       { isCompleted: false, title: 'Выучить Node.js' },
       { isCompleted: true, title: 'Выучить js' },
