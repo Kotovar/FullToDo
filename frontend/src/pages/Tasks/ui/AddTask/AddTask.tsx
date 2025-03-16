@@ -17,7 +17,7 @@ export const AddTask = () => {
   const { notepadId = '' } = useParams();
   const [value, setValue] = useState<TaskOptions>({
     title: '',
-    date: notepadId === 'today' ? new Date() : '',
+    date: '',
   });
   const queryClient = useQueryClient();
   const mutation = useMutation({
