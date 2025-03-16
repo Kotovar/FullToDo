@@ -24,11 +24,9 @@ export const createSubtaskSchema = z.object({
 
 export const createTaskSchema = z.object({
   title: z.coerce.string().min(1, 'Title is required'),
-  isCompleted: z.boolean().default(false),
   description: z.string().optional(),
   dueDate: z.coerce.date().optional(),
   priority: PriorityEnum.optional(),
-  subtasks: z.array(createSubtaskSchema).optional(),
 });
 
 export const dbTaskSchema = createTaskSchema.extend({
@@ -36,6 +34,8 @@ export const dbTaskSchema = createTaskSchema.extend({
   notepadId: z.string(),
   _id: z.string(),
   progress: z.string(),
+  isCompleted: z.boolean().default(false),
+  subtasks: z.array(createSubtaskSchema).optional(),
 });
 
 export const dbNotepadSchema = createNotepadSchema.extend({

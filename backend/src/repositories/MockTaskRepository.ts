@@ -12,7 +12,7 @@ import type {
   CreateTask,
 } from '@shared/schemas';
 import type { TaskRepository } from './TaskRepository';
-import { commonNotepads } from './const';
+import { commonNotepads, commonNotepadTitles } from './const';
 
 export class MockTaskRepository implements TaskRepository {
   private tasks: Task[];
@@ -44,7 +44,27 @@ export class MockTaskRepository implements TaskRepository {
   }
 
   async createTask(task: CreateTask, notepadId: string): Promise<TaskResponse> {
-    const { title, dueDate, description, subtasks = [] } = task;
+    const { title, dueDate, description } = task;
+
+    if (commonNotepadTitles.includes(notepadId)) {
+      const newTask = {
+        title: title,
+        _id: uuidv4(),
+        createdDate: new Date(),
+        isCompleted: false,
+        notepadId: commonNotepadTitles[1],
+        dueDate: dueDate,
+        description: description,
+        subtasks: [],
+        progress: '',
+      };
+
+      this.tasks.push(newTask);
+      return {
+        status: 201,
+        message: `A task with the title ${title} has been successfully created`,
+      };
+    }
 
     const currentNotepad = this.notepads.find(
       notepad => notepad._id === notepadId,
@@ -68,13 +88,6 @@ export class MockTaskRepository implements TaskRepository {
       };
     }
 
-    const finishedSubtasks = subtasks.reduce((acc, el) => {
-      return acc + Number(el.isCompleted);
-    }, 0);
-
-    const progress =
-      subtasks.length === 0 ? '' : `${finishedSubtasks} из ${subtasks.length}`;
-
     const newTask = {
       title: title,
       _id: uuidv4(),
@@ -83,8 +96,8 @@ export class MockTaskRepository implements TaskRepository {
       notepadId: notepadId,
       dueDate: dueDate,
       description: description,
-      subtasks: subtasks,
-      progress: progress,
+      subtasks: [],
+      progress: '',
     };
 
     this.tasks.push(newTask);
@@ -230,7 +243,26 @@ export class MockTaskRepository implements TaskRepository {
       return { status: 404, message: 'Task not found' };
     }
 
-    this.tasks[taskIndex] = { ...this.tasks[taskIndex], ...updatedTaskFields };
+    const subtasks =
+      updatedTaskFields.subtasks ?? this.tasks[taskIndex].subtasks;
+
+    const finishedSubtasks =
+      subtasks?.filter(subtask => subtask.isCompleted).length ?? 0;
+    const totalSubtasks = subtasks?.length ?? 0;
+
+    const progress =
+      totalSubtasks === 0 ? '' : `${finishedSubtasks} из ${totalSubtasks}`;
+
+    const isCompleted = totalSubtasks > 0 && finishedSubtasks === totalSubtasks;
+
+    const updatedTask = {
+      ...this.tasks[taskIndex],
+      ...updatedTaskFields,
+      isCompleted,
+      progress,
+    };
+
+    this.tasks[taskIndex] = updatedTask;
 
     return {
       status: 200,

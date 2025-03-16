@@ -3,7 +3,7 @@ import { useLocation } from 'react-router';
 import { clsx } from 'clsx';
 import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notepadService } from '@entities/Notepad';
 
 interface Props extends ComponentPropsWithoutRef<'nav'> {
@@ -13,6 +13,20 @@ interface Props extends ComponentPropsWithoutRef<'nav'> {
 export const NavigationBar = (props: Props) => {
   const { turnOffVisibility, ...rest } = props;
   const [currentModalId, setCurrentModalId] = useState('');
+  const [title, setTitle] = useState('');
+  const queryClient = useQueryClient();
+  const { data, isError } = useQuery({
+    queryKey: ['notepads'],
+    queryFn: notepadService.getNotepads,
+    select: data => data.data,
+  });
+  const mutation = useMutation({
+    mutationFn: (title: string) => notepadService.createNotepad(title),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notepads'] });
+      setTitle('');
+    },
+  });
 
   const location = useLocation().pathname;
   const basePath = location.split(ROUTES.TASK)[0];
@@ -21,11 +35,19 @@ export const NavigationBar = (props: Props) => {
     setCurrentModalId(id);
   };
 
-  const { data, isError } = useQuery({
-    queryKey: ['notepads'],
-    queryFn: notepadService.getNotepads,
-    select: data => data.data,
-  });
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = event => {
+    setTitle(event.target.value);
+  };
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
+    if (event.key === 'Enter' && title) {
+      createNotepad(title);
+    }
+  };
+
+  const createNotepad = (title: string) => {
+    mutation.mutate(title);
+  };
 
   if (isError) {
     return <div>Error fetching data</div>;
@@ -60,8 +82,11 @@ export const NavigationBar = (props: Props) => {
           className='min-w-0 outline-0'
           placeholder='Добавить список'
           type='text'
+          value={title}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
           leftContent={
-            <Button appearance='ghost'>
+            <Button appearance='ghost' onClick={() => createNotepad(title)}>
               <Icon name='plus' stroke={COLORS.ACCENT} />
             </Button>
           }

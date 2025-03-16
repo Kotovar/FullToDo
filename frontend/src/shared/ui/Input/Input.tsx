@@ -2,7 +2,7 @@ import type { ComponentPropsWithoutRef, JSX } from 'react';
 import { clsx } from 'clsx';
 
 export interface InputProps extends ComponentPropsWithoutRef<'input'> {
-  type: 'text' | 'data';
+  type: 'text' | 'date';
   containerClassName?: string;
   leftContent?: JSX.Element;
   rightContent?: JSX.Element;

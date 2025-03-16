@@ -50,6 +50,14 @@ export const createHttpServer = () => {
       'GET, POST, PATCH, DELETE, OPTIONS',
     );
 
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+
     logger(req, res, () => {});
 
     const key = `${req.method} ${req.url}`;

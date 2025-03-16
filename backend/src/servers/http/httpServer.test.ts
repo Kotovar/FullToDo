@@ -856,6 +856,25 @@ describe('httpServer DELETE', () => {
   });
 });
 
+describe('httpServer OPTIONS', () => {
+  beforeEach(() => {
+    server.listen(port);
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    server.close();
+  });
+
+  test(`should handle OPTIONS /notepad and return 204 status`, async () => {
+    const response = await request(server)
+      .options(ROUTES.NOTEPADS)
+      .set('Accept', 'application/json');
+
+    expect(response.status).toBe(204);
+  });
+});
+
 describe('httpServer non-existent routes', () => {
   const notepadId = '1';
   const taskId = '1';

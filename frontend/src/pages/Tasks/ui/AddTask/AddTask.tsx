@@ -3,6 +3,10 @@ import { clsx } from 'clsx';
 import { Input } from '@shared/ui/Input';
 import { Button } from '@shared/ui/Button';
 import { COLORS, Icon } from '@shared/ui/Icon';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { CreateTask } from 'shared/schemas';
+import { taskService } from '@features/Tasks';
+import { useParams } from 'react-router';
 
 interface TaskOptions {
   title: string;
@@ -10,7 +14,18 @@ interface TaskOptions {
 }
 
 export const AddTask = () => {
-  const [value, setValue] = useState<TaskOptions>({ title: '', date: '' });
+  const { notepadId = '' } = useParams();
+  const [value, setValue] = useState<TaskOptions>({
+    title: '',
+    date: notepadId === 'today' ? new Date() : '',
+  });
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (task: CreateTask) => taskService.createTask(task, notepadId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
 
   const handleValueTitle: React.ChangeEventHandler<HTMLInputElement> = e => {
     setValue({ ...value, title: e.target.value });
@@ -20,8 +35,26 @@ export const AddTask = () => {
     setValue({ ...value, date: e.target.value });
   };
 
+  const createTask = (task: CreateTask) => {
+    mutation.mutate(task);
+  };
+
   const handleClick = () => {
     setValue({ title: '', date: '' });
+    createTask({
+      title: value.title,
+      dueDate: value?.date ? new Date(value?.date) : undefined,
+    });
+  };
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
+    if (event.key === 'Enter' && value.title) {
+      createTask({
+        title: value.title,
+        dueDate: value?.date ? new Date(value?.date) : undefined,
+      });
+      setValue({ title: '', date: '' });
+    }
   };
 
   const baseWrapperContainerStyles =
@@ -34,6 +67,7 @@ export const AddTask = () => {
       <Input
         value={value.title}
         onChange={handleValueTitle}
+        onKeyDown={handleKeyDown}
         placeholder='Добавить задачу'
         type='text'
         containerClassName={clsx(
@@ -48,7 +82,7 @@ export const AddTask = () => {
         className={inputStyles}
       />
       <Input
-        type='text'
+        type='date'
         placeholder='Дата выполнения'
         value={value.date}
         onChange={handleValueDate}
@@ -56,7 +90,7 @@ export const AddTask = () => {
           baseWrapperContainerStyles,
           'grid-cols-[auto_1fr_auto]',
         )}
-        className={inputStyles}
+        className={clsx(inputStyles, 'w-fit')}
         leftContent={
           <Button appearance='ghost'>
             <Icon name='calendar' stroke={COLORS.ACCENT} />

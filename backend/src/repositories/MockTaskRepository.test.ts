@@ -17,20 +17,6 @@ const newTask = {
   description: 'Task description',
 };
 
-const taskWithSubtasks = {
-  title: 'Task title 2',
-  createdDate: new Date(),
-  isCompleted: false,
-  notepadId: notepadId,
-  dueDate: new Date(),
-  description: 'Task description',
-  subtasks: [
-    { isCompleted: true, title: 'Subtask 1' },
-    { isCompleted: false, title: 'Subtask 2' },
-    { isCompleted: true, title: 'Subtask 3' },
-  ],
-};
-
 describe('MockTaskRepository', () => {
   let repository: typeof taskRepository;
 
@@ -78,18 +64,6 @@ describe('MockTaskRepository', () => {
     expect(doubleResponseCreate).toStrictEqual({
       status: 409,
       message: `A task with the title ${newTask.title} already exists in notepad '${realNotepadTitle}'`,
-    });
-  });
-
-  test('method createTask should correctly calculate finished subtasks', async () => {
-    const responseCreate = await repository.createTask(
-      taskWithSubtasks,
-      realNotepadId,
-    );
-
-    expect(responseCreate).toStrictEqual({
-      status: 201,
-      message: `A task with the title ${taskWithSubtasks.title} has been successfully created`,
     });
   });
 

@@ -55,9 +55,10 @@ export const TaskDetail = (props: TaskDetailProps) => {
       />
       <Input
         placeholder='Укажите дату'
-        type='text'
-        containerClassName='flex items-center gap-2 p-1'
-        className='w-full outline-0'
+        type='date'
+        containerClassName='flex items-center gap-2 p-1 '
+        className='w-fit outline-0'
+        // value={data.dueDate?.toString() ?? ''}
         leftContent={
           <Button appearance='ghost'>
             <Icon name='calendar' stroke={COLORS.ACCENT} />
