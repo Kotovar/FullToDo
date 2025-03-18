@@ -75,7 +75,7 @@ export const AddTask = () => {
           'bg-white grid-cols-[auto_1fr]',
         )}
         leftContent={
-          <Button appearance='ghost'>
+          <Button appearance='ghost' padding='s'>
             <Icon name='plus' stroke={COLORS.ACCENT} />
           </Button>
         }
@@ -92,12 +92,12 @@ export const AddTask = () => {
         )}
         className={clsx(inputStyles, 'w-fit')}
         leftContent={
-          <Button appearance='ghost'>
+          <Button appearance='ghost' padding='s'>
             <Icon name='calendar' stroke={COLORS.ACCENT} />
           </Button>
         }
         rightContent={
-          <Button onClick={handleClick} appearance='secondary'>
+          <Button onClick={handleClick} appearance='secondary' padding='s'>
             Добавить
           </Button>
         }

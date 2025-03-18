@@ -37,7 +37,7 @@ export const TasksBody = (props: TasksBodyProps) => {
               <LinkCard
                 currentModalId={currentModalId}
                 handleModalId={handleModalId}
-                className='hover:bg-accent-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm bg-white p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]'
+                className='hover:bg-accent-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm bg-white p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-8'
                 path={ROUTES.getTaskDetailPath(notepadPathName, String(_id))}
                 cardTitle={title}
                 header={

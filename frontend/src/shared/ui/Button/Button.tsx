@@ -2,16 +2,24 @@ import type { ComponentPropsWithoutRef } from 'react';
 import { clsx } from 'clsx';
 
 type ButtonAppearance = 'primary' | 'secondary' | 'ghost';
+type ButtonPadding = 'none' | 's';
 
 interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   appearance: ButtonAppearance;
+  padding: ButtonPadding;
   className?: string;
 }
 
 export const Button = (props: ButtonProps) => {
-  const { appearance = 'primary', className, children, ...rest } = props;
+  const {
+    appearance = 'primary',
+    padding = 's',
+    className,
+    children,
+    ...rest
+  } = props;
 
-  const baseStyles = 'rounded p-2';
+  const baseStyles = 'rounded cursor-pointer';
 
   const variantStyles: Record<ButtonAppearance, string> = {
     primary: 'bg-accent hover:bg-accent-lighter text-white',
@@ -20,10 +28,20 @@ export const Button = (props: ButtonProps) => {
     ghost: '',
   };
 
+  const paddingStyles: Record<ButtonPadding, string> = {
+    none: 'p-0',
+    s: 'p-2',
+  };
+
   return (
     <button
       type='button'
-      className={clsx(baseStyles, variantStyles[appearance], className)}
+      className={clsx(
+        baseStyles,
+        variantStyles[appearance],
+        paddingStyles[padding],
+        className,
+      )}
       {...rest}
     >
       {children}

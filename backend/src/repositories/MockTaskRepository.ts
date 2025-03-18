@@ -235,8 +235,16 @@ export class MockTaskRepository implements TaskRepository {
     notepadId: string,
     updatedTaskFields: Partial<Task>,
   ): Promise<TaskResponse> {
+    let isCommonNotepad = false;
+
+    if (commonNotepadTitles.includes(notepadId)) {
+      isCommonNotepad = true;
+    }
+
     const taskIndex = this.tasks.findIndex(
-      task => task._id === taskId && task.notepadId === notepadId,
+      task =>
+        task._id === taskId &&
+        (task.notepadId === notepadId || isCommonNotepad),
     );
 
     if (taskIndex === -1) {

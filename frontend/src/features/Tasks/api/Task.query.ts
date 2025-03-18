@@ -1,4 +1,9 @@
-import type { CreateTask, TaskResponse, TasksResponse } from 'shared/schemas';
+import type {
+  CreateTask,
+  Task,
+  TaskResponse,
+  TasksResponse,
+} from 'shared/schemas';
 
 if (!process.env.VITE_URL) {
   throw new Error('VITE_URL is not defined in .env file');
@@ -37,6 +42,24 @@ class TaskService {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(task),
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  }
+
+  async updateTask(
+    taskId: string,
+    notepadId: string,
+    updatedTaskFields: Partial<Task>,
+  ): Promise<TaskResponse> {
+    const response = await fetch(`${URL}/notepad/${notepadId}/task/${taskId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedTaskFields),
     });
     if (!response.ok) {
       throw new Error('Network response was not ok');

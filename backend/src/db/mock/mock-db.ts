@@ -11,11 +11,11 @@ export const TASKS1: Task[] = [
     isCompleted: false,
     progress: '1 из 5',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Node.js' },
-      { isCompleted: true, title: 'Выучить js' },
-      { isCompleted: false, title: 'Выучить GO' },
-      { isCompleted: false, title: 'Выучить Nest.js' },
-      { isCompleted: false, title: 'Выучить Express' },
+      { isCompleted: false, title: 'Выучить Node.js', _id: '1' },
+      { isCompleted: true, title: 'Выучить js', _id: '2' },
+      { isCompleted: false, title: 'Выучить GO', _id: '3' },
+      { isCompleted: false, title: 'Выучить Nest.js', _id: '4' },
+      { isCompleted: false, title: 'Выучить Express', _id: '5' },
     ],
   },
   {
@@ -28,9 +28,9 @@ export const TASKS1: Task[] = [
     priority: 'low',
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python1' },
-      { isCompleted: true, title: 'Выучить css1' },
-      { isCompleted: true, title: 'Выучить http1' },
+      { isCompleted: false, title: 'Выучить Python1', _id: '1' },
+      { isCompleted: true, title: 'Выучить css1', _id: '2' },
+      { isCompleted: true, title: 'Выучить http1', _id: '3' },
     ],
   },
   {
@@ -41,9 +41,9 @@ export const TASKS1: Task[] = [
     createdDate: new Date(),
     progress: '3 из 3',
     subtasks: [
-      { isCompleted: true, title: 'Выучить Python1' },
-      { isCompleted: true, title: 'Выучить css1' },
-      { isCompleted: true, title: 'Выучить http1' },
+      { isCompleted: true, title: 'Выучить Python1', _id: '1' },
+      { isCompleted: true, title: 'Выучить css1', _id: '2' },
+      { isCompleted: true, title: 'Выучить http1', _id: '3' },
     ],
   },
   {
@@ -55,9 +55,9 @@ export const TASKS1: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python1' },
-      { isCompleted: true, title: 'Выучить css1' },
-      { isCompleted: true, title: 'Выучить http1' },
+      { isCompleted: false, title: 'Выучить Python1', _id: '1' },
+      { isCompleted: true, title: 'Выучить css1', _id: '2' },
+      { isCompleted: true, title: 'Выучить http1', _id: '3' },
     ],
   },
   {
@@ -69,9 +69,9 @@ export const TASKS1: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python1' },
-      { isCompleted: true, title: 'Выучить css1' },
-      { isCompleted: true, title: 'Выучить http1' },
+      { isCompleted: false, title: 'Выучить Python1', _id: '1' },
+      { isCompleted: true, title: 'Выучить css1', _id: '2' },
+      { isCompleted: true, title: 'Выучить http1', _id: '3' },
     ],
   },
   {
@@ -83,9 +83,9 @@ export const TASKS1: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python1' },
-      { isCompleted: true, title: 'Выучить css1' },
-      { isCompleted: true, title: 'Выучить http1' },
+      { isCompleted: false, title: 'Выучить Python1', _id: '1' },
+      { isCompleted: true, title: 'Выучить css1', _id: '2' },
+      { isCompleted: true, title: 'Выучить http1', _id: '3' },
     ],
   },
   {
@@ -97,9 +97,9 @@ export const TASKS1: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python1' },
-      { isCompleted: true, title: 'Выучить css1' },
-      { isCompleted: true, title: 'Выучить http1' },
+      { isCompleted: false, title: 'Выучить Python1', _id: '1' },
+      { isCompleted: true, title: 'Выучить css1', _id: '2' },
+      { isCompleted: true, title: 'Выучить http1', _id: '3' },
     ],
   },
   {
@@ -111,9 +111,9 @@ export const TASKS1: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python1' },
-      { isCompleted: true, title: 'Выучить css1' },
-      { isCompleted: true, title: 'Выучить http1' },
+      { isCompleted: false, title: 'Выучить Python1', _id: '1' },
+      { isCompleted: true, title: 'Выучить css1', _id: '2' },
+      { isCompleted: true, title: 'Выучить http1', _id: '3' },
     ],
   },
   {
@@ -125,9 +125,9 @@ export const TASKS1: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python1' },
-      { isCompleted: true, title: 'Выучить css1' },
-      { isCompleted: true, title: 'Выучить http1' },
+      { isCompleted: false, title: 'Выучить Python1', _id: '1' },
+      { isCompleted: true, title: 'Выучить css1', _id: '2' },
+      { isCompleted: true, title: 'Выучить http1', _id: '3' },
     ],
   },
   {
@@ -139,9 +139,9 @@ export const TASKS1: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python1' },
-      { isCompleted: true, title: 'Выучить css1' },
-      { isCompleted: true, title: 'Выучить http1' },
+      { isCompleted: false, title: 'Выучить Python1', _id: '1' },
+      { isCompleted: true, title: 'Выучить css1', _id: '2' },
+      { isCompleted: true, title: 'Выучить http1', _id: '3' },
     ],
   },
   {
@@ -153,9 +153,9 @@ export const TASKS1: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python1' },
-      { isCompleted: true, title: 'Выучить css1' },
-      { isCompleted: true, title: 'Выучить http1' },
+      { isCompleted: false, title: 'Выучить Python1', _id: '1' },
+      { isCompleted: true, title: 'Выучить css1', _id: '2' },
+      { isCompleted: true, title: 'Выучить http1', _id: '3' },
     ],
   },
 ];
@@ -170,9 +170,9 @@ const TASKS2: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python2' },
-      { isCompleted: true, title: 'Выучить css2' },
-      { isCompleted: true, title: 'Выучить http2' },
+      { isCompleted: false, title: 'Выучить Python2', _id: '1' },
+      { isCompleted: true, title: 'Выучить css2', _id: '2' },
+      { isCompleted: true, title: 'Выучить http2', _id: '3' },
     ],
   },
   {
@@ -183,9 +183,9 @@ const TASKS2: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python2' },
-      { isCompleted: true, title: 'Выучить css2' },
-      { isCompleted: true, title: 'Выучить http2' },
+      { isCompleted: false, title: 'Выучить Python2', _id: '1' },
+      { isCompleted: true, title: 'Выучить css2', _id: '2' },
+      { isCompleted: true, title: 'Выучить http2', _id: '3' },
     ],
   },
 ];
@@ -199,9 +199,9 @@ const TASKS3: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python3' },
-      { isCompleted: true, title: 'Выучить css3' },
-      { isCompleted: true, title: 'Выучить http3' },
+      { isCompleted: false, title: 'Выучить Python3', _id: '1' },
+      { isCompleted: true, title: 'Выучить css3', _id: '2' },
+      { isCompleted: true, title: 'Выучить http3', _id: '3' },
     ],
   },
   {
@@ -212,9 +212,9 @@ const TASKS3: Task[] = [
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Python3' },
-      { isCompleted: true, title: 'Выучить css3' },
-      { isCompleted: true, title: 'Выучить http3' },
+      { isCompleted: false, title: 'Выучить Python3', _id: '1' },
+      { isCompleted: true, title: 'Выучить css3', _id: '2' },
+      { isCompleted: true, title: 'Выучить http3', _id: '3' },
     ],
   },
   {
@@ -226,9 +226,9 @@ const TASKS3: Task[] = [
     createdDate: new Date(),
     progress: '3 из 3',
     subtasks: [
-      { isCompleted: true, title: 'Выучить Python3' },
-      { isCompleted: true, title: 'Выучить css3' },
-      { isCompleted: true, title: 'Выучить http3' },
+      { isCompleted: true, title: 'Выучить Python3', _id: '1' },
+      { isCompleted: true, title: 'Выучить css3', _id: '2' },
+      { isCompleted: true, title: 'Выучить http3', _id: '3' },
     ],
   },
 ];

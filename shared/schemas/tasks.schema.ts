@@ -20,6 +20,7 @@ export const createNotepadSchema = z.object({
 export const createSubtaskSchema = z.object({
   title: z.coerce.string().min(1, 'Title is required'),
   isCompleted: z.boolean().optional().default(false),
+  _id: z.string(),
 });
 
 export const createTaskSchema = z.object({
@@ -49,6 +50,9 @@ const notepadWithoutTasksSchema = dbNotepadSchema.pick({
 });
 
 export const updateTaskSchema = createTaskSchema
+  .extend({
+    subtasks: z.array(createSubtaskSchema).optional(),
+  })
   .partial()
   .refine(data => Object.keys(data).length > 0, {
     message: 'At least one field must be provided for update',
