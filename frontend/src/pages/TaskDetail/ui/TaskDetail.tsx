@@ -1,7 +1,7 @@
 import { useEffect, useState, type ComponentPropsWithoutRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { v4 as uuidv4 } from 'uuid';
-import { Button, COLORS, Icon, Input, P, Textarea } from '@shared/ui';
+import { Button, COLORS, Icon, Input, Textarea } from '@shared/ui';
 import { Subtasks } from './Subtasks';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { taskService } from '@features/Tasks';
@@ -25,7 +25,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
 
   const mutation = useMutation({
     mutationFn: (updatedTask: Partial<Task>) =>
-      taskService.updateTask(taskId, notepadId, updatedTask),
+      taskService.updateTask(notepadId, taskId, updatedTask),
     onSuccess: () => refetch(),
   });
 
@@ -84,10 +84,9 @@ export const TaskDetail = (props: TaskDetailProps) => {
 
   const handleClickUpdate = () => {
     updateTask({
-      title: value.title,
       dueDate: value?.dueDate ? new Date(value?.dueDate) : undefined,
       description: value.description,
-      subtasks: value.subtasks,
+      ...(data?.title !== value.title && { title: value.title }),
     });
     handleGoBack();
   };
@@ -162,6 +161,10 @@ export const TaskDetail = (props: TaskDetailProps) => {
     setSubtaskTitle(e.target.value);
   };
 
+  const handleTaskTitle: React.ChangeEventHandler<HTMLInputElement> = e => {
+    setValue({ ...value, title: e.target.value });
+  };
+
   return (
     <div {...rest} className='flex flex-col gap-1 p-1'>
       <Button
@@ -172,22 +175,21 @@ export const TaskDetail = (props: TaskDetailProps) => {
       >
         Назад
       </Button>
-      {data && (
-        <P className='p-2' size='l'>
-          {value.title}
-        </P>
-      )}
+      <Input
+        type='text'
+        value={value.title}
+        onChange={handleTaskTitle}
+        className='p-2 outline-0'
+      />
       {data && (
         <Subtasks
           subtasks={data.subtasks ?? []}
           updateSubtask={handleClickUpdateSubtask}
           deleteSubtask={handleClickDeleteSubtask}
-          // notepadId={notepadId}
-          // taskId={taskId}
         />
       )}
       <Input
-        placeholder='Следующий шаг'
+        placeholder={value.subtasks.length ? 'Следующий шаг' : 'Первый шаг'}
         type='text'
         containerClassName='flex items-center gap-2 p-1'
         className='w-full outline-0'

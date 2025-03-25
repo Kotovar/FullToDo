@@ -1,4 +1,8 @@
-import { NotepadWithoutTasksResponse, NotepadResponse } from 'shared/schemas';
+import {
+  NotepadWithoutTasksResponse,
+  NotepadResponse,
+  CreateNotepad,
+} from 'shared/schemas';
 
 if (!process.env.VITE_URL) {
   throw new Error('VITE_URL is not defined in .env file');
@@ -22,6 +26,36 @@ class NotepadService {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ title: title }),
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  }
+
+  async updateNotepad(
+    notepadId: string,
+    updatedNotepadFields: Partial<CreateNotepad>,
+  ) {
+    const response = await fetch(`${URL}/notepad/${notepadId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedNotepadFields),
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  }
+
+  async deleteNotepad(notepadId: string): Promise<NotepadResponse> {
+    const response = await fetch(`${URL}/notepad/${notepadId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
     if (!response.ok) {
       throw new Error('Network response was not ok');

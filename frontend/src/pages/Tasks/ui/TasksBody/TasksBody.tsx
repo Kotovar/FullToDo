@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { COLORS, Icon, LinkCard } from '@shared/ui';
-import { ROUTES } from '@sharedCommon/';
-import { useQuery } from '@tanstack/react-query';
+import { Button, COLORS, Icon, LinkCard } from '@shared/ui';
+import { ROUTES, Task } from '@sharedCommon/';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { taskService } from '@features/Tasks';
 
 interface TasksBodyProps {
@@ -12,12 +12,30 @@ interface TasksBodyProps {
 export const TasksBody = (props: TasksBodyProps) => {
   const { notepadPathName, notepadId = '' } = props;
   const [currentModalId, setCurrentModalId] = useState('');
+  const [closeDialog, setCloseDialog] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
-  const { data, isError } = useQuery({
+  const { data, isError, refetch } = useQuery({
     queryKey: ['tasks', notepadId],
     queryFn: () => taskService.getTasksFromNotepad(notepadId),
     select: data => data.data ?? null,
     enabled: !!notepadId,
+  });
+
+  const mutationUpdate = useMutation({
+    mutationFn: ({
+      updatedTask,
+      id,
+    }: {
+      updatedTask: Partial<Task>;
+      id: string;
+    }) => taskService.updateTask(notepadId, id, updatedTask),
+    onSuccess: () => refetch(),
+  });
+
+  const mutationDelete = useMutation({
+    mutationFn: (id: string) => taskService.deleteTask(notepadId, id),
+    onSuccess: () => refetch(),
   });
 
   if (isError) {
@@ -26,6 +44,34 @@ export const TasksBody = (props: TasksBodyProps) => {
 
   const handleModalId = (id: string) => {
     setCurrentModalId(id);
+    setCloseDialog(false);
+  };
+
+  const updateTask = (updatedTask: Partial<Task>, id: string) => {
+    mutationUpdate.mutate({ updatedTask, id });
+  };
+
+  const deleteTask = (id: string) => {
+    mutationDelete.mutate(id);
+  };
+
+  const renameTask = (id: string) => {
+    setEditingTaskId(id);
+    setCloseDialog(true);
+  };
+
+  const updateTaskStatus = (id: string, status: boolean) => {
+    updateTask(
+      {
+        isCompleted: !status,
+      },
+      id,
+    );
+  };
+
+  const handleSaveTitle = (id: string, newTitle: string) => {
+    updateTask({ title: newTitle }, id);
+    setEditingTaskId(null);
   };
 
   return (
@@ -37,17 +83,26 @@ export const TasksBody = (props: TasksBodyProps) => {
               <LinkCard
                 currentModalId={currentModalId}
                 handleModalId={handleModalId}
-                className='hover:bg-accent-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm bg-white p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-8'
+                className='hover:bg-accent-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm bg-white p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10'
                 path={ROUTES.getTaskDetailPath(notepadPathName, String(_id))}
                 cardTitle={title}
+                handleClickDelete={() => deleteTask(_id)}
+                handleClickRename={() => renameTask(_id)}
+                closeDialog={closeDialog}
+                isEditing={editingTaskId === _id}
+                onSaveTitle={newTitle => handleSaveTitle(_id, newTitle)}
                 header={
-                  <div>
-                    {isCompleted ? (
-                      <Icon name='circleFilled' fill={COLORS.ACCENT} />
-                    ) : (
-                      <Icon name='circleEmpty' stroke={COLORS.ACCENT} />
-                    )}
-                  </div>
+                  <Button
+                    appearance='ghost'
+                    onClick={() => updateTaskStatus(_id, isCompleted)}
+                    padding='none'
+                  >
+                    <Icon
+                      name={isCompleted ? 'circleFilled' : 'circleEmpty'}
+                      fill={isCompleted ? COLORS.ACCENT : undefined}
+                      stroke={!isCompleted ? COLORS.ACCENT : undefined}
+                    />
+                  </Button>
                 }
                 body={
                   <div className='flex flex-col'>

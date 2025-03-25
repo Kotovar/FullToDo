@@ -1,15 +1,26 @@
-import { useRef, type ComponentPropsWithoutRef, JSX } from 'react';
+import {
+  useRef,
+  type ComponentPropsWithoutRef,
+  JSX,
+  useEffect,
+  useState,
+} from 'react';
 import { Link } from 'react-router';
-import { COLORS, Icon, OptionsMenu } from '@shared/ui';
+import { Button, COLORS, Icon, OptionsMenu } from '@shared/ui';
 
 interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   path: string;
-  cardTitle: string | JSX.Element;
+  cardTitle: string;
   header?: JSX.Element;
   body?: JSX.Element;
   handleLinkClick?: () => void;
   handleModalId: (id: string) => void;
   currentModalId: string;
+  handleClickRename: () => void;
+  handleClickDelete: () => void;
+  closeDialog: boolean;
+  isEditing?: boolean;
+  onSaveTitle?: (newTitle: string) => void;
 }
 
 export const LinkCard = (props: LinkCardProps) => {
@@ -21,34 +32,77 @@ export const LinkCard = (props: LinkCardProps) => {
     handleLinkClick,
     currentModalId,
     handleModalId,
+    handleClickRename,
+    handleClickDelete,
+    closeDialog,
+    isEditing = false,
+    onSaveTitle,
     ...rest
   } = props;
   const menuRef = useRef<HTMLDivElement>(null);
+  const [editedTitle, setEditedTitle] = useState(cardTitle);
+
+  useEffect(() => {
+    if (closeDialog) {
+      menuRef.current?.togglePopover();
+    }
+  }, [closeDialog]);
 
   const handleClick = () => {
     handleModalId(path);
     menuRef.current?.togglePopover();
   };
 
+  const handleSave = () => {
+    onSaveTitle?.(editedTitle);
+  };
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
+    if (event.key === 'Enter' && editedTitle) {
+      handleSave();
+    }
+  };
+
   return (
     <li {...rest}>
       {header}
-      {handleLinkClick ? (
-        <Link to={path} onClick={handleLinkClick} className='w-full'>
-          {cardTitle}
+      {isEditing ? (
+        <div className='w-full'>
+          {isEditing ? (
+            <input
+              type='text'
+              value={editedTitle}
+              onChange={e => setEditedTitle(e.target.value)}
+              onBlur={handleSave}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
+          ) : (
+            <div>{editedTitle}</div>
+          )}
           {body}
-        </Link>
+        </div>
       ) : (
-        <Link to={path} className='w-full'>
+        <Link
+          to={path}
+          onClick={handleLinkClick || undefined}
+          className='w-full'
+        >
           {cardTitle}
           {body}
         </Link>
       )}
-      <div className='relative'>
-        <button onClick={handleClick}>
+      <div className='relative flex'>
+        <Button appearance='ghost' onClick={handleClick} padding='none'>
           <Icon name='threeDots' size={38} fill={COLORS.ACCENT} />
-        </button>
-        {currentModalId === path && <OptionsMenu ref={menuRef} />}
+        </Button>
+        {currentModalId === path && (
+          <OptionsMenu
+            handleClickRename={handleClickRename}
+            handleClickDelete={handleClickDelete}
+            ref={menuRef}
+          />
+        )}
       </div>
     </li>
   );

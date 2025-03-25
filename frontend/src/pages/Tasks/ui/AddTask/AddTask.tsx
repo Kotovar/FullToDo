@@ -75,7 +75,7 @@ export const AddTask = () => {
           'bg-white grid-cols-[auto_1fr]',
         )}
         leftContent={
-          <Button appearance='ghost' padding='s'>
+          <Button appearance='ghost' padding='s' onClick={handleClick}>
             <Icon name='plus' stroke={COLORS.ACCENT} />
           </Button>
         }

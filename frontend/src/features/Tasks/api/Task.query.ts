@@ -66,6 +66,19 @@ class TaskService {
     }
     return response.json();
   }
+
+  async deleteTask(notepadId: string, taskId: string): Promise<TaskResponse> {
+    const response = await fetch(`${URL}/notepad/${notepadId}/task/${taskId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  }
 }
 
 export const taskService = new TaskService();

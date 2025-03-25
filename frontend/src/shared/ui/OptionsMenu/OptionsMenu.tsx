@@ -2,10 +2,12 @@ import { ComponentPropsWithRef } from 'react';
 
 interface OptionsMenu extends ComponentPropsWithRef<'div'> {
   path?: string;
+  handleClickRename: () => void;
+  handleClickDelete: () => void;
 }
 
 export const OptionsMenu = (props: OptionsMenu) => {
-  const { ...rest } = props;
+  const { handleClickRename, handleClickDelete, ...rest } = props;
 
   return (
     <div
@@ -13,10 +15,18 @@ export const OptionsMenu = (props: OptionsMenu) => {
       popover='manual'
       {...rest}
     >
-      <button className='hover:bg-accent/40 p-2' type='button'>
+      <button
+        className='hover:bg-accent/40 cursor-pointer p-2'
+        type='button'
+        onClick={handleClickRename}
+      >
         Переименовать
       </button>
-      <button className='bg-bg-second hover:bg-accent/40 p-2' type='button'>
+      <button
+        className='bg-bg-second hover:bg-accent/40 cursor-pointer p-2'
+        type='button'
+        onClick={handleClickDelete}
+      >
         Удалить
       </button>
     </div>

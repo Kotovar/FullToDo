@@ -52,6 +52,7 @@ const notepadWithoutTasksSchema = dbNotepadSchema.pick({
 export const updateTaskSchema = createTaskSchema
   .extend({
     subtasks: z.array(createSubtaskSchema).optional(),
+    isCompleted: z.boolean(),
   })
   .partial()
   .refine(data => Object.keys(data).length > 0, {

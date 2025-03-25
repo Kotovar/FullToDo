@@ -35,11 +35,11 @@ const validTaskData: TaskResponse = {
     isCompleted: false,
     progress: '1 из 5',
     subtasks: [
-      { isCompleted: false, title: 'Выучить Node.js' },
-      { isCompleted: true, title: 'Выучить js' },
-      { isCompleted: false, title: 'Выучить GO' },
-      { isCompleted: false, title: 'Выучить Nest.js' },
-      { isCompleted: false, title: 'Выучить Express' },
+      { isCompleted: false, title: 'Выучить Node.js', _id: '1' },
+      { isCompleted: true, title: 'Выучить js', _id: '2' },
+      { isCompleted: false, title: 'Выучить GO', _id: '3' },
+      { isCompleted: false, title: 'Выучить Nest.js', _id: '4' },
+      { isCompleted: false, title: 'Выучить Express', _id: '5' },
     ],
   },
 };
@@ -392,7 +392,6 @@ describe('httpServer POST', () => {
     const notepadId = '1';
     const taskData = {
       title: '1',
-      isCompleted: false,
       description: 'Созданная',
     };
 
@@ -614,7 +613,6 @@ describe('httpServer PATH', () => {
     const updatedTaskData = {
       title: '1',
       isCompleted: true,
-      subtasks: [{ title: 'abc3111', isCompleted: false }],
     };
 
     const taskResponse: TaskResponse = {
@@ -655,7 +653,7 @@ describe('httpServer PATH', () => {
       const invalidTaskData = {
         title: 'title',
         description: 'Созданная',
-        subtasks: [{ title: 'abc3111', isCompleted: 2 }],
+        subtasks: [{ title: 'abc3111', isCompleted: 2, _id: '1' }],
       };
 
       const errors: ZodIssue[] = [

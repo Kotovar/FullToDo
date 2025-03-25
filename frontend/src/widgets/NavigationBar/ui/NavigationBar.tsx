@@ -1,9 +1,9 @@
 import { useState, type ComponentPropsWithoutRef } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { clsx } from 'clsx';
 import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
-import { ROUTES } from '@sharedCommon/';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Notepad, ROUTES } from '@sharedCommon/';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { notepadService } from '@entities/Notepad';
 
 interface Props extends ComponentPropsWithoutRef<'nav'> {
@@ -14,22 +14,47 @@ export const NavigationBar = (props: Props) => {
   const { turnOffVisibility, ...rest } = props;
   const [currentModalId, setCurrentModalId] = useState('');
   const [title, setTitle] = useState('');
-  const queryClient = useQueryClient();
-  const { data, isError } = useQuery({
+  const [closeDialog, setCloseDialog] = useState(false);
+  const [editingNotepadId, setEditingNotepadId] = useState<string | null>(null);
+
+  const { data, isError, refetch } = useQuery({
     queryKey: ['notepads'],
     queryFn: notepadService.getNotepads,
     select: data => data.data,
   });
-  const mutation = useMutation({
+
+  const mutationCreate = useMutation({
     mutationFn: (title: string) => notepadService.createNotepad(title),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notepads'] });
+      refetch();
       setTitle('');
+    },
+  });
+
+  const mutationUpdate = useMutation({
+    mutationFn: ({
+      notepadId,
+      updatedNotepad,
+    }: {
+      notepadId: string;
+      updatedNotepad: Partial<Notepad>;
+    }) => notepadService.updateNotepad(notepadId, updatedNotepad),
+    onSuccess: () => {
+      refetch();
+    },
+  });
+
+  const mutationDelete = useMutation({
+    mutationFn: (notepadId: string) => notepadService.deleteNotepad(notepadId),
+    onSuccess: () => {
+      refetch();
+      navigate('/notepad/today');
     },
   });
 
   const location = useLocation().pathname;
   const basePath = location.split(ROUTES.TASK)[0];
+  const navigate = useNavigate();
 
   const handleModalId = (id: string) => {
     setCurrentModalId(id);
@@ -46,7 +71,28 @@ export const NavigationBar = (props: Props) => {
   };
 
   const createNotepad = (title: string) => {
-    mutation.mutate(title);
+    mutationCreate.mutate(title);
+  };
+
+  const deleteNotepad = (id: string) => {
+    mutationDelete.mutate(id);
+  };
+
+  const updateNotepad = (
+    notepadId: string,
+    updatedNotepad: Partial<Notepad>,
+  ) => {
+    mutationUpdate.mutate({ notepadId, updatedNotepad });
+  };
+
+  const renameNotepad = (id: string) => {
+    setEditingNotepadId(id);
+    setCloseDialog(true);
+  };
+
+  const handleSaveTitle = (id: string, newTitle: string) => {
+    updateNotepad(id, { title: newTitle });
+    setEditingNotepadId(null);
   };
 
   if (isError) {
@@ -65,7 +111,7 @@ export const NavigationBar = (props: Props) => {
                 currentModalId={currentModalId}
                 handleModalId={handleModalId}
                 className={clsx(
-                  'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] items-center justify-items-start rounded-lg p-2 break-words',
+                  'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] items-center justify-items-center rounded-lg p-2 break-words',
                   {
                     ['bg-grey-light']: path === basePath,
                   },
@@ -73,7 +119,12 @@ export const NavigationBar = (props: Props) => {
                 handleLinkClick={turnOffVisibility}
                 key={_id}
                 path={path}
-                cardTitle={<span className='text-3xl'>{title}</span>}
+                cardTitle={title}
+                handleClickDelete={() => deleteNotepad(_id)}
+                handleClickRename={() => renameNotepad(_id)}
+                onSaveTitle={newTitle => handleSaveTitle(_id, newTitle)}
+                closeDialog={closeDialog}
+                isEditing={editingNotepadId === _id}
               />
             );
           })}
@@ -86,7 +137,11 @@ export const NavigationBar = (props: Props) => {
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           leftContent={
-            <Button appearance='ghost' onClick={() => createNotepad(title)}>
+            <Button
+              appearance='ghost'
+              onClick={() => createNotepad(title)}
+              padding='none'
+            >
               <Icon name='plus' stroke={COLORS.ACCENT} />
             </Button>
           }

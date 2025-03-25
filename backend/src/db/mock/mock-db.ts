@@ -63,7 +63,7 @@ export const TASKS1: Task[] = [
   {
     _id: '5',
     notepadId: '1',
-    title: 'Задача 4',
+    title: 'Задача 5',
     description: 'Описание для задачи 4',
     isCompleted: false,
     createdDate: new Date(),
@@ -77,7 +77,7 @@ export const TASKS1: Task[] = [
   {
     _id: '6',
     notepadId: '1',
-    title: 'Задача 4',
+    title: 'Задача 6',
     description: 'Описание для задачи 4',
     isCompleted: false,
     createdDate: new Date(),
@@ -91,7 +91,7 @@ export const TASKS1: Task[] = [
   {
     _id: '7',
     notepadId: '1',
-    title: 'Задача 4',
+    title: 'Задача 7',
     description: 'Описание для задачи 4',
     isCompleted: false,
     createdDate: new Date(),
@@ -105,7 +105,7 @@ export const TASKS1: Task[] = [
   {
     _id: '8',
     notepadId: '1',
-    title: 'Задача 4',
+    title: 'Задача 8',
     description: 'Описание для задачи 4',
     isCompleted: false,
     createdDate: new Date(),
@@ -119,7 +119,7 @@ export const TASKS1: Task[] = [
   {
     _id: '9',
     notepadId: '1',
-    title: 'Задача 4',
+    title: 'Задача 9',
     description: 'Описание для задачи 4',
     isCompleted: false,
     createdDate: new Date(),
@@ -133,7 +133,7 @@ export const TASKS1: Task[] = [
   {
     _id: '10',
     notepadId: '1',
-    title: 'Задача 4',
+    title: 'Задача 10',
     description: 'Описание для задачи 4',
     isCompleted: false,
     createdDate: new Date(),
@@ -147,7 +147,7 @@ export const TASKS1: Task[] = [
   {
     _id: '11',
     notepadId: '1',
-    title: 'Задача 4',
+    title: 'Задача 11',
     description: 'Описание для задачи 4',
     isCompleted: false,
     createdDate: new Date(),
@@ -164,7 +164,7 @@ const TASKS2: Task[] = [
   {
     _id: '12',
     notepadId: '2',
-    title: 'Задача 3',
+    title: 'Задача 12',
     description: 'Описание для задачи 3',
     isCompleted: false,
     createdDate: new Date(),
@@ -178,7 +178,7 @@ const TASKS2: Task[] = [
   {
     _id: '13',
     notepadId: '2',
-    title: 'Задача 4',
+    title: 'Задача 13',
     isCompleted: false,
     createdDate: new Date(),
     progress: '2 из 3',
@@ -193,7 +193,7 @@ const TASKS3: Task[] = [
   {
     _id: '14',
     notepadId: '3',
-    title: 'Задача 1',
+    title: 'Задача 14',
     description: 'Описание для задачи 5',
     isCompleted: false,
     createdDate: new Date(),
@@ -207,7 +207,7 @@ const TASKS3: Task[] = [
   {
     _id: '15',
     notepadId: '3',
-    title: 'Задача 3',
+    title: 'Задача 15',
     isCompleted: false,
     createdDate: new Date(),
     progress: '2 из 3',
@@ -220,7 +220,7 @@ const TASKS3: Task[] = [
   {
     _id: '16',
     notepadId: '3',
-    title: 'Задача 5',
+    title: 'Задача 16',
     description: 'Описание для задачи 5',
     isCompleted: true,
     createdDate: new Date(),
