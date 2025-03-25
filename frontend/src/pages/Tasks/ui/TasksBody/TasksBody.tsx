@@ -12,7 +12,6 @@ interface TasksBodyProps {
 export const TasksBody = (props: TasksBodyProps) => {
   const { notepadPathName, notepadId = '' } = props;
   const [currentModalId, setCurrentModalId] = useState('');
-  const [closeDialog, setCloseDialog] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
   const { data, isError, refetch } = useQuery({
@@ -44,7 +43,6 @@ export const TasksBody = (props: TasksBodyProps) => {
 
   const handleModalId = (id: string) => {
     setCurrentModalId(id);
-    setCloseDialog(false);
   };
 
   const updateTask = (updatedTask: Partial<Task>, id: string) => {
@@ -57,7 +55,6 @@ export const TasksBody = (props: TasksBodyProps) => {
 
   const renameTask = (id: string) => {
     setEditingTaskId(id);
-    setCloseDialog(true);
   };
 
   const updateTaskStatus = (id: string, status: boolean) => {
@@ -69,8 +66,14 @@ export const TasksBody = (props: TasksBodyProps) => {
     );
   };
 
-  const handleSaveTitle = (id: string, newTitle: string) => {
-    updateTask({ title: newTitle }, id);
+  const handleSaveTitle = (
+    id: string,
+    newTitle: string,
+    currentTitle: string,
+  ) => {
+    if (newTitle !== currentTitle) {
+      updateTask({ title: newTitle }, id);
+    }
     setEditingTaskId(null);
   };
 
@@ -81,16 +84,6 @@ export const TasksBody = (props: TasksBodyProps) => {
           {data.map(({ title, progress, isCompleted, _id }) => {
             return (
               <LinkCard
-                currentModalId={currentModalId}
-                handleModalId={handleModalId}
-                className='hover:bg-accent-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm bg-white p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10'
-                path={ROUTES.getTaskDetailPath(notepadPathName, String(_id))}
-                cardTitle={title}
-                handleClickDelete={() => deleteTask(_id)}
-                handleClickRename={() => renameTask(_id)}
-                closeDialog={closeDialog}
-                isEditing={editingTaskId === _id}
-                onSaveTitle={newTitle => handleSaveTitle(_id, newTitle)}
                 header={
                   <Button
                     appearance='ghost'
@@ -104,11 +97,20 @@ export const TasksBody = (props: TasksBodyProps) => {
                     />
                   </Button>
                 }
+                cardTitle={title}
+                currentModalId={currentModalId}
+                handleModalId={handleModalId}
+                path={ROUTES.getTaskDetailPath(notepadPathName, String(_id))}
+                handleClickDelete={() => deleteTask(_id)}
+                handleClickRename={() => renameTask(_id)}
+                isEditing={editingTaskId === _id}
+                onSaveTitle={newTitle => handleSaveTitle(_id, newTitle, title)}
                 body={
                   <div className='flex flex-col'>
                     <span className='text-sm'>{progress}</span>
                   </div>
                 }
+                className='hover:bg-accent-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm bg-white p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10'
                 key={_id}
               />
             );

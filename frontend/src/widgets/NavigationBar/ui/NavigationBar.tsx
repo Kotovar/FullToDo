@@ -14,7 +14,6 @@ export const NavigationBar = (props: Props) => {
   const { turnOffVisibility, ...rest } = props;
   const [currentModalId, setCurrentModalId] = useState('');
   const [title, setTitle] = useState('');
-  const [closeDialog, setCloseDialog] = useState(false);
   const [editingNotepadId, setEditingNotepadId] = useState<string | null>(null);
 
   const { data, isError, refetch } = useQuery({
@@ -52,46 +51,31 @@ export const NavigationBar = (props: Props) => {
     },
   });
 
-  const location = useLocation().pathname;
-  const basePath = location.split(ROUTES.TASK)[0];
+  const basePath = useLocation().pathname;
   const navigate = useNavigate();
 
-  const handleModalId = (id: string) => {
-    setCurrentModalId(id);
-  };
-
-  const handleChange: React.ChangeEventHandler<HTMLInputElement> = event => {
-    setTitle(event.target.value);
-  };
+  if (isError) {
+    return <div>Error fetching data</div>;
+  }
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
     if (event.key === 'Enter' && title) {
-      createNotepad(title);
+      mutationCreate.mutate(title);
     }
   };
 
-  const createNotepad = (title: string) => {
-    mutationCreate.mutate(title);
-  };
-
-  const deleteNotepad = (id: string) => {
-    mutationDelete.mutate(id);
-  };
-
-  const updateNotepad = (
-    notepadId: string,
-    updatedNotepad: Partial<Notepad>,
+  const handleSaveTitle = (
+    id: string,
+    newTitle: string,
+    currentTitle: string,
   ) => {
-    mutationUpdate.mutate({ notepadId, updatedNotepad });
-  };
+    if (newTitle !== currentTitle) {
+      mutationUpdate.mutate({
+        notepadId: id,
+        updatedNotepad: { title: newTitle },
+      });
+    }
 
-  const renameNotepad = (id: string) => {
-    setEditingNotepadId(id);
-    setCloseDialog(true);
-  };
-
-  const handleSaveTitle = (id: string, newTitle: string) => {
-    updateNotepad(id, { title: newTitle });
     setEditingNotepadId(null);
   };
 
@@ -109,9 +93,9 @@ export const NavigationBar = (props: Props) => {
             return (
               <LinkCard
                 currentModalId={currentModalId}
-                handleModalId={handleModalId}
+                handleModalId={id => setCurrentModalId(id)}
                 className={clsx(
-                  'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] items-center justify-items-center rounded-lg p-2 break-words',
+                  'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] content-center items-center justify-items-center rounded-lg p-2 break-words',
                   {
                     ['bg-grey-light']: path === basePath,
                   },
@@ -120,10 +104,9 @@ export const NavigationBar = (props: Props) => {
                 key={_id}
                 path={path}
                 cardTitle={title}
-                handleClickDelete={() => deleteNotepad(_id)}
-                handleClickRename={() => renameNotepad(_id)}
-                onSaveTitle={newTitle => handleSaveTitle(_id, newTitle)}
-                closeDialog={closeDialog}
+                handleClickDelete={() => mutationDelete.mutate(_id)}
+                handleClickRename={() => setEditingNotepadId(_id)}
+                onSaveTitle={newTitle => handleSaveTitle(_id, newTitle, title)}
                 isEditing={editingNotepadId === _id}
               />
             );
@@ -134,12 +117,12 @@ export const NavigationBar = (props: Props) => {
           placeholder='Добавить список'
           type='text'
           value={title}
-          onChange={handleChange}
+          onChange={event => setTitle(event.target.value)}
           onKeyDown={handleKeyDown}
           leftContent={
             <Button
               appearance='ghost'
-              onClick={() => createNotepad(title)}
+              onClick={() => mutationCreate.mutate(title)}
               padding='none'
             >
               <Icon name='plus' stroke={COLORS.ACCENT} />

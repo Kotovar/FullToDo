@@ -24,7 +24,7 @@ export const Header = (props: Props) => {
         type='text'
         containerClassName='flex h-10 w-full items-center gap-x-1 rounded-xl bg-white px-2 md:w-[60%]'
         leftContent={
-          <Button appearance='ghost'>
+          <Button appearance='ghost' padding='none' aria-label='Поиск'>
             <Icon name='loupe' fill={COLORS.ACCENT} />
           </Button>
         }

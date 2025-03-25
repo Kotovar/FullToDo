@@ -1,10 +1,4 @@
-import {
-  useRef,
-  type ComponentPropsWithoutRef,
-  JSX,
-  useEffect,
-  useState,
-} from 'react';
+import { ComponentPropsWithoutRef, JSX, useState } from 'react';
 import { Link } from 'react-router';
 import { Button, COLORS, Icon, OptionsMenu } from '@shared/ui';
 
@@ -18,7 +12,6 @@ interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   currentModalId: string;
   handleClickRename: () => void;
   handleClickDelete: () => void;
-  closeDialog: boolean;
   isEditing?: boolean;
   onSaveTitle?: (newTitle: string) => void;
 }
@@ -29,30 +22,20 @@ export const LinkCard = (props: LinkCardProps) => {
     cardTitle,
     path,
     body,
-    handleLinkClick,
+    isEditing = false,
     currentModalId,
+    handleLinkClick,
     handleModalId,
     handleClickRename,
     handleClickDelete,
-    closeDialog,
-    isEditing = false,
     onSaveTitle,
     ...rest
   } = props;
-  const menuRef = useRef<HTMLDivElement>(null);
+
   const [editedTitle, setEditedTitle] = useState(cardTitle);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  useEffect(() => {
-    if (closeDialog) {
-      menuRef.current?.togglePopover();
-    }
-  }, [closeDialog]);
-
-  const handleClick = () => {
-    handleModalId(path);
-    menuRef.current?.togglePopover();
-  };
-
+  const closeMenu = () => setIsMenuOpen(false);
   const handleSave = () => {
     onSaveTitle?.(editedTitle);
   };
@@ -63,44 +46,53 @@ export const LinkCard = (props: LinkCardProps) => {
     }
   };
 
+  const handleButtonClick = () => {
+    handleModalId(path);
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const title = isEditing ? (
+    <div className='w-full'>
+      <input
+        type='text'
+        value={editedTitle}
+        onChange={e => setEditedTitle(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={handleKeyDown}
+        className='h-full w-full outline-2 outline-transparent'
+        autoFocus
+      />
+      {body}
+    </div>
+  ) : (
+    <Link
+      to={path}
+      onClick={handleLinkClick || undefined}
+      className='h-full w-full outline-2 outline-transparent'
+    >
+      {editedTitle}
+      {body}
+    </Link>
+  );
+
   return (
     <li {...rest}>
       {header}
-      {isEditing ? (
-        <div className='w-full'>
-          {isEditing ? (
-            <input
-              type='text'
-              value={editedTitle}
-              onChange={e => setEditedTitle(e.target.value)}
-              onBlur={handleSave}
-              onKeyDown={handleKeyDown}
-              autoFocus
-            />
-          ) : (
-            <div>{editedTitle}</div>
-          )}
-          {body}
-        </div>
-      ) : (
-        <Link
-          to={path}
-          onClick={handleLinkClick || undefined}
-          className='w-full'
-        >
-          {cardTitle}
-          {body}
-        </Link>
-      )}
+      {title}
       <div className='relative flex'>
-        <Button appearance='ghost' onClick={handleClick} padding='none'>
+        <Button appearance='ghost' onClick={handleButtonClick} padding='none'>
           <Icon name='threeDots' size={38} fill={COLORS.ACCENT} />
         </Button>
-        {currentModalId === path && (
+        {isMenuOpen && currentModalId === path && (
           <OptionsMenu
-            handleClickRename={handleClickRename}
-            handleClickDelete={handleClickDelete}
-            ref={menuRef}
+            renameHandler={() => {
+              handleClickRename();
+              closeMenu();
+            }}
+            deleteHandler={() => {
+              handleClickDelete();
+              closeMenu();
+            }}
           />
         )}
       </div>
