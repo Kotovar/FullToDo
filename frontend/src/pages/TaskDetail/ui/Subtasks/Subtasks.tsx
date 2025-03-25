@@ -1,17 +1,16 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import type { Subtask } from '@sharedCommon/*';
 import { SubtaskItem } from '../SubtaskItem';
+import { SubtaskAction } from './types';
 
 interface SubtasksProps extends ComponentPropsWithoutRef<'ul'> {
   subtasks: Subtask[];
-  updateSubtask: (id: string, title: string, isCompleted: boolean) => void;
-  deleteSubtask: (id: string) => void;
+  updateSubtask: (action: SubtaskAction) => void;
 }
 
 export const Subtasks = ({
   subtasks = [],
   updateSubtask,
-  deleteSubtask,
   ...rest
 }: SubtasksProps) => {
   return (
@@ -21,7 +20,6 @@ export const Subtasks = ({
           key={subtask._id}
           subtask={subtask}
           updateSubtask={updateSubtask}
-          deleteSubtask={deleteSubtask}
         />
       ))}
     </ul>

@@ -2,18 +2,14 @@ import { useState, useEffect, useMemo } from 'react';
 import { Button, COLORS, Icon, Input } from '@shared/ui';
 import type { Subtask } from '@sharedCommon/*';
 import { debounce } from '@shared/lib/debounce';
+import { SubtaskAction } from '../Subtasks/types';
 
 interface SubtaskItemProps {
   subtask: Subtask;
-  updateSubtask: (id: string, title: string, isCompleted: boolean) => void;
-  deleteSubtask: (id: string) => void;
+  updateSubtask: (action: SubtaskAction) => void;
 }
 
-export const SubtaskItem = ({
-  subtask,
-  updateSubtask,
-  deleteSubtask,
-}: SubtaskItemProps) => {
+export const SubtaskItem = ({ subtask, updateSubtask }: SubtaskItemProps) => {
   const { _id, title, isCompleted } = subtask;
 
   const [localTitle, setLocalTitle] = useState(title);
@@ -22,7 +18,12 @@ export const SubtaskItem = ({
   const debouncedUpdateSubtask = useMemo(
     () =>
       debounce((id: string, newTitle: string, completed: boolean) => {
-        updateSubtask(id, newTitle, completed);
+        updateSubtask({
+          type: 'update',
+          id,
+          title: newTitle,
+          isCompleted: completed,
+        });
       }, 300),
     [updateSubtask],
   );
@@ -52,7 +53,7 @@ export const SubtaskItem = ({
       />
       <Button
         appearance='ghost'
-        onClick={() => deleteSubtask(_id)}
+        onClick={() => updateSubtask({ type: 'delete', id: _id })}
         padding='none'
       >
         <Icon name='cross' fill={COLORS.ACCENT} />

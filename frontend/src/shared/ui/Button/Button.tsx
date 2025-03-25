@@ -6,7 +6,7 @@ type ButtonPadding = 'none' | 's';
 
 interface ButtonProps extends ComponentPropsWithRef<'button'> {
   appearance: ButtonAppearance;
-  padding: ButtonPadding;
+  padding?: ButtonPadding;
   className?: string;
 }
 
