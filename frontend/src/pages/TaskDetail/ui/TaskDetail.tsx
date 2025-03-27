@@ -65,7 +65,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
         <Subtasks subtasks={form.subtasks} updateSubtask={handleSubtask} />
       )}
       <Input
-        placeholder={form.subtasks.length ? 'Следующий шаг' : 'Первый шаг'}
+        placeholder={form.subtasks.length > 0 ? 'Следующий шаг' : 'Первый шаг'}
         type='text'
         containerClassName='flex items-center gap-2 p-1'
         className='w-full outline-0'
