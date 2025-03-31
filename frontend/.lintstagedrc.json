@@ -5,6 +5,6 @@
     "tsc --noEmit",
     "vitest related --run --environment=jsdom"
   ],
-  "src/**/*": ["npm run fsd:check"],
+  "src/**/*.{ts,tsx}": ["npm run fsd:check"],
   "*.{json,md}": ["prettier --write"]
 }
