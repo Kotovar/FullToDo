@@ -1,11 +1,10 @@
 {
-  "*.{js,ts,tsx}": [
+  "src/**/*.{js,ts,tsx}": [
     "prettier --write",
     "eslint --ignore-pattern .gitignore --fix",
-    "bash -c tsc --build ../shared",
-    "bash -c tsc --noEmit",
-    "vitest related --run --environment=jsdom",
-    "bash -c 'npx steiger ./src'"
+    "tsc --noEmit",
+    "vitest related --run --environment=jsdom"
   ],
+  "src/**/*": ["npm run fsd:check"],
   "*.{json,md}": ["prettier --write"]
 }

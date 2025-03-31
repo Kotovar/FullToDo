@@ -12,7 +12,7 @@
     "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
-    "fsd": "npx steiger ./src",
+    "fsd:check": "npx steiger ./src",
     "preview": "vite preview",
     "prepare": "cd .. && husky frontend/.husky",
     "lint-staged": "lint-staged"
