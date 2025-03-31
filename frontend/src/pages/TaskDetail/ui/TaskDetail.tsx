@@ -1,14 +1,20 @@
 import { useNavigate, useParams } from 'react-router';
-import { Button, COLORS, Icon, Input, Textarea } from '@shared/ui';
+import { Button } from '@shared/ui';
 import { Subtasks } from './Subtasks';
 import type { SubtaskAction, TaskDetailProps } from './Subtasks/types';
 import { handleSubtaskAction, useTask, useTaskForm } from './Subtasks/utils';
+import { SubtaskInput } from './SubtaskInput';
+import { DateInput } from './DateInput';
+import { TaskTextarea } from './TaskTextarea';
+import { TaskTitle } from './TaskTitle';
+import { useTasks } from '@pages/Tasks/lib';
 
 export const TaskDetail = (props: TaskDetailProps) => {
   const { notepadId = '', taskId = '' } = useParams();
   const navigate = useNavigate();
 
   const { task, isError, updateTask } = useTask(notepadId, taskId);
+  const { methods } = useTasks(notepadId);
   const { form, setForm, subtaskTitle, setSubtaskTitle, handleAddSubtask } =
     useTaskForm(task);
 
@@ -20,15 +26,26 @@ export const TaskDetail = (props: TaskDetailProps) => {
     navigate(-1);
   };
 
-  const handleUpdateTask = () => {
-    updateTask({
-      dueDate: form.dueDate ? new Date(form.dueDate) : undefined,
-      description: form.description,
-      ...(task?.title !== form.title && { title: form.title }),
-      subtasks: form.subtasks,
-    });
+  const handleUpdateTask = async () => {
+    try {
+      updateTask({
+        dueDate: form.dueDate ? new Date(form.dueDate) : undefined,
+        description: form.description,
+        subtasks: form.subtasks,
+      });
 
-    handleGoBack();
+      if (task?.title !== form.title) {
+        await methods.updateTask({ title: form.title }, taskId);
+      }
+
+      handleGoBack();
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`Ошибка при сохранении: ${error.message}`);
+      } else {
+        throw new Error('Неизвестная ошибка при сохранении');
+      }
+    }
   };
 
   const handleSubtask = (action: SubtaskAction) => {
@@ -46,7 +63,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   };
 
   return (
-    <div {...props} className='flex flex-col gap-1 p-1'>
+    <section {...props} className='flex flex-col gap-1 p-1'>
       <Button
         className='self-start'
         appearance='primary'
@@ -55,56 +72,52 @@ export const TaskDetail = (props: TaskDetailProps) => {
       >
         Назад
       </Button>
-      <Input
-        type='text'
+
+      <TaskTitle
         value={form.title}
         onChange={e => setForm({ ...form, title: e.target.value })}
-        className='p-2 outline-0'
       />
+
       {task && (
         <Subtasks subtasks={form.subtasks} updateSubtask={handleSubtask} />
       )}
-      <Input
-        placeholder={form.subtasks.length > 0 ? 'Следующий шаг' : 'Первый шаг'}
-        type='text'
-        containerClassName='flex items-center gap-2 p-1'
-        className='w-full outline-0'
-        value={subtaskTitle}
-        onChange={e => setSubtaskTitle(e.target.value)}
-        onKeyDown={handleKeyDown}
-        leftContent={
-          <Button appearance='ghost' onClick={handleAddSubtask} padding='s'>
-            <Icon name='plus' stroke={COLORS.ACCENT} />
-          </Button>
-        }
-      />
-      <Input
-        placeholder='Укажите дату'
-        type='date'
-        containerClassName='flex items-center gap-2 p-1 '
-        className='w-fit outline-0'
-        value={form.dueDate}
-        onChange={e => setForm({ ...form, dueDate: e.target.value })}
-        leftContent={
-          <Button appearance='ghost' padding='s'>
-            <Icon name='calendar' stroke={COLORS.ACCENT} />
-          </Button>
-        }
-      />
-      <Textarea
-        className='outline-bg-second w-full rounded-sm bg-white p-2'
-        placeholder='Описание'
-        value={form.description}
-        onChange={e => setForm({ ...form, description: e.target.value })}
-      ></Textarea>
+
+      <fieldset className='flex flex-col gap-2'>
+        <legend className='sr-only'>Детали задачи</legend>
+
+        <SubtaskInput
+          value={subtaskTitle}
+          label='Добавить подзадачу'
+          placeholder={
+            form.subtasks.length > 0 ? 'Следующий шаг' : 'Первый шаг'
+          }
+          onChange={e => setSubtaskTitle(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onClick={handleAddSubtask}
+        />
+
+        <DateInput
+          value={form.dueDate}
+          label='Дата выполнения'
+          onChange={e => setForm({ ...form, dueDate: e.target.value })}
+        />
+
+        <TaskTextarea
+          label='Описание'
+          value={form.description}
+          onChange={e => setForm({ ...form, description: e.target.value })}
+        />
+      </fieldset>
+
       <Button
         appearance='primary'
+        type='submit'
         padding='s'
         className='self-center'
         onClick={handleUpdateTask}
       >
         Сохранить
       </Button>
-    </div>
+    </section>
   );
 };

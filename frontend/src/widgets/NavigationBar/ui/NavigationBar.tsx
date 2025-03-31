@@ -3,19 +3,19 @@ import { useLocation } from 'react-router';
 import { clsx } from 'clsx';
 import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
-import { useNotepad } from '../utils';
+import { useNotepads } from '../lib';
 
-interface Props extends ComponentPropsWithoutRef<'nav'> {
+interface NavigationBarProps extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
 }
 
-export const NavigationBar = (props: Props) => {
+export const NavigationBar = (props: NavigationBarProps) => {
   const { turnOffVisibility, ...rest } = props;
 
   const [currentModalId, setCurrentModalId] = useState('');
   const [title, setTitle] = useState('');
   const [editingNotepadId, setEditingNotepadId] = useState<string | null>(null);
-  const { notepads, isError, methods } = useNotepad();
+  const { notepads, isError, methods } = useNotepads();
   const [basePath] = useLocation().pathname.split(ROUTES.TASK);
 
   if (isError) {
@@ -76,7 +76,6 @@ export const NavigationBar = (props: Props) => {
       <ul className='w-full'>
         {notepadList}
         <Input
-          containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden gap-2'
           className='min-w-0 outline-0'
           placeholder='Добавить список'
           type='text'

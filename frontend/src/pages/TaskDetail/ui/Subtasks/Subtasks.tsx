@@ -1,5 +1,6 @@
-import type { ComponentPropsWithoutRef } from 'react';
+import { useMemo, type ComponentPropsWithoutRef } from 'react';
 import type { Subtask } from '@sharedCommon/*';
+import { debounce } from '@shared/lib/debounce';
 import { SubtaskItem } from '../SubtaskItem';
 import { SubtaskAction } from './types';
 
@@ -13,13 +14,21 @@ export const Subtasks = ({
   updateSubtask,
   ...rest
 }: SubtasksProps) => {
+  const debouncedUpdateSubtask = useMemo(
+    () =>
+      debounce((action: SubtaskAction) => {
+        updateSubtask(action);
+      }, 300),
+    [updateSubtask],
+  );
+
   return (
     <ul className='flex list-none flex-col' {...rest}>
       {subtasks.map(subtask => (
         <SubtaskItem
           key={subtask._id}
           subtask={subtask}
-          updateSubtask={updateSubtask}
+          updateSubtask={debouncedUpdateSubtask}
         />
       ))}
     </ul>

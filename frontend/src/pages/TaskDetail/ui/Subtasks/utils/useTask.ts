@@ -12,7 +12,9 @@ export const useTask = (notepadId: string, taskId: string) => {
   const mutation = useMutation({
     mutationFn: (updatedTask: Partial<Task>) =>
       taskService.updateTask(notepadId, taskId, updatedTask),
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      refetch();
+    },
   });
 
   const updateTask = (updatedTask: Partial<Task>) => {

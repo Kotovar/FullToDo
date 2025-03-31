@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { notepadService } from '@entities/Notepad';
 import { type Notepad, ROUTES } from '@sharedCommon/';
 
-export const useNotepad = () => {
+export const useNotepads = () => {
   const navigate = useNavigate();
   const { data, refetch, isError } = useQuery({
     queryKey: ['notepads'],

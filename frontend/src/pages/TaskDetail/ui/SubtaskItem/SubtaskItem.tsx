@@ -1,7 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { Button, COLORS, Icon, Input } from '@shared/ui';
 import type { Subtask } from '@sharedCommon/*';
-import { debounce } from '@shared/lib/debounce';
 import { SubtaskAction } from '../Subtasks/types';
 
 interface SubtaskItemProps {
@@ -9,27 +8,27 @@ interface SubtaskItemProps {
   updateSubtask: (action: SubtaskAction) => void;
 }
 
-export const SubtaskItem = ({ subtask, updateSubtask }: SubtaskItemProps) => {
+export const SubtaskItem = memo(function SubtaskItem({
+  subtask,
+  updateSubtask,
+}: SubtaskItemProps) {
   const { _id, title, isCompleted } = subtask;
 
   const [localTitle, setLocalTitle] = useState(title);
   const [localCompleted, setLocalCompleted] = useState(isCompleted);
-
-  const debouncedUpdateSubtask = useMemo(
-    () =>
-      debounce((id: string, newTitle: string, completed: boolean) => {
-        updateSubtask({
-          type: 'update',
-          id,
-          title: newTitle,
-          isCompleted: completed,
-        });
-      }, 300),
-    [updateSubtask],
-  );
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    debouncedUpdateSubtask(_id, localTitle, localCompleted);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    updateSubtask({
+      type: 'update',
+      id: _id,
+      title: localTitle,
+      isCompleted: localCompleted,
+    });
   }, [_id, localCompleted, localTitle]);
 
   const handleToggleCompleted = () => {
@@ -60,4 +59,4 @@ export const SubtaskItem = ({ subtask, updateSubtask }: SubtaskItemProps) => {
       </Button>
     </li>
   );
-};
+});
