@@ -75,23 +75,25 @@ export const NavigationBar = (props: NavigationBarProps) => {
     <nav {...rest}>
       <ul className='w-full'>
         {notepadList}
-        <Input
-          className='min-w-0 outline-0'
-          placeholder='Добавить список'
-          type='text'
-          value={title}
-          onChange={event => setTitle(event.target.value)}
-          onKeyDown={handleKeyDown}
-          leftContent={
-            <Button
-              appearance='ghost'
-              onClick={handleCreateNotepad}
-              padding='none'
-            >
-              <Icon name='plus' stroke={COLORS.ACCENT} />
-            </Button>
-          }
-        />
+        <div className='flex gap-2 p-2'>
+          <Input
+            className='min-w-0 outline-0'
+            placeholder='Добавить список'
+            type='text'
+            value={title}
+            onChange={event => setTitle(event.target.value)}
+            onKeyDown={handleKeyDown}
+            leftContent={
+              <Button
+                appearance='ghost'
+                onClick={handleCreateNotepad}
+                padding='none'
+              >
+                <Icon name='plus' stroke={COLORS.ACCENT} />
+              </Button>
+            }
+          />
+        </div>
       </ul>
     </nav>
   );

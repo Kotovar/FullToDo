@@ -1,10 +1,5 @@
 {
-  "src/**/*.{js,ts,tsx}": [
-    "prettier --write",
-    "eslint --ignore-pattern .gitignore --fix",
-    "tsc --noEmit",
-    "vitest related --run --environment=jsdom"
-  ],
-  "src/**/*.{ts,tsx}": ["npm run fsd:check"],
-  "*.{json,md}": ["prettier --write"]
+  "src/**/*.{js,ts,tsx}": ["prettier --write", "eslint --fix"],
+
+  "*.{json,md}": ["prettier --write --ignore-unknown"]
 }

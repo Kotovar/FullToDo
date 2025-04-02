@@ -1,13 +1,22 @@
 import { useNavigate, useParams } from 'react-router';
 import { Button } from '@shared/ui';
-import { Subtasks } from './Subtasks';
-import type { SubtaskAction, TaskDetailProps } from './Subtasks/types';
-import { handleSubtaskAction, useTask, useTaskForm } from './Subtasks/utils';
-import { SubtaskInput } from './SubtaskInput';
-import { DateInput } from './DateInput';
-import { TaskTextarea } from './TaskTextarea';
-import { TaskTitle } from './TaskTitle';
-import { useTasks } from '@pages/Tasks/lib';
+import type {
+  SubtaskAction,
+  TaskDetailProps,
+} from '@pages/TaskDetail/ui/Subtasks';
+import {
+  handleSubtaskAction,
+  useTask,
+  useTaskForm,
+} from '@pages/TaskDetail/ui/Subtasks';
+import {
+  Subtasks,
+  SubtaskInput,
+  DateInput,
+  TaskTextarea,
+  TaskTitle,
+} from '@pages/TaskDetail/ui';
+import { useTasks } from '@entities/Task';
 
 export const TaskDetail = (props: TaskDetailProps) => {
   const { notepadId = '', taskId = '' } = useParams();
@@ -28,7 +37,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
 
   const handleUpdateTask = async () => {
     try {
-      updateTask({
+      await updateTask({
         dueDate: form.dueDate ? new Date(form.dueDate) : undefined,
         description: form.description,
         subtasks: form.subtasks,

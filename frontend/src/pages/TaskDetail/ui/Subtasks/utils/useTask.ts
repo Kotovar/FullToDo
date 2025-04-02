@@ -1,4 +1,4 @@
-import { taskService } from '@features/Tasks';
+import { taskService } from '@entities/Task';
 import { Task } from '@sharedCommon/*';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
@@ -17,8 +17,8 @@ export const useTask = (notepadId: string, taskId: string) => {
     },
   });
 
-  const updateTask = (updatedTask: Partial<Task>) => {
-    mutation.mutate(updatedTask);
+  const updateTask = async (updatedTask: Partial<Task>) => {
+    mutation.mutateAsync(updatedTask);
   };
 
   return { task: data, isError, updateTask };

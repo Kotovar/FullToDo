@@ -1,8 +1,9 @@
 import { useParams } from 'react-router';
 import { useState } from 'react';
-import { TaskOptions, useTasks } from '@pages/Tasks/lib';
+import { TaskOptions } from '@pages/Tasks/lib';
 import { DateInput } from './DateInput';
 import { TaskInput } from './TaskInput';
+import { useTasks } from '@entities/Task';
 
 export const AddTask = () => {
   const { notepadId = '' } = useParams();

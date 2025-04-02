@@ -5,7 +5,7 @@ import { notepadService } from '@entities/Notepad';
 export const useNotepad = () => {
   const { notepadId } = useParams();
   const { data } = useQuery({
-    queryKey: ['notepad'],
+    queryKey: ['notepads'],
     queryFn: notepadService.getNotepads,
     select: data => data.data,
   });

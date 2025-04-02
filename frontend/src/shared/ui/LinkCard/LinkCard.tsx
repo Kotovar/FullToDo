@@ -51,6 +51,15 @@ export const LinkCard = (props: LinkCardProps) => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const inputTitle = (
+    <input
+      type='text'
+      value={editedTitle}
+      className='h-full w-full cursor-pointer border-none bg-transparent outline-none'
+      readOnly
+    />
+  );
+
   const title = isEditing ? (
     <div className='w-full'>
       <input
@@ -59,7 +68,7 @@ export const LinkCard = (props: LinkCardProps) => {
         onChange={e => setEditedTitle(e.target.value)}
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
-        className='h-full w-full outline-2 outline-transparent'
+        className='h-full w-full leading-normal outline-2 outline-transparent'
         autoFocus
       />
       {body}
@@ -68,10 +77,16 @@ export const LinkCard = (props: LinkCardProps) => {
     <Link
       to={path}
       onClick={handleLinkClick || undefined}
-      className='h-full w-full outline-2 outline-transparent'
+      className='block h-full w-full'
     >
-      {editedTitle}
-      {body}
+      {body ? (
+        <div className='w-full'>
+          {inputTitle}
+          {body}
+        </div>
+      ) : (
+        inputTitle
+      )}
     </Link>
   );
 

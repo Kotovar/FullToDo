@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { taskService } from '@features/Tasks';
 import { CreateTask, Task } from '@sharedCommon/*';
+import { taskService } from '..';
 
 export const useTasks = (notepadId: string = '') => {
   const { data, isError, refetch } = useQuery({
@@ -31,18 +31,9 @@ export const useTasks = (notepadId: string = '') => {
     onSuccess: () => refetch(),
   });
 
-  const createTask = (task: CreateTask) => {
-    mutationCreate.mutate(task);
-  };
-
-  // const updateTask = (updatedTask: Partial<Task>, id: string) => {
-  //   mutationUpdate.mutate({ updatedTask, id });
-  // };
-
-  const updateTask = async (updatedTask: Partial<Task>, id: string) => {
-    return mutationUpdate.mutateAsync({ updatedTask, id });
-  };
-
+  const createTask = (task: CreateTask) => mutationCreate.mutate(task);
+  const updateTask = async (updatedTask: Partial<Task>, id: string) =>
+    mutationUpdate.mutateAsync({ updatedTask, id });
   const deleteTask = (id: string) => {
     mutationDelete.mutate(id);
   };

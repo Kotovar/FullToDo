@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, memo } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Button, COLORS, Icon, Input } from '@shared/ui';
 import type { Subtask } from '@sharedCommon/*';
 import { SubtaskAction } from '../Subtasks/types';
@@ -16,13 +16,12 @@ export const SubtaskItem = memo(function SubtaskItem({
 
   const [localTitle, setLocalTitle] = useState(title);
   const [localCompleted, setLocalCompleted] = useState(isCompleted);
-  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    if (localTitle === title && localCompleted === isCompleted) {
       return;
     }
+
     updateSubtask({
       type: 'update',
       id: _id,

@@ -15,7 +15,7 @@ export const OptionsMenu = (props: OptionsMenu) => {
       {...rest}
     >
       <button
-        className='hover:bg-accent/40 cursor-pointer p-2'
+        className='hover:bg-accent/40 cursor-pointer bg-white p-2'
         type='button'
         onClick={renameHandler}
       >

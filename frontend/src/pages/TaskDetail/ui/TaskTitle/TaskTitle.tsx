@@ -11,7 +11,7 @@ export const TaskTitle = ({ value, onChange }: TaskTitleProps) => (
       type='text'
       value={value}
       onChange={onChange}
-      className='p-2 outline-0'
+      className='w-full p-2 outline-0'
     />
   </h1>
 );
