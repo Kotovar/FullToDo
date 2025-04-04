@@ -1,4 +1,4 @@
-import { COLORS, Icon } from '@shared/ui';
+import { COLORS, Icon, ICON_SIZES } from '@shared/ui';
 
 type Sort = 'date' | 'deadline' | 'priority';
 
@@ -18,13 +18,13 @@ export const Sort = (props: SortProps) => {
 
   return (
     <div className='flex items-center justify-center gap-2'>
-      <button>{sortType[sort]}</button>
-      <button>
-        {direction === 'down' ? (
-          <Icon name='arrowDown' size={32} fill={COLORS.ACCENT} />
-        ) : (
-          <Icon name='arrowUp' size={32} fill={COLORS.ACCENT} />
-        )}
+      {sortType[sort]}
+      <button aria-label='Сменить сортировку' className='cursor-pointer'>
+        <Icon
+          name={direction === 'down' ? 'arrowDown' : 'arrowUp'}
+          size={ICON_SIZES.FILTERS}
+          fill={COLORS.ACCENT}
+        />
       </button>
     </div>
   );

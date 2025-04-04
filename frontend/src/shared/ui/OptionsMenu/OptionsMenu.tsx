@@ -15,14 +15,14 @@ export const OptionsMenu = (props: OptionsMenu) => {
       {...rest}
     >
       <button
-        className='hover:bg-accent/40 cursor-pointer bg-white p-2'
+        className='cursor-pointer bg-white p-2 hover:brightness-60'
         type='button'
         onClick={renameHandler}
       >
         Переименовать
       </button>
       <button
-        className='bg-bg-second hover:bg-accent/40 cursor-pointer p-2'
+        className='bg-bg-second cursor-pointer p-2 hover:brightness-70'
         type='button'
         onClick={deleteHandler}
       >

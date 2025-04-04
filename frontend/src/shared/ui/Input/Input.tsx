@@ -1,6 +1,6 @@
-import type { ComponentPropsWithoutRef, JSX } from 'react';
+import type { ComponentPropsWithRef, JSX } from 'react';
 
-export interface InputProps extends ComponentPropsWithoutRef<'input'> {
+export interface InputProps extends ComponentPropsWithRef<'input'> {
   type: 'text' | 'date';
   leftContent?: JSX.Element;
   rightContent?: JSX.Element;

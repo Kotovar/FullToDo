@@ -35,8 +35,15 @@ export const SubtaskItem = memo(function SubtaskItem({
   };
 
   return (
-    <li className='odd:bg-bg-second even:bg-grey-light grid grid-cols-[1rem_1fr_1rem] items-center gap-4 p-2'>
-      <Button appearance='ghost' onClick={handleToggleCompleted} padding='none'>
+    <li className='odd:bg-bg-second even:bg-grey-light grid grid-cols-[auto_1fr_auto] items-center gap-4 p-2'>
+      <Button
+        appearance='ghost'
+        onClick={handleToggleCompleted}
+        padding='none'
+        aria-label={
+          localCompleted ? 'Снять отметку о выполнении' : 'Отметить выполненной'
+        }
+      >
         <Icon
           name={localCompleted ? 'circleFilled' : 'circleEmpty'}
           fill={localCompleted ? COLORS.ACCENT : undefined}
@@ -53,6 +60,7 @@ export const SubtaskItem = memo(function SubtaskItem({
         appearance='ghost'
         onClick={() => updateSubtask({ type: 'delete', id: _id })}
         padding='none'
+        aria-label='Удалить подзадачу'
       >
         <Icon name='cross' fill={COLORS.ACCENT} />
       </Button>

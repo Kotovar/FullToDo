@@ -59,6 +59,11 @@ export const TasksBody = (props: TasksBodyProps) => {
                     appearance='ghost'
                     onClick={() => updateTaskStatus(_id, isCompleted)}
                     padding='none'
+                    aria-label={
+                      isCompleted
+                        ? 'Снять отметку о выполнении'
+                        : 'Отметить выполненной'
+                    }
                   >
                     <Icon
                       name={isCompleted ? 'circleFilled' : 'circleEmpty'}

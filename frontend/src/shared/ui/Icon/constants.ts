@@ -7,3 +7,8 @@ export const enum COLORS {
   BG_SECONDS = '#d9d9d9',
   WHITE = '#ffffff',
 }
+
+export const enum ICON_SIZES {
+  DEFAULT = 36,
+  FILTERS = 32,
+}

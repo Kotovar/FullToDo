@@ -31,7 +31,12 @@ export const SubtaskInput = ({
       onChange={onChange}
       onKeyDown={onKeyDown}
       leftContent={
-        <Button appearance='ghost' onClick={onClick} padding='s'>
+        <Button
+          appearance='ghost'
+          onClick={onClick}
+          padding='s'
+          aria-label='Добавить подзадачу'
+        >
           <Icon name='plus' stroke={COLORS.ACCENT} />
         </Button>
       }

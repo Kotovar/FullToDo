@@ -1,4 +1,4 @@
-import { COLORS, Icon } from '@shared/ui';
+import { COLORS, Icon, ICON_SIZES } from '@shared/ui';
 
 type Status = 'completed' | 'expired' | 'active' | 'all';
 
@@ -19,8 +19,14 @@ export const Filter = (props: FilterProps) => {
   return (
     <>
       <div className='flex items-center justify-center gap-2'>
-        <button>{status[type]}</button>
-        <Icon name='filter' size={32} stroke={COLORS.ACCENT} />
+        {status[type]}
+        <button aria-label='Сменить фильтр' className='cursor-pointer'>
+          <Icon
+            name='filter'
+            size={ICON_SIZES.FILTERS}
+            stroke={COLORS.ACCENT}
+          />
+        </button>
       </div>
     </>
   );

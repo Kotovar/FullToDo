@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { useRef } from 'react';
 import { STYLES } from '@pages/Tasks/lib';
 import { Button, COLORS, Icon, Input } from '@shared/ui';
 
@@ -16,29 +17,46 @@ export const DateInput = ({
   placeholder = label,
   onChange,
   onClick,
-}: DateInputProps) => (
-  <div className={clsx(STYLES.baseWrapper, 'grid-cols-[auto_1fr_auto]')}>
-    <label htmlFor='due-date-external' className='sr-only'>
-      {label}
-    </label>
+}: DateInputProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    <Input
-      type='date'
-      id='due-date-external'
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      className={clsx(STYLES.input, 'w-fit')}
-      leftContent={
-        <Button appearance='ghost' padding='s'>
-          <Icon name='calendar' stroke={COLORS.ACCENT} />
-        </Button>
-      }
-      rightContent={
-        <Button onClick={onClick} appearance='secondary' padding='s'>
-          Добавить
-        </Button>
-      }
-    />
-  </div>
-);
+  const handleOpenCalendar = () => {
+    inputRef.current?.showPicker();
+  };
+
+  return (
+    <div className={clsx(STYLES.baseWrapper, 'grid-cols-[auto_1fr_auto]')}>
+      <label htmlFor='due-date-external' className='sr-only'>
+        {label}
+      </label>
+
+      <Input
+        type='date'
+        id='due-date-external'
+        ref={inputRef}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className={clsx(
+          STYLES.input,
+          'w-fit [&::-webkit-calendar-picker-indicator]:hidden',
+        )}
+        leftContent={
+          <Button
+            appearance='ghost'
+            padding='s'
+            aria-label='Выбрать дату из календаря'
+            onClick={handleOpenCalendar}
+          >
+            <Icon name='calendar' stroke={COLORS.ACCENT} />
+          </Button>
+        }
+        rightContent={
+          <Button onClick={onClick} appearance='secondary' padding='s'>
+            Добавить
+          </Button>
+        }
+      />
+    </div>
+  );
+};

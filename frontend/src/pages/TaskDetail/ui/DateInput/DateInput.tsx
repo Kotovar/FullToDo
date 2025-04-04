@@ -1,4 +1,5 @@
 import { Button, COLORS, Icon, Input } from '@shared/ui';
+import { useRef } from 'react';
 
 interface DateInputProps {
   value?: string;
@@ -12,24 +13,38 @@ export const DateInput = ({
   label,
   onChange,
   placeholder = label,
-}: DateInputProps) => (
-  <div className={'flex items-center gap-2 p-1'}>
-    <label htmlFor='due-date-external' className='sr-only'>
-      {label}
-    </label>
+}: DateInputProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    <Input
-      type='date'
-      id='due-date-external'
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      className={'w-fit outline-0'}
-      leftContent={
-        <Button appearance='ghost' padding='s'>
-          <Icon name='calendar' stroke={COLORS.ACCENT} />
-        </Button>
-      }
-    />
-  </div>
-);
+  const handleOpenCalendar = () => {
+    inputRef.current?.showPicker();
+  };
+
+  return (
+    <div className={'flex items-center gap-2 p-1'}>
+      <label htmlFor='due-date-external' className='sr-only'>
+        {label}
+      </label>
+
+      <Input
+        type='date'
+        id='due-date-external'
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        ref={inputRef}
+        className={'w-fit [&::-webkit-calendar-picker-indicator]:hidden'}
+        leftContent={
+          <Button
+            appearance='ghost'
+            padding='s'
+            onClick={handleOpenCalendar}
+            aria-label='Выбрать дату из календаря'
+          >
+            <Icon name='calendar' stroke={COLORS.ACCENT} />
+          </Button>
+        }
+      />
+    </div>
+  );
+};

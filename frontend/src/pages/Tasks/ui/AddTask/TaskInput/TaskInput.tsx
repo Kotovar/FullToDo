@@ -32,7 +32,12 @@ export const TaskInput = ({
       type='text'
       id='task-input'
       leftContent={
-        <Button appearance='ghost' padding='s' onClick={onClick}>
+        <Button
+          appearance='ghost'
+          padding='s'
+          onClick={onClick}
+          aria-label='Добавить задачу'
+        >
           <Icon name='plus' stroke={COLORS.ACCENT} />
         </Button>
       }

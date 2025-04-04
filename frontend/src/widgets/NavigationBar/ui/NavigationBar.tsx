@@ -78,7 +78,7 @@ export const NavigationBar = (props: NavigationBarProps) => {
         <div className='flex gap-2 p-2'>
           <Input
             className='min-w-0 outline-0'
-            placeholder='Добавить список'
+            placeholder='Добавить блокнот'
             type='text'
             value={title}
             onChange={event => setTitle(event.target.value)}
@@ -88,6 +88,7 @@ export const NavigationBar = (props: NavigationBarProps) => {
                 appearance='ghost'
                 onClick={handleCreateNotepad}
                 padding='none'
+                aria-label='Добавить блокнот'
               >
                 <Icon name='plus' stroke={COLORS.ACCENT} />
               </Button>

@@ -1,6 +1,6 @@
 import { ComponentPropsWithoutRef, JSX, useState } from 'react';
 import { Link } from 'react-router';
-import { Button, COLORS, Icon, OptionsMenu } from '@shared/ui';
+import { Button, COLORS, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
 
 interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   path: string;
@@ -95,8 +95,17 @@ export const LinkCard = (props: LinkCardProps) => {
       {header}
       {title}
       <div className='relative flex'>
-        <Button appearance='ghost' onClick={handleButtonClick} padding='none'>
-          <Icon name='threeDots' size={38} fill={COLORS.ACCENT} />
+        <Button
+          appearance='ghost'
+          onClick={handleButtonClick}
+          padding='none'
+          aria-label='Дополнительное меню'
+        >
+          <Icon
+            name='threeDots'
+            fill={COLORS.ACCENT}
+            size={ICON_SIZES.DEFAULT}
+          />
         </Button>
         {isMenuOpen && currentModalId === path && (
           <OptionsMenu
