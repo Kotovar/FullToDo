@@ -2,8 +2,8 @@ import type { ComponentPropsWithRef, JSX } from 'react';
 
 export interface InputProps extends ComponentPropsWithRef<'input'> {
   type: 'text' | 'date';
-  leftContent?: JSX.Element;
-  rightContent?: JSX.Element;
+  leftContent?: JSX.Element | null;
+  rightContent?: JSX.Element | null;
 }
 
 export const Input = (props: InputProps) => {

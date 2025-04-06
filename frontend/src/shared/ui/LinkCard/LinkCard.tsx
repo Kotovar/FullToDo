@@ -36,6 +36,7 @@ export const LinkCard = (props: LinkCardProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const closeMenu = () => setIsMenuOpen(false);
+
   const handleSave = () => {
     onSaveTitle?.(editedTitle);
   };
@@ -117,6 +118,7 @@ export const LinkCard = (props: LinkCardProps) => {
               handleClickDelete();
               closeMenu();
             }}
+            closeMenu={closeMenu}
           />
         )}
       </div>

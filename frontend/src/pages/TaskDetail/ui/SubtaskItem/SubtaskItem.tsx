@@ -2,6 +2,7 @@ import { useState, useEffect, memo } from 'react';
 import { Button, COLORS, Icon, Input } from '@shared/ui';
 import type { Subtask } from '@sharedCommon/*';
 import { SubtaskAction } from '../Subtasks/types';
+import { CompletionIcon } from '@shared/ui/CompletionIcon';
 
 interface SubtaskItemProps {
   subtask: Subtask;
@@ -28,7 +29,7 @@ export const SubtaskItem = memo(function SubtaskItem({
       title: localTitle,
       isCompleted: localCompleted,
     });
-  }, [_id, localCompleted, localTitle]);
+  }, [_id, isCompleted, localCompleted, localTitle, title, updateSubtask]);
 
   const handleToggleCompleted = () => {
     setLocalCompleted(prev => !prev);
@@ -44,11 +45,7 @@ export const SubtaskItem = memo(function SubtaskItem({
           localCompleted ? 'Снять отметку о выполнении' : 'Отметить выполненной'
         }
       >
-        <Icon
-          name={localCompleted ? 'circleFilled' : 'circleEmpty'}
-          fill={localCompleted ? COLORS.ACCENT : undefined}
-          stroke={!localCompleted ? COLORS.ACCENT : undefined}
-        />
+        <CompletionIcon completed={localCompleted} />
       </Button>
       <Input
         type='text'

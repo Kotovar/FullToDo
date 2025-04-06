@@ -9,14 +9,9 @@ import {
   useTask,
   useTaskForm,
 } from '@pages/TaskDetail/ui/Subtasks';
-import {
-  Subtasks,
-  SubtaskInput,
-  DateInput,
-  TaskTextarea,
-  TaskTitle,
-} from '@pages/TaskDetail/ui';
+import { Subtasks, TaskTextarea, TaskTitle } from '@pages/TaskDetail/ui';
 import { useTasks } from '@entities/Task';
+import { TaskInput } from './TaskInput';
 
 export const TaskDetail = (props: TaskDetailProps) => {
   const { notepadId = '', taskId = '' } = useParams();
@@ -94,7 +89,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
       <fieldset className='flex flex-col gap-2'>
         <legend className='sr-only'>Детали задачи</legend>
 
-        <SubtaskInput
+        <TaskInput
           value={subtaskTitle}
           label='Добавить подзадачу'
           placeholder={
@@ -105,10 +100,11 @@ export const TaskDetail = (props: TaskDetailProps) => {
           onClick={handleAddSubtask}
         />
 
-        <DateInput
+        <TaskInput
           value={form.dueDate}
           label='Дата выполнения'
           onChange={e => setForm({ ...form, dueDate: e.target.value })}
+          type='date'
         />
 
         <TaskTextarea

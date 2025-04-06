@@ -1,9 +1,8 @@
 import { useParams } from 'react-router';
 import { useState } from 'react';
 import { TaskOptions } from '@pages/Tasks/lib';
-import { DateInput } from './DateInput';
-import { TaskInput } from './TaskInput';
 import { useTasks } from '@entities/Task';
+import { AddTaskInput } from './AddTaskInput';
 
 export const AddTask = () => {
   const { notepadId = '' } = useParams();
@@ -41,7 +40,7 @@ export const AddTask = () => {
     <fieldset className='flex flex-col gap-2'>
       <legend className='sr-only'>Создание задачи</legend>
 
-      <TaskInput
+      <AddTaskInput
         value={value.title}
         label='Добавить задачу'
         onChange={handleValueChange('title')}
@@ -49,11 +48,12 @@ export const AddTask = () => {
         onKeyDown={handleKeyDown}
       />
 
-      <DateInput
+      <AddTaskInput
         value={value.date}
         label='Дата выполнения'
         onChange={handleValueChange('date')}
         onClick={handleSubmit}
+        type='date'
       />
     </fieldset>
   );

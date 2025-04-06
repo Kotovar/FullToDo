@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Button, COLORS, Icon, LinkCard } from '@shared/ui';
+import { Button, LinkCard } from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
 import { useTasks } from '@entities/Task';
+import { CompletionIcon } from '@shared/ui/CompletionIcon';
 
 interface TasksBodyProps {
   notepadId?: string;
@@ -65,11 +66,7 @@ export const TasksBody = (props: TasksBodyProps) => {
                         : 'Отметить выполненной'
                     }
                   >
-                    <Icon
-                      name={isCompleted ? 'circleFilled' : 'circleEmpty'}
-                      fill={isCompleted ? COLORS.ACCENT : undefined}
-                      stroke={!isCompleted ? COLORS.ACCENT : undefined}
-                    />
+                    <CompletionIcon completed={isCompleted} />
                   </Button>
                 }
                 cardTitle={title}
