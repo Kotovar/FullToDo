@@ -3,12 +3,11 @@ import {
   NotepadResponse,
   CreateNotepad,
 } from 'shared/schemas';
+import { URL } from '@shared/api';
 
-if (!process.env.VITE_URL) {
+if (!URL) {
   throw new Error('VITE_URL is not defined in .env file');
 }
-
-const URL = process.env.VITE_URL;
 
 class NotepadService {
   async getNotepads(): Promise<NotepadWithoutTasksResponse> {
