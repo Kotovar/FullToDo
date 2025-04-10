@@ -4,7 +4,7 @@ import type {
   TaskResponse,
   TasksResponse,
 } from 'shared/schemas';
-import { URL } from '@shared/api';
+import { URL, ERRORS } from '@shared/api';
 
 if (!URL) {
   throw new Error('VITE_URL is not defined in .env file');
@@ -18,7 +18,7 @@ class TaskService {
     const response = await fetch(`${URL}/notepad/${notepadId}/task/${taskId}`);
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(ERRORS.network);
     }
 
     return response.json();
@@ -28,7 +28,7 @@ class TaskService {
     const response = await fetch(`${URL}/notepad/${taskId}`);
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(ERRORS.network);
     }
 
     return response.json();
@@ -43,7 +43,7 @@ class TaskService {
       body: JSON.stringify(task),
     });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(ERRORS.network);
     }
     return response.json();
   }
@@ -61,7 +61,7 @@ class TaskService {
       body: JSON.stringify(updatedTaskFields),
     });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(ERRORS.network);
     }
     return response.json();
   }
@@ -74,7 +74,7 @@ class TaskService {
       },
     });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(ERRORS.network);
     }
     return response.json();
   }

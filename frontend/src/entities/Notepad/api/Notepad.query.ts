@@ -3,17 +3,17 @@ import {
   NotepadResponse,
   CreateNotepad,
 } from 'shared/schemas';
-import { URL } from '@shared/api';
+import { URL, ERRORS } from '@shared/api';
 
 if (!URL) {
-  throw new Error('VITE_URL is not defined in .env file');
+  throw new Error(ERRORS.url);
 }
 
-class NotepadService {
+export class NotepadService {
   async getNotepads(): Promise<NotepadWithoutTasksResponse> {
     const response = await fetch(`${URL}/notepad`);
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(ERRORS.network);
     }
     return response.json();
   }
@@ -27,7 +27,7 @@ class NotepadService {
       body: JSON.stringify({ title: title }),
     });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(ERRORS.network);
     }
     return response.json();
   }
@@ -44,7 +44,7 @@ class NotepadService {
       body: JSON.stringify(updatedNotepadFields),
     });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(ERRORS.network);
     }
     return response.json();
   }
@@ -57,7 +57,7 @@ class NotepadService {
       },
     });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(ERRORS.network);
     }
     return response.json();
   }
