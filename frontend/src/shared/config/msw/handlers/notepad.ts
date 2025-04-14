@@ -1,7 +1,13 @@
 import { http, HttpResponse } from 'msw';
 import { ROUTES } from '@sharedCommon/';
-import { MOCK_NOTEPADS, MOCK_TODAY_TASKS } from '@shared/mocks';
-import { notepadTestState } from '@shared/config';
+import {
+  getDeleteResponse,
+  MOCK_NOTEPADS_RESPONSE,
+  MOCK_NOTEPADS_UPDATE_RESPONSE,
+  MOCK_TITLE_EXISTING,
+  notepadId,
+} from '@shared/mocks';
+import { testState } from '@shared/config';
 
 type AddNotepadRequestParams = {
   notepadId: string;
@@ -18,15 +24,11 @@ type AddNotepadResponseBody = {
 
 export const notepadHandlers = [
   http.get(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}`, () => {
-    if (notepadTestState.forceError) {
+    if (testState.forceError) {
       return new HttpResponse(null, { status: 500 });
     }
 
-    return HttpResponse.json(MOCK_NOTEPADS);
-  }),
-
-  http.get(`${import.meta.env.VITE_URL}${ROUTES.TODAY_TASKS}`, () => {
-    return HttpResponse.json(MOCK_TODAY_TASKS);
+    return HttpResponse.json(MOCK_NOTEPADS_RESPONSE);
   }),
 
   http.post<
@@ -34,9 +36,13 @@ export const notepadHandlers = [
     AddNotepadRequestBody,
     AddNotepadResponseBody
   >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}`, async ({ request }) => {
+    if (testState.forceError) {
+      return new HttpResponse(null, { status: 500 });
+    }
+
     const { title } = await request.json();
 
-    if (title !== 'TEST') {
+    if (title !== MOCK_TITLE_EXISTING) {
       return HttpResponse.json({
         status: 201,
         message: `A notebook with the title ${title} has been successfully created`,
@@ -47,5 +53,41 @@ export const notepadHandlers = [
       status: 409,
       message: `A notebook with the title ${title} already exists`,
     });
+  }),
+
+  http.patch<
+    AddNotepadRequestParams,
+    AddNotepadRequestBody,
+    AddNotepadResponseBody
+  >(
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`,
+    async ({ request }) => {
+      if (testState.forceError) {
+        return new HttpResponse(null, { status: 500 });
+      }
+
+      const { title } = await request.json();
+
+      if (title !== MOCK_TITLE_EXISTING) {
+        return HttpResponse.json(MOCK_NOTEPADS_UPDATE_RESPONSE);
+      }
+
+      return HttpResponse.json({
+        status: 409,
+        message: `The title ${title} is already in use`,
+      });
+    },
+  ),
+
+  http.delete<
+    AddNotepadRequestParams,
+    AddNotepadRequestBody,
+    AddNotepadResponseBody
+  >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`, async () => {
+    if (testState.forceError) {
+      return new HttpResponse(null, { status: 500 });
+    }
+
+    return HttpResponse.json(getDeleteResponse('Notepad'));
   }),
 ];

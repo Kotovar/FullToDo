@@ -18,17 +18,17 @@ class TaskService {
     const response = await fetch(`${URL}/notepad/${notepadId}/task/${taskId}`);
 
     if (!response.ok) {
-      throw new Error(ERRORS.network);
+      throw new Error(ERRORS.fetch);
     }
 
     return response.json();
   }
 
-  async getTasksFromNotepad(taskId: string): Promise<TasksResponse> {
-    const response = await fetch(`${URL}/notepad/${taskId}`);
+  async getTasksFromNotepad(notepadId: string): Promise<TasksResponse> {
+    const response = await fetch(`${URL}/notepad/${notepadId}`);
 
     if (!response.ok) {
-      throw new Error(ERRORS.network);
+      throw new Error(ERRORS.fetch);
     }
 
     return response.json();
@@ -43,7 +43,7 @@ class TaskService {
       body: JSON.stringify(task),
     });
     if (!response.ok) {
-      throw new Error(ERRORS.network);
+      throw new Error(ERRORS.fetch);
     }
     return response.json();
   }
@@ -61,7 +61,7 @@ class TaskService {
       body: JSON.stringify(updatedTaskFields),
     });
     if (!response.ok) {
-      throw new Error(ERRORS.network);
+      throw new Error(ERRORS.fetch);
     }
     return response.json();
   }
@@ -74,7 +74,7 @@ class TaskService {
       },
     });
     if (!response.ok) {
-      throw new Error(ERRORS.network);
+      throw new Error(ERRORS.fetch);
     }
     return response.json();
   }

@@ -1,3 +1,3 @@
-export const notepadTestState = {
+export const testState = {
   forceError: false,
 };

@@ -13,7 +13,7 @@ export class NotepadService {
   async getNotepads(): Promise<NotepadWithoutTasksResponse> {
     const response = await fetch(`${URL}/notepad`);
     if (!response.ok) {
-      throw new Error(ERRORS.network);
+      throw new Error(ERRORS.fetch);
     }
     return response.json();
   }
@@ -27,7 +27,7 @@ export class NotepadService {
       body: JSON.stringify({ title: title }),
     });
     if (!response.ok) {
-      throw new Error(ERRORS.network);
+      throw new Error(ERRORS.fetch);
     }
     return response.json();
   }
@@ -35,7 +35,7 @@ export class NotepadService {
   async updateNotepad(
     notepadId: string,
     updatedNotepadFields: Partial<CreateNotepad>,
-  ) {
+  ): Promise<NotepadResponse> {
     const response = await fetch(`${URL}/notepad/${notepadId}`, {
       method: 'PATCH',
       headers: {
@@ -44,7 +44,7 @@ export class NotepadService {
       body: JSON.stringify(updatedNotepadFields),
     });
     if (!response.ok) {
-      throw new Error(ERRORS.network);
+      throw new Error(ERRORS.fetch);
     }
     return response.json();
   }
@@ -57,7 +57,7 @@ export class NotepadService {
       },
     });
     if (!response.ok) {
-      throw new Error(ERRORS.network);
+      throw new Error(ERRORS.fetch);
     }
     return response.json();
   }

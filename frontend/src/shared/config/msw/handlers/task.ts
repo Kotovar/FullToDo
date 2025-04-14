@@ -1,53 +1,97 @@
 import { http, HttpResponse } from 'msw';
-import { ROUTES } from '@sharedCommon/';
+import { CreateTask, ROUTES } from '@sharedCommon/';
+import {
+  getDeleteResponse,
+  MOCK_SINGE_NOTEPAD_RESPONSE,
+  MOCK_SINGE_TASK_RESPONSE,
+  MOCK_TASK_UPDATE_RESPONSE,
+  MOCK_TITLE_EXISTING,
+  MOCK_TITLE_EXISTING_NOTEPAD,
+  notepadId,
+  taskId,
+} from '@shared/mocks';
+import { testState } from '@shared/config';
 
-const MOCK_TASK = {
-  status: 200,
-  message: 'Success',
-  data: {
-    _id: '1',
-    notepadId: '1',
-    title: 'Задача 1',
-    description: 'Описание для задачи 1',
-    dueDate: '2025-04-09T05:49:14.966Z',
-    createdDate: '2025-04-09T05:49:14.966Z',
-    isCompleted: false,
-    progress: '1 из 5',
-    subtasks: [
-      {
-        isCompleted: false,
-        title: 'Выучить Node.js',
-        _id: '1',
-      },
-      {
-        isCompleted: true,
-        title: 'Выучить js',
-        _id: '2',
-      },
-      {
-        isCompleted: false,
-        title: 'Выучить GO',
-        _id: '3',
-      },
-      {
-        isCompleted: false,
-        title: 'Выучить Nest.js',
-        _id: '4',
-      },
-      {
-        isCompleted: false,
-        title: 'Выучить Express',
-        _id: '5',
-      },
-    ],
-  },
+type AddTaskRequestParams = {
+  taskId: string;
+};
+
+type AddTaskRequestBody = CreateTask;
+
+type AddTaskResponseBody = {
+  status: number;
+  message: string;
 };
 
 export const taskHandlers = [
   http.get(
-    `${import.meta.env.VITE_URL}${() => ROUTES.getTaskDetailPath('/notepad/all', '1')}`,
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASK}/${taskId}`,
     () => {
-      return HttpResponse.json(MOCK_TASK);
+      if (testState.forceError) {
+        return new HttpResponse(null, { status: 500 });
+      }
+      return HttpResponse.json(MOCK_SINGE_TASK_RESPONSE);
+    },
+  ),
+
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`, () => {
+    if (testState.forceError) {
+      return new HttpResponse(null, { status: 500 });
+    }
+    return HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE);
+  }),
+
+  http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASK}`,
+    async ({ request }) => {
+      if (testState.forceError) {
+        return new HttpResponse(null, { status: 500 });
+      }
+
+      const { title } = await request.json();
+
+      if (title !== MOCK_TITLE_EXISTING) {
+        return HttpResponse.json({
+          status: 201,
+          message: `A task with the title ${title} has been successfully created`,
+        });
+      }
+
+      return HttpResponse.json({
+        status: 409,
+        message: `A task with the title ${MOCK_TITLE_EXISTING} already exists in notepad ${MOCK_TITLE_EXISTING_NOTEPAD}`,
+      });
+    },
+  ),
+
+  http.patch<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASK}/${taskId}`,
+    async ({ request }) => {
+      if (testState.forceError) {
+        return new HttpResponse(null, { status: 500 });
+      }
+
+      const { title } = await request.json();
+
+      if (title !== MOCK_TITLE_EXISTING) {
+        return HttpResponse.json(MOCK_TASK_UPDATE_RESPONSE);
+      }
+
+      return HttpResponse.json({
+        status: 409,
+        message: `A task with the title ${MOCK_TITLE_EXISTING} already exists in notepad ${MOCK_TITLE_EXISTING_NOTEPAD}`,
+      });
+    },
+  ),
+
+  http.delete<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASK}/${taskId}`,
+    async () => {
+      if (testState.forceError) {
+        return new HttpResponse(null, { status: 500 });
+      }
+
+      return HttpResponse.json(getDeleteResponse('Task'));
     },
   ),
 ];
