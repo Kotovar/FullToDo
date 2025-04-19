@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useId, useRef } from 'react';
 import clsx from 'clsx';
 import { Button, COLORS, Icon, Input } from '@shared/ui';
 
@@ -24,7 +24,7 @@ export const TaskInput = ({
   onKeyDown,
 }: TaskInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const inputId = `${type}-input`;
+  const inputId = useId();
 
   const handleOpenCalendar = () => {
     inputRef.current?.showPicker();

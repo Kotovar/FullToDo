@@ -32,7 +32,8 @@
       "@pages/*": ["src/pages/*"],
       "@widgets/*": ["src/widgets/*"],
       "@sharedCommon/*": ["../shared"]
-    }
+    },
+    "types": ["vitest/globals", "@testing-library/jest-dom/vitest"]
   },
   "include": ["src"]
 }

@@ -6,7 +6,7 @@ export const handleSubtaskAction = (
   action: SubtaskAction,
 ): Subtask[] => {
   const { type, id } = action;
-  const index = currentSubtasks.findIndex(s => s._id === id);
+  const index = currentSubtasks.findIndex(subtask => subtask._id === id);
 
   if (index === -1) return currentSubtasks;
 

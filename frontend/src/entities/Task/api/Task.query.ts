@@ -49,8 +49,8 @@ class TaskService {
   }
 
   async updateTask(
-    taskId: string,
     notepadId: string,
+    taskId: string,
     updatedTaskFields: Partial<Task>,
   ): Promise<TaskResponse> {
     const response = await fetch(`${URL}/notepad/${notepadId}/task/${taskId}`, {

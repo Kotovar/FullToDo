@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Button } from '@shared/ui';
 import type {
@@ -21,6 +22,16 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const { methods } = useTasks(notepadId);
   const { form, setForm, subtaskTitle, setSubtaskTitle, handleAddSubtask } =
     useTaskForm(task);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const updateSubtask = useCallback(
+    (action: SubtaskAction) => {
+      const updatedSubtasks = handleSubtaskAction(form.subtasks, action);
+      setForm(prev => ({ ...prev, subtasks: updatedSubtasks }));
+      updateTask({ subtasks: updatedSubtasks });
+    },
+    [form.subtasks, setForm, updateTask],
+  );
 
   if (isError) {
     return <div>Error fetching data</div>;
@@ -43,20 +54,14 @@ export const TaskDetail = (props: TaskDetailProps) => {
       }
 
       handleGoBack();
+      setErrorMessage('');
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`Ошибка при сохранении: ${error.message}`);
+        setErrorMessage(`Ошибка при сохранении: ${error.message}`);
       } else {
-        throw new Error('Неизвестная ошибка при сохранении');
+        setErrorMessage('Неизвестная ошибка при сохранении');
       }
     }
-  };
-
-  const handleSubtask = (action: SubtaskAction) => {
-    const updatedSubtasks = handleSubtaskAction(form.subtasks, action);
-
-    setForm(prev => ({ ...prev, subtasks: updatedSubtasks }));
-    updateTask({ subtasks: updatedSubtasks });
   };
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
@@ -83,7 +88,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
       />
 
       {task && (
-        <Subtasks subtasks={form.subtasks} updateSubtask={handleSubtask} />
+        <Subtasks subtasks={form.subtasks} updateSubtask={updateSubtask} />
       )}
 
       <fieldset className='flex flex-col gap-2'>
@@ -123,6 +128,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
       >
         Сохранить
       </Button>
+      {errorMessage && <div role='alert'>{errorMessage}</div>}
     </section>
   );
 };

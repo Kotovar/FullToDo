@@ -22,7 +22,7 @@ export const useTasks = (notepadId: string = '') => {
     }: {
       updatedTask: Partial<Task>;
       id: string;
-    }) => taskService.updateTask(id, notepadId, updatedTask),
+    }) => taskService.updateTask(notepadId, id, updatedTask),
     onSuccess: () => refetch(),
   });
 
