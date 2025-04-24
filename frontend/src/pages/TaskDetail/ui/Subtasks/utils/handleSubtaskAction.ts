@@ -1,5 +1,5 @@
 import { Subtask } from '@sharedCommon/*';
-import { SubtaskAction } from '../types';
+import { SubtaskAction } from '..';
 
 export const handleSubtaskAction = (
   currentSubtasks: Subtask[],

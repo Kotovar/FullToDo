@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react';
-import { describe, expect, test, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { renderWithRouter } from '@shared/testing';
 import { Error } from './Error';

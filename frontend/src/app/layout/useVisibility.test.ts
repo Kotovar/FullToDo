@@ -1,5 +1,4 @@
 import { renderHook, act } from '@testing-library/react';
-import { describe, test, expect, vi, beforeEach, afterAll } from 'vitest';
 import { useVisibility } from './useVisibility';
 
 describe('useVisibility', () => {

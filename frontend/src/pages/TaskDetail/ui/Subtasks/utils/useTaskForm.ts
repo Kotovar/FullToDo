@@ -20,7 +20,7 @@ export const useTaskForm = (initialTask?: Task | null) => {
 
   useEffect(() => {
     if (initialTask) {
-      setForm(getForm(initialTask ?? null));
+      setForm(getForm(initialTask));
     }
   }, [initialTask]);
 

@@ -10,7 +10,7 @@ interface SubtasksProps extends ComponentPropsWithoutRef<'ul'> {
 }
 
 export const Subtasks = ({
-  subtasks = [],
+  subtasks,
   updateSubtask,
   ...rest
 }: SubtasksProps) => {

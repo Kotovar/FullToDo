@@ -1,5 +1,4 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { useTasks } from './useTasks';
 import { setupMockServer } from '@shared/config';
 import {
@@ -21,7 +20,7 @@ const getInitialData = async () => {
   return result;
 };
 
-describe('useTasks', () => {
+describe('useTasks hook', () => {
   setupMockServer();
 
   beforeEach(() => {
