@@ -64,7 +64,7 @@ export const MOCK_SINGE_NOTEPAD_RESPONSE = {
   data: [
     {
       _id: '12',
-      notepadId: '2',
+      notepadId: '1',
       title: 'Задача 12',
       description: 'Описание для задачи 3',
       isCompleted: false,

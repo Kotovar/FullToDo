@@ -4,7 +4,6 @@ import { useNotepad } from '../lib';
 
 export const Tasks = () => {
   const { title, notepadId, location } = useNotepad();
-
   return (
     <>
       <TasksHeader title={title} />
