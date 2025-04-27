@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { Button } from '@shared/ui';
+import { Button, TaskInput } from '@shared/ui';
 import type {
   SubtaskAction,
   TaskDetailProps,
@@ -12,7 +12,6 @@ import {
 } from '@pages/TaskDetail/ui/Subtasks';
 import { Subtasks, TaskTextarea, TaskTitle } from '@pages/TaskDetail/ui';
 import { useTasks } from '@entities/Task';
-import { TaskInput } from './TaskInput';
 
 export const TaskDetail = (props: TaskDetailProps) => {
   const { notepadId = '', taskId = '' } = useParams();

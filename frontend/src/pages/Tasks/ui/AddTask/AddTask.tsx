@@ -1,18 +1,17 @@
 import { useParams } from 'react-router';
 import { useState } from 'react';
-import { TaskOptions } from '@pages/Tasks/lib';
 import { useTasks } from '@entities/Task';
-import { AddTaskInput } from './AddTaskInput';
+
+import type { TaskOptions } from '@pages/Tasks/lib';
+import { TaskInput } from '@shared/ui';
 
 export const AddTask = () => {
-  const { notepadId = '' } = useParams();
+  const { notepadId } = useParams();
   const [value, setValue] = useState<TaskOptions>({
     title: '',
     date: '',
   });
   const { methods } = useTasks(notepadId);
-
-  const setValueDefault = () => setValue({ title: '', date: '' });
 
   const handleValueChange =
     (field: keyof TaskOptions) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,7 +26,7 @@ export const AddTask = () => {
       dueDate: value?.date ? new Date(value?.date) : undefined,
     });
 
-    setValueDefault();
+    setValue({ title: '', date: '' });
   };
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
@@ -40,7 +39,8 @@ export const AddTask = () => {
     <fieldset className='flex flex-col gap-2'>
       <legend className='sr-only'>Создание задачи</legend>
 
-      <AddTaskInput
+      <TaskInput
+        variant='add-task'
         value={value.title}
         label='Добавить задачу'
         onChange={handleValueChange('title')}
@@ -48,7 +48,8 @@ export const AddTask = () => {
         onKeyDown={handleKeyDown}
       />
 
-      <AddTaskInput
+      <TaskInput
+        variant='add-task'
         value={value.date}
         label='Дата выполнения'
         onChange={handleValueChange('date')}

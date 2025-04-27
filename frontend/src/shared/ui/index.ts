@@ -5,3 +5,4 @@ export * from './LinkCard';
 export * from './P';
 export * from './Textarea';
 export * from './OptionsMenu';
+export * from './TaskInput';

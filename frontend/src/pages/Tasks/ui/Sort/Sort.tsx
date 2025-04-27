@@ -22,6 +22,9 @@ export const Sort = (props: SortProps) => {
       <button aria-label='Сменить сортировку' className='cursor-pointer'>
         <Icon
           name={direction === 'down' ? 'arrowDown' : 'arrowUp'}
+          ariaLabel={
+            direction === 'down' ? 'sort descending' : 'sort ascending'
+          }
           size={ICON_SIZES.FILTERS}
           fill={COLORS.ACCENT}
         />
