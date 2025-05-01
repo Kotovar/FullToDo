@@ -28,7 +28,9 @@ export const createWrapper = () => {
   );
 };
 
-export const createWrapperWithRouter = (initialEntries = ['/']) => {
+export const createWrapperWithRouter = (
+  initialEntries = [ROUTES.getNotepadPath(notepadId)],
+) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {

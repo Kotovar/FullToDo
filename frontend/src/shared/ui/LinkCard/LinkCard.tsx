@@ -5,14 +5,14 @@ import { Button, COLORS, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
 interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   path: string;
   cardTitle: string;
+  currentModalId: string;
   header?: JSX.Element;
   body?: JSX.Element;
-  handleLinkClick?: () => void;
+  isEditing?: boolean;
   handleModalId: (id: string) => void;
-  currentModalId: string;
   handleClickRename: () => void;
   handleClickDelete: () => void;
-  isEditing?: boolean;
+  handleLinkClick?: () => void;
   onSaveTitle?: (newTitle: string) => void;
 }
 
@@ -22,8 +22,8 @@ export const LinkCard = (props: LinkCardProps) => {
     cardTitle,
     path,
     body,
-    isEditing = false,
     currentModalId,
+    isEditing = false,
     handleLinkClick,
     handleModalId,
     handleClickRename,

@@ -5,7 +5,7 @@ type ButtonAppearance = 'primary' | 'secondary' | 'ghost';
 type ButtonPadding = 'none' | 's';
 
 interface ButtonProps extends ComponentPropsWithRef<'button'> {
-  appearance: ButtonAppearance;
+  appearance?: ButtonAppearance;
   padding?: ButtonPadding;
   className?: string;
 }
