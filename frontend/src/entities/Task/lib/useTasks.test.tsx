@@ -7,8 +7,9 @@ import {
   MOCK_TITLE_NON_EXISTING,
   notepadId,
   taskId,
+  getDeleteResponse,
 } from '@shared/mocks';
-import { taskService } from '@entities/Task/api/Task.query';
+import { taskService } from '@entities/Task';
 
 const getInitialData = async () => {
   const { result } = renderHook(() => useTasks(notepadId), {
@@ -36,10 +37,9 @@ describe('useTasks hook', () => {
       message: 'A task with the _id 1 has been successfully updated',
     });
 
-    vi.spyOn(taskService, 'deleteTask').mockResolvedValue({
-      status: 200,
-      message: `Task deleted successfully`,
-    });
+    vi.spyOn(taskService, 'deleteTask').mockResolvedValue(
+      getDeleteResponse('Task'),
+    );
   });
 
   test('возвращает список задач из конкретного блокнота', async () => {
