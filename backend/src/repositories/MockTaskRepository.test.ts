@@ -1,6 +1,8 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import taskRepository, { MockTaskRepository } from './MockTaskRepository';
 import { NOTEPADS } from '../db/mock/mock-db';
+import { commonNotepads } from './const';
+import type { Notepad } from '@shared/schemas';
 
 const newTitleNotepad = { title: 'Test Notepad' };
 const notepadId = '999';
@@ -16,9 +18,17 @@ const newTask = {
   dueDate: new Date(),
   description: 'Task description',
 };
+const customNotepad: Notepad[] = [
+  {
+    title: 'Рабочее',
+    _id: realNotepadId,
+    tasks: [{ ...newTask, progress: '', _id: realTaskId }],
+  },
+];
 
 describe('MockTaskRepository', () => {
   let repository: typeof taskRepository;
+  const updatedTask = { title: 'new' };
 
   beforeEach(() => {
     repository = new MockTaskRepository(NOTEPADS);
@@ -56,17 +66,47 @@ describe('MockTaskRepository', () => {
       message: 'Notepad not found',
     });
 
-    const doubleResponseCreate = await repository.createTask(
+    const secondResponseCreate = await repository.createTask(
       newTask,
       realNotepadId,
     );
 
-    expect(doubleResponseCreate).toStrictEqual({
+    expect(secondResponseCreate).toStrictEqual({
       status: 409,
       message: `A task with the title ${newTask.title} already exists in notepad '${realNotepadTitle}'`,
     });
   });
 
+  test('method createTask and common id', async () => {
+    const responseCreate = await repository.createTask(
+      newTask,
+      commonNotepads[0]._id,
+    );
+
+    expect(responseCreate).toStrictEqual({
+      status: 201,
+      message: `A task with the title ${newTask.title} has been successfully created`,
+    });
+  });
+
+  test('method createTask and common notepad with second Response', async () => {
+    const responseCreate = await repository.createTask(newTask, realNotepadId);
+
+    expect(responseCreate).toStrictEqual({
+      status: 201,
+      message: `A task with the title ${newTask.title} has been successfully created`,
+    });
+
+    const secondResponseCreate = await repository.createTask(
+      newTask,
+      commonNotepads[0]._id,
+    );
+
+    expect(secondResponseCreate).toStrictEqual({
+      status: 409,
+      message: `A task with the title ${newTask.title} already exists in notepad 'All'`,
+    });
+  });
   test('method getAllNotepads', async () => {
     const responseGet = await repository.getAllNotepads();
 
@@ -187,11 +227,9 @@ describe('MockTaskRepository', () => {
   });
 
   test('method updateTask', async () => {
-    const updatedTask = { title: 'new' };
-
     const responseUpdate = await repository.updateTask(
-      realTaskId,
       realNotepadId,
+      realTaskId,
       updatedTask,
     );
 
@@ -211,6 +249,67 @@ describe('MockTaskRepository', () => {
       status: 404,
       message: 'Task not found',
     });
+
+    const responseUpdateSecond = await repository.updateTask(
+      realNotepadId,
+      realNotepadId,
+      updatedTask,
+    );
+
+    expect(responseUpdateSecond).toStrictEqual({
+      status: 409,
+      message: `A task with the title ${updatedTask.title} already exists in notepad '${realNotepadTitle}'`,
+    });
+  });
+
+  test('method updateTask and common id', async () => {
+    const responseUpdate = await repository.updateTask(
+      commonNotepads[0]._id,
+      realNotepadId,
+      updatedTask,
+    );
+
+    expect(responseUpdate).toStrictEqual({
+      status: 200,
+      message: `A task with the _id ${realTaskId} has been successfully updated`,
+      data: { ...NOTEPADS[0].tasks[0], title: updatedTask.title },
+    });
+  });
+
+  test('should calculate progress when no subtasks completed', async () => {
+    const updatedTask = {
+      title: 'Updated title',
+      subtasks: [{ isCompleted: false, title: 'Выучить Java', _id: '7' }],
+    };
+
+    const response = await repository.updateTask(
+      realNotepadId,
+      realTaskId,
+      updatedTask,
+    );
+    expect(response?.data?.progress).toBe(
+      `${updatedTask.subtasks.filter(task => task.isCompleted).length} из ${updatedTask.subtasks.length}`,
+    );
+  });
+
+  test('should handle empty subtasks with empty progress', async () => {
+    const response = await repository.updateTask(realNotepadId, realTaskId, {
+      title: 'Updated title',
+      subtasks: [],
+    });
+
+    expect(response?.data?.progress).toBe('');
+  });
+
+  test('should default finishedSubtasks and totalSubtasks to 0', async () => {
+    const repo = new MockTaskRepository(customNotepad);
+
+    const response = await repo.updateTask(realNotepadId, realTaskId, {
+      title: 'New title',
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data?.progress).toBe('');
   });
 
   test('method deleteNotepad', async () => {
