@@ -4,9 +4,10 @@ import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ZodError, type ZodIssue } from 'zod';
 import { ROUTES } from '@shared/routes';
 import {
-  type TaskResponse,
+  type TasksResponse,
   type NotepadWithoutTasksResponse,
   type NotepadResponse,
+  type TaskResponse,
   createNotepadSchema,
   createTaskSchema,
 } from '@shared/schemas';
@@ -15,10 +16,32 @@ import { taskRepository } from '../../repositories';
 import { getSingleNotepadTasks, getSingleTask } from '../../controllers';
 import { TASKS1 } from '../../db/mock/mock-db';
 
-const validTaskData: TaskResponse = {
+const validTasksData: TasksResponse = {
   status: 200,
   message: 'Success',
   data: TASKS1,
+};
+
+const validTaskData: TaskResponse = {
+  status: 200,
+  message: 'Success',
+  data: {
+    _id: '1',
+    notepadId: '1',
+    title: 'Задача 1',
+    description: 'Описание для задачи 1',
+    dueDate: new Date(),
+    createdDate: new Date(),
+    isCompleted: false,
+    progress: '1 из 5',
+    subtasks: [
+      { isCompleted: false, title: 'Выучить Node.js', _id: '1' },
+      { isCompleted: true, title: 'Выучить js', _id: '2' },
+      { isCompleted: false, title: 'Выучить GO', _id: '3' },
+      { isCompleted: false, title: 'Выучить Nest.js', _id: '4' },
+      { isCompleted: false, title: 'Выучить Express', _id: '5' },
+    ],
+  },
 };
 
 const validNotepadWithoutTasksData: NotepadWithoutTasksResponse = {
@@ -74,15 +97,15 @@ describe('httpServer GET', () => {
       url: ROUTES.ALL_TASKS,
     } as http.IncomingMessage;
 
-    vi.spyOn(taskRepository, 'getAllTasks').mockResolvedValue(validTaskData);
+    vi.spyOn(taskRepository, 'getAllTasks').mockResolvedValue(validTasksData);
 
     await routes[`GET ${ROUTES.ALL_TASKS}`]({ req, res });
 
-    expect(res.writeHead).toHaveBeenCalledWith(validTaskData.status, {
+    expect(res.writeHead).toHaveBeenCalledWith(validTasksData.status, {
       'Content-Type': 'application/json',
     });
 
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTaskData));
+    expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTasksData));
   });
 
   test('should return 500 if an internal server error occurs - /notepad/today', async () => {
@@ -139,15 +162,15 @@ describe('httpServer GET', () => {
       url: ROUTES.TODAY_TASKS,
     } as http.IncomingMessage;
 
-    vi.spyOn(taskRepository, 'getTodayTasks').mockResolvedValue(validTaskData);
+    vi.spyOn(taskRepository, 'getTodayTasks').mockResolvedValue(validTasksData);
 
     await routes[`GET ${ROUTES.TODAY_TASKS}`]({ req, res });
 
-    expect(res.writeHead).toHaveBeenCalledWith(validTaskData.status, {
+    expect(res.writeHead).toHaveBeenCalledWith(validTasksData.status, {
       'Content-Type': 'application/json',
     });
 
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTaskData));
+    expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTasksData));
   });
 
   test('should return 500 if an internal server error occurs - /notepad/today', async () => {
@@ -169,16 +192,16 @@ describe('httpServer GET', () => {
     } as http.IncomingMessage;
 
     vi.spyOn(taskRepository, 'getSingleNotepadTasks').mockResolvedValue(
-      validTaskData,
+      validTasksData,
     );
 
     await getSingleNotepadTasks({ req, res }, taskRepository);
 
-    expect(res.writeHead).toHaveBeenCalledWith(validTaskData.status, {
+    expect(res.writeHead).toHaveBeenCalledWith(validTasksData.status, {
       'Content-Type': 'application/json',
     });
 
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTaskData));
+    expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTasksData));
   });
 
   test('should return 500 if an internal server error occurs - /notepad/1', async () => {
@@ -369,7 +392,6 @@ describe('httpServer POST', () => {
     const notepadId = '1';
     const taskData = {
       title: '1',
-      isCompleted: false,
       description: 'Созданная',
     };
 
@@ -591,7 +613,6 @@ describe('httpServer PATH', () => {
     const updatedTaskData = {
       title: '1',
       isCompleted: true,
-      subtasks: [{ title: 'abc3111', isCompleted: false }],
     };
 
     const taskResponse: TaskResponse = {
@@ -632,7 +653,7 @@ describe('httpServer PATH', () => {
       const invalidTaskData = {
         title: 'title',
         description: 'Созданная',
-        subtasks: [{ title: 'abc3111', isCompleted: 2 }],
+        subtasks: [{ title: 'abc3111', isCompleted: 2, _id: '1' }],
       };
 
       const errors: ZodIssue[] = [
@@ -830,6 +851,25 @@ describe('httpServer DELETE', () => {
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: {} });
     });
+  });
+});
+
+describe('httpServer OPTIONS', () => {
+  beforeEach(() => {
+    server.listen(port);
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    server.close();
+  });
+
+  test(`should handle OPTIONS /notepad and return 204 status`, async () => {
+    const response = await request(server)
+      .options(ROUTES.NOTEPADS)
+      .set('Accept', 'application/json');
+
+    expect(response.status).toBe(204);
   });
 });
 

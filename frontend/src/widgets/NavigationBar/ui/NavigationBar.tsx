@@ -1,59 +1,100 @@
 import { useState, type ComponentPropsWithoutRef } from 'react';
 import { useLocation } from 'react-router';
 import { clsx } from 'clsx';
-import { NOTEPADS } from '@entities/Task';
 import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
+import { useNotepads } from '../lib';
 
-interface Props extends ComponentPropsWithoutRef<'nav'> {
+interface NavigationBarProps extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
 }
 
-export const NavigationBar = (props: Props) => {
+export const NavigationBar = (props: NavigationBarProps) => {
   const { turnOffVisibility, ...rest } = props;
+
   const [currentModalId, setCurrentModalId] = useState('');
+  const [title, setTitle] = useState('');
+  const [editingNotepadId, setEditingNotepadId] = useState<string | null>(null);
+  const { notepads, isError, methods } = useNotepads();
+  const [basePath] = useLocation().pathname.split(ROUTES.TASK);
 
-  const location = useLocation().pathname;
-  const basePath = location.split(ROUTES.TASK)[0];
+  if (isError) {
+    return <div>Error fetching data</div>;
+  }
 
-  const handleModalId = (id: string) => {
-    setCurrentModalId(id);
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
+    if (event.key === 'Enter' && title) {
+      methods.createNotepad(title);
+      setTitle('');
+    }
   };
+
+  const handleSaveTitle = (
+    id: string,
+    newTitle: string,
+    currentTitle: string,
+  ) => {
+    if (newTitle !== currentTitle) {
+      methods.updateNotepadTitle(id, newTitle);
+    }
+
+    setEditingNotepadId(null);
+  };
+
+  const handleCreateNotepad = () => {
+    methods.createNotepad(title);
+    setTitle('');
+  };
+
+  const notepadList = notepads?.map(({ title, _id }) => {
+    const path = ROUTES.getNotepadPath(_id);
+
+    return (
+      <LinkCard
+        currentModalId={currentModalId}
+        handleModalId={id => setCurrentModalId(id)}
+        className={clsx(
+          'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] content-center items-center justify-items-center rounded-lg p-2 break-words',
+          {
+            ['bg-grey-light']: path === basePath,
+          },
+        )}
+        handleLinkClick={turnOffVisibility}
+        key={_id}
+        path={path}
+        cardTitle={title}
+        handleClickDelete={() => methods.deleteNotepad(_id)}
+        handleClickRename={() => setEditingNotepadId(_id)}
+        onSaveTitle={newTitle => handleSaveTitle(_id, newTitle, title)}
+        isEditing={editingNotepadId === _id}
+      />
+    );
+  });
 
   return (
     <nav {...rest}>
       <ul className='w-full'>
-        {NOTEPADS.map(({ name, id }) => {
-          const path = ROUTES.getNotepadPath(id);
-
-          return (
-            <LinkCard
-              currentModalId={currentModalId}
-              handleModalId={handleModalId}
-              className={clsx(
-                'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] items-center justify-items-start rounded-lg p-2 break-words',
-                {
-                  ['bg-grey-light']: path === basePath,
-                },
-              )}
-              handleLinkClick={turnOffVisibility}
-              key={id}
-              path={path}
-              cardTitle={<span className='text-3xl'>{name}</span>}
-            />
-          );
-        })}
-        <Input
-          containerClassName='grid grid-cols-[2rem_1fr] overflow-hidden gap-2'
-          className='min-w-0 outline-0'
-          placeholder='Добавить список'
-          type='text'
-          leftContent={
-            <Button appearance='ghost'>
-              <Icon name='plus' stroke={COLORS.ACCENT} />
-            </Button>
-          }
-        />
+        {notepadList}
+        <div className='flex gap-2 p-2'>
+          <Input
+            className='min-w-0 outline-0'
+            placeholder='Добавить блокнот'
+            type='text'
+            value={title}
+            onChange={event => setTitle(event.target.value)}
+            onKeyDown={handleKeyDown}
+            leftContent={
+              <Button
+                appearance='ghost'
+                onClick={handleCreateNotepad}
+                padding='none'
+                aria-label='Добавить блокнот'
+              >
+                <Icon name='plus' stroke={COLORS.ACCENT} />
+              </Button>
+            }
+          />
+        </div>
       </ul>
     </nav>
   );

@@ -1,15 +1,19 @@
-import { useRef, type ComponentPropsWithoutRef, JSX } from 'react';
+import { ComponentPropsWithoutRef, JSX, useState } from 'react';
 import { Link } from 'react-router';
-import { COLORS, Icon, OptionsMenu } from '@shared/ui';
+import { Button, COLORS, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
 
 interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   path: string;
-  cardTitle: string | JSX.Element;
+  cardTitle: string;
+  currentModalId: string;
   header?: JSX.Element;
   body?: JSX.Element;
-  handleLinkClick?: () => void;
+  isEditing?: boolean;
   handleModalId: (id: string) => void;
-  currentModalId: string;
+  handleClickRename: () => void;
+  handleClickDelete: () => void;
+  handleLinkClick?: () => void;
+  onSaveTitle?: (newTitle: string) => void;
 }
 
 export const LinkCard = (props: LinkCardProps) => {
@@ -18,37 +22,105 @@ export const LinkCard = (props: LinkCardProps) => {
     cardTitle,
     path,
     body,
-    handleLinkClick,
     currentModalId,
+    isEditing = false,
+    handleLinkClick,
     handleModalId,
+    handleClickRename,
+    handleClickDelete,
+    onSaveTitle,
     ...rest
   } = props;
-  const menuRef = useRef<HTMLDivElement>(null);
 
-  const handleClick = () => {
-    handleModalId(path);
-    menuRef.current?.togglePopover();
+  const [editedTitle, setEditedTitle] = useState(cardTitle);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const closeMenu = () => setIsMenuOpen(false);
+
+  const handleSave = () => {
+    onSaveTitle?.(editedTitle);
   };
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
+    if (event.key === 'Enter' && editedTitle) {
+      handleSave();
+    }
+  };
+
+  const handleButtonClick = () => {
+    handleModalId(path);
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const inputTitle = (
+    <input
+      type='text'
+      value={editedTitle}
+      className='h-full w-full cursor-pointer border-none bg-transparent outline-none'
+      readOnly
+    />
+  );
+
+  const title = isEditing ? (
+    <div className='w-full'>
+      <input
+        type='text'
+        value={editedTitle}
+        onChange={e => setEditedTitle(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={handleKeyDown}
+        className='h-full w-full leading-normal outline-2 outline-transparent'
+        autoFocus
+      />
+      {body}
+    </div>
+  ) : (
+    <Link
+      to={path}
+      onClick={handleLinkClick || undefined}
+      className='block h-full w-full'
+    >
+      {body ? (
+        <div className='w-full'>
+          {inputTitle}
+          {body}
+        </div>
+      ) : (
+        inputTitle
+      )}
+    </Link>
+  );
 
   return (
     <li {...rest}>
       {header}
-      {handleLinkClick ? (
-        <Link to={path} onClick={handleLinkClick} className='w-full'>
-          {cardTitle}
-          {body}
-        </Link>
-      ) : (
-        <Link to={path} className='w-full'>
-          {cardTitle}
-          {body}
-        </Link>
-      )}
-      <div className='relative'>
-        <button onClick={handleClick}>
-          <Icon name='threeDots' size={38} fill={COLORS.ACCENT} />
-        </button>
-        {currentModalId === path && <OptionsMenu ref={menuRef} />}
+      {title}
+      <div className='relative flex'>
+        <Button
+          appearance='ghost'
+          onClick={handleButtonClick}
+          padding='none'
+          aria-label='Дополнительное меню'
+        >
+          <Icon
+            name='threeDots'
+            fill={COLORS.ACCENT}
+            size={ICON_SIZES.DEFAULT}
+          />
+        </Button>
+        {isMenuOpen && currentModalId === path && (
+          <OptionsMenu
+            renameHandler={() => {
+              handleClickRename();
+              closeMenu();
+            }}
+            deleteHandler={() => {
+              handleClickDelete();
+              closeMenu();
+            }}
+            closeMenu={closeMenu}
+          />
+        )}
       </div>
     </li>
   );

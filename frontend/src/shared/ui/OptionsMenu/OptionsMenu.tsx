@@ -1,22 +1,37 @@
-import { ComponentPropsWithRef } from 'react';
+import { ComponentPropsWithRef, RefObject, useRef } from 'react';
+import { useOnClickOutside } from 'usehooks-ts';
 
 interface OptionsMenu extends ComponentPropsWithRef<'div'> {
   path?: string;
+  renameHandler: () => void;
+  deleteHandler: () => void;
+  closeMenu: () => void;
 }
 
 export const OptionsMenu = (props: OptionsMenu) => {
-  const { ...rest } = props;
+  const { renameHandler, deleteHandler, closeMenu, ...rest } = props;
+  const ref = useRef<HTMLDivElement>(null);
+
+  useOnClickOutside(ref as RefObject<HTMLElement>, closeMenu);
 
   return (
     <div
       className='border-bg-second absolute flex w-max -translate-x-full flex-col border-1'
-      popover='manual'
+      ref={ref}
       {...rest}
     >
-      <button className='hover:bg-accent/40 p-2' type='button'>
+      <button
+        className='cursor-pointer bg-white p-2 hover:brightness-60'
+        type='button'
+        onClick={renameHandler}
+      >
         Переименовать
       </button>
-      <button className='bg-bg-second hover:bg-accent/40 p-2' type='button'>
+      <button
+        className='bg-bg-second cursor-pointer p-2 hover:brightness-70'
+        type='button'
+        onClick={deleteHandler}
+      >
         Удалить
       </button>
     </div>

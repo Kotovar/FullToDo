@@ -1,5 +1,9 @@
 import { describe, test, expect, expectTypeOf, beforeEach, vi } from 'vitest';
+import { config } from 'dotenv';
+import path from 'path';
 import { getDbType } from './index';
+
+config({ path: path.resolve(__dirname, '../../.env') });
 
 describe('DB_TYPE tests', () => {
   const originalEnv = process.env;

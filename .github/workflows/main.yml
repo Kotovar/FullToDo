@@ -2,39 +2,83 @@ name: CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
-  build-and-test:
+  frontend:
+    name: Build, Lint & Test Frontend
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: 'npm'
 
-      - name: Install Dependencies
-        run: |
-          cd frontend
-          npm ci
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        env:
+          HUSKY: 0
+        run: npm ci
 
-      - name: Run Linter
-        run: |
-          cd frontend
-          npm run lint
+      - name: FSD Validation
+        working-directory: ./frontend
+        run: npm run fsd:check
 
-      - name: Types Checking
-        run: |
-          cd frontend
-          npm run type-check
+      - name: Lint Frontend
+        working-directory: ./frontend
+        run: npm run lint
 
-      - name: Build project
+      - name: Type Check Frontend
+        working-directory: ./frontend
+        run: npm run type-check
+
+      - name: Create test env file
         run: |
-          cd frontend
-          npm run build
+          echo "VITE_URL=http://localhost" > .env
+
+      - name: Run Frontend Tests
+        working-directory: ./frontend
+        run: npm run test
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
+
+  backend:
+    name: Lint, Test & Build Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        env:
+          HUSKY: 0
+        run: npm ci
+
+      - name: Lint Backend
+        working-directory: ./backend
+        run: npm run lint
+
+      - name: Type Check Backend
+        working-directory: ./backend
+        run: npm run type-check
+
+      - name: Run Tests
+        working-directory: ./backend
+        run: npm run test
+
+      - name: Build Backend
+        working-directory: ./backend
+        run: npm run build

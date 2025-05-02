@@ -1,36 +1,36 @@
-import type { ComponentPropsWithoutRef } from 'react';
-import type { Subtask } from '@entities/Task';
-import { COLORS, Icon } from '@shared/ui';
+import { useMemo, type ComponentPropsWithoutRef } from 'react';
+import type { Subtask } from '@sharedCommon/*';
+import { debounce } from '@shared/lib/debounce';
+import { SubtaskItem } from '../SubtaskItem';
+import { SubtaskAction } from './types';
 
 interface SubtasksProps extends ComponentPropsWithoutRef<'ul'> {
   subtasks: Subtask[];
+  updateSubtask: (action: SubtaskAction) => void;
 }
 
-export const Subtasks = (props: SubtasksProps) => {
-  const { subtasks, ...rest } = props;
+export const Subtasks = ({
+  subtasks,
+  updateSubtask,
+  ...rest
+}: SubtasksProps) => {
+  const debouncedUpdateSubtask = useMemo(
+    () =>
+      debounce((action: SubtaskAction) => {
+        updateSubtask(action);
+      }, 300),
+    [updateSubtask],
+  );
 
   return (
     <ul className='flex list-none flex-col' {...rest}>
-      {subtasks.map(({ completed, title }, i) => {
-        return (
-          <li
-            key={i}
-            className='odd:bg-bg-second even:bg-grey-light grid grid-cols-[1rem_1fr_1rem] items-center gap-4 p-2'
-          >
-            <span>
-              {completed ? (
-                <Icon name='circleFilled' fill={COLORS.ACCENT} />
-              ) : (
-                <Icon name='circleEmpty' stroke={COLORS.ACCENT} />
-              )}
-            </span>
-            <span>{title}</span>
-            <button type='button'>
-              <Icon name='cross' fill={COLORS.ACCENT} />
-            </button>
-          </li>
-        );
-      })}
+      {subtasks.map(subtask => (
+        <SubtaskItem
+          key={subtask._id}
+          subtask={subtask}
+          updateSubtask={debouncedUpdateSubtask}
+        />
+      ))}
     </ul>
   );
 };

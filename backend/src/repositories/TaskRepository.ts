@@ -1,5 +1,6 @@
 import {
   TaskResponse,
+  TasksResponse,
   CreateTask,
   UpdateTask,
   CreateNotepad,
@@ -11,10 +12,10 @@ export interface TaskRepository {
   createNotepad(notepad: CreateNotepad): Promise<NotepadResponse>;
   createTask(task: CreateTask, notepadId: string): Promise<TaskResponse>;
   getAllNotepads(): Promise<NotepadWithoutTasksResponse>;
-  getAllTasks(): Promise<TaskResponse>;
+  getAllTasks(): Promise<TasksResponse>;
   getSingleTask(taskId: string, notepadId: string): Promise<TaskResponse>;
-  getSingleNotepadTasks(notepadId: string): Promise<TaskResponse>;
-  getTodayTasks(): Promise<TaskResponse>;
+  getSingleNotepadTasks(notepadId: string): Promise<TasksResponse>;
+  getTodayTasks(): Promise<TasksResponse>;
   updateNotepad(
     notepadId: string,
     notepad: CreateNotepad,

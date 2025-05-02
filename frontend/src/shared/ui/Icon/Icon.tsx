@@ -6,14 +6,21 @@ interface IconProps {
   size?: number;
   fill?: string;
   stroke?: string;
+  ariaLabel?: string;
 }
 
 export const Icon = (props: IconProps) => {
-  const { name, fill = 'none', stroke, size = 24 } = props;
+  const { name, fill = 'none', stroke, size = 24, ariaLabel } = props;
 
   const IconComponent = iconsNames[name];
 
   return (
-    <IconComponent width={size} height={size} fill={fill} stroke={stroke} />
+    <IconComponent
+      width={size}
+      height={size}
+      fill={fill}
+      stroke={stroke}
+      aria-label={ariaLabel}
+    />
   );
 };

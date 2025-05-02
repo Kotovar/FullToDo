@@ -113,6 +113,7 @@ export const updateTask = async (
     const taskId = getId(req, 'task');
     const notepadId = getId(req, 'notepad');
     const rawTask = await parseJsonBody<unknown>(req);
+
     const validationResult = updateTaskSchema.safeParse(rawTask);
 
     if (!validationResult.success) {
@@ -126,7 +127,7 @@ export const updateTask = async (
     }
 
     const updatedTask = validationResult.data;
-    const result = await repository.updateTask(taskId, notepadId, updatedTask);
+    const result = await repository.updateTask(notepadId, taskId, updatedTask);
 
     if (result.status === 404) {
       res.writeHead(404, { 'Content-Type': 'application/json' });

@@ -1,24 +1,19 @@
-import type { ComponentPropsWithoutRef, JSX } from 'react';
-import { clsx } from 'clsx';
+import type { ComponentPropsWithRef, JSX } from 'react';
 
-export interface InputProps extends ComponentPropsWithoutRef<'input'> {
-  type: 'text' | 'data';
-  containerClassName?: string;
-  leftContent?: JSX.Element;
-  rightContent?: JSX.Element;
+export interface InputProps extends ComponentPropsWithRef<'input'> {
+  type: 'text' | 'date';
+  leftContent?: JSX.Element | null;
+  rightContent?: JSX.Element | null;
 }
 
 export const Input = (props: InputProps) => {
-  const { leftContent, rightContent, containerClassName, type, ...rest } =
-    props;
-
-  const baseStyles = 'w-full';
+  const { leftContent, rightContent, type, ...rest } = props;
 
   return (
-    <div className={clsx(baseStyles, containerClassName)}>
+    <>
       {leftContent}
       <input type={type} {...rest} />
       {rightContent}
-    </div>
+    </>
   );
 };

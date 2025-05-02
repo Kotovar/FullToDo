@@ -1,73 +1,61 @@
+import { useParams } from 'react-router';
 import { useState } from 'react';
-import { clsx } from 'clsx';
-import { Input } from '@shared/ui/Input';
-import { Button } from '@shared/ui/Button';
-import { COLORS, Icon } from '@shared/ui/Icon';
+import { useTasks } from '@entities/Task';
 
-interface TaskOptions {
-  title: string;
-  date?: string;
-}
+import type { TaskOptions } from '@pages/Tasks/lib';
+import { TaskInput } from '@shared/ui';
 
 export const AddTask = () => {
-  const [value, setValue] = useState<TaskOptions>({ title: '', date: '' });
+  const { notepadId } = useParams();
+  const [value, setValue] = useState<TaskOptions>({
+    title: '',
+    date: '',
+  });
+  const { methods } = useTasks(notepadId);
 
-  const handleValueTitle: React.ChangeEventHandler<HTMLInputElement> = e => {
-    setValue({ ...value, title: e.target.value });
-  };
+  const handleValueChange =
+    (field: keyof TaskOptions) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(prev => ({ ...prev, [field]: e.target.value }));
+    };
 
-  const handleValueDate: React.ChangeEventHandler<HTMLInputElement> = e => {
-    setValue({ ...value, date: e.target.value });
-  };
+  const handleSubmit = () => {
+    if (!value.title.trim()) return;
 
-  const handleClick = () => {
+    methods.createTask({
+      title: value.title,
+      dueDate: value?.date ? new Date(value?.date) : undefined,
+    });
+
     setValue({ title: '', date: '' });
   };
 
-  const baseWrapperContainerStyles =
-    'shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] bg-grey-light justify-between gap-2 p-2 rounded grid';
-
-  const inputStyles = 'min-w-0 outline-0';
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
+    if (event.key === 'Enter') {
+      handleSubmit();
+    }
+  };
 
   return (
-    <>
-      <Input
+    <fieldset className='flex flex-col gap-2'>
+      <legend className='sr-only'>Создание задачи</legend>
+
+      <TaskInput
+        variant='add-task'
         value={value.title}
-        onChange={handleValueTitle}
-        placeholder='Добавить задачу'
-        type='text'
-        containerClassName={clsx(
-          baseWrapperContainerStyles,
-          'bg-white grid-cols-[auto_1fr]',
-        )}
-        leftContent={
-          <Button appearance='ghost'>
-            <Icon name='plus' stroke={COLORS.ACCENT} />
-          </Button>
-        }
-        className={inputStyles}
+        label='Добавить задачу'
+        onChange={handleValueChange('title')}
+        onClick={handleSubmit}
+        onKeyDown={handleKeyDown}
       />
-      <Input
-        type='text'
-        placeholder='Дата выполнения'
+
+      <TaskInput
+        variant='add-task'
         value={value.date}
-        onChange={handleValueDate}
-        containerClassName={clsx(
-          baseWrapperContainerStyles,
-          'grid-cols-[auto_1fr_auto]',
-        )}
-        className={inputStyles}
-        leftContent={
-          <Button appearance='ghost'>
-            <Icon name='calendar' stroke={COLORS.ACCENT} />
-          </Button>
-        }
-        rightContent={
-          <Button onClick={handleClick} appearance='secondary'>
-            Добавить
-          </Button>
-        }
+        label='Дата выполнения'
+        onChange={handleValueChange('date')}
+        onClick={handleSubmit}
+        type='date'
       />
-    </>
+    </fieldset>
   );
 };
