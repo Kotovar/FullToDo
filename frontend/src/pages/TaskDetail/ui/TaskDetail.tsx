@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { Button, TaskInput } from '@shared/ui';
+import { Button, ErrorFetching, TaskInput } from '@shared/ui';
 import type {
   SubtaskAction,
   TaskDetailProps,
@@ -18,7 +18,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const navigate = useNavigate();
 
   const { task, isError, updateTask } = useTask(notepadId, taskId);
-  const { methods } = useTasks(notepadId);
+  const { methods } = useTasks({ notepadId });
   const { form, setForm, subtaskTitle, setSubtaskTitle, handleAddSubtask } =
     useTaskForm(task);
   const [errorMessage, setErrorMessage] = useState('');
@@ -33,7 +33,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   );
 
   if (isError) {
-    return <div>Error fetching data</div>;
+    return <ErrorFetching />;
   }
 
   const handleGoBack = () => {

@@ -11,7 +11,7 @@ import { notepadService } from '@entities/Notepad';
 import { useNotepads } from './useNotepads';
 
 const getInitialData = async () => {
-  const { result } = renderHook(() => useNotepads(), {
+  const { result } = renderHook(() => useNotepads({}), {
     wrapper: createWrapperWithRouter(),
   });
 

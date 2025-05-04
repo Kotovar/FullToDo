@@ -1,17 +1,28 @@
 import { useParams } from 'react-router';
 import { useState } from 'react';
 import { useTasks } from '@entities/Task';
-
 import type { TaskOptions } from '@pages/Tasks/lib';
-import { TaskInput } from '@shared/ui';
+import { ErrorFetching, TaskInput } from '@shared/ui';
+import { useNotifications } from '@shared/lib/notifications';
+import { TASKS_SUCCESSFUL_MESSAGES } from '@shared/api';
 
 export const AddTask = () => {
-  const { notepadId } = useParams();
+  const { notepadId = '' } = useParams();
   const [value, setValue] = useState<TaskOptions>({
     title: '',
     date: '',
   });
-  const { methods } = useTasks(notepadId);
+
+  const { showSuccess, showError } = useNotifications();
+  const { isError, methods } = useTasks({
+    notepadId,
+    onSuccess: method => showSuccess(TASKS_SUCCESSFUL_MESSAGES[method]),
+    onError: error => showError(error.message),
+  });
+
+  if (isError) {
+    return <ErrorFetching />;
+  }
 
   const handleValueChange =
     (field: keyof TaskOptions) => (e: React.ChangeEvent<HTMLInputElement>) => {

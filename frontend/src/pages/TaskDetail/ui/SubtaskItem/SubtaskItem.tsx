@@ -1,8 +1,7 @@
 import { useState, useEffect, memo } from 'react';
-import { Button, COLORS, Icon, Input } from '@shared/ui';
+import { Button, COLORS, Icon, Input, CompletionIcon } from '@shared/ui';
 import type { Subtask } from '@sharedCommon/*';
-import { SubtaskAction } from '../Subtasks/types';
-import { CompletionIcon } from '@shared/ui/CompletionIcon';
+import type { SubtaskAction } from '../Subtasks/types';
 
 interface SubtaskItemProps {
   subtask: Subtask;

@@ -1,9 +1,18 @@
 import { useState, type ComponentPropsWithoutRef } from 'react';
 import { useLocation } from 'react-router';
 import { clsx } from 'clsx';
-import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
+import {
+  LinkCard,
+  Input,
+  COLORS,
+  Icon,
+  Button,
+  ErrorFetching,
+} from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
-import { useNotepads } from '../lib';
+import { useNotifications } from '@shared/lib/notifications';
+import { NOTEPAD_SUCCESSFUL_MESSAGES } from '@shared/api';
+import { useNotepads } from '@widgets/NavigationBar/lib';
 
 interface NavigationBarProps extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
@@ -15,11 +24,15 @@ export const NavigationBar = (props: NavigationBarProps) => {
   const [currentModalId, setCurrentModalId] = useState('');
   const [title, setTitle] = useState('');
   const [editingNotepadId, setEditingNotepadId] = useState<string | null>(null);
-  const { notepads, isError, methods } = useNotepads();
+  const { showSuccess, showError } = useNotifications();
+  const { notepads, isError, methods } = useNotepads({
+    onSuccess: method => showSuccess(NOTEPAD_SUCCESSFUL_MESSAGES[method]),
+    onError: error => showError(error.message),
+  });
   const [basePath] = useLocation().pathname.split(ROUTES.TASK);
 
   if (isError) {
-    return <div>Error fetching data</div>;
+    return <ErrorFetching />;
   }
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
@@ -29,21 +42,26 @@ export const NavigationBar = (props: NavigationBarProps) => {
     }
   };
 
-  const handleSaveTitle = (
+  const handleSaveTitle = async (
     id: string,
     newTitle: string,
     currentTitle: string,
   ) => {
     if (newTitle !== currentTitle) {
-      methods.updateNotepadTitle(id, newTitle);
+      const success = await methods.updateNotepadTitle(id, newTitle);
+      if (!success) {
+        return currentTitle;
+      }
     }
-
     setEditingNotepadId(null);
+    return newTitle;
   };
 
   const handleCreateNotepad = () => {
-    methods.createNotepad(title);
-    setTitle('');
+    if (title) {
+      methods.createNotepad(title);
+      setTitle('');
+    }
   };
 
   const notepadList = notepads?.map(({ title, _id }) => {

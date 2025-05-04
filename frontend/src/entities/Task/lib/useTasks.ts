@@ -1,8 +1,16 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+} from '@tanstack/react-query';
 import { CreateTask, Task } from '@sharedCommon/*';
-import { taskService } from '..';
+import { taskService } from '@entities/Task';
+import { type MutationUpdateProps, type UseTasksProps } from './utils';
+import { handleMutationError, type MutationMethods } from '@shared/api';
 
-export const useTasks = (notepadId: string = '') => {
+export const useTasks = (props: UseTasksProps) => {
+  const { notepadId = '', onSuccess, onError } = props;
+
   const { data, isError, refetch } = useQuery({
     queryKey: ['tasks', notepadId],
     queryFn: () => taskService.getTasksFromNotepad(notepadId),
@@ -10,19 +18,29 @@ export const useTasks = (notepadId: string = '') => {
     enabled: !!notepadId,
   });
 
+  const handleMutation = async <T, V>(
+    mutation: UseMutationResult<T, unknown, V>,
+    method: MutationMethods,
+    payload: V,
+  ) => {
+    try {
+      await mutation.mutateAsync(payload);
+      onSuccess?.(method);
+      return true;
+    } catch (error) {
+      onError?.(handleMutationError(error));
+      return false;
+    }
+  };
+
   const mutationCreate = useMutation({
     mutationFn: (task: CreateTask) => taskService.createTask(task, notepadId),
     onSuccess: () => refetch(),
   });
 
   const mutationUpdate = useMutation({
-    mutationFn: ({
-      updatedTask,
-      id,
-    }: {
-      updatedTask: Partial<Task>;
-      id: string;
-    }) => taskService.updateTask(notepadId, id, updatedTask),
+    mutationFn: ({ updatedTask, id }: MutationUpdateProps) =>
+      taskService.updateTask(notepadId, id, updatedTask),
     onSuccess: () => refetch(),
   });
 
@@ -31,15 +49,20 @@ export const useTasks = (notepadId: string = '') => {
     onSuccess: () => refetch(),
   });
 
-  const createTask = (task: CreateTask) => mutationCreate.mutate(task);
+  const createTask = async (task: CreateTask) =>
+    handleMutation(mutationCreate, 'create', task);
+
   const updateTask = async (updatedTask: Partial<Task>, id: string) =>
-    mutationUpdate.mutateAsync({ updatedTask, id });
-  const deleteTask = (id: string) => {
-    mutationDelete.mutate(id);
-  };
+    handleMutation(mutationUpdate, 'update', {
+      updatedTask,
+      id,
+    });
+
+  const deleteTask = (id: string) =>
+    handleMutation(mutationDelete, 'delete', id);
 
   return {
-    tasks: data,
+    tasks: data ?? [],
     isError,
     methods: {
       updateTask,

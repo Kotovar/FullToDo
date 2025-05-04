@@ -3,6 +3,7 @@ import { clsx } from 'clsx';
 import { useVisibility } from '@app/layout/useVisibility';
 import { Header } from '@widgets/Header';
 import { NavigationBar } from '@widgets/NavigationBar';
+import { ToastContainer } from 'react-toastify';
 
 export const Layout = () => {
   const [isHidden, handleVisibility, turnOffVisibility] = useVisibility();
@@ -29,6 +30,14 @@ export const Layout = () => {
           })}
         >
           <Outlet />
+          <ToastContainer
+            position='bottom-right'
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            draggable
+          />
         </main>
       </div>
     </div>

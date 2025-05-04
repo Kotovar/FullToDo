@@ -17,6 +17,7 @@ const getUseNotepadsMockWithRender = (
 ) => {
   vi.spyOn(useNotepadsHook, 'useNotepads').mockReturnValue({
     notepads,
+    isLoading: false,
     isError,
     methods: {
       createNotepad,

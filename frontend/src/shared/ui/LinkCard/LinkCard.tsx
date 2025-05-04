@@ -13,7 +13,7 @@ interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   handleClickRename: () => void;
   handleClickDelete: () => void;
   handleLinkClick?: () => void;
-  onSaveTitle?: (newTitle: string) => void;
+  onSaveTitle?: (newTitle: string) => Promise<string | void>;
 }
 
 export const LinkCard = (props: LinkCardProps) => {
@@ -37,13 +37,18 @@ export const LinkCard = (props: LinkCardProps) => {
 
   const closeMenu = () => setIsMenuOpen(false);
 
-  const handleSave = () => {
-    onSaveTitle?.(editedTitle);
+  const handleSave = async () => {
+    const resultTitle = await onSaveTitle?.(editedTitle);
+    if (resultTitle !== editedTitle) {
+      setEditedTitle(cardTitle);
+    }
   };
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
+  const handleKeyDown: React.KeyboardEventHandler<
+    HTMLInputElement
+  > = async event => {
     if (event.key === 'Enter' && editedTitle) {
-      handleSave();
+      await handleSave();
     }
   };
 

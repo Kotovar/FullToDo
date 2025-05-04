@@ -12,7 +12,7 @@ import {
 import { taskService } from '@entities/Task';
 
 const getInitialData = async () => {
-  const { result } = renderHook(() => useTasks(notepadId), {
+  const { result } = renderHook(() => useTasks({ notepadId }), {
     wrapper: createWrapper(),
   });
 
@@ -87,16 +87,6 @@ describe('useTasks hook', () => {
 
     await waitFor(() => {
       expect(taskService.deleteTask).toHaveBeenCalledWith(notepadId, taskId);
-    });
-  });
-
-  test('работает с useTasks без аргумента', async () => {
-    const { result } = renderHook(() => useTasks(), {
-      wrapper: createWrapper(),
-    });
-
-    await waitFor(() => {
-      expect(result.current.tasks).not.toBeDefined();
     });
   });
 });

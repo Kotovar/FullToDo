@@ -9,6 +9,7 @@ import {
 import { ERRORS } from '@shared/api';
 import { testState, setupMockServer } from '@shared/config';
 import { notepadService } from './Notepad.query';
+import { waitFor } from '@testing-library/dom';
 
 describe('MockNotepadService', () => {
   setupMockServer();
@@ -37,7 +38,7 @@ describe('MockNotepadService', () => {
     test('return error if network problem', async () => {
       testState.forceError = true;
 
-      await expect(notepadService.getNotepads()).rejects.toThrow(ERRORS.fetch);
+      await expect(notepadService.getNotepads()).rejects.toThrow(ERRORS.json);
 
       testState.forceError = false;
     });
@@ -59,18 +60,36 @@ describe('MockNotepadService', () => {
       const responsePost =
         await notepadService.createNotepad(MOCK_TITLE_EXISTING);
 
-      expect(responsePost).toStrictEqual({
-        status: 409,
-        message: `A notebook with the title ${MOCK_TITLE_EXISTING} already exists`,
-      });
+      expect(responsePost).toThrowError('Server error');
+
+      // await waitFor(() =>
+      //   expect(
+      //     notepadService.createNotepad(MOCK_TITLE_NON_EXISTING),
+      //   ).toStrictEqual({
+      //     type: 'SERVER_ERROR',
+      //     message: 'Некорректные данные',
+      //   }),
+      // );
     });
 
     test('return error if network problem', async () => {
       testState.forceError = true;
 
-      await expect(
-        notepadService.createNotepad(MOCK_TITLE_NON_EXISTING),
-      ).rejects.toThrow(ERRORS.fetch);
+      await waitFor(() =>
+        expect(
+          notepadService.createNotepad(MOCK_TITLE_NON_EXISTING),
+        ).toStrictEqual({
+          type: 'CONFLICT',
+          message: 'Блокнот с таким названием уже существует',
+        }),
+      );
+
+      // await expect(
+      //   notepadService.createNotepad(MOCK_TITLE_NON_EXISTING),
+      // ).toStrictEqual({
+      //   type: 'CONFLICT',
+      //   message: 'Блокнот с таким названием уже существует',
+      // });
 
       testState.forceError = false;
     });
@@ -103,7 +122,7 @@ describe('MockNotepadService', () => {
         notepadService.updateNotepad(notepadId, {
           title: MOCK_TITLE_NON_EXISTING,
         }),
-      ).rejects.toThrow(ERRORS.fetch);
+      ).rejects.toThrow(ERRORS.server);
 
       testState.forceError = false;
     });
@@ -119,7 +138,7 @@ describe('MockNotepadService', () => {
       testState.forceError = true;
 
       await expect(notepadService.deleteNotepad(notepadId)).rejects.toThrow(
-        ERRORS.fetch,
+        ERRORS.server,
       );
 
       testState.forceError = false;

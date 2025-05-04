@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Button, LinkCard } from '@shared/ui';
+import { Button, ErrorFetching, LinkCard } from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
 import { useTasks } from '@entities/Task';
-import { CompletionIcon } from '@shared/ui/CompletionIcon';
+import { CompletionIcon } from '@shared/ui';
+import { useNotifications } from '@shared/lib/notifications';
+import { TASKS_SUCCESSFUL_MESSAGES } from '@shared/api';
 
 interface TasksBodyProps {
   notepadId?: string;
@@ -13,10 +15,15 @@ export const TasksBody = (props: TasksBodyProps) => {
   const { notepadPathName, notepadId } = props;
   const [currentModalId, setCurrentModalId] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
-  const { tasks, isError, methods } = useTasks(notepadId);
+  const { showSuccess, showError } = useNotifications();
+  const { tasks, isError, methods } = useTasks({
+    notepadId,
+    onSuccess: method => showSuccess(TASKS_SUCCESSFUL_MESSAGES[method]),
+    onError: error => showError(error.message),
+  });
 
   if (isError) {
-    return <div>Error fetching data</div>;
+    return <ErrorFetching />;
   }
 
   const handleModalId = (id: string) => {
@@ -36,16 +43,19 @@ export const TasksBody = (props: TasksBodyProps) => {
     );
   };
 
-  const handleSaveTitle = (
+  const handleSaveTitle = async (
     id: string,
     newTitle: string,
     currentTitle: string,
   ) => {
     if (newTitle !== currentTitle) {
-      methods.updateTask({ title: newTitle }, id);
+      const success = await methods.updateTask({ title: newTitle }, id);
+      if (!success) {
+        return currentTitle;
+      }
     }
-
     setEditingTaskId(null);
+    return newTitle;
   };
 
   return (
