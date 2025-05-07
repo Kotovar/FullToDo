@@ -34,12 +34,10 @@ export const routes: Record<
   (context: { req: IncomingMessage; res: ServerResponse }) => Promise<unknown>
 > = {
   [`GET ${ROUTES.ALL_TASKS}`]: context => getAllTasks(context, taskRepository),
-  [`GET ${ROUTES.NOTEPADS}`]: context =>
-    getAllNotepads(context, taskRepository),
+  [`GET ${ROUTES.NOTEPAD}`]: context => getAllNotepads(context, taskRepository),
   [`GET ${ROUTES.TODAY_TASKS}`]: context =>
     getTodayTasks(context, taskRepository),
-  [`POST ${ROUTES.NOTEPADS}`]: context =>
-    createNotepad(context, taskRepository),
+  [`POST ${ROUTES.NOTEPAD}`]: context => createNotepad(context, taskRepository),
 };
 
 export const createHttpServer = () => {

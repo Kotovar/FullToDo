@@ -28,8 +28,8 @@ const getUseTasksMockWithRender = (
   });
 
   renderWithRouter(<TasksBody {...props} />, {
-    initialEntries: ['/notepads/1'],
-    path: '/notepads/:notepadId',
+    initialEntries: ['/notepad/1'],
+    path: '/notepad/:notepadId',
   });
 };
 

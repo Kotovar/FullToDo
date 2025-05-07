@@ -11,7 +11,7 @@ import {
 } from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
 import { useNotifications } from '@shared/lib/notifications';
-import { NOTEPAD_SUCCESSFUL_MESSAGES } from '@shared/api';
+import { getSuccessMessage } from '@shared/api';
 import { useNotepads } from '@widgets/NavigationBar/lib';
 
 interface NavigationBarProps extends ComponentPropsWithoutRef<'nav'> {
@@ -26,7 +26,7 @@ export const NavigationBar = (props: NavigationBarProps) => {
   const [editingNotepadId, setEditingNotepadId] = useState<string | null>(null);
   const { showSuccess, showError } = useNotifications();
   const { notepads, isError, methods } = useNotepads({
-    onSuccess: method => showSuccess(NOTEPAD_SUCCESSFUL_MESSAGES[method]),
+    onSuccess: method => showSuccess(getSuccessMessage('notepad', method)),
     onError: error => showError(error.message),
   });
   const [basePath] = useLocation().pathname.split(ROUTES.TASK);

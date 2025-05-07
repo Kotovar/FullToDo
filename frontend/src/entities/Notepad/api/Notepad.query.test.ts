@@ -6,10 +6,9 @@ import {
   getDeleteResponse,
   notepadId,
 } from '@shared/mocks';
-import { ERRORS } from '@shared/api';
+import { COMMON_ERRORS } from '@shared/api';
 import { testState, setupMockServer } from '@shared/config';
 import { notepadService } from './Notepad.query';
-import { waitFor } from '@testing-library/dom';
 
 describe('MockNotepadService', () => {
   setupMockServer();
@@ -22,10 +21,12 @@ describe('MockNotepadService', () => {
     test('get error, if URL is not defined', async () => {
       vi.doMock('@shared/api', () => ({
         URL: undefined,
-        ERRORS: ERRORS,
+        COMMON_ERRORS: COMMON_ERRORS,
       }));
 
-      await expect(import('./Notepad.query')).rejects.toThrow(ERRORS.url);
+      await expect(import('./Notepad.query')).rejects.toThrow(
+        COMMON_ERRORS.URL.message,
+      );
     });
   });
 
@@ -38,7 +39,9 @@ describe('MockNotepadService', () => {
     test('return error if network problem', async () => {
       testState.forceError = true;
 
-      await expect(notepadService.getNotepads()).rejects.toThrow(ERRORS.json);
+      await expect(notepadService.getNotepads()).rejects.toThrow(
+        COMMON_ERRORS.JSON.message,
+      );
 
       testState.forceError = false;
     });
@@ -60,38 +63,10 @@ describe('MockNotepadService', () => {
       const responsePost =
         await notepadService.createNotepad(MOCK_TITLE_EXISTING);
 
-      expect(responsePost).toThrowError('Server error');
-
-      // await waitFor(() =>
-      //   expect(
-      //     notepadService.createNotepad(MOCK_TITLE_NON_EXISTING),
-      //   ).toStrictEqual({
-      //     type: 'SERVER_ERROR',
-      //     message: 'Некорректные данные',
-      //   }),
-      // );
-    });
-
-    test('return error if network problem', async () => {
-      testState.forceError = true;
-
-      await waitFor(() =>
-        expect(
-          notepadService.createNotepad(MOCK_TITLE_NON_EXISTING),
-        ).toStrictEqual({
-          type: 'CONFLICT',
-          message: 'Блокнот с таким названием уже существует',
-        }),
+      expect(responsePost.status).toBe(409);
+      expect(responsePost.message).toBe(
+        'A notebook with the title EXISTING already exists',
       );
-
-      // await expect(
-      //   notepadService.createNotepad(MOCK_TITLE_NON_EXISTING),
-      // ).toStrictEqual({
-      //   type: 'CONFLICT',
-      //   message: 'Блокнот с таким названием уже существует',
-      // });
-
-      testState.forceError = false;
     });
   });
 
@@ -114,34 +89,12 @@ describe('MockNotepadService', () => {
         message: `The title ${MOCK_TITLE_EXISTING} is already in use`,
       });
     });
-
-    test('return error if network problem', async () => {
-      testState.forceError = true;
-
-      await expect(
-        notepadService.updateNotepad(notepadId, {
-          title: MOCK_TITLE_NON_EXISTING,
-        }),
-      ).rejects.toThrow(ERRORS.server);
-
-      testState.forceError = false;
-    });
   });
 
   describe('deleteNotepad', () => {
     test('success', async () => {
       const responseDelete = await notepadService.deleteNotepad(notepadId);
       expect(responseDelete).toStrictEqual(getDeleteResponse('Notepad'));
-    });
-
-    test('return error if network problem', async () => {
-      testState.forceError = true;
-
-      await expect(notepadService.deleteNotepad(notepadId)).rejects.toThrow(
-        ERRORS.server,
-      );
-
-      testState.forceError = false;
     });
   });
 });

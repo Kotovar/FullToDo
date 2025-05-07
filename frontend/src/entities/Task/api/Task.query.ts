@@ -4,10 +4,10 @@ import type {
   TaskResponse,
   TasksResponse,
 } from 'shared/schemas';
-import { URL, TASKS_ERRORS, ERRORS } from '@shared/api';
+import { URL, TASKS_ERRORS, COMMON_ERRORS } from '@shared/api';
 
 if (!URL) {
-  throw new Error(ERRORS.url);
+  throw new Error(COMMON_ERRORS.URL.message);
 }
 
 class TaskService {

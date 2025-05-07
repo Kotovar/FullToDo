@@ -3,10 +3,10 @@ import {
   NotepadResponse,
   CreateNotepad,
 } from 'shared/schemas';
-import { URL, ERRORS, NOTEPAD_ERRORS } from '@shared/api';
+import { URL, COMMON_ERRORS, NOTEPAD_ERRORS } from '@shared/api';
 
 if (!URL) {
-  throw new Error(ERRORS.url);
+  throw new Error(COMMON_ERRORS.URL.message);
 }
 
 export class NotepadService {

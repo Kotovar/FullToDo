@@ -10,11 +10,13 @@ export const handleSubtaskAction = (
 
   if (index === -1) return currentSubtasks;
 
-  return type === 'delete'
-    ? currentSubtasks.toSpliced(index, 1)
-    : currentSubtasks.toSpliced(index, 1, {
-        isCompleted: action.isCompleted,
-        title: action.title,
-        _id: id,
-      });
+  if (type === 'delete') {
+    return currentSubtasks.toSpliced(index, 1);
+  }
+
+  return currentSubtasks.toSpliced(index, 1, {
+    isCompleted: action.isCompleted,
+    title: action.title,
+    _id: id,
+  });
 };

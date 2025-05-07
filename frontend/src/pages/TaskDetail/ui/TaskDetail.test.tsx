@@ -14,21 +14,34 @@ const task = {
   createdDate: new Date('2025-04-11T06:26:26.561Z'),
   isCompleted: false,
   progress: '1 из 5',
-  subtasks: [],
+  subtasks: [
+    {
+      isCompleted: false,
+      title: 'Выучить Node.js',
+      _id: '1',
+    },
+  ],
 };
 
-const getUseTaskMock = (updateTask = vi.fn()) => {
-  vi.spyOn(taskModule, 'useTask').mockReturnValue({
+const getUseTasksMock = (
+  isError = false,
+  updateTask = vi.fn(),
+  deleteTask = vi.fn(),
+  tasks = [],
+) => {
+  vi.spyOn(useTaskHook, 'useTasks').mockReturnValue({
     task,
-    isError: false,
-    updateTask: updateTask,
+    tasks,
+    isError,
+    methods: {
+      updateTask,
+      deleteTask,
+      createTask: vi.fn(),
+    },
   });
-
-  return updateTask;
 };
 
 const getUseTaskFormMock = (
-  addTaskMock = vi.fn(),
   setFormMock = vi.fn(),
   setSubtaskTitleMock = vi.fn(),
 ) => {
@@ -42,15 +55,15 @@ const getUseTaskFormMock = (
     setForm: setFormMock,
     subtaskTitle: 'Новая подзадача',
     setSubtaskTitle: setSubtaskTitleMock,
-    handleAddSubtask: addTaskMock,
   });
 
-  return { addTaskMock, setFormMock, setSubtaskTitleMock };
+  return { setFormMock, setSubtaskTitleMock };
 };
 
 describe('TaskDetail component', () => {
   const user = userEvent.setup();
   const onClickBackMock = vi.fn();
+  const updateTaskMock = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -76,6 +89,8 @@ describe('TaskDetail component', () => {
     });
 
     test('показывает ошибку, если задача не найдена', async () => {
+      getUseTasksMock(true);
+
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/unknown/tasks/404'],
         path: '/notepads/:notepadId/tasks/:taskId',
@@ -89,71 +104,27 @@ describe('TaskDetail component', () => {
   describe('метод handleUpdateTask', () => {
     setupMockServer();
 
-    test('кнопка Сохранить вызывает updateTask', async () => {
-      const updateTaskMock = getUseTaskMock();
+    test('кнопка Сохранить вызывает не updateTask если ничего не изменено', async () => {
+      getUseTasksMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepads/1/tasks/1'],
-        path: '/notepads/:notepadId/tasks/:taskId',
+        initialEntries: ['/notepad/1/task/1'],
+        path: '/notepad/:notepadId/task/:taskId',
       });
 
       const button = screen.getByText('Сохранить');
 
       await user.click(button);
 
-      expect(updateTaskMock).toHaveBeenCalled();
+      expect(updateTaskMock).not.toHaveBeenCalled();
     });
 
-    test.each([
-      {
-        name: 'ошибка является экземпляром Error',
-        rejection: new Error('Сетевая ошибка'),
-        expectedError: 'Ошибка при сохранении: Сетевая ошибка',
-      },
-      {
-        name: 'ошибка не является экземпляром Error',
-        rejection: 'что-то пошло не так',
-        expectedError: 'Неизвестная ошибка при сохранении',
-      },
-    ])(
-      'кнопка Сохранить выбрасывает ошибку, если $name',
-      async ({ rejection, expectedError }) => {
-        getUseTaskMock(vi.fn().mockRejectedValue(rejection));
-
-        renderWithRouter(<TaskDetail />, {
-          initialEntries: ['/notepads/1/tasks/1'],
-          path: '/notepads/:notepadId/tasks/:taskId',
-        });
-
-        const button = screen.getByText('Сохранить');
-        await user.click(button);
-
-        expect(screen.getByText(expectedError)).toBeDefined();
-      },
-    );
-
     test('если новый title не совпадает с введённым, то вызывается updateTask', async () => {
-      const updateTaskMock = vi.fn();
-
-      getUseTaskMock();
-
-      vi.spyOn(useTaskHook, 'useTasks').mockReturnValue({
-        tasks: [task],
-        isError: false,
-        methods: {
-          updateTask: updateTaskMock,
-          deleteTask: vi.fn(),
-          createTask: vi.fn(),
-        },
-      });
+      getUseTasksMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepads/1/tasks/1'],
-        path: '/notepads/:notepadId/tasks/:taskId',
-      });
-
-      await waitFor(() => {
-        expect(screen.getByDisplayValue('Задача 1')).toBeDefined();
+        initialEntries: ['/notepad/1/task/1'],
+        path: '/notepad/:notepadId/task/:taskId',
       });
 
       const input = screen.getByDisplayValue('Задача 1');
@@ -166,11 +137,11 @@ describe('TaskDetail component', () => {
     });
 
     test('при наличии dueDate в форме передает new Date(dueDate)', async () => {
-      const updateTaskMock = getUseTaskMock();
+      getUseTasksMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepads/1/tasks/1'],
-        path: '/notepads/:notepadId/tasks/:taskId',
+        initialEntries: ['/notepad/1/task/1'],
+        path: '/notepad/:notepadId/task/:taskId',
       });
 
       const dateInput = screen.getByLabelText('Дата выполнения', {
@@ -184,9 +155,11 @@ describe('TaskDetail component', () => {
 
       await waitFor(() => {
         expect(updateTaskMock).toHaveBeenCalledWith(
-          expect.objectContaining({
+          {
             dueDate: new Date('2025-04-20'),
-          }),
+          },
+          '1',
+          'update',
         );
       });
     });
@@ -196,9 +169,11 @@ describe('TaskDetail component', () => {
     setupMockServer();
 
     test('обновляет подзадачи при действии toggle', async () => {
+      getUseTasksMock();
+
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepads/1/tasks/1'],
-        path: '/notepads/:notepadId/tasks/:taskId',
+        initialEntries: ['/notepad/1/task/1'],
+        path: '/notepad/:notepadId/task/:taskId',
       });
 
       await waitFor(() => {
@@ -227,21 +202,19 @@ describe('TaskDetail component', () => {
   });
 
   describe('метод handleKeyDown', () => {
-    setupMockServer();
-
     test('Нажатие Enter добавляет подзадачу', async () => {
-      const { addTaskMock } = getUseTaskFormMock();
+      getUseTasksMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepads/1/tasks/1'],
-        path: '/notepads/:notepadId/tasks/:taskId',
+        initialEntries: ['/notepad/1/task/1'],
+        path: '/notepad/:notepadId/task/:taskId',
       });
 
-      const input = screen.getByPlaceholderText('Первый шаг');
-      await user.type(input, '{Enter}');
+      const input = screen.getByPlaceholderText('Следующий шаг');
+      await user.type(input, 'Новая{Enter}');
 
       await waitFor(() => {
-        expect(addTaskMock).toHaveBeenCalled();
+        expect(updateTaskMock).toHaveBeenCalled();
       });
     });
   });

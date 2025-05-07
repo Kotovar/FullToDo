@@ -23,7 +23,7 @@ type AddNotepadResponseBody = {
 };
 
 export const notepadHandlers = [
-  http.get(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}`, () => {
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}`, () => {
     if (testState.forceError) {
       return new HttpResponse(null, { status: 500 });
     }
@@ -35,7 +35,7 @@ export const notepadHandlers = [
     AddNotepadRequestParams,
     AddNotepadRequestBody,
     AddNotepadResponseBody
-  >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}`, async ({ request }) => {
+  >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}`, async ({ request }) => {
     if (testState.forceError) {
       return new HttpResponse(null, { status: 500 });
     }
@@ -60,7 +60,7 @@ export const notepadHandlers = [
     AddNotepadRequestBody,
     AddNotepadResponseBody
   >(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}`,
     async ({ request }) => {
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });
@@ -83,7 +83,7 @@ export const notepadHandlers = [
     AddNotepadRequestParams,
     AddNotepadRequestBody,
     AddNotepadResponseBody
-  >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`, async () => {
+  >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}`, async () => {
     if (testState.forceError) {
       return new HttpResponse(null, { status: 500 });
     }

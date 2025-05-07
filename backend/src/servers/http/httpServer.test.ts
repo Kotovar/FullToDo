@@ -123,14 +123,14 @@ describe('httpServer GET', () => {
   test('should handle GET /notepad', async () => {
     const req = {
       method: 'GET',
-      url: ROUTES.NOTEPADS,
+      url: ROUTES.NOTEPAD,
     } as http.IncomingMessage;
 
     vi.spyOn(taskRepository, 'getAllNotepads').mockResolvedValue(
       validNotepadWithoutTasksData,
     );
 
-    await routes[`GET ${ROUTES.NOTEPADS}`]({ req, res });
+    await routes[`GET ${ROUTES.NOTEPAD}`]({ req, res });
 
     expect(res.writeHead).toHaveBeenCalledWith(
       validNotepadWithoutTasksData.status,
@@ -148,7 +148,7 @@ describe('httpServer GET', () => {
     vi.spyOn(taskRepository, 'getAllNotepads').mockRejectedValue(internalError);
 
     const response = await request(server)
-      .get(ROUTES.NOTEPADS)
+      .get(ROUTES.NOTEPAD)
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json');
 
@@ -292,7 +292,7 @@ describe('httpServer POST', () => {
       );
 
       const response = await request(server)
-        .post(ROUTES.NOTEPADS)
+        .post(ROUTES.NOTEPAD)
         .send(notepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -306,7 +306,7 @@ describe('httpServer POST', () => {
       const notepadData = { title: 'New Notepad' };
 
       const response = await request(server)
-        .post(ROUTES.NOTEPADS)
+        .post(ROUTES.NOTEPAD)
         .send(JSON.stringify(notepadData))
         .set('Accept', 'application/json')
         .set('Content-Type', 'text/plain');
@@ -340,7 +340,7 @@ describe('httpServer POST', () => {
       });
 
       const response = await request(server)
-        .post(ROUTES.NOTEPADS)
+        .post(ROUTES.NOTEPAD)
         .send(invalidNotepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -361,7 +361,7 @@ describe('httpServer POST', () => {
       );
 
       const response = await request(server)
-        .post(ROUTES.NOTEPADS)
+        .post(ROUTES.NOTEPAD)
         .send(notepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -378,7 +378,7 @@ describe('httpServer POST', () => {
       );
 
       const response = await request(server)
-        .post(ROUTES.NOTEPADS)
+        .post(ROUTES.NOTEPAD)
         .send(notepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -866,7 +866,7 @@ describe('httpServer OPTIONS', () => {
 
   test(`should handle OPTIONS /notepad and return 204 status`, async () => {
     const response = await request(server)
-      .options(ROUTES.NOTEPADS)
+      .options(ROUTES.NOTEPAD)
       .set('Accept', 'application/json');
 
     expect(response.status).toBe(204);

@@ -1,4 +1,4 @@
-import { ERRORS } from '@shared/api';
+import { COMMON_ERRORS } from '@shared/api';
 import { testState, setupMockServer } from '@shared/config';
 import { taskService } from './Task.query';
 import {
@@ -23,11 +23,17 @@ describe('MockTaskService', () => {
   describe('URL', () => {
     test('get error, if URL is not defined', async () => {
       vi.doMock('@shared/api', () => ({
+        COMMON_ERRORS: {
+          URL: {
+            message: COMMON_ERRORS.URL.message,
+          },
+        },
         URL: undefined,
-        ERRORS: ERRORS,
       }));
 
-      await expect(import('./Task.query')).rejects.toThrow(ERRORS.url);
+      await expect(import('./Task.query')).rejects.toThrow(
+        COMMON_ERRORS.URL.message,
+      );
     });
   });
 
@@ -42,7 +48,7 @@ describe('MockTaskService', () => {
 
       await expect(
         taskService.getSingleTask(notepadId, taskId),
-      ).rejects.toThrow(ERRORS.fetch);
+      ).rejects.toThrow(COMMON_ERRORS.JSON.message);
 
       testState.forceError = false;
     });
@@ -58,7 +64,7 @@ describe('MockTaskService', () => {
       testState.forceError = true;
 
       await expect(taskService.getTasksFromNotepad(notepadId)).rejects.toThrow(
-        ERRORS.fetch,
+        COMMON_ERRORS.JSON.message,
       );
 
       testState.forceError = false;
@@ -95,7 +101,7 @@ describe('MockTaskService', () => {
 
       await expect(
         taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
-      ).rejects.toThrow(ERRORS.fetch);
+      ).rejects.toThrow('Server error');
 
       testState.forceError = false;
     });
@@ -128,7 +134,7 @@ describe('MockTaskService', () => {
         taskService.updateTask(taskId, notepadId, {
           title: MOCK_TITLE_NON_EXISTING,
         }),
-      ).rejects.toThrow(ERRORS.fetch);
+      ).rejects.toThrow('Server error');
 
       testState.forceError = false;
     });
@@ -144,7 +150,7 @@ describe('MockTaskService', () => {
       testState.forceError = true;
 
       await expect(taskService.deleteTask(notepadId, taskId)).rejects.toThrow(
-        ERRORS.fetch,
+        'Server error',
       );
 
       testState.forceError = false;

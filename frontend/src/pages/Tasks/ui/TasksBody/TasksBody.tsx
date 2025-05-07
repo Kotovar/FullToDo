@@ -4,7 +4,7 @@ import { ROUTES } from '@sharedCommon/';
 import { useTasks } from '@entities/Task';
 import { CompletionIcon } from '@shared/ui';
 import { useNotifications } from '@shared/lib/notifications';
-import { TASKS_SUCCESSFUL_MESSAGES } from '@shared/api';
+import { getSuccessMessage } from '@shared/api';
 
 interface TasksBodyProps {
   notepadId?: string;
@@ -18,7 +18,7 @@ export const TasksBody = (props: TasksBodyProps) => {
   const { showSuccess, showError } = useNotifications();
   const { tasks, isError, methods } = useTasks({
     notepadId,
-    onSuccess: method => showSuccess(TASKS_SUCCESSFUL_MESSAGES[method]),
+    onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
     onError: error => showError(error.message),
   });
 

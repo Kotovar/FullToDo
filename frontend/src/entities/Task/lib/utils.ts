@@ -1,8 +1,9 @@
 import type { MutationMethods, QueryError } from '@shared/api';
-import { Task } from '@sharedCommon/*';
+import type { Task } from '@sharedCommon/*';
 
 export interface UseTasksProps {
   notepadId?: string;
+  taskId?: string;
   onSuccess?: (method: MutationMethods) => void;
   onError?: (error: QueryError) => void;
 }

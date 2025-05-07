@@ -1,4 +1,4 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
 import { Task } from '@sharedCommon/*';
 import { MOCK_TASK } from '@shared/mocks';
 import { useTaskForm } from './useTaskForm';
@@ -15,52 +15,6 @@ const getInitialData = async (initialTask?: Task | null) => {
 };
 
 describe('useTasks hook', () => {
-  test('если название подзадачи пустое - не добавлять подзадачу', async () => {
-    const { result } = await getInitialData();
-
-    act(() => {
-      result.current.setSubtaskTitle('');
-    });
-
-    await waitFor(() => {
-      expect(result.current.subtaskTitle).toBe('');
-    });
-
-    const initialSubtasksCount = result.current.form.subtasks.length;
-
-    act(() => {
-      result.current.handleAddSubtask();
-    });
-
-    await waitFor(() => {
-      expect(result.current.form.subtasks.length).toBe(initialSubtasksCount);
-    });
-  });
-
-  test('если название подзадачи не пустое - добавлять подзадачу', async () => {
-    const { result } = await getInitialData(MOCK_TASK);
-
-    act(() => {
-      result.current.setSubtaskTitle('new subtask');
-    });
-
-    await waitFor(() => {
-      expect(result.current.subtaskTitle).toBe('new subtask');
-    });
-
-    const initialSubtasksCount = result.current.form.subtasks.length;
-
-    act(() => {
-      result.current.handleAddSubtask();
-    });
-
-    await waitFor(() => {
-      expect(result.current.form.subtasks.length).toBe(
-        initialSubtasksCount + 1,
-      );
-    });
-  });
-
   test('Если в начальном значении хука указана дата выполнения - отформатировать её', async () => {
     const { result } = await getInitialData(MOCK_TASK);
 

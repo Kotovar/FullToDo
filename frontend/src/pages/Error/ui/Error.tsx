@@ -1,12 +1,8 @@
+import { useBackNavigate } from '@shared/lib';
 import { Button } from '@shared/ui';
-import { useNavigate } from 'react-router';
 
 export const Error = () => {
-  const navigate = useNavigate();
-
-  const handleGoBack = () => {
-    navigate(-1);
-  };
+  const handleGoBack = useBackNavigate();
 
   return (
     <div className='flex flex-col items-center justify-center gap-4'>

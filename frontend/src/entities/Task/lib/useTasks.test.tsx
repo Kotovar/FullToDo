@@ -12,7 +12,7 @@ import {
 import { taskService } from '@entities/Task';
 
 const getInitialData = async () => {
-  const { result } = renderHook(() => useTasks({ notepadId }), {
+  const { result } = renderHook(() => useTasks({ notepadId, taskId }), {
     wrapper: createWrapper(),
   });
 

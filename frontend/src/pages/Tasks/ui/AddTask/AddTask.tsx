@@ -4,7 +4,7 @@ import { useTasks } from '@entities/Task';
 import type { TaskOptions } from '@pages/Tasks/lib';
 import { ErrorFetching, TaskInput } from '@shared/ui';
 import { useNotifications } from '@shared/lib/notifications';
-import { TASKS_SUCCESSFUL_MESSAGES } from '@shared/api';
+import { getSuccessMessage } from '@shared/api';
 
 export const AddTask = () => {
   const { notepadId = '' } = useParams();
@@ -16,7 +16,7 @@ export const AddTask = () => {
   const { showSuccess, showError } = useNotifications();
   const { isError, methods } = useTasks({
     notepadId,
-    onSuccess: method => showSuccess(TASKS_SUCCESSFUL_MESSAGES[method]),
+    onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
     onError: error => showError(error.message),
   });
 
