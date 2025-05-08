@@ -13,7 +13,8 @@ export const useTasks = (props: UseTasksProps) => {
 
   const {
     data: tasks,
-    isError: isTasksError,
+    isError,
+    isLoading: isTasksLoading,
     refetch: refetchTasks,
   } = useQuery({
     queryKey: ['tasks', notepadId],
@@ -24,7 +25,7 @@ export const useTasks = (props: UseTasksProps) => {
 
   const {
     data: singleTask,
-    isError: isSingleTaskError,
+    isLoading: isSingleTaskLoading,
     refetch: refetchSingleTask,
   } = useQuery({
     queryKey: ['task', notepadId, taskId],
@@ -90,7 +91,8 @@ export const useTasks = (props: UseTasksProps) => {
 
   return {
     tasks: tasks ?? [],
-    isError: isTasksError || isSingleTaskError,
+    isError,
+    isLoading: isTasksLoading || isSingleTaskLoading,
     ...(taskId && { task: singleTask ?? null }),
     methods: {
       updateTask,

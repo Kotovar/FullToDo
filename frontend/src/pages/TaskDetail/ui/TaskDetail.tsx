@@ -13,6 +13,7 @@ import {
   Subtasks,
   TaskTextarea,
   TaskTitle,
+  SubtasksSkeleton,
 } from '@pages/TaskDetail/ui';
 import { useTasks } from '@entities/Task';
 import { Button, ErrorFetching, TaskInput } from '@shared/ui';
@@ -23,7 +24,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   const { notepadId = '', taskId = '' } = useParams();
   const handleGoBack = useBackNavigate();
   const { showSuccess, showError } = useNotifications();
-  const { task, isError, methods } = useTasks({
+  const { task, isError, isLoading, methods } = useTasks({
     notepadId,
     taskId,
     onSuccess: method => showSuccess(getSuccessMessage('task', method)),
@@ -39,6 +40,10 @@ export const TaskDetail = (props: TaskDetailProps) => {
     },
     [form.subtasks, methods, setForm, taskId],
   );
+
+  if (isLoading) {
+    return <SubtasksSkeleton />;
+  }
 
   if (isError) {
     return <ErrorFetching />;

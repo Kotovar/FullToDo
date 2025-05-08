@@ -26,7 +26,7 @@ const getUseNotepadsMockWithRender = (
     },
   });
 
-  renderWithRouter(<NavigationBar />, {
+  renderWithRouter(<NavigationBar isHidden={false} />, {
     initialEntries: ['/notepads'],
     path: '/notepads',
   });
@@ -58,13 +58,6 @@ describe('NavigationBar component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  test('Обработка ошибки, если не получилось обработать данные по блокнотам', async () => {
-    getUseNotepadsMockWithRender(true);
-
-    const errorBlock = screen.getByText('Error fetching data');
-    expect(errorBlock).toBeInTheDocument();
   });
 
   test('Создаётся блокнот, если указано название блокнота и нажат Enter', async () => {

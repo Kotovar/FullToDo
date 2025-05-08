@@ -1,1 +1,5 @@
-export const ErrorFetching = () => <div>Error fetching data</div>;
+export const ErrorFetching = () => (
+  <div className='text-center'>
+    Не удалось загрузить данные. Повторите попытку позже
+  </div>
+);

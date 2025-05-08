@@ -2,7 +2,7 @@ import { useParams } from 'react-router';
 import { useState } from 'react';
 import { useTasks } from '@entities/Task';
 import type { TaskOptions } from '@pages/Tasks/lib';
-import { ErrorFetching, TaskInput } from '@shared/ui';
+import { TaskInput } from '@shared/ui';
 import { useNotifications } from '@shared/lib/notifications';
 import { getSuccessMessage } from '@shared/api';
 
@@ -14,15 +14,11 @@ export const AddTask = () => {
   });
 
   const { showSuccess, showError } = useNotifications();
-  const { isError, methods } = useTasks({
+  const { methods } = useTasks({
     notepadId,
     onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
     onError: error => showError(error.message),
   });
-
-  if (isError) {
-    return <ErrorFetching />;
-  }
 
   const handleValueChange =
     (field: keyof TaskOptions) => (e: React.ChangeEvent<HTMLInputElement>) => {

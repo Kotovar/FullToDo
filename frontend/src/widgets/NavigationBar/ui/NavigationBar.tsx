@@ -1,38 +1,33 @@
 import { useState, type ComponentPropsWithoutRef } from 'react';
 import { useLocation } from 'react-router';
 import { clsx } from 'clsx';
-import {
-  LinkCard,
-  Input,
-  COLORS,
-  Icon,
-  Button,
-  ErrorFetching,
-} from '@shared/ui';
+import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
 import { useNotifications } from '@shared/lib/notifications';
 import { getSuccessMessage } from '@shared/api';
 import { useNotepads } from '@widgets/NavigationBar/lib';
+import { NavigationBarSkeleton } from './skeleton';
 
 interface NavigationBarProps extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
+  isHidden: boolean;
 }
 
 export const NavigationBar = (props: NavigationBarProps) => {
-  const { turnOffVisibility, ...rest } = props;
+  const { isHidden, turnOffVisibility, ...rest } = props;
 
   const [currentModalId, setCurrentModalId] = useState('');
   const [title, setTitle] = useState('');
   const [editingNotepadId, setEditingNotepadId] = useState<string | null>(null);
   const { showSuccess, showError } = useNotifications();
-  const { notepads, isError, methods } = useNotepads({
+  const { notepads, isError, isLoading, methods } = useNotepads({
     onSuccess: method => showSuccess(getSuccessMessage('notepad', method)),
     onError: error => showError(error.message),
   });
   const [basePath] = useLocation().pathname.split(ROUTES.TASK);
 
-  if (isError) {
-    return <ErrorFetching />;
+  if (isLoading || isError) {
+    return <NavigationBarSkeleton isHidden={isHidden} />;
   }
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {

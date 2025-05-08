@@ -14,7 +14,7 @@ export const Layout = () => {
         className='bg-accent fixed z-10 flex h-16 w-full items-center justify-between gap-x-1 px-2'
         changeVisibility={handleVisibility}
       />
-      <div className='bg-grey-light text-dark relative flex h-full w-full gap-2 pt-16 text-2xl'>
+      <div className='bg-grey-light text-dark relative flex h-full w-full pt-16 text-2xl'>
         <NavigationBar
           className={clsx(
             'flex flex-auto bg-white p-4 break-all md:w-[30%] md:flex-none',
@@ -23,6 +23,7 @@ export const Layout = () => {
             },
           )}
           turnOffVisibility={turnOffVisibility}
+          isHidden={isHidden}
         />
         <main
           className={clsx('flex flex-auto flex-col p-4 md:flex md:w-full', {

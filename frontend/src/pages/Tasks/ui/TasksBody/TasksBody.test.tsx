@@ -20,6 +20,7 @@ const getUseTasksMockWithRender = (
   vi.spyOn(useTaskHook, 'useTasks').mockReturnValue({
     tasks,
     isError,
+    isLoading: false,
     methods: {
       updateTask,
       deleteTask,
@@ -58,13 +59,6 @@ describe('TasksBody component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-  });
-
-  test('Обработка ошибки, если не получилось обработать данные по задачам', async () => {
-    getUseTasksMockWithRender(true);
-
-    const errorBlock = screen.getByText('Error fetching data');
-    expect(errorBlock).toBeInTheDocument();
   });
 
   test('вызов метода handleModalId открывает подменю', async () => {

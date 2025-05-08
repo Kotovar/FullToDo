@@ -12,6 +12,6 @@ export const handleMutationError = (error: unknown): QueryError => {
   }
   return {
     type: 'SERVER_ERROR',
-    message: 'Неизвестная ошибка',
+    message: 'Сервер недоступен',
   };
 };

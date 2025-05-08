@@ -33,6 +33,7 @@ const getUseTasksMock = (
     task,
     tasks,
     isError,
+    isLoading: false,
     methods: {
       updateTask,
       deleteTask,
@@ -92,11 +93,13 @@ describe('TaskDetail component', () => {
       getUseTasksMock(true);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepads/unknown/tasks/404'],
-        path: '/notepads/:notepadId/tasks/:taskId',
+        initialEntries: ['/notepad/unknown/task/404'],
+        path: '/notepad/:notepadId/task/:taskId',
       });
 
-      const error = await screen.findByText('Error fetching data');
+      const error = await screen.findByText(
+        'Не удалось загрузить данные. Повторите попытку позже',
+      );
       expect(error).toBeDefined();
     });
   });
@@ -226,9 +229,13 @@ describe('TaskDetail component', () => {
       const { setFormMock } = getUseTaskFormMock();
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepads/1/tasks/1'],
-        path: '/notepads/:notepadId/tasks/:taskId',
+        initialEntries: ['/notepad/1/task/1'],
+        path: '/notepad/:notepadId/task/:taskId',
       });
+
+      await waitFor(() =>
+        expect(screen.getByDisplayValue('Задача 1')).toBeDefined(),
+      );
 
       const input = screen.getByDisplayValue('Задача 1');
       await user.type(input, 'Задача Новая');
@@ -250,6 +257,10 @@ describe('TaskDetail component', () => {
         path: '/notepads/:notepadId/tasks/:taskId',
       });
 
+      await waitFor(() =>
+        expect(screen.getByPlaceholderText('Первый шаг')).toBeDefined(),
+      );
+
       const input = screen.getByPlaceholderText('Первый шаг');
       await user.type(input, 'Подзадача Новая');
 
@@ -265,6 +276,14 @@ describe('TaskDetail component', () => {
         initialEntries: ['/notepads/1/tasks/1'],
         path: '/notepads/:notepadId/tasks/:taskId',
       });
+
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText('Дата выполнения', {
+            selector: 'input',
+          }),
+        ).toBeDefined(),
+      );
 
       const input = screen.getByLabelText('Дата выполнения', {
         selector: 'input',
@@ -287,6 +306,14 @@ describe('TaskDetail component', () => {
         initialEntries: ['/notepads/1/tasks/1'],
         path: '/notepads/:notepadId/tasks/:taskId',
       });
+
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText('Описание', {
+            selector: 'textarea',
+          }),
+        ).toBeDefined(),
+      );
 
       const textarea = screen.getByLabelText('Описание', {
         selector: 'textarea',
