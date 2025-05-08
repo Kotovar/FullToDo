@@ -1,6 +1,6 @@
 export const URL = import.meta.env.VITE_URL;
 
-type ErrorType =
+export type ErrorType =
   | 'CONFLICT'
   | 'SERVER_ERROR'
   | 'UNDEFINED'
@@ -12,7 +12,7 @@ type BaseErrorType = Extract<
   ErrorType,
   'SERVER_ERROR' | 'NETWORK_ERROR' | 'URL' | 'JSON'
 >;
-type ErrorDetail = {
+export type ErrorDetail = {
   type: ErrorType;
   message: string;
 };

@@ -1,4 +1,4 @@
-import { COMMON_ERRORS } from '@shared/api';
+import { COMMON_ERRORS, TASKS_ERRORS } from '@shared/api';
 import { testState, setupMockServer } from '@shared/config';
 import { taskService } from './Task.query';
 import {
@@ -12,6 +12,11 @@ import {
   notepadId,
   taskId,
 } from '@shared/mocks';
+import {
+  getErrorMock,
+  getErrorResult,
+  getFailFetchResponse,
+} from '@shared/testing';
 
 describe('MockTaskService', () => {
   setupMockServer();
@@ -37,6 +42,67 @@ describe('MockTaskService', () => {
     });
   });
 
+  describe('handleResponse', () => {
+    test('should handle 409 conflict error', async () => {
+      const fetchSpy = getFailFetchResponse(409);
+
+      await expect(
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
+      ).rejects.toThrowError(
+        expect.objectContaining({
+          message: 'Conflict',
+          cause: TASKS_ERRORS.CONFLICT,
+        }),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    test('should handle 404 Not found error', async () => {
+      const fetchSpy = getFailFetchResponse(404);
+
+      await expect(
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
+      ).rejects.toThrowError(
+        expect.objectContaining({
+          message: 'Not found',
+          cause: TASKS_ERRORS.UNDEFINED,
+        }),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('handleError', () => {
+    test('should throw error if error instanceof Error && error.cause', async () => {
+      const fetchSpy = getErrorMock(true);
+
+      await expect(
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
+      ).rejects.toThrowError(
+        expect.objectContaining({
+          message: 'Failed to fetch',
+          cause: 'Error',
+        }),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    test('should throw error if error in not instanceof Error', async () => {
+      const fetchSpy = getErrorMock();
+
+      await expect(
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
+      ).rejects.toThrowError(
+        expect.objectContaining(getErrorResult(TASKS_ERRORS)),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('getSingleTask', () => {
     test('success', async () => {
       const responseGet = await taskService.getSingleTask(notepadId, taskId);
@@ -51,6 +117,18 @@ describe('MockTaskService', () => {
       ).rejects.toThrow(COMMON_ERRORS.JSON.message);
 
       testState.forceError = false;
+    });
+
+    test('return handleError if catch error', async () => {
+      const fetchSpy = getErrorMock();
+
+      await expect(
+        taskService.getSingleTask(notepadId, taskId),
+      ).rejects.toThrowError(
+        expect.objectContaining(getErrorResult(TASKS_ERRORS)),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -68,6 +146,18 @@ describe('MockTaskService', () => {
       );
 
       testState.forceError = false;
+    });
+
+    test('should throw error if error in not instanceof Error', async () => {
+      const fetchSpy = getErrorMock();
+
+      await expect(
+        taskService.getTasksFromNotepad(notepadId),
+      ).rejects.toThrowError(
+        expect.objectContaining(getErrorResult(TASKS_ERRORS)),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -138,6 +228,20 @@ describe('MockTaskService', () => {
 
       testState.forceError = false;
     });
+
+    test('should throw error if error in not instanceof Error', async () => {
+      const fetchSpy = getErrorMock();
+
+      await expect(
+        taskService.updateTask(taskId, notepadId, {
+          title: MOCK_TITLE_NON_EXISTING,
+        }),
+      ).rejects.toThrowError(
+        expect.objectContaining(getErrorResult(TASKS_ERRORS)),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('deleteTask', () => {
@@ -154,6 +258,18 @@ describe('MockTaskService', () => {
       );
 
       testState.forceError = false;
+    });
+
+    test('should throw error if error in not instanceof Error', async () => {
+      const fetchSpy = getErrorMock();
+
+      await expect(
+        taskService.deleteTask(notepadId, taskId),
+      ).rejects.toThrowError(
+        expect.objectContaining(getErrorResult(TASKS_ERRORS)),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -6,9 +6,14 @@ import {
   getDeleteResponse,
   notepadId,
 } from '@shared/mocks';
-import { COMMON_ERRORS } from '@shared/api';
+import { COMMON_ERRORS, NOTEPAD_ERRORS } from '@shared/api';
 import { testState, setupMockServer } from '@shared/config';
 import { notepadService } from './Notepad.query';
+import {
+  getErrorMock,
+  getErrorResult,
+  getFailFetchResponse,
+} from '@shared/testing';
 
 describe('MockNotepadService', () => {
   setupMockServer();
@@ -27,6 +32,82 @@ describe('MockNotepadService', () => {
       await expect(import('./Notepad.query')).rejects.toThrow(
         COMMON_ERRORS.URL.message,
       );
+    });
+  });
+
+  describe('handleResponse', () => {
+    test('should handle 409 conflict error', async () => {
+      const fetchSpy = getFailFetchResponse(409);
+
+      await expect(
+        notepadService.createNotepad(MOCK_TITLE_EXISTING),
+      ).rejects.toThrowError(
+        expect.objectContaining({
+          message: 'Conflict',
+          cause: NOTEPAD_ERRORS.CONFLICT,
+        }),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    test('should handle 404 Not found error', async () => {
+      const fetchSpy = getFailFetchResponse(404);
+
+      await expect(
+        notepadService.createNotepad(MOCK_TITLE_EXISTING),
+      ).rejects.toThrowError(
+        expect.objectContaining({
+          message: 'Not found',
+          cause: NOTEPAD_ERRORS.UNDEFINED,
+        }),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    test('should handle default error', async () => {
+      const fetchSpy = getFailFetchResponse(500);
+
+      await expect(
+        notepadService.createNotepad(MOCK_TITLE_EXISTING),
+      ).rejects.toThrowError(
+        expect.objectContaining({
+          message: 'Server error',
+          cause: NOTEPAD_ERRORS.SERVER_ERROR,
+        }),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('handleError', () => {
+    test('should throw error if error instanceof Error && error.cause', async () => {
+      const fetchSpy = getErrorMock(true);
+
+      await expect(
+        notepadService.createNotepad(MOCK_TITLE_EXISTING),
+      ).rejects.toThrowError(
+        expect.objectContaining({
+          message: 'Failed to fetch',
+          cause: 'Error',
+        }),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    test('should throw error if error in not instanceof Error', async () => {
+      const fetchSpy = getErrorMock();
+
+      await expect(
+        notepadService.createNotepad(MOCK_TITLE_EXISTING),
+      ).rejects.toThrowError(
+        expect.objectContaining(getErrorResult(NOTEPAD_ERRORS)),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -89,12 +170,38 @@ describe('MockNotepadService', () => {
         message: `The title ${MOCK_TITLE_EXISTING} is already in use`,
       });
     });
+
+    test('return handleError if catch error', async () => {
+      const fetchSpy = getErrorMock();
+
+      await expect(
+        notepadService.updateNotepad(notepadId, {
+          title: MOCK_TITLE_EXISTING,
+        }),
+      ).rejects.toThrowError(
+        expect.objectContaining(getErrorResult(NOTEPAD_ERRORS)),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('deleteNotepad', () => {
     test('success', async () => {
       const responseDelete = await notepadService.deleteNotepad(notepadId);
       expect(responseDelete).toStrictEqual(getDeleteResponse('Notepad'));
+    });
+
+    test('return handleError if catch error', async () => {
+      const fetchSpy = getErrorMock();
+
+      await expect(
+        notepadService.deleteNotepad(notepadId),
+      ).rejects.toThrowError(
+        expect.objectContaining(getErrorResult(NOTEPAD_ERRORS)),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
