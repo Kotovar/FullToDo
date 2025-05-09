@@ -1,8 +1,8 @@
 import type { Subtask } from '@sharedCommon/*';
 
 export const MOCK_SUBTASK: Subtask = {
-  title: 'Подзадача',
   isCompleted: false,
+  title: 'Выучить Node.js',
   _id: '1',
 };
 
@@ -10,6 +10,7 @@ export const MOCK_TASK = {
   title: 'Задача 1',
   notepadId: '1',
   _id: '1',
+  description: 'Описание для задачи 1',
   createdDate: new Date('2025-04-11T06:26:26.561Z'),
   dueDate: new Date('2025-04-11T06:26:26.561Z'),
   isCompleted: false,

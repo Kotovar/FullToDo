@@ -41,7 +41,7 @@ describe('useTasks hook', () => {
       expect(result.current.form).toEqual({
         title: MOCK_TASK.title,
         dueDate: getFormattedDate(MOCK_TASK.dueDate),
-        description: '',
+        description: 'Описание для задачи 1',
         subtasks: MOCK_TASK.subtasks,
       });
     });

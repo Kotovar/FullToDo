@@ -1,7 +1,7 @@
 import { TasksHeader } from './TasksHeader';
 import { TasksBody } from './TasksBody';
-import { useNotepad } from '../lib';
 import { TasksSkeleton } from './TasksSkeleton';
+import { useNotepad } from '@pages/Tasks/lib';
 import { ErrorFetching } from '@shared/ui';
 
 export const Tasks = () => {

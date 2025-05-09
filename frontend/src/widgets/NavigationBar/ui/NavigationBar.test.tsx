@@ -60,13 +60,25 @@ describe('NavigationBar component', () => {
     vi.clearAllMocks();
   });
 
-  test('Создаётся блокнот, если указано название блокнота и нажат Enter', async () => {
+  test('Создаётся блокнот, если указано название блокнота и нажат Enter или кнопка Сохранить', async () => {
     getUseNotepadsMockWithRender(false, createNotepadMock);
 
-    const input = getElements('Добавить блокнот');
-    await user.type(input, 'Новое название{enter}');
+    const input = screen.getByPlaceholderText('Добавить блокнот');
+    await user.type(input, 'Новое название');
+    expect(input).toHaveValue('Новое название');
 
+    const addButton = screen.getByLabelText('Добавить блокнот');
+    await user.click(addButton);
+
+    expect(input).toHaveValue('');
     expect(createNotepadMock).toHaveBeenCalledWith('Новое название');
+
+    await user.type(input, 'Новое название 2');
+    expect(input).toHaveValue('Новое название 2');
+
+    await user.type(input, '{enter}');
+    expect(input).toHaveValue('');
+    expect(createNotepadMock).toHaveBeenCalledWith('Новое название 2');
   });
 
   test('Меняется название блокнота, если новое название не совпадает со старым', async () => {

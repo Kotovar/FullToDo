@@ -3,6 +3,8 @@ import { useNotepad } from './useNotepad';
 import { setupMockServer } from '@shared/config';
 import { createWrapperWithRouter, notepadId } from '@shared/mocks';
 import { ROUTES } from 'shared/routes';
+import { notepadService } from '@entities/Notepad';
+import { getUseNotificationsMock } from '@shared/testing';
 
 const getInitialData = async () => {
   const { result } = renderHook(() => useNotepad(), {
@@ -16,6 +18,7 @@ const getInitialData = async () => {
 
 describe('useNotepad hook', () => {
   setupMockServer();
+  const showError = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -29,6 +32,18 @@ describe('useNotepad hook', () => {
 
     await waitFor(() => {
       expect(result.current.title).toBe('Рабочее');
+    });
+  });
+
+  test('Если получена ошибка, вызывается showError', async () => {
+    getUseNotificationsMock(showError);
+    const mockError = new Error('Ошибка сервера');
+    vi.spyOn(notepadService, 'getNotepads').mockRejectedValue(mockError);
+
+    await getInitialData();
+
+    await waitFor(() => {
+      expect(showError).toBeCalled();
     });
   });
 });
