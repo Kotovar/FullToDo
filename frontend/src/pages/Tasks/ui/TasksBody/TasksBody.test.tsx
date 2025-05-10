@@ -8,7 +8,7 @@ import * as useTaskHook from '@entities/Task';
 
 const props = {
   notepadId: notepadId,
-  notepadPathName: '/notepad/1',
+  notepadPathName: '/notepads/1',
 };
 
 const getUseTasksMockWithRender = (
@@ -29,8 +29,8 @@ const getUseTasksMockWithRender = (
   });
 
   renderWithRouter(<TasksBody {...props} />, {
-    initialEntries: ['/notepad/1'],
-    path: '/notepad/:notepadId',
+    initialEntries: ['/notepads/1'],
+    path: '/notepads/:notepadId',
   });
 };
 

@@ -9,8 +9,8 @@ describe('Tasks component', () => {
 
   test('корректно запускается', async () => {
     renderWithRouter(<Tasks />, {
-      initialEntries: ['/notepad/1'],
-      path: '/notepad/:notepadId',
+      initialEntries: ['/notepads/1'],
+      path: '/notepads/:notepadId',
     });
 
     await waitFor(() => expect(screen.getByRole('heading')).toBeDefined());
@@ -20,8 +20,8 @@ describe('Tasks component', () => {
     getUseNotepadMock(true);
 
     renderWithRouter(<Tasks />, {
-      initialEntries: ['/notepad/1'],
-      path: '/notepad/:notepadId',
+      initialEntries: ['/notepads/1'],
+      path: '/notepads/:notepadId',
     });
 
     await waitFor(() =>

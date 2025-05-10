@@ -59,8 +59,8 @@ describe('TaskDetail component', () => {
       getUseTasksMock(true);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepad/unknown/task/404'],
-        path: '/notepad/:notepadId/task/:taskId',
+        initialEntries: ['/notepads/unknown/task/404'],
+        path: '/notepads/:notepadId/task/:taskId',
       });
 
       const error = await screen.findByText(
@@ -70,33 +70,6 @@ describe('TaskDetail component', () => {
     });
   });
 
-  // describe('Тесты onSuccess и onError из хука useTasks', () => {
-  //   setupMockServer();
-
-  //   test('onSuccess', async () => {
-  //     const showSuccessMock = vi.fn();
-
-  //     getUseTasksMock(false, updateTaskMock);
-  //     getUseNotificationsMock(showSuccessMock);
-
-  //     renderWithRouter(<TaskDetail />, {
-  //       initialEntries: ['/notepad/1/task/1'],
-  //       path: '/notepad/:notepadId/task/:taskId',
-  //     });
-
-  //     const input = screen.getByDisplayValue('Задача 1');
-  //     await user.type(input, 'Выучить Node.js и deno');
-
-  //     const button = screen.getByText('Сохранить');
-  //     await user.click(button);
-
-  //     await waitFor(() => {
-  //       expect(updateTaskMock).toHaveBeenCalled();
-  //       expect(showSuccessMock).toHaveBeenCalled();
-  //     });
-  //   });
-  // });
-
   describe('метод handleUpdateTask', () => {
     setupMockServer();
 
@@ -104,8 +77,8 @@ describe('TaskDetail component', () => {
       getUseTasksMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepad/1/task/1'],
-        path: '/notepad/:notepadId/task/:taskId',
+        initialEntries: ['/notepads/1/task/1'],
+        path: '/notepads/:notepadId/task/:taskId',
       });
 
       const button = screen.getByText('Сохранить');
@@ -122,8 +95,8 @@ describe('TaskDetail component', () => {
       getUseBackNavigateMock(handleGoBack);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepad/1/task/1'],
-        path: '/notepad/:notepadId/task/:taskId',
+        initialEntries: ['/notepads/1/task/1'],
+        path: '/notepads/:notepadId/task/:taskId',
       });
 
       const input = screen.getByDisplayValue('Задача 1');
@@ -142,8 +115,8 @@ describe('TaskDetail component', () => {
       getUseTasksMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepad/1/task/1'],
-        path: '/notepad/:notepadId/task/:taskId',
+        initialEntries: ['/notepads/1/task/1'],
+        path: '/notepads/:notepadId/task/:taskId',
       });
 
       const textarea = screen.getByDisplayValue('Описание для задачи 1');
@@ -159,8 +132,8 @@ describe('TaskDetail component', () => {
       getUseTasksMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepad/1/task/1'],
-        path: '/notepad/:notepadId/task/:taskId',
+        initialEntries: ['/notepads/1/task/1'],
+        path: '/notepads/:notepadId/task/:taskId',
       });
 
       const dateInput = screen.getByLabelText('Дата выполнения', {
@@ -191,8 +164,8 @@ describe('TaskDetail component', () => {
       getUseTasksMock();
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepad/1/task/1'],
-        path: '/notepad/:notepadId/task/:taskId',
+        initialEntries: ['/notepads/1/task/1'],
+        path: '/notepads/:notepadId/task/:taskId',
       });
 
       await waitFor(() => {
@@ -225,8 +198,8 @@ describe('TaskDetail component', () => {
       getUseTasksMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepad/1/task/1'],
-        path: '/notepad/:notepadId/task/:taskId',
+        initialEntries: ['/notepads/1/task/1'],
+        path: '/notepads/:notepadId/task/:taskId',
       });
 
       const input = screen.getByPlaceholderText('Следующий шаг');
@@ -245,8 +218,8 @@ describe('TaskDetail component', () => {
       const { setFormMock } = getUseTaskFormMock();
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepad/1/task/1'],
-        path: '/notepad/:notepadId/task/:taskId',
+        initialEntries: ['/notepads/1/task/1'],
+        path: '/notepads/:notepadId/task/:taskId',
       });
 
       await waitFor(() =>
@@ -321,8 +294,8 @@ describe('TaskDetail component', () => {
       getUseTasksMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
-        initialEntries: ['/notepad/1/task/1'],
-        path: '/notepad/:notepadId/task/:taskId',
+        initialEntries: ['/notepads/1/task/1'],
+        path: '/notepads/:notepadId/task/:taskId',
       });
 
       await waitFor(() =>

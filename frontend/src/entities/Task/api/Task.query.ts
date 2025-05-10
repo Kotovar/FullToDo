@@ -37,7 +37,7 @@ class TaskService {
   ): Promise<TaskResponse> {
     try {
       const response = await fetch(
-        `${URL}/notepad/${notepadId}/task/${taskId}`,
+        `${URL}/notepads/${notepadId}/task/${taskId}`,
       );
       return response.json();
     } catch (error) {
@@ -47,7 +47,7 @@ class TaskService {
 
   async getTasksFromNotepad(notepadId: string): Promise<TasksResponse> {
     try {
-      const response = await fetch(`${URL}/notepad/${notepadId}`);
+      const response = await fetch(`${URL}/notepads/${notepadId}`);
       return response.json();
     } catch (error) {
       return this.handleError(error);
@@ -56,7 +56,7 @@ class TaskService {
 
   async createTask(task: CreateTask, notepadId: string): Promise<TaskResponse> {
     try {
-      const response = await fetch(`${URL}/notepad/${notepadId}/task`, {
+      const response = await fetch(`${URL}/notepads/${notepadId}/task`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ class TaskService {
   ): Promise<TaskResponse> {
     try {
       const response = await fetch(
-        `${URL}/notepad/${notepadId}/task/${taskId}`,
+        `${URL}/notepads/${notepadId}/task/${taskId}`,
         {
           method: 'PATCH',
           headers: {
@@ -94,7 +94,7 @@ class TaskService {
   async deleteTask(notepadId: string, taskId: string): Promise<TaskResponse> {
     try {
       const response = await fetch(
-        `${URL}/notepad/${notepadId}/task/${taskId}`,
+        `${URL}/notepads/${notepadId}/task/${taskId}`,
         {
           method: 'DELETE',
           headers: {

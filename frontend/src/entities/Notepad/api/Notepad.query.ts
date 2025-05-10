@@ -32,7 +32,7 @@ export class NotepadService {
 
   async getNotepads(): Promise<NotepadWithoutTasksResponse> {
     try {
-      const response = await fetch(`${URL}/notepad`);
+      const response = await fetch(`${URL}/notepads`);
       return response.json();
     } catch (error) {
       return this.handleError(error);
@@ -41,7 +41,7 @@ export class NotepadService {
 
   async createNotepad(title: string): Promise<NotepadResponse> {
     try {
-      const response = await fetch(`${URL}/notepad`, {
+      const response = await fetch(`${URL}/notepads`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export class NotepadService {
     updatedNotepadFields: Partial<CreateNotepad>,
   ): Promise<NotepadResponse> {
     try {
-      const response = await fetch(`${URL}/notepad/${notepadId}`, {
+      const response = await fetch(`${URL}/notepads/${notepadId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +74,7 @@ export class NotepadService {
 
   async deleteNotepad(notepadId: string): Promise<NotepadResponse> {
     try {
-      const response = await fetch(`${URL}/notepad/${notepadId}`, {
+      const response = await fetch(`${URL}/notepads/${notepadId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

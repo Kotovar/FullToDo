@@ -1,10 +1,10 @@
 export const ROUTES = {
-  NOTEPAD: '/notepad',
-  ALL_TASKS: '/notepad/all',
-  TODAY_TASKS: '/notepad/today',
+  NOTEPAD: '/notepads',
+  ALL_TASKS: '/notepads/all',
+  TODAY_TASKS: '/notepads/today',
   TASK: '/task',
-  NOTEPAD_ID: '/notepad/:notepadId',
-  TASK_ID: '/notepad/:notepadId/task/:taskId',
+  NOTEPAD_ID: '/notepads/:notepadId',
+  TASK_ID: '/notepads/:notepadId/task/:taskId',
 
   getNotepadPath: (id: string) => `${ROUTES.NOTEPAD}/${id}`,
 
