@@ -12,8 +12,7 @@
     "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
     "dev": "npm-run-all --parallel dev:backend dev:frontend",
     "dev:backend": "npm run dev --workspace=backend",
-    "dev:frontend": "npm run dev --workspace=frontend",
-    "prepare": "husky install .husky || echo '[prepare] husky not found, skipping'"
+    "dev:frontend": "npm run dev --workspace=frontend"
   },
   "dependencies": {
     "zod": "^3.24.4"
