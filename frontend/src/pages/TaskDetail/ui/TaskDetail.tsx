@@ -1,72 +1,103 @@
-import { useCallback, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import { Button, TaskInput } from '@shared/ui';
-import type {
-  SubtaskAction,
-  TaskDetailProps,
-} from '@pages/TaskDetail/ui/Subtasks';
+import { useCallback } from 'react';
+import { useParams } from 'react-router';
+import type { Task } from '@sharedCommon/*';
 import {
+  type SubtaskAction,
+  type TaskDetailProps,
+  getFormattedDate,
   handleSubtaskAction,
-  useTask,
   useTaskForm,
 } from '@pages/TaskDetail/ui/Subtasks';
-import { Subtasks, TaskTextarea, TaskTitle } from '@pages/TaskDetail/ui';
+import {
+  createSubtask,
+  Subtasks,
+  TaskTextarea,
+  TaskTitle,
+  SubtasksSkeleton,
+} from '@pages/TaskDetail/ui';
 import { useTasks } from '@entities/Task';
+import { Button, ErrorFetching, TaskInput } from '@shared/ui';
+import { useNotifications, useBackNavigate } from '@shared/lib';
+import { getSuccessMessage } from '@shared/api';
 
 export const TaskDetail = (props: TaskDetailProps) => {
   const { notepadId = '', taskId = '' } = useParams();
-  const navigate = useNavigate();
-
-  const { task, isError, updateTask } = useTask(notepadId, taskId);
-  const { methods } = useTasks(notepadId);
-  const { form, setForm, subtaskTitle, setSubtaskTitle, handleAddSubtask } =
-    useTaskForm(task);
-  const [errorMessage, setErrorMessage] = useState('');
+  const handleGoBack = useBackNavigate();
+  const { showSuccess, showError } = useNotifications();
+  const { task, isError, isLoading, methods } = useTasks({
+    notepadId,
+    taskId,
+    onSuccess: method => showSuccess(getSuccessMessage('task', method)),
+    onError: error => showError(error.message),
+  });
+  const { form, subtaskTitle, setForm, setSubtaskTitle } = useTaskForm(task);
 
   const updateSubtask = useCallback(
     (action: SubtaskAction) => {
       const updatedSubtasks = handleSubtaskAction(form.subtasks, action);
       setForm(prev => ({ ...prev, subtasks: updatedSubtasks }));
-      updateTask({ subtasks: updatedSubtasks });
+      methods.updateTask({ subtasks: updatedSubtasks }, taskId, action.type);
     },
-    [form.subtasks, setForm, updateTask],
+    [form.subtasks, methods, setForm, taskId],
   );
 
-  if (isError) {
-    return <div>Error fetching data</div>;
+  if (isLoading) {
+    return <SubtasksSkeleton />;
   }
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
+  if (isError) {
+    return <ErrorFetching />;
+  }
 
   const handleUpdateTask = async () => {
-    try {
-      await updateTask({
-        dueDate: form.dueDate ? new Date(form.dueDate) : undefined,
-        description: form.description,
-        subtasks: form.subtasks,
-      });
+    const updates: Partial<Task> = {};
 
-      if (task?.title !== form.title) {
-        await methods.updateTask({ title: form.title }, taskId);
-      }
-
-      handleGoBack();
-      setErrorMessage('');
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(`Ошибка при сохранении: ${error.message}`);
-      } else {
-        setErrorMessage('Неизвестная ошибка при сохранении');
-      }
+    if (task?.title !== form.title) {
+      updates.title = form.title;
     }
+
+    if (task?.description !== form.description) {
+      updates.description = form.description;
+    }
+
+    const currentDueDate = task?.dueDate
+      ? getFormattedDate(task.dueDate)
+      : null;
+    const newDueDate = form.dueDate ? form.dueDate : null;
+
+    if (currentDueDate !== newDueDate) {
+      updates.dueDate = form.dueDate ? new Date(form.dueDate) : undefined;
+    }
+
+    if (
+      Object.keys(updates).length > 0 &&
+      (await methods.updateTask(updates, taskId, 'update'))
+    ) {
+      handleGoBack();
+    }
+  };
+
+  const handleCreateSubtask = () => {
+    if (!subtaskTitle.trim()) {
+      return;
+    }
+
+    const newSubtask = createSubtask(subtaskTitle);
+    const updatedSubtasks = [...form.subtasks, newSubtask];
+
+    methods.updateTask({ subtasks: updatedSubtasks }, taskId, 'create');
+
+    setForm(prev => ({
+      ...prev,
+      subtasks: updatedSubtasks,
+    }));
+    setSubtaskTitle('');
   };
 
   const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
     if (event.key === 'Enter' && subtaskTitle) {
       event.preventDefault();
-      handleAddSubtask();
+      handleCreateSubtask();
     }
   };
 
@@ -101,7 +132,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
           }
           onChange={e => setSubtaskTitle(e.target.value)}
           onKeyDown={handleKeyDown}
-          onClick={handleAddSubtask}
+          onClick={handleCreateSubtask}
         />
 
         <TaskInput
@@ -127,7 +158,6 @@ export const TaskDetail = (props: TaskDetailProps) => {
       >
         Сохранить
       </Button>
-      {errorMessage && <div role='alert'>{errorMessage}</div>}
     </section>
   );
 };

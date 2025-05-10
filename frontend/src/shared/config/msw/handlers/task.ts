@@ -25,7 +25,7 @@ type AddTaskResponseBody = {
 
 export const taskHandlers = [
   http.get(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASK}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}${ROUTES.TASK}/${taskId}`,
     () => {
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });
@@ -34,7 +34,7 @@ export const taskHandlers = [
     },
   ),
 
-  http.get(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`, () => {
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}`, () => {
     if (testState.forceError) {
       return new HttpResponse(null, { status: 500 });
     }
@@ -42,7 +42,7 @@ export const taskHandlers = [
   }),
 
   http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASK}`,
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}${ROUTES.TASK}`,
     async ({ request }) => {
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });
@@ -65,7 +65,7 @@ export const taskHandlers = [
   ),
 
   http.patch<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASK}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}${ROUTES.TASK}/${taskId}`,
     async ({ request }) => {
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });
@@ -85,7 +85,7 @@ export const taskHandlers = [
   ),
 
   http.delete<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASK}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}${ROUTES.TASK}/${taskId}`,
     async () => {
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });
@@ -94,4 +94,19 @@ export const taskHandlers = [
       return HttpResponse.json(getDeleteResponse('Task'));
     },
   ),
+
+  http.all(`${import.meta.env.VITE_URL}/*`, () => {
+    return HttpResponse.json(
+      {
+        status: 404,
+        message: 'Страница не найдена',
+        error: 'Not Found',
+      },
+      { status: 404 },
+    );
+  }),
+
+  http.get(`${import.meta.env.VITE_URL}/notepads/unknown/tasks/404`, () => {
+    return new HttpResponse(null, { status: 404 });
+  }),
 ];

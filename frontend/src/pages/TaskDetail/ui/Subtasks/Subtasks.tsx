@@ -1,4 +1,4 @@
-import { useMemo, type ComponentPropsWithoutRef } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import type { Subtask } from '@sharedCommon/*';
 import { debounce } from '@shared/lib/debounce';
 import { SubtaskItem } from '../SubtaskItem';
@@ -14,13 +14,9 @@ export const Subtasks = ({
   updateSubtask,
   ...rest
 }: SubtasksProps) => {
-  const debouncedUpdateSubtask = useMemo(
-    () =>
-      debounce((action: SubtaskAction) => {
-        updateSubtask(action);
-      }, 300),
-    [updateSubtask],
-  );
+  const debouncedUpdateSubtask = debounce((action: SubtaskAction) => {
+    updateSubtask(action);
+  }, 300);
 
   return (
     <ul className='flex list-none flex-col' {...rest}>

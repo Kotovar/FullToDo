@@ -11,11 +11,11 @@ import { notepadService } from '@entities/Notepad';
 import { useNotepads } from './useNotepads';
 
 const getInitialData = async () => {
-  const { result } = renderHook(() => useNotepads(), {
+  const { result } = renderHook(() => useNotepads({}), {
     wrapper: createWrapperWithRouter(),
   });
 
-  await waitFor(() => expect(result.current.notepads).toBeDefined());
+  await waitFor(() => expect(result.current.isLoading).toBeFalsy());
 
   return result;
 };
@@ -38,6 +38,21 @@ describe('useNotepads hook', () => {
 
     vi.spyOn(notepadService, 'deleteNotepad').mockResolvedValue(
       getDeleteResponse('Notepad'),
+    );
+  });
+
+  test('Показывает уведомление об ошибке, если она произошла', async () => {
+    const mockError = new Error('Ошибка сервера');
+    vi.spyOn(notepadService, 'createNotepad').mockRejectedValue(mockError);
+
+    const result = await getInitialData();
+    const success = await result.current.methods.createNotepad(
+      MOCK_TITLE_NON_EXISTING,
+    );
+
+    expect(success).toBe(false);
+    expect(notepadService.createNotepad).toHaveBeenCalledWith(
+      MOCK_TITLE_NON_EXISTING,
     );
   });
 

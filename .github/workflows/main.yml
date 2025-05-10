@@ -8,7 +8,7 @@ on:
 
 jobs:
   frontend:
-    name: Build, Lint & Test Frontend
+    name: Lint, Test & Build Frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

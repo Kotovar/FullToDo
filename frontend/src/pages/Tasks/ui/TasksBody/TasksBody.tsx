@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { Button, LinkCard } from '@shared/ui';
 import { ROUTES } from '@sharedCommon/';
 import { useTasks } from '@entities/Task';
-import { CompletionIcon } from '@shared/ui/CompletionIcon';
+import { CompletionIcon } from '@shared/ui';
+import { useNotifications } from '@shared/lib/notifications';
+import { getSuccessMessage } from '@shared/api';
 
 interface TasksBodyProps {
   notepadId?: string;
@@ -13,11 +15,12 @@ export const TasksBody = (props: TasksBodyProps) => {
   const { notepadPathName, notepadId } = props;
   const [currentModalId, setCurrentModalId] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
-  const { tasks, isError, methods } = useTasks(notepadId);
-
-  if (isError) {
-    return <div>Error fetching data</div>;
-  }
+  const { showSuccess, showError } = useNotifications();
+  const { tasks, methods } = useTasks({
+    notepadId,
+    onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
+    onError: error => showError(error.message),
+  });
 
   const handleModalId = (id: string) => {
     setCurrentModalId(id);
@@ -36,16 +39,19 @@ export const TasksBody = (props: TasksBodyProps) => {
     );
   };
 
-  const handleSaveTitle = (
+  const handleSaveTitle = async (
     id: string,
     newTitle: string,
     currentTitle: string,
   ) => {
     if (newTitle !== currentTitle) {
-      methods.updateTask({ title: newTitle }, id);
+      const success = await methods.updateTask({ title: newTitle }, id);
+      if (!success) {
+        return currentTitle;
+      }
     }
-
     setEditingTaskId(null);
+    return newTitle;
   };
 
   return (
