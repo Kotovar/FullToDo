@@ -30,7 +30,6 @@ export const createWrapper = () => {
 
 export const createWrapperWithRouter = (
   initialEntries = [`${ROUTES.NOTEPADS}/${notepadId}`],
-  // initialEntries = [ROUTES.getNotepadPath(notepadId)],
 ) => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -44,11 +43,7 @@ export const createWrapperWithRouter = (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={initialEntries}>
         <Routes>
-          <Route
-            path={`${ROUTES.NOTEPADS}/:notepadId`}
-            // path={ROUTES.getNotepadPath(':notepadId')}
-            element={children}
-          />
+          <Route path={`${ROUTES.NOTEPADS}/:notepadId`} element={children} />
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>

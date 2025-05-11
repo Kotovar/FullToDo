@@ -199,7 +199,7 @@ describe('MockTaskService', () => {
 
   describe('updateTask', () => {
     test('success', async () => {
-      const responsePost = await taskService.updateTask(taskId, notepadId, {
+      const responsePost = await taskService.updateTask(taskId, {
         title: MOCK_TITLE_NON_EXISTING,
       });
 
@@ -207,7 +207,7 @@ describe('MockTaskService', () => {
     });
 
     test('return error if title exists', async () => {
-      const responsePost = await taskService.updateTask(taskId, notepadId, {
+      const responsePost = await taskService.updateTask(taskId, {
         title: MOCK_TITLE_EXISTING,
       });
 
@@ -221,7 +221,7 @@ describe('MockTaskService', () => {
       testState.forceError = true;
 
       await expect(
-        taskService.updateTask(taskId, notepadId, {
+        taskService.updateTask(taskId, {
           title: MOCK_TITLE_NON_EXISTING,
         }),
       ).rejects.toThrow('Server error');
@@ -233,7 +233,7 @@ describe('MockTaskService', () => {
       const fetchSpy = getErrorMock();
 
       await expect(
-        taskService.updateTask(taskId, notepadId, {
+        taskService.updateTask(taskId, {
           title: MOCK_TITLE_NON_EXISTING,
         }),
       ).rejects.toThrowError(
@@ -246,14 +246,14 @@ describe('MockTaskService', () => {
 
   describe('deleteTask', () => {
     test('success', async () => {
-      const responseDelete = await taskService.deleteTask(notepadId, taskId);
+      const responseDelete = await taskService.deleteTask(taskId);
       expect(responseDelete).toStrictEqual(getDeleteResponse('Task'));
     });
 
     test('return error if network problem', async () => {
       testState.forceError = true;
 
-      await expect(taskService.deleteTask(notepadId, taskId)).rejects.toThrow(
+      await expect(taskService.deleteTask(taskId)).rejects.toThrow(
         'Server error',
       );
 
@@ -263,9 +263,7 @@ describe('MockTaskService', () => {
     test('should throw error if error in not instanceof Error', async () => {
       const fetchSpy = getErrorMock();
 
-      await expect(
-        taskService.deleteTask(notepadId, taskId),
-      ).rejects.toThrowError(
+      await expect(taskService.deleteTask(taskId)).rejects.toThrowError(
         expect.objectContaining(getErrorResult(TASKS_ERRORS)),
       );
 

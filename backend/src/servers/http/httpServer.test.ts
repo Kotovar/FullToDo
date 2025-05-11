@@ -10,11 +10,13 @@ import {
   type TaskResponse,
   createNotepadSchema,
   createTaskSchema,
+  commonNotepadId,
 } from '@shared/schemas';
-import { createHttpServer, routes } from './httpServer';
+import { createHttpServer } from './httpServer';
 import { taskRepository } from '../../repositories';
 import { getSingleNotepadTasks, getSingleTask } from '../../controllers';
 import { TASKS1 } from '../../db/mock/mock-db';
+import { BASE_ROUTES } from './routes';
 
 const validTasksData: TasksResponse = {
   status: 200,
@@ -49,12 +51,8 @@ const validNotepadWithoutTasksData: NotepadWithoutTasksResponse = {
   message: 'Success',
   data: [
     {
-      title: 'Сегодня',
-      _id: 'today',
-    },
-    {
       title: 'Задачи',
-      _id: 'all',
+      _id: commonNotepadId,
     },
   ],
 };
@@ -91,7 +89,7 @@ describe('httpServer GET', () => {
     server.close();
   });
 
-  test('should handle GET /notepads/all', async () => {
+  test('should handle GET /tasks', async () => {
     const req = {
       method: 'GET',
       url: ROUTES.TASKS,
@@ -99,7 +97,7 @@ describe('httpServer GET', () => {
 
     vi.spyOn(taskRepository, 'getAllTasks').mockResolvedValue(validTasksData);
 
-    await routes[`GET ${ROUTES.TASKS}`]({ req, res });
+    await BASE_ROUTES[`GET ${ROUTES.TASKS}`]({ req, res }, taskRepository);
 
     expect(res.writeHead).toHaveBeenCalledWith(validTasksData.status, {
       'Content-Type': 'application/json',
@@ -108,7 +106,7 @@ describe('httpServer GET', () => {
     expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTasksData));
   });
 
-  test('should return 500 if an internal server error occurs - /notepads/today', async () => {
+  test('should return 500 if an internal server error occurs - /tasks', async () => {
     vi.spyOn(taskRepository, 'getAllTasks').mockRejectedValue(internalError);
 
     const response = await request(server)
@@ -130,7 +128,7 @@ describe('httpServer GET', () => {
       validNotepadWithoutTasksData,
     );
 
-    await routes[`GET ${ROUTES.NOTEPADS}`]({ req, res });
+    await BASE_ROUTES[`GET ${ROUTES.NOTEPADS}`]({ req, res }, taskRepository);
 
     expect(res.writeHead).toHaveBeenCalledWith(
       validNotepadWithoutTasksData.status,
@@ -149,35 +147,6 @@ describe('httpServer GET', () => {
 
     const response = await request(server)
       .get(ROUTES.NOTEPADS)
-      .set('Accept', 'application/json')
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: {} });
-  });
-
-  test('should handle GET /notepads/today', async () => {
-    const req = {
-      method: 'GET',
-      url: ROUTES.TODAY_TASKS,
-    } as http.IncomingMessage;
-
-    vi.spyOn(taskRepository, 'getTodayTasks').mockResolvedValue(validTasksData);
-
-    await routes[`GET ${ROUTES.TODAY_TASKS}`]({ req, res });
-
-    expect(res.writeHead).toHaveBeenCalledWith(validTasksData.status, {
-      'Content-Type': 'application/json',
-    });
-
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTasksData));
-  });
-
-  test('should return 500 if an internal server error occurs - /notepads/today', async () => {
-    vi.spyOn(taskRepository, 'getTodayTasks').mockRejectedValue(internalError);
-
-    const response = await request(server)
-      .get(ROUTES.TODAY_TASKS)
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json');
 

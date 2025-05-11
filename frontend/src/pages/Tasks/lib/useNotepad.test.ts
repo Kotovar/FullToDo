@@ -8,7 +8,6 @@ import { getUseNotificationsMock } from '@shared/testing';
 
 const getInitialData = async () => {
   const { result } = renderHook(() => useNotepad(), {
-    // wrapper: createWrapperWithRouter([ROUTES.getNotepadPath(notepadId)]),
     wrapper: createWrapperWithRouter([`${ROUTES.NOTEPADS}/${notepadId}`]),
   });
 
@@ -29,7 +28,6 @@ describe('useNotepad hook', () => {
     const result = await getInitialData();
 
     expect(result.current.notepadId).toBe(notepadId);
-    // expect(result.current.location).toBe(ROUTES.getNotepadPath(notepadId));
     expect(result.current.location).toBe(`${ROUTES.NOTEPADS}/${notepadId}`);
 
     await waitFor(() => {

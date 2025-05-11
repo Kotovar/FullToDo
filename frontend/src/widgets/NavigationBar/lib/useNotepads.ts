@@ -50,8 +50,7 @@ export const useNotepads = (props: UseNotepadsProps) => {
 
   const mutationDelete = useMutation({
     mutationFn: (notepadId: string) => notepadService.deleteNotepad(notepadId),
-    onSuccess: () =>
-      handleMutationSuccess(refetch, navigate, ROUTES.TODAY_TASKS),
+    onSuccess: () => handleMutationSuccess(refetch, navigate, ROUTES.TASKS),
   });
 
   const createNotepad = async (title: string) =>

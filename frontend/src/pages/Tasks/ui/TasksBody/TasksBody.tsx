@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Button, LinkCard } from '@shared/ui';
-import { ROUTES } from '@sharedCommon/';
 import { useTasks } from '@entities/Task';
 import { CompletionIcon } from '@shared/ui';
 import { useNotifications } from '@shared/lib/notifications';
 import { getSuccessMessage } from '@shared/api';
+import { getPatch } from '@pages/Tasks/lib';
 
 interface TasksBodyProps {
   notepadId?: string;
@@ -21,6 +21,7 @@ export const TasksBody = (props: TasksBodyProps) => {
     onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
     onError: error => showError(error.message),
   });
+
   const handleModalId = (id: string) => {
     setCurrentModalId(id);
   };
@@ -58,6 +59,8 @@ export const TasksBody = (props: TasksBodyProps) => {
       {tasks && (
         <ul className='bg-grey-light my-scroll scrollbar-custom flex flex-col gap-2 overflow-y-auto p-1'>
           {tasks.map(({ title, progress, isCompleted, _id }) => {
+            const path = getPatch(_id, notepadPathName, notepadId);
+
             return (
               <LinkCard
                 header={
@@ -77,8 +80,7 @@ export const TasksBody = (props: TasksBodyProps) => {
                 cardTitle={title}
                 currentModalId={currentModalId}
                 handleModalId={handleModalId}
-                path={`${ROUTES.getTaskDetailPath(notepadPathName.split('/notepads/')[1], String(_id))}`}
-                // path={ROUTES.getTaskDetailPath(notepadPathName, String(_id))}
+                path={path}
                 handleClickDelete={() => methods.deleteTask(_id)}
                 handleClickRename={() => renameTask(_id)}
                 isEditing={editingTaskId === _id}

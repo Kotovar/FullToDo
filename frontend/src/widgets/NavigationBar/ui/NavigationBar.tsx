@@ -2,7 +2,7 @@ import { useState, type ComponentPropsWithoutRef } from 'react';
 import { useLocation } from 'react-router';
 import { clsx } from 'clsx';
 import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
-import { ROUTES } from '@sharedCommon/';
+import { commonNotepadId, ROUTES } from '@sharedCommon/';
 import { useNotifications } from '@shared/lib/notifications';
 import { getSuccessMessage } from '@shared/api';
 import { useNotepads } from '@widgets/NavigationBar/lib';
@@ -24,7 +24,7 @@ export const NavigationBar = (props: NavigationBarProps) => {
     onSuccess: method => showSuccess(getSuccessMessage('notepad', method)),
     onError: error => showError(error.message),
   });
-  const [basePath] = useLocation().pathname.split(ROUTES.TASKS);
+  const basePath = useLocation().pathname;
 
   if (isLoading || isError) {
     return <NavigationBarSkeleton isHidden={isHidden} />;
@@ -60,8 +60,12 @@ export const NavigationBar = (props: NavigationBarProps) => {
   };
 
   const notepadList = notepads?.map(({ title, _id }) => {
-    // const path = ROUTES.getNotepadPath(_id);
-    const path = `${ROUTES.NOTEPADS}/${_id}`;
+    let path: string;
+    if (_id === commonNotepadId) {
+      path = ROUTES.TASKS;
+    } else {
+      path = ROUTES.getNotepadPath(_id);
+    }
 
     return (
       <LinkCard

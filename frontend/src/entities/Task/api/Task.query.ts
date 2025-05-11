@@ -1,8 +1,9 @@
-import type {
-  CreateTask,
-  Task,
-  TaskResponse,
-  TasksResponse,
+import {
+  commonNotepadId,
+  type CreateTask,
+  type Task,
+  type TaskResponse,
+  type TasksResponse,
 } from 'shared/schemas';
 import { URL, TASKS_ERRORS, COMMON_ERRORS } from '@shared/api';
 import { ROUTES } from 'shared/routes';
@@ -33,13 +34,17 @@ class TaskService {
   }
 
   async getSingleTask(
-    notepadId: string,
     taskId: string,
+    notepadId: string,
   ): Promise<TaskResponse> {
     try {
-      const response = await fetch(
-        `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
-      );
+      if (notepadId) {
+        const response = await fetch(
+          `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
+        );
+        return response.json();
+      }
+      const response = await fetch(`${URL}${ROUTES.TASKS}/${taskId}`);
       return response.json();
     } catch (error) {
       return this.handleError(error);
@@ -48,7 +53,27 @@ class TaskService {
 
   async getTasksFromNotepad(notepadId: string): Promise<TasksResponse> {
     try {
-      const response = await fetch(`${URL}${ROUTES.getNotepadPath(notepadId)}`);
+      let endpoint: string;
+
+      switch (notepadId) {
+        case commonNotepadId:
+        case '':
+          endpoint = ROUTES.TASKS;
+          break;
+        default:
+          endpoint = ROUTES.getNotepadPath(notepadId);
+      }
+
+      const response = await fetch(`${URL}${endpoint}`);
+      return response.json();
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async getAllTasks(): Promise<TasksResponse> {
+    try {
+      const response = await fetch(`${URL}${ROUTES.TASKS}`);
       return response.json();
     } catch (error) {
       return this.handleError(error);
@@ -57,16 +82,17 @@ class TaskService {
 
   async createTask(task: CreateTask, notepadId: string): Promise<TaskResponse> {
     try {
-      const response = await fetch(
-        `${URL}${ROUTES.getNotepadPath(notepadId)}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(task),
+      const patch = notepadId
+        ? `${URL}${ROUTES.getNotepadPath(notepadId)}`
+        : `${URL}${ROUTES.TASKS}`;
+
+      const response = await fetch(patch, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(task),
+      });
       return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);
@@ -74,38 +100,31 @@ class TaskService {
   }
 
   async updateTask(
-    notepadId: string,
     taskId: string,
     updatedTaskFields: Partial<Task>,
   ): Promise<TaskResponse> {
     try {
-      const response = await fetch(
-        `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(updatedTaskFields),
+      const response = await fetch(`${URL}${ROUTES.TASKS}/${taskId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(updatedTaskFields),
+      });
       return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);
     }
   }
 
-  async deleteTask(notepadId: string, taskId: string): Promise<TaskResponse> {
+  async deleteTask(taskId: string): Promise<TaskResponse> {
     try {
-      const response = await fetch(
-        `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      const response = await fetch(`${URL}${ROUTES.TASKS}/${taskId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+      });
       return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);
