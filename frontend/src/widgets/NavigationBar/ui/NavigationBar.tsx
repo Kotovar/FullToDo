@@ -24,7 +24,7 @@ export const NavigationBar = (props: NavigationBarProps) => {
     onSuccess: method => showSuccess(getSuccessMessage('notepad', method)),
     onError: error => showError(error.message),
   });
-  const [basePath] = useLocation().pathname.split(ROUTES.TASK);
+  const [basePath] = useLocation().pathname.split(ROUTES.TASKS);
 
   if (isLoading || isError) {
     return <NavigationBarSkeleton isHidden={isHidden} />;
@@ -60,7 +60,8 @@ export const NavigationBar = (props: NavigationBarProps) => {
   };
 
   const notepadList = notepads?.map(({ title, _id }) => {
-    const path = ROUTES.getNotepadPath(_id);
+    // const path = ROUTES.getNotepadPath(_id);
+    const path = `${ROUTES.NOTEPADS}/${_id}`;
 
     return (
       <LinkCard

@@ -21,7 +21,6 @@ export const TasksBody = (props: TasksBodyProps) => {
     onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
     onError: error => showError(error.message),
   });
-
   const handleModalId = (id: string) => {
     setCurrentModalId(id);
   };
@@ -78,7 +77,8 @@ export const TasksBody = (props: TasksBodyProps) => {
                 cardTitle={title}
                 currentModalId={currentModalId}
                 handleModalId={handleModalId}
-                path={ROUTES.getTaskDetailPath(notepadPathName, String(_id))}
+                path={`${ROUTES.getTaskDetailPath(notepadPathName.split('/notepads/')[1], String(_id))}`}
+                // path={ROUTES.getTaskDetailPath(notepadPathName, String(_id))}
                 handleClickDelete={() => methods.deleteTask(_id)}
                 handleClickRename={() => renameTask(_id)}
                 isEditing={editingTaskId === _id}

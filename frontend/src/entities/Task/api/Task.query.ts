@@ -5,6 +5,7 @@ import type {
   TasksResponse,
 } from 'shared/schemas';
 import { URL, TASKS_ERRORS, COMMON_ERRORS } from '@shared/api';
+import { ROUTES } from 'shared/routes';
 
 if (!URL) {
   throw new Error(COMMON_ERRORS.URL.message);
@@ -37,7 +38,7 @@ class TaskService {
   ): Promise<TaskResponse> {
     try {
       const response = await fetch(
-        `${URL}/notepads/${notepadId}/task/${taskId}`,
+        `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
       );
       return response.json();
     } catch (error) {
@@ -47,7 +48,7 @@ class TaskService {
 
   async getTasksFromNotepad(notepadId: string): Promise<TasksResponse> {
     try {
-      const response = await fetch(`${URL}/notepads/${notepadId}`);
+      const response = await fetch(`${URL}${ROUTES.getNotepadPath(notepadId)}`);
       return response.json();
     } catch (error) {
       return this.handleError(error);
@@ -56,13 +57,16 @@ class TaskService {
 
   async createTask(task: CreateTask, notepadId: string): Promise<TaskResponse> {
     try {
-      const response = await fetch(`${URL}/notepads/${notepadId}/task`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        `${URL}${ROUTES.getNotepadPath(notepadId)}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(task),
         },
-        body: JSON.stringify(task),
-      });
+      );
       return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);
@@ -76,7 +80,7 @@ class TaskService {
   ): Promise<TaskResponse> {
     try {
       const response = await fetch(
-        `${URL}/notepads/${notepadId}/task/${taskId}`,
+        `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
         {
           method: 'PATCH',
           headers: {
@@ -94,7 +98,7 @@ class TaskService {
   async deleteTask(notepadId: string, taskId: string): Promise<TaskResponse> {
     try {
       const response = await fetch(
-        `${URL}/notepads/${notepadId}/task/${taskId}`,
+        `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
         {
           method: 'DELETE',
           headers: {

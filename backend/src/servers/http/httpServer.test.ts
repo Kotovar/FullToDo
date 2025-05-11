@@ -94,12 +94,12 @@ describe('httpServer GET', () => {
   test('should handle GET /notepads/all', async () => {
     const req = {
       method: 'GET',
-      url: ROUTES.ALL_TASKS,
+      url: ROUTES.TASKS,
     } as http.IncomingMessage;
 
     vi.spyOn(taskRepository, 'getAllTasks').mockResolvedValue(validTasksData);
 
-    await routes[`GET ${ROUTES.ALL_TASKS}`]({ req, res });
+    await routes[`GET ${ROUTES.TASKS}`]({ req, res });
 
     expect(res.writeHead).toHaveBeenCalledWith(validTasksData.status, {
       'Content-Type': 'application/json',
@@ -112,7 +112,7 @@ describe('httpServer GET', () => {
     vi.spyOn(taskRepository, 'getAllTasks').mockRejectedValue(internalError);
 
     const response = await request(server)
-      .get(ROUTES.ALL_TASKS)
+      .get(ROUTES.TASKS)
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json');
 
@@ -123,14 +123,14 @@ describe('httpServer GET', () => {
   test('should handle GET /notepads', async () => {
     const req = {
       method: 'GET',
-      url: ROUTES.NOTEPAD,
+      url: ROUTES.NOTEPADS,
     } as http.IncomingMessage;
 
     vi.spyOn(taskRepository, 'getAllNotepads').mockResolvedValue(
       validNotepadWithoutTasksData,
     );
 
-    await routes[`GET ${ROUTES.NOTEPAD}`]({ req, res });
+    await routes[`GET ${ROUTES.NOTEPADS}`]({ req, res });
 
     expect(res.writeHead).toHaveBeenCalledWith(
       validNotepadWithoutTasksData.status,
@@ -148,7 +148,7 @@ describe('httpServer GET', () => {
     vi.spyOn(taskRepository, 'getAllNotepads').mockRejectedValue(internalError);
 
     const response = await request(server)
-      .get(ROUTES.NOTEPAD)
+      .get(ROUTES.NOTEPADS)
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json');
 
@@ -235,7 +235,7 @@ describe('httpServer GET', () => {
     expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTaskData));
   });
 
-  test('should return 404 if task not found - /notepads/1/task/1', async () => {
+  test('should return 404 if task not found - /notepads/1/tasks/1', async () => {
     const updateResponse: TaskResponse = {
       status: 404,
       message: 'Task not found',
@@ -244,7 +244,7 @@ describe('httpServer GET', () => {
     vi.spyOn(taskRepository, 'getSingleTask').mockResolvedValue(updateResponse);
 
     const response = await request(server)
-      .get(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+      .get(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json');
 
@@ -260,7 +260,7 @@ describe('httpServer GET', () => {
     vi.spyOn(taskRepository, 'getSingleTask').mockRejectedValue(internalError);
 
     const response = await request(server)
-      .get(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+      .get(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json');
 
@@ -292,7 +292,7 @@ describe('httpServer POST', () => {
       );
 
       const response = await request(server)
-        .post(ROUTES.NOTEPAD)
+        .post(ROUTES.NOTEPADS)
         .send(notepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -306,7 +306,7 @@ describe('httpServer POST', () => {
       const notepadData = { title: 'New Notepad' };
 
       const response = await request(server)
-        .post(ROUTES.NOTEPAD)
+        .post(ROUTES.NOTEPADS)
         .send(JSON.stringify(notepadData))
         .set('Accept', 'application/json')
         .set('Content-Type', 'text/plain');
@@ -340,7 +340,7 @@ describe('httpServer POST', () => {
       });
 
       const response = await request(server)
-        .post(ROUTES.NOTEPAD)
+        .post(ROUTES.NOTEPADS)
         .send(invalidNotepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -361,7 +361,7 @@ describe('httpServer POST', () => {
       );
 
       const response = await request(server)
-        .post(ROUTES.NOTEPAD)
+        .post(ROUTES.NOTEPADS)
         .send(notepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -378,7 +378,7 @@ describe('httpServer POST', () => {
       );
 
       const response = await request(server)
-        .post(ROUTES.NOTEPAD)
+        .post(ROUTES.NOTEPADS)
         .send(notepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -388,14 +388,14 @@ describe('httpServer POST', () => {
     });
   });
 
-  describe('should handle POST /notepads/1/task', () => {
+  describe('should handle POST /notepads/1/tasks', () => {
     const notepadId = '1';
     const taskData = {
       title: '1',
       description: 'Созданная',
     };
 
-    test(`should handle POST /notepads/${notepadId}/task and return 201 status`, async () => {
+    test(`should handle POST /notepads/${notepadId}/tasks and return 201 status`, async () => {
       const taskResponse: TaskResponse = {
         status: 201,
         message: `A task with the title ${taskData.title} has been successfully created`,
@@ -404,7 +404,7 @@ describe('httpServer POST', () => {
       vi.spyOn(taskRepository, 'createTask').mockResolvedValue(taskResponse);
 
       const response = await request(server)
-        .post(`${ROUTES.getNotepadPath(notepadId)}/task`)
+        .post(ROUTES.getNotepadPath(notepadId))
         .send(taskData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -419,7 +419,7 @@ describe('httpServer POST', () => {
 
     test('should return 400 if Content-Type is not application/json', async () => {
       const response = await request(server)
-        .post(`${ROUTES.getNotepadPath(notepadId)}/task`)
+        .post(ROUTES.getNotepadPath(notepadId))
         .send(JSON.stringify(taskData))
         .set('Accept', 'application/json')
         .set('Content-Type', 'text/plain');
@@ -457,7 +457,7 @@ describe('httpServer POST', () => {
       });
 
       const response = await request(server)
-        .post(`${ROUTES.getNotepadPath(notepadId)}/task`)
+        .post(ROUTES.getNotepadPath(notepadId))
         .send(invalidTaskData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -472,7 +472,7 @@ describe('httpServer POST', () => {
       vi.spyOn(taskRepository, 'createTask').mockRejectedValue(internalError);
 
       const response = await request(server)
-        .post(`${ROUTES.getNotepadPath(notepadId)}/task`)
+        .post(ROUTES.getNotepadPath(notepadId))
         .send(taskData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -509,7 +509,7 @@ describe('httpServer PATH', () => {
       );
 
       const response = await request(server)
-        .patch(ROUTES.getNotepadPath(notepadId))
+        .patch(`${ROUTES.NOTEPADS}/${notepadId}`)
         .send(updatedNotepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -524,7 +524,7 @@ describe('httpServer PATH', () => {
 
     test('should return 400 if Content-Type is not application/json', async () => {
       const response = await request(server)
-        .patch(ROUTES.getNotepadPath(notepadId))
+        .patch(`${ROUTES.NOTEPADS}/${notepadId}`)
         .send(JSON.stringify(updatedNotepadData))
         .set('Accept', 'application/json')
         .set('Content-Type', 'text/plain');
@@ -558,7 +558,7 @@ describe('httpServer PATH', () => {
       });
 
       const response = await request(server)
-        .patch(ROUTES.getNotepadPath(notepadId))
+        .patch(`${ROUTES.NOTEPADS}/${notepadId}`)
         .send(invalidNotepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -578,7 +578,7 @@ describe('httpServer PATH', () => {
       );
 
       const response = await request(server)
-        .patch(ROUTES.getNotepadPath(notepadId))
+        .patch(`${ROUTES.NOTEPADS}/${notepadId}`)
         .send(updatedNotepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -599,7 +599,7 @@ describe('httpServer PATH', () => {
       );
 
       const response = await request(server)
-        .patch(ROUTES.getNotepadPath(notepadId))
+        .patch(`${ROUTES.NOTEPADS}/${notepadId}`)
         .send(notepadData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -609,7 +609,7 @@ describe('httpServer PATH', () => {
     });
   });
 
-  describe(`should handle PATCH /notepads/${notepadId}/task/${taskId}`, () => {
+  describe(`should handle PATCH /notepads/${notepadId}/tasks/${taskId}`, () => {
     const updatedTaskData = {
       title: '1',
       isCompleted: true,
@@ -624,7 +624,7 @@ describe('httpServer PATH', () => {
       vi.spyOn(taskRepository, 'updateTask').mockResolvedValue(taskResponse);
 
       const response = await request(server)
-        .patch(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+        .patch(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
         .send(updatedTaskData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -640,7 +640,7 @@ describe('httpServer PATH', () => {
 
     test('should return 400 if Content-Type is not application/json', async () => {
       const response = await request(server)
-        .patch(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+        .patch(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
         .send(JSON.stringify(updatedTaskData))
         .set('Accept', 'application/json')
         .set('Content-Type', 'text/plain');
@@ -679,7 +679,7 @@ describe('httpServer PATH', () => {
       });
 
       const response = await request(server)
-        .patch(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+        .patch(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
         .send(invalidTaskData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -697,7 +697,7 @@ describe('httpServer PATH', () => {
       vi.spyOn(taskRepository, 'updateTask').mockResolvedValue(updateResponse);
 
       const response = await request(server)
-        .patch(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+        .patch(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
         .send(updatedTaskData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -715,7 +715,7 @@ describe('httpServer PATH', () => {
       vi.spyOn(taskRepository, 'updateTask').mockRejectedValue(internalError);
 
       const response = await request(server)
-        .patch(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+        .patch(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
         .send(updatedTaskData)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -751,7 +751,7 @@ describe('httpServer DELETE', () => {
       );
 
       const response = await request(server)
-        .delete(ROUTES.getNotepadPath(notepadId))
+        .delete(`${ROUTES.NOTEPADS}/${notepadId}`)
         .send(notepadId)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -772,7 +772,7 @@ describe('httpServer DELETE', () => {
       );
 
       const response = await request(server)
-        .delete(ROUTES.getNotepadPath(notepadId))
+        .delete(`${ROUTES.NOTEPADS}/${notepadId}`)
         .send(notepadId)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -788,7 +788,7 @@ describe('httpServer DELETE', () => {
       );
 
       const response = await request(server)
-        .delete(ROUTES.getNotepadPath(notepadId))
+        .delete(`${ROUTES.NOTEPADS}/${notepadId}`)
         .send(notepadId)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -798,7 +798,7 @@ describe('httpServer DELETE', () => {
     });
   });
 
-  describe(`should handle DELETE /notepads/${notepadId}/task/${taskId}`, () => {
+  describe(`should handle DELETE /notepads/${notepadId}/tasks/${taskId}`, () => {
     test(`should handle DELETE /notepads/${notepadId}/task/${taskId} and return 200 status`, async () => {
       const deleteResponse: TaskResponse = {
         status: 200,
@@ -808,7 +808,7 @@ describe('httpServer DELETE', () => {
       vi.spyOn(taskRepository, 'deleteTask').mockResolvedValue(deleteResponse);
 
       const response = await request(server)
-        .delete(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+        .delete(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
         .send(taskId)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -827,7 +827,7 @@ describe('httpServer DELETE', () => {
       vi.spyOn(taskRepository, 'deleteTask').mockResolvedValue(deleteResponse);
 
       const response = await request(server)
-        .delete(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+        .delete(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
         .send(taskId)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -843,7 +843,7 @@ describe('httpServer DELETE', () => {
       vi.spyOn(taskRepository, 'deleteTask').mockRejectedValue(error);
 
       const response = await request(server)
-        .delete(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+        .delete(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
         .send(taskId)
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
@@ -866,7 +866,7 @@ describe('httpServer OPTIONS', () => {
 
   test(`should handle OPTIONS /notepads and return 204 status`, async () => {
     const response = await request(server)
-      .options(ROUTES.NOTEPAD)
+      .options(ROUTES.NOTEPADS)
       .set('Accept', 'application/json');
 
     expect(response.status).toBe(204);
@@ -903,9 +903,9 @@ describe('httpServer non-existent routes', () => {
     });
   });
 
-  test(`should handle PUT /notepads/${notepadId}/task/${taskId} and return 404 status`, async () => {
+  test(`should handle PUT /notepads/${notepadId}/tasks/${taskId} and return 404 status`, async () => {
     const response = await request(server)
-      .put(`${ROUTES.getTaskDetailPath(`/notepads/${notepadId}`, taskId)}`)
+      .put(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
       .send(notepadId)
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json');
