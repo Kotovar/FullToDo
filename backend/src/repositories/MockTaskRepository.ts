@@ -11,6 +11,7 @@ import type {
   CreateNotepad,
   CreateTask,
   Subtask,
+  TaskQueryParams,
 } from '@shared/schemas';
 import { commonNotepadId } from '@shared/schemas';
 import type { TaskRepository } from './TaskRepository';
@@ -22,6 +23,66 @@ export class MockTaskRepository implements TaskRepository {
   constructor(initialNotepads: Notepad[]) {
     this.notepads = structuredClone(initialNotepads);
     this.tasks = initialNotepads.flatMap(notepad => notepad.tasks);
+  }
+
+  private applyTaskFilters(tasks: Task[], params?: TaskQueryParams): Task[] {
+    if (!params) {
+      return tasks;
+    }
+
+    const { isCompleted, hasDueDate, priority, sortBy, order } = params;
+
+    let result = [...tasks];
+
+    if (isCompleted !== undefined) {
+      result = result.filter(task => task.isCompleted === isCompleted);
+    }
+
+    if (hasDueDate !== undefined) {
+      result = result.filter(task =>
+        hasDueDate ? !!task.dueDate : !task.dueDate,
+      );
+    }
+
+    if (priority) {
+      result = result.filter(task => task.priority === priority);
+    }
+
+    if (sortBy) {
+      result = result.toSorted((a, b) => {
+        if (sortBy === 'priority') {
+          const priorityOrder = { low: 0, medium: 1, high: 2 };
+          const aVal = a.priority ? priorityOrder[a.priority] : -1;
+          const bVal = b.priority ? priorityOrder[b.priority] : -1;
+          return order === 'asc' ? aVal - bVal : bVal - aVal;
+        }
+
+        const valA = a[sortBy];
+        const valB = b[sortBy];
+
+        if (valA === undefined) return order === 'asc' ? 1 : -1;
+        if (valB === undefined) return order === 'asc' ? -1 : 1;
+        if (valA === valB) return 0;
+
+        return order === 'asc' ? (valA < valB ? -1 : 1) : valA < valB ? 1 : -1;
+      });
+    }
+
+    if (params.search !== undefined) {
+      const searchTerm = params.search.toLowerCase().trim();
+
+      if (searchTerm === '') {
+        return result;
+      }
+
+      result = result.filter(
+        task =>
+          task.title.toLowerCase().includes(searchTerm) ||
+          task.description?.toLowerCase().includes(searchTerm),
+      );
+    }
+
+    return result;
   }
 
   private isValidNotepadId(id: string): boolean {
@@ -127,11 +188,13 @@ export class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getAllTasks(): Promise<TasksResponse> {
+  async getAllTasks(params?: TaskQueryParams): Promise<TasksResponse> {
+    const filteredTasks = this.applyTaskFilters(this.tasks, params);
+
     return {
       status: 200,
       message: 'Success',
-      data: this.tasks,
+      data: filteredTasks,
     };
   }
 
@@ -153,7 +216,10 @@ export class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getSingleNotepadTasks(notepadId: string): Promise<TasksResponse> {
+  async getSingleNotepadTasks(
+    notepadId: string,
+    params?: TaskQueryParams,
+  ): Promise<TasksResponse> {
     if (!this.notepads.some(notepad => notepad._id === notepadId)) {
       return {
         status: 404,
@@ -166,10 +232,12 @@ export class MockTaskRepository implements TaskRepository {
       task => task.notepadId === notepadId,
     );
 
+    const filteredTasks = this.applyTaskFilters(filteredByNotebook, params);
+
     return {
       status: 200,
       message: 'Success',
-      data: filteredByNotebook,
+      data: filteredTasks,
     };
   }
 

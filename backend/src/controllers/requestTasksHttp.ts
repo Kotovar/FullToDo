@@ -3,6 +3,7 @@ import {
   checkContentType,
   errorHandler,
   getId,
+  getValidatedTaskParams,
   handleValidationError,
   parseJsonBody,
 } from './utils';
@@ -48,9 +49,11 @@ export const getSingleTask: RequestHandler = async (
   }
 };
 
-export const getAllTasks: RequestHandler = async ({ res }, repository) => {
+export const getAllTasks: RequestHandler = async ({ req, res }, repository) => {
+  const params = getValidatedTaskParams(req);
+
   try {
-    const result = await repository.getAllTasks();
+    const result = await repository.getAllTasks(params);
     res
       .writeHead(result.status, { 'Content-Type': 'application/json' })
       .end(JSON.stringify(result));
@@ -63,9 +66,11 @@ export const getSingleNotepadTasks: RequestHandler = async (
   { req, res },
   repository,
 ) => {
+  const params = getValidatedTaskParams(req);
+
   try {
     const notepadId = getId(req, 'notepad');
-    const result = await repository.getSingleNotepadTasks(notepadId);
+    const result = await repository.getSingleNotepadTasks(notepadId, params);
 
     res
       .writeHead(result.status, { 'Content-Type': 'application/json' })

@@ -1,4 +1,4 @@
-import {
+import type {
   TaskResponse,
   TasksResponse,
   CreateTask,
@@ -6,15 +6,19 @@ import {
   CreateNotepad,
   NotepadResponse,
   NotepadWithoutTasksResponse,
+  TaskQueryParams,
 } from '@shared/schemas';
 
 export interface TaskRepository {
   createNotepad(notepad: CreateNotepad): Promise<NotepadResponse>;
   createTask(task: CreateTask, notepadId: string): Promise<TaskResponse>;
   getAllNotepads(): Promise<NotepadWithoutTasksResponse>;
-  getAllTasks(): Promise<TasksResponse>;
+  getAllTasks(params?: TaskQueryParams): Promise<TasksResponse>;
   getSingleTask(taskId: string, notepadId?: string): Promise<TaskResponse>;
-  getSingleNotepadTasks(notepadId: string): Promise<TasksResponse>;
+  getSingleNotepadTasks(
+    notepadId: string,
+    params?: TaskQueryParams,
+  ): Promise<TasksResponse>;
   updateNotepad(
     notepadId: string,
     notepad: CreateNotepad,
