@@ -46,38 +46,31 @@ export const getId = (
   if (idType === 'notepad') {
     return url[1] === 'tasks' ? commonNotepadId : (url[2] ?? '');
   }
-  if (idType === 'task') {
-    return url.at(-1) ?? '';
-  }
 
-  return '';
+  return url.at(-1) ?? '';
 };
 
 export const getValidatedTaskParams = (
   req: IncomingMessage,
-): TaskQueryParams | undefined => {
-  try {
-    const queryString = req.url?.split('?')[1] ?? '';
-    if (!queryString) return {};
+): TaskQueryParams => {
+  const queryString = req.url?.split('?')[1] ?? '';
+  if (!queryString) return {};
 
-    const params = new URLSearchParams(queryString);
-    const rawParams = Object.fromEntries(params.entries());
-    const validation = taskQueryParamsSchema.safeParse(rawParams);
+  const params = new URLSearchParams(queryString);
+  const rawParams = Object.fromEntries(params.entries());
+  const validation = taskQueryParamsSchema.safeParse(rawParams);
 
-    if (validation.success) {
-      return validation.data;
-    }
-
-    const invalidKeys = extractInvalidKeys(validation.error);
-    const validParams = filterValidParams(rawParams, invalidKeys);
-
-    return taskQueryParamsSchema.parse(validParams);
-  } catch {
-    return;
+  if (validation.success) {
+    return validation.data;
   }
+
+  const invalidKeys = extractInvalidKeys(validation.error);
+  const validParams = filterValidParams(rawParams, invalidKeys);
+
+  return taskQueryParamsSchema.parse(validParams);
 };
 
-const extractInvalidKeys = (error: ZodError): string[] => {
+export const extractInvalidKeys = (error: ZodError): string[] => {
   return error.issues.flatMap(issue => {
     if (issue.code === 'unrecognized_keys' && 'keys' in issue) {
       return issue.keys;

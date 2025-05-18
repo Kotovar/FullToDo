@@ -1,11 +1,10 @@
 import { http, HttpResponse } from 'msw';
-import { ROUTES } from '@sharedCommon/';
+import { notepadId, ROUTES } from '@sharedCommon/';
 import {
   getDeleteResponse,
   MOCK_NOTEPADS_RESPONSE,
   MOCK_NOTEPADS_UPDATE_RESPONSE,
   MOCK_TITLE_EXISTING,
-  notepadId,
 } from '@shared/mocks';
 import { testState } from '@shared/config';
 

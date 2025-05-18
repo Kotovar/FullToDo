@@ -129,11 +129,11 @@ export class MockTaskRepository implements TaskRepository {
       };
     }
 
-    const isTitleUnique = !this.tasks.some(
+    const existingTask = this.tasks.some(
       task => task.title === title && task.notepadId === notepadId,
     );
 
-    if (!isTitleUnique) {
+    if (existingTask) {
       const notepadTitle =
         notepadId === commonNotepadId
           ? 'All tasks'
@@ -142,11 +142,11 @@ export class MockTaskRepository implements TaskRepository {
 
       return {
         status: 409,
-        message: `Task with title "${title}" already exists in ${notepadTitle}`,
+        message: `Task with title ${title} already exists in ${notepadTitle}`,
       };
     }
 
-    const newTask = {
+    const newTask: Task = {
       title: title,
       _id: this.generateTaskId(),
       createdDate: new Date(),
@@ -287,29 +287,24 @@ export class MockTaskRepository implements TaskRepository {
     }
 
     const currentTask = { ...this.tasks[taskIndex] };
+    const newNotepadId = updatedTaskFields.notepadId ?? currentTask.notepadId;
 
-    const currentNotepad =
-      currentTask.notepadId !== commonNotepadId
-        ? this.notepads.find(notepad => notepad._id === currentTask.notepadId)
-        : null;
-
-    if (!currentNotepad && currentTask.notepadId !== commonNotepadId) {
+    if (
+      !this.isValidNotepadId(newNotepadId) &&
+      newNotepadId !== commonNotepadId
+    ) {
       return {
         status: 404,
         message: 'Notepad not found',
       };
     }
 
-    if (
-      updatedTaskFields.title &&
-      updatedTaskFields.title !== currentTask.title
-    ) {
+    if (updatedTaskFields.title) {
       const tasksToCheck =
-        currentTask.notepadId === commonNotepadId
-          ? this.tasks.filter(
-              task => task.notepadId === commonNotepadId && task._id !== taskId,
-            )
-          : currentNotepad?.tasks?.filter(task => task._id !== taskId) || [];
+        newNotepadId === commonNotepadId
+          ? this.tasks.filter(task => task.notepadId === commonNotepadId)
+          : this.notepads.find(notepad => notepad._id === newNotepadId)
+              ?.tasks || [];
 
       const titleExists = tasksToCheck.some(
         task => task.title === updatedTaskFields.title,
@@ -318,38 +313,53 @@ export class MockTaskRepository implements TaskRepository {
       if (titleExists) {
         return {
           status: 409,
-          message: `Task with title "${updatedTaskFields.title}" already exists`,
+          message: `Task with title ${updatedTaskFields.title} already exists`,
         };
       }
     }
 
     const subtasks = updatedTaskFields.subtasks ?? currentTask.subtasks;
-    const progress = this.calculateProgress(subtasks);
+    const progress = updatedTaskFields.subtasks
+      ? this.calculateProgress(subtasks)
+      : currentTask.progress;
 
     const updatedTask = {
       ...currentTask,
       ...updatedTaskFields,
       progress,
       subtasks,
+      _id: currentTask._id,
     };
 
-    this.tasks = [
-      ...this.tasks.slice(0, taskIndex),
-      updatedTask,
-      ...this.tasks.slice(taskIndex + 1),
-    ];
+    this.tasks[taskIndex] = updatedTask;
+    const shouldMoveNotepad = newNotepadId !== currentTask.notepadId;
 
-    if (currentNotepad) {
+    const currentNotepad =
+      currentTask.notepadId !== commonNotepadId
+        ? this.notepads.find(notepad => notepad._id === currentTask.notepadId)
+        : null;
+
+    const targetNotepad =
+      newNotepadId !== commonNotepadId
+        ? this.notepads.find(notepad => notepad._id === newNotepadId)
+        : null;
+
+    if (shouldMoveNotepad) {
+      if (currentNotepad) {
+        currentNotepad.tasks = currentNotepad.tasks.filter(
+          task => task._id !== taskId,
+        );
+      }
+
+      if (targetNotepad) {
+        targetNotepad.tasks.push(updatedTask);
+      }
+    } else if (currentNotepad) {
       const notepadTaskIndex = currentNotepad.tasks.findIndex(
         task => task._id === taskId,
       );
-
       if (notepadTaskIndex !== -1) {
-        currentNotepad.tasks = [
-          ...currentNotepad.tasks.slice(0, notepadTaskIndex),
-          updatedTask,
-          ...currentNotepad.tasks.slice(notepadTaskIndex + 1),
-        ];
+        currentNotepad.tasks[notepadTaskIndex] = updatedTask;
       }
     }
 
@@ -365,7 +375,7 @@ export class MockTaskRepository implements TaskRepository {
       notepad => notepad._id === notepadId,
     );
 
-    if (notepadIndex === -1) {
+    if (notepadIndex === -1 || notepadId === commonNotepadId) {
       return { status: 404, message: 'Notepad not found' };
     }
 

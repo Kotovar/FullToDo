@@ -4,7 +4,6 @@ import {
   MOCK_NOTEPADS_UPDATE_RESPONSE,
   MOCK_TITLE_NON_EXISTING,
   getDeleteResponse,
-  notepadId,
 } from '@shared/mocks';
 import { COMMON_ERRORS, NOTEPAD_ERRORS } from '@shared/api';
 import { testState, setupMockServer } from '@shared/config';
@@ -14,6 +13,7 @@ import {
   getErrorResult,
   getFailFetchResponse,
 } from '@shared/testing';
+import { notepadId } from 'shared/schemas';
 
 describe('MockNotepadService', () => {
   setupMockServer();

@@ -1,70 +1,27 @@
-import http from 'http';
 import request from 'supertest';
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ZodError, type ZodIssue } from 'zod';
 import { ROUTES } from '@shared/routes';
 import {
-  type TasksResponse,
-  type NotepadWithoutTasksResponse,
   type NotepadResponse,
   type TaskResponse,
   createNotepadSchema,
   createTaskSchema,
-  commonNotepadId,
+  notepadId,
+  taskId,
 } from '@shared/schemas';
-import { createHttpServer } from './httpServer';
+import { createHttpServer, extractPath } from './httpServer';
 import { taskRepository } from '../../repositories';
-import { getSingleNotepadTasks, getSingleTask } from '../../controllers';
-import { TASKS1 } from '../../db/mock/mock-db';
-import { BASE_ROUTES } from './routes';
-
-const validTasksData: TasksResponse = {
-  status: 200,
-  message: 'Success',
-  data: TASKS1,
-};
-
-const validTaskData: TaskResponse = {
-  status: 200,
-  message: 'Success',
-  data: {
-    _id: '1',
-    notepadId: '1',
-    title: 'Задача 1',
-    description: 'Описание для задачи 1',
-    dueDate: new Date(),
-    createdDate: new Date(),
-    isCompleted: false,
-    progress: '1 из 5',
-    subtasks: [
-      { isCompleted: false, title: 'Выучить Node.js', _id: '1' },
-      { isCompleted: true, title: 'Выучить js', _id: '2' },
-      { isCompleted: false, title: 'Выучить GO', _id: '3' },
-      { isCompleted: false, title: 'Выучить Nest.js', _id: '4' },
-      { isCompleted: false, title: 'Выучить Express', _id: '5' },
-    ],
-  },
-};
-
-const validNotepadWithoutTasksData: NotepadWithoutTasksResponse = {
-  status: 200,
-  message: 'Success',
-  data: [
-    {
-      title: 'Задачи',
-      _id: commonNotepadId,
-    },
-  ],
-};
+import {
+  validNotepadWithoutTasksData,
+  validTaskData,
+  validTasksData,
+} from '../../db/mock';
 
 const port = 3000;
 const server = createHttpServer();
 const internalError = new Error('Internal Server Error');
-
-const res = {
-  writeHead: vi.fn(),
-  end: vi.fn(),
-} as unknown as http.ServerResponse;
+const validationErrorMessage = 'Invalid data';
 
 describe('httpServer start/close', () => {
   test('should start and stop the server', async () => {
@@ -76,10 +33,13 @@ describe('httpServer start/close', () => {
   });
 });
 
-describe('httpServer GET', () => {
-  const notepadId = '1';
-  const taskId = '1';
+describe('extractPath', () => {
+  test('returns undefined if url is undefined', () => {
+    expect(extractPath(undefined)).toBeUndefined();
+  });
+});
 
+describe('httpServer GET', () => {
   beforeEach(() => {
     server.listen(port);
     vi.clearAllMocks();
@@ -90,20 +50,12 @@ describe('httpServer GET', () => {
   });
 
   test('should handle GET /tasks', async () => {
-    const req = {
-      method: 'GET',
-      url: ROUTES.TASKS,
-    } as http.IncomingMessage;
-
     vi.spyOn(taskRepository, 'getAllTasks').mockResolvedValue(validTasksData);
 
-    await BASE_ROUTES[`GET ${ROUTES.TASKS}`]({ req, res }, taskRepository);
-
-    expect(res.writeHead).toHaveBeenCalledWith(validTasksData.status, {
-      'Content-Type': 'application/json',
-    });
-
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTasksData));
+    const response = await request(server).get(ROUTES.TASKS);
+    expect(JSON.stringify(response.body)).toEqual(
+      JSON.stringify(validTasksData),
+    );
   });
 
   test('should return 500 if an internal server error occurs - /tasks', async () => {
@@ -119,27 +71,12 @@ describe('httpServer GET', () => {
   });
 
   test('should handle GET /notepads', async () => {
-    const req = {
-      method: 'GET',
-      url: ROUTES.NOTEPADS,
-    } as http.IncomingMessage;
-
     vi.spyOn(taskRepository, 'getAllNotepads').mockResolvedValue(
       validNotepadWithoutTasksData,
     );
 
-    await BASE_ROUTES[`GET ${ROUTES.NOTEPADS}`]({ req, res }, taskRepository);
-
-    expect(res.writeHead).toHaveBeenCalledWith(
-      validNotepadWithoutTasksData.status,
-      {
-        'Content-Type': 'application/json',
-      },
-    );
-
-    expect(res.end).toHaveBeenCalledWith(
-      JSON.stringify(validNotepadWithoutTasksData),
-    );
+    const response = await request(server).get(ROUTES.NOTEPADS);
+    expect(response.body).toEqual(validNotepadWithoutTasksData);
   });
 
   test('should return 500 if an internal server error occurs - /notepads', async () => {
@@ -154,32 +91,27 @@ describe('httpServer GET', () => {
     expect(response.body).toEqual({ error: {} });
   });
 
-  test('should handle GET /notepads/1', async () => {
-    const req = {
-      method: 'GET',
-      url: ROUTES.getNotepadPath('1'),
-    } as http.IncomingMessage;
-
+  test(`should handle GET /notepads/${notepadId}`, async () => {
     vi.spyOn(taskRepository, 'getSingleNotepadTasks').mockResolvedValue(
       validTasksData,
     );
 
-    await getSingleNotepadTasks({ req, res }, taskRepository);
-
-    expect(res.writeHead).toHaveBeenCalledWith(validTasksData.status, {
-      'Content-Type': 'application/json',
-    });
-
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTasksData));
+    const response = await request(server).get(
+      ROUTES.getNotepadPath(notepadId),
+    );
+    expect(response.status).toBe(validTasksData.status);
+    expect(JSON.stringify(response.body)).toEqual(
+      JSON.stringify(validTasksData),
+    );
   });
 
-  test('should return 500 if an internal server error occurs - /notepads/1', async () => {
+  test(`should return 500 if an internal server error occurs - /notepads/${notepadId}`, async () => {
     vi.spyOn(taskRepository, 'getSingleNotepadTasks').mockRejectedValue(
       internalError,
     );
 
     const response = await request(server)
-      .get(ROUTES.getNotepadPath('1'))
+      .get(ROUTES.getNotepadPath(notepadId))
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json');
 
@@ -187,24 +119,18 @@ describe('httpServer GET', () => {
     expect(response.body).toEqual({ error: {} });
   });
 
-  test('should handle GET /notepads/1/task/1', async () => {
-    const req = {
-      method: 'GET',
-      url: ROUTES.getTaskDetailPath('/notepads/1', '1'),
-    } as http.IncomingMessage;
-
+  test(`should handle GET /notepads/${notepadId}/task/${taskId}`, async () => {
     vi.spyOn(taskRepository, 'getSingleTask').mockResolvedValue(validTaskData);
 
-    await getSingleTask({ req, res }, taskRepository);
-
-    expect(res.writeHead).toHaveBeenCalledWith(validTaskData.status, {
-      'Content-Type': 'application/json',
-    });
-
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify(validTaskData));
+    const response = await request(server).get(
+      ROUTES.getTaskDetailPath(notepadId, taskId),
+    );
+    expect(JSON.stringify(response.body)).toEqual(
+      JSON.stringify(validTaskData),
+    );
   });
 
-  test('should return 404 if task not found - /notepads/1/tasks/1', async () => {
+  test(`should return 404 if task not found - /notepads/${notepadId}/tasks/${taskId}`, async () => {
     const updateResponse: TaskResponse = {
       status: 404,
       message: 'Task not found',
@@ -219,13 +145,10 @@ describe('httpServer GET', () => {
 
     expect(response.status).toBe(updateResponse.status);
     expect(response.body).toEqual(updateResponse);
-    expect(taskRepository.getSingleTask).toHaveBeenCalledWith(
-      notepadId,
-      taskId,
-    );
+    expect(taskRepository.getSingleTask).toHaveBeenCalledWith(taskId);
   });
 
-  test('should return 500 if an internal server error occurs - /notepads/1/task/1', async () => {
+  test(`should return 500 if an internal server error occurs - /notepads/${notepadId}/task/${taskId}`, async () => {
     vi.spyOn(taskRepository, 'getSingleTask').mockRejectedValue(internalError);
 
     const response = await request(server)
@@ -297,7 +220,7 @@ describe('httpServer POST', () => {
       ];
 
       const validationError = {
-        message: 'Invalid Notepad data',
+        message: validationErrorMessage,
         errors: errors,
       };
 
@@ -357,8 +280,7 @@ describe('httpServer POST', () => {
     });
   });
 
-  describe('should handle POST /notepads/1/tasks', () => {
-    const notepadId = '1';
+  describe(`should handle POST /notepads/${notepadId}/tasks`, () => {
     const taskData = {
       title: '1',
       description: 'Созданная',
@@ -414,7 +336,7 @@ describe('httpServer POST', () => {
       ];
 
       const validationError = {
-        message: 'Invalid Task data',
+        message: validationErrorMessage,
         errors: errors,
       };
 
@@ -453,9 +375,6 @@ describe('httpServer POST', () => {
 });
 
 describe('httpServer PATH', () => {
-  const notepadId = '1';
-  const taskId = '1';
-
   beforeEach(() => {
     server.listen(port);
     vi.clearAllMocks();
@@ -515,7 +434,7 @@ describe('httpServer PATH', () => {
       ];
 
       const validationError = {
-        message: 'Invalid Notepad data',
+        message: validationErrorMessage,
         errors: errors,
       };
 
@@ -601,7 +520,6 @@ describe('httpServer PATH', () => {
       expect(response.status).toBe(taskResponse.status);
       expect(response.body).toEqual(taskResponse);
       expect(taskRepository.updateTask).toHaveBeenCalledWith(
-        notepadId,
         taskId,
         updatedTaskData,
       );
@@ -636,7 +554,7 @@ describe('httpServer PATH', () => {
       ];
 
       const validationError = {
-        message: 'Invalid task data',
+        message: validationErrorMessage,
         errors: errors,
       };
 
@@ -674,7 +592,6 @@ describe('httpServer PATH', () => {
       expect(response.status).toBe(updateResponse.status);
       expect(response.body).toEqual(updateResponse);
       expect(taskRepository.updateTask).toHaveBeenCalledWith(
-        notepadId,
         taskId,
         updatedTaskData,
       );
@@ -696,9 +613,6 @@ describe('httpServer PATH', () => {
 });
 
 describe('httpServer DELETE', () => {
-  const notepadId = '1';
-  const taskId = '1';
-
   beforeEach(() => {
     server.listen(port);
     vi.clearAllMocks();
@@ -843,8 +757,6 @@ describe('httpServer OPTIONS', () => {
 });
 
 describe('httpServer non-existent routes', () => {
-  const notepadId = '1';
-  const taskId = '1';
   const nonExistentRouteResponse: NotepadResponse = {
     status: 404,
     message: 'Route not found',

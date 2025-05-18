@@ -86,6 +86,7 @@ export const updateTask: RequestHandler = async ({ req, res }, repository) => {
 
     const taskId = getId(req, 'task');
     const rawTask = await parseJsonBody<unknown>(req);
+
     const validationResult = updateTaskSchema.safeParse(rawTask);
 
     if (!validationResult.success) {

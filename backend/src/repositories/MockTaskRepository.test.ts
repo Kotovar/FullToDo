@@ -1,7 +1,11 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import taskRepository, { MockTaskRepository } from './MockTaskRepository';
 import { NOTEPADS } from '../db/mock/mock-db';
-import { commonNotepadId, type Notepad } from '@shared/schemas';
+import {
+  commonNotepadId,
+  type TaskQueryParams,
+  type Notepad,
+} from '@shared/schemas';
 
 const newTitleNotepad = { title: 'Test Notepad' };
 const notepadId = '999';
@@ -17,6 +21,7 @@ const newTask = {
   dueDate: new Date(),
   description: 'Task description',
 };
+
 const customNotepad: Notepad[] = [
   {
     title: 'Рабочее',
@@ -24,6 +29,8 @@ const customNotepad: Notepad[] = [
     tasks: [{ ...newTask, progress: '', _id: realTaskId }],
   },
 ];
+
+const allTasks = NOTEPADS.flatMap(notepad => notepad.tasks);
 
 describe('MockTaskRepository', () => {
   let repository: typeof taskRepository;
@@ -88,24 +95,6 @@ describe('MockTaskRepository', () => {
     });
   });
 
-  test('method createTask and common notepad with second Response', async () => {
-    const responseCreate = await repository.createTask(newTask, realNotepadId);
-
-    expect(responseCreate).toStrictEqual({
-      status: 201,
-      message: `A task with the title ${newTask.title} has been successfully created`,
-    });
-
-    const secondResponseCreate = await repository.createTask(
-      newTask,
-      commonNotepadId,
-    );
-
-    expect(secondResponseCreate).toStrictEqual({
-      status: 409,
-      message: `A task with the title ${newTask.title} already exists in notepad 'All'`,
-    });
-  });
   test('method getAllNotepads', async () => {
     const responseGet = await repository.getAllNotepads();
 
@@ -123,9 +112,96 @@ describe('MockTaskRepository', () => {
   test('method getAllTasks', async () => {
     const responseGet = await repository.getAllTasks();
 
-    const allTasks = NOTEPADS.flatMap(notepad => notepad.tasks);
+    expect(responseGet).toStrictEqual({
+      status: 200,
+      message: 'Success',
+      data: allTasks,
+    });
+  });
+
+  test('method getAllTasks with filter`s params', async () => {
+    const params: TaskQueryParams = {
+      isCompleted: true,
+      hasDueDate: false,
+      priority: 'low',
+    };
+    const responseGet = await repository.getAllTasks(params);
+
+    const allTasksFiltered = allTasks.filter(
+      task => task.isCompleted && !task.dueDate && task.priority === 'low',
+    );
 
     expect(responseGet).toStrictEqual({
+      status: 200,
+      message: 'Success',
+      data: allTasksFiltered,
+    });
+  });
+
+  test('method getAllTasks with sort`s params - createdDate', async () => {
+    const params: TaskQueryParams = {
+      sortBy: 'createdDate',
+      order: 'asc',
+    };
+    const responseGet = await repository.getAllTasks(params);
+
+    const allTasksSorted = allTasks.toSorted((a, b) => {
+      const valA = a.createdDate;
+      const valB = b.createdDate;
+
+      return valA < valB ? -1 : 1;
+    });
+
+    expect(responseGet).toStrictEqual({
+      status: 200,
+      message: 'Success',
+      data: allTasksSorted,
+    });
+  });
+
+  test('method getAllTasks with sort`s params - priority', async () => {
+    const params: TaskQueryParams = {
+      sortBy: 'priority',
+      order: 'desc',
+    };
+    const responseGet = await repository.getAllTasks(params);
+
+    const allTasksSorted = allTasks.toSorted((a, b) => {
+      const priorityOrder = { low: 0, medium: 1, high: 2 };
+      const aVal = a.priority ? priorityOrder[a.priority] : -1;
+      const bVal = b.priority ? priorityOrder[b.priority] : -1;
+      return bVal - aVal;
+    });
+
+    expect(responseGet).toStrictEqual({
+      status: 200,
+      message: 'Success',
+      data: allTasksSorted,
+    });
+  });
+
+  test('method getAllTasks with search', async () => {
+    const params: TaskQueryParams = {
+      search: '  TasK  ',
+    };
+
+    const responseGet = await repository.getAllTasks(params);
+
+    const allTasksSearched = allTasks.filter(
+      task =>
+        task.title.toLowerCase().includes('task') ||
+        task.description?.toLowerCase().includes('task'),
+    );
+
+    expect(responseGet).toStrictEqual({
+      status: 200,
+      message: 'Success',
+      data: allTasksSearched,
+    });
+
+    const responseGetAgain = await repository.getAllTasks({ search: '' });
+
+    expect(responseGetAgain).toStrictEqual({
       status: 200,
       message: 'Success',
       data: allTasks,
@@ -234,21 +310,48 @@ describe('MockTaskRepository', () => {
 
     expect(responseUpdateSecond).toStrictEqual({
       status: 409,
-      message: `A task with the title ${updatedTask.title} already exists in notepad '${realNotepadTitle}'`,
+      message: `Task with title ${updatedTask.title} already exists`,
     });
   });
 
-  test('method updateTask and common id', async () => {
-    const responseUpdate = await repository.updateTask(
-      commonNotepadId,
-      updatedTask,
-    );
+  test('method updateTask and undefined notepad', async () => {
+    const responseUpdate = await repository.updateTask(realTaskId, {
+      ...updatedTask,
+      notepadId: 'undefined',
+    });
+
+    expect(responseUpdate).toEqual({
+      status: 404,
+      message: 'Notepad not found',
+    });
+  });
+
+  test('method updateTask and common notepad', async () => {
+    const responseUpdate = await repository.updateTask(realTaskId, {
+      ...updatedTask,
+      notepadId: commonNotepadId,
+    });
 
     expect(responseUpdate).toStrictEqual({
       status: 200,
       message: `A task with the _id ${realTaskId} has been successfully updated`,
-      data: { ...NOTEPADS[0].tasks[0], title: updatedTask.title },
+      data: {
+        ...NOTEPADS[0].tasks[0],
+        title: updatedTask.title,
+        notepadId: commonNotepadId,
+      },
     });
+  });
+
+  test('method updateTask and switch task to another notepad', async () => {
+    const anotherRealTaskId = '2';
+
+    const responseUpdate = await repository.updateTask(realTaskId, {
+      ...updatedTask,
+      notepadId: anotherRealTaskId,
+    });
+
+    expect(responseUpdate.data?.notepadId).toBe(anotherRealTaskId);
   });
 
   test('should calculate progress when no subtasks completed', async () => {

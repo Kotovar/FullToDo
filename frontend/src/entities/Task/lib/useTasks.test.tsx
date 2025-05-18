@@ -5,11 +5,10 @@ import {
   createWrapper,
   MOCK_SINGE_NOTEPAD_RESPONSE,
   MOCK_TITLE_NON_EXISTING,
-  notepadId,
-  taskId,
   getDeleteResponse,
 } from '@shared/mocks';
 import { taskService } from '@entities/Task';
+import { notepadId, taskId } from 'shared/schemas';
 
 const getInitialData = async (withProps: boolean = true) => {
   const { result } = renderHook(

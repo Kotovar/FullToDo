@@ -5,10 +5,10 @@ import {
   getDeleteResponse,
   MOCK_NOTEPADS_RESPONSE,
   MOCK_TITLE_NON_EXISTING,
-  notepadId,
 } from '@shared/mocks';
 import { notepadService } from '@entities/Notepad';
 import { useNotepads } from './useNotepads';
+import { notepadId } from 'shared/schemas';
 
 const getInitialData = async () => {
   const { result } = renderHook(() => useNotepads({}), {

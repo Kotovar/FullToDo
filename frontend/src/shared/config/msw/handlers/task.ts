@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { CreateTask, ROUTES } from '@sharedCommon/';
+import { type CreateTask, notepadId, ROUTES, taskId } from '@sharedCommon/';
 import {
   getDeleteResponse,
   MOCK_SINGE_NOTEPAD_RESPONSE,
@@ -7,8 +7,6 @@ import {
   MOCK_TASK_UPDATE_RESPONSE,
   MOCK_TITLE_EXISTING,
   MOCK_TITLE_EXISTING_NOTEPAD,
-  notepadId,
-  taskId,
 } from '@shared/mocks';
 import { testState } from '@shared/config';
 

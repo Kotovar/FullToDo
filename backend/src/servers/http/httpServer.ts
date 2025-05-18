@@ -15,6 +15,11 @@ const setHeaders = (res: http.ServerResponse) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 };
 
+export const extractPath = (reqUrl?: string): string | undefined => {
+  const { 0: url } = reqUrl?.split('?') ?? [];
+  return url;
+};
+
 export const createHttpServer = () => {
   const server = http.createServer((req, res) => {
     logger(req, res, () => {});
@@ -26,7 +31,7 @@ export const createHttpServer = () => {
       return;
     }
 
-    const [url] = req.url?.split('?') ?? [];
+    const url = extractPath(req.url);
     const routeKey = `${req.method} ${url}`;
 
     if (BASE_ROUTES[routeKey]) {

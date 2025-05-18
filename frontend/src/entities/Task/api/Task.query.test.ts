@@ -9,14 +9,13 @@ import {
   MOCK_TITLE_EXISTING,
   MOCK_TITLE_EXISTING_NOTEPAD,
   MOCK_TITLE_NON_EXISTING,
-  notepadId,
-  taskId,
 } from '@shared/mocks';
 import {
   getErrorMock,
   getErrorResult,
   getFailFetchResponse,
 } from '@shared/testing';
+import { notepadId, taskId } from 'shared/schemas';
 
 describe('MockTaskService', () => {
   setupMockServer();
