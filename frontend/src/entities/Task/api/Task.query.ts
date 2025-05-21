@@ -1,12 +1,12 @@
-import {
-  commonNotepadId,
-  type CreateTask,
-  type Task,
-  type TaskResponse,
-  type TasksResponse,
-} from 'shared/schemas';
 import { URL, TASKS_ERRORS, COMMON_ERRORS } from '@shared/api';
 import { ROUTES } from 'shared/routes';
+import { commonNotepadId } from 'shared/schemas';
+import type {
+  CreateTask,
+  Task,
+  TaskResponse,
+  TasksResponse,
+} from 'shared/schemas';
 
 if (!URL) {
   throw new Error(COMMON_ERRORS.URL.message);
@@ -35,7 +35,7 @@ class TaskService {
 
   async getSingleTask(
     taskId: string,
-    notepadId: string,
+    notepadId?: string,
   ): Promise<TaskResponse> {
     try {
       if (notepadId) {
@@ -51,7 +51,10 @@ class TaskService {
     }
   }
 
-  async getTasksFromNotepad(notepadId: string): Promise<TasksResponse> {
+  async getTasksFromNotepad(
+    notepadId: string,
+    params: URLSearchParams,
+  ): Promise<TasksResponse> {
     try {
       let endpoint: string;
 
@@ -63,24 +66,34 @@ class TaskService {
         default:
           endpoint = ROUTES.getNotepadPath(notepadId);
       }
+      const queryString = params.toString();
 
-      const response = await fetch(`${URL}${endpoint}`);
+      const response = await fetch(
+        `${URL}${endpoint}${queryString ? `?${queryString}` : ''}`,
+      );
       return response.json();
     } catch (error) {
       return this.handleError(error);
     }
   }
 
-  async getAllTasks(): Promise<TasksResponse> {
+  async getAllTasks(params: URLSearchParams): Promise<TasksResponse> {
     try {
-      const response = await fetch(`${URL}${ROUTES.TASKS}`);
+      const queryString = params.toString();
+
+      const response = await fetch(
+        `${URL}${ROUTES.TASKS}${queryString ? `?${queryString}` : ''}`,
+      );
       return response.json();
     } catch (error) {
       return this.handleError(error);
     }
   }
 
-  async createTask(task: CreateTask, notepadId: string): Promise<TaskResponse> {
+  async createTask(
+    task: CreateTask,
+    notepadId?: string,
+  ): Promise<TaskResponse> {
     try {
       const patch = notepadId
         ? `${URL}${ROUTES.getNotepadPath(notepadId)}`

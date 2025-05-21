@@ -1,81 +1,41 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  useMutation,
-  UseMutationResult,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { commonNotepadId } from 'shared/schemas';
-import { taskService } from '@entities/Task';
-import type { MutationUpdateProps, UseTasksProps } from './utils';
-import type { CreateTask, Task } from '@sharedCommon/*';
-import { handleMutationError, type MutationMethods } from '@shared/api';
+  getTaskQueryKey,
+  handleMutation,
+  isCommonNotepad,
+  taskService,
+  type MutationUpdateProps,
+  type UseTasksProps,
+} from '@entities/Task';
+import type { MutationMethods } from '@shared/api';
+import type { Task } from '@sharedCommon/*';
 
 export const useTasks = (props: UseTasksProps) => {
-  const { notepadId = '', taskId = '', onSuccess, onError } = props;
+  const { notepadId, params, onSuccess, onError } = props;
   const queryClient = useQueryClient();
+  const isCommon = isCommonNotepad(notepadId);
+  const queryKey = getTaskQueryKey(notepadId);
 
   const {
-    data: notepadTasks,
-    isError: isNotepadTasksError,
-    isLoading: isNotepadTasksLoading,
+    data: tasks,
+    isError: isErrorTasks,
+    isLoading: isLoadingTasks,
   } = useQuery({
-    queryKey: ['tasks', notepadId],
-    queryFn: () => taskService.getTasksFromNotepad(notepadId),
+    queryKey: ['tasks', notepadId, params],
+    queryFn: () => taskService.getTasksFromNotepad(notepadId, params),
     select: data => data.data,
-    enabled: !!notepadId,
+    enabled: !isCommon,
   });
 
   const {
     data: tasksAll,
-    isError: isAllTasksError,
-    isLoading: isAllTasksLoading,
+    isError: isErrorTasksAll,
+    isLoading: isLoadingTasksAll,
   } = useQuery({
-    queryKey: ['tasks', 'all'],
-    queryFn: () => taskService.getAllTasks(),
+    queryKey: ['tasks', params],
+    queryFn: () => taskService.getAllTasks(params),
     select: data => data.data,
-    enabled: notepadId === commonNotepadId || !!taskId,
-  });
-
-  const { data: singleTask, isLoading: isSingleTaskLoading } = useQuery({
-    queryKey: ['task', notepadId, taskId],
-    queryFn: () => taskService.getSingleTask(taskId, notepadId),
-    select: data => data.data,
-    enabled: !!taskId,
-  });
-
-  const handleMutation = async <T, V>(
-    mutation: UseMutationResult<T, unknown, V>,
-    method: MutationMethods,
-    payload: V,
-  ) => {
-    try {
-      await mutation.mutateAsync(payload);
-
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ['tasks', notepadId],
-        }),
-        taskId &&
-          queryClient.invalidateQueries({
-            queryKey: ['task', notepadId, taskId],
-          }),
-        (!notepadId || notepadId === 'all') &&
-          queryClient.invalidateQueries({
-            queryKey: ['tasks', 'all'],
-          }),
-      ]);
-      onSuccess?.(method);
-
-      return true;
-    } catch (error) {
-      onError?.(handleMutationError(error));
-
-      return false;
-    }
-  };
-
-  const mutationCreate = useMutation({
-    mutationFn: (task: CreateTask) => taskService.createTask(task, notepadId),
+    enabled: isCommon,
   });
 
   const mutationUpdate = useMutation({
@@ -87,32 +47,41 @@ export const useTasks = (props: UseTasksProps) => {
     mutationFn: (id: string) => taskService.deleteTask(id),
   });
 
-  const createTask = async (task: CreateTask) =>
-    handleMutation(mutationCreate, 'create', task);
-
   const updateTask = async (
     updatedTask: Partial<Task>,
     id: string,
     subtaskActionType?: MutationMethods,
   ) =>
-    handleMutation(mutationUpdate, subtaskActionType ?? 'update', {
-      updatedTask,
-      id,
-    });
+    handleMutation(
+      mutationUpdate,
+      subtaskActionType ?? 'update',
+      {
+        updatedTask,
+        id,
+      },
+      {
+        queryClient,
+        queryKey,
+        onSuccess,
+        onError,
+      },
+    );
 
   const deleteTask = (id: string) =>
-    handleMutation(mutationDelete, 'delete', id);
+    handleMutation(mutationDelete, 'delete', id, {
+      queryClient,
+      queryKey,
+      onSuccess,
+      onError,
+    });
 
   return {
-    tasks: notepadTasks ?? tasksAll ?? [],
-    isError: isNotepadTasksError || isAllTasksError,
-    isLoading:
-      isNotepadTasksLoading || isSingleTaskLoading || isAllTasksLoading,
-    ...(taskId && { task: singleTask }),
+    tasks: tasks || tasksAll,
+    isError: isErrorTasks || isErrorTasksAll,
+    isLoading: isLoadingTasks || isLoadingTasksAll,
     methods: {
       updateTask,
       deleteTask,
-      createTask,
     },
   };
 };

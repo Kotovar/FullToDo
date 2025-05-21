@@ -1,12 +1,12 @@
-import type { Mock } from 'vitest';
-import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { screen, waitFor } from '@testing-library/react';
+import type { Mock } from 'vitest';
 import { renderWithRouter } from '@shared/testing';
-import { useTasks } from '@entities/Task';
+import { useCreateTask } from '@entities/Task';
 import { AddTask } from './AddTask';
 
 vi.mock('@entities/Task', () => ({
-  useTasks: vi.fn(),
+  useCreateTask: vi.fn(),
 }));
 
 const mockCreateTask = vi.fn();
@@ -31,10 +31,8 @@ describe('AddTask component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    (useTasks as Mock).mockReturnValue({
-      methods: {
-        createTask: mockCreateTask,
-      },
+    (useCreateTask as Mock).mockReturnValue({
+      createTask: mockCreateTask,
     });
   });
 

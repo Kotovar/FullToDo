@@ -40,7 +40,7 @@ export const useNotepad = () => {
     const notepad = notepadsData?.find(notepad => notepad._id === notepadId);
     return {
       title: notepad?.title ?? '',
-      resolvedNotepadId: notepadId,
+      resolvedNotepadId: notepadId ?? '',
     };
   }, [notepadId, pathname, notepadsData]);
 

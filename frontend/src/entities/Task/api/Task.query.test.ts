@@ -132,17 +132,21 @@ describe('MockTaskService', () => {
   });
 
   describe('getTasksFromNotepad', () => {
+    const params = new URLSearchParams();
     test('success', async () => {
-      const responseGet = await taskService.getTasksFromNotepad(notepadId);
+      const responseGet = await taskService.getTasksFromNotepad(
+        notepadId,
+        params,
+      );
       expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE);
     });
 
     test('return error if network problem', async () => {
       testState.forceError = true;
 
-      await expect(taskService.getTasksFromNotepad(notepadId)).rejects.toThrow(
-        COMMON_ERRORS.JSON.message,
-      );
+      await expect(
+        taskService.getTasksFromNotepad(notepadId, params),
+      ).rejects.toThrow(COMMON_ERRORS.JSON.message);
 
       testState.forceError = false;
     });
@@ -151,7 +155,7 @@ describe('MockTaskService', () => {
       const fetchSpy = getErrorMock();
 
       await expect(
-        taskService.getTasksFromNotepad(notepadId),
+        taskService.getTasksFromNotepad(notepadId, params),
       ).rejects.toThrowError(
         expect.objectContaining(getErrorResult(TASKS_ERRORS)),
       );

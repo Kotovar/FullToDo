@@ -34,6 +34,7 @@ export default tseslint.config(
       'no-unused-expressions': 'error',
       'no-console': 'error',
       '@typescript-eslint/no-empty-function': 'off',
+      "@typescript-eslint/no-empty-object-type": "off"
     },
     ignores: ['coverage/'],
   },

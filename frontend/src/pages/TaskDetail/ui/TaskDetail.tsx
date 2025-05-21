@@ -1,44 +1,42 @@
 import { useCallback } from 'react';
 import { useParams } from 'react-router';
-import type { Task } from '@sharedCommon/*';
+import { Button, ErrorFetching, TaskInput } from '@shared/ui';
+import { useNotifications, useBackNavigate } from '@shared/lib';
+import { getSuccessMessage } from '@shared/api';
+import { useTaskDetail } from '@entities/Task';
 import {
-  type SubtaskAction,
-  type TaskDetailProps,
   getFormattedDate,
   handleSubtaskAction,
   useTaskForm,
-} from '@pages/TaskDetail/ui/Subtasks';
-import {
   createSubtask,
   Subtasks,
   TaskTextarea,
   TaskTitle,
   SubtasksSkeleton,
 } from '@pages/TaskDetail/ui';
-import { useTasks } from '@entities/Task';
-import { Button, ErrorFetching, TaskInput } from '@shared/ui';
-import { useNotifications, useBackNavigate } from '@shared/lib';
-import { getSuccessMessage } from '@shared/api';
+import type { SubtaskAction, TaskDetailProps } from '@pages/TaskDetail/ui';
+import type { Task } from '@sharedCommon/*';
 
 export const TaskDetail = (props: TaskDetailProps) => {
-  const { notepadId = '', taskId = '' } = useParams();
-  const handleGoBack = useBackNavigate();
+  const { notepadId, taskId = '' } = useParams();
   const { showSuccess, showError } = useNotifications();
-  const { task, isError, isLoading, methods } = useTasks({
+  const { task, isError, isLoading, updateTask } = useTaskDetail({
     notepadId,
     taskId,
     onSuccess: method => showSuccess(getSuccessMessage('task', method)),
     onError: error => showError(error.message),
   });
+
   const { form, subtaskTitle, setForm, setSubtaskTitle } = useTaskForm(task);
+  const handleGoBack = useBackNavigate();
 
   const updateSubtask = useCallback(
     (action: SubtaskAction) => {
       const updatedSubtasks = handleSubtaskAction(form.subtasks, action);
       setForm(prev => ({ ...prev, subtasks: updatedSubtasks }));
-      methods.updateTask({ subtasks: updatedSubtasks }, taskId, action.type);
+      updateTask({ subtasks: updatedSubtasks }, taskId, action.type);
     },
-    [form.subtasks, methods, setForm, taskId],
+    [form.subtasks, setForm, taskId, updateTask],
   );
 
   if (isLoading) {
@@ -71,7 +69,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
 
     if (
       Object.keys(updates).length > 0 &&
-      (await methods.updateTask(updates, taskId, 'update'))
+      (await updateTask(updates, taskId, 'update'))
     ) {
       handleGoBack();
     }
@@ -85,7 +83,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
     const newSubtask = createSubtask(subtaskTitle);
     const updatedSubtasks = [...form.subtasks, newSubtask];
 
-    methods.updateTask({ subtasks: updatedSubtasks }, taskId, 'create');
+    updateTask({ subtasks: updatedSubtasks }, taskId, 'create');
 
     setForm(prev => ({
       ...prev,

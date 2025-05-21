@@ -6,7 +6,7 @@ import { setupMockServer } from '@shared/config';
 import { NavigationBar } from './NavigationBar';
 import * as useNotepadsHook from '@widgets/NavigationBar/lib';
 
-const NOTEPAD_INDEX = 2;
+const NOTEPAD_INDEX = 1;
 
 const getUseNotepadsMockWithRender = (
   isError = false,

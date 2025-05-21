@@ -1,21 +1,16 @@
-import * as useTaskHook from '@entities/Task';
 import { MOCK_TASK } from '@shared/mocks';
+import * as useTaskHook from '@entities/Task';
 
-export const getUseTasksMock = (
+export const getUseTaskDetailsMock = (
   isError = false,
   updateTask = vi.fn(),
-  deleteTask = vi.fn(),
-  tasks = [],
+  isLoading = false,
+  task = MOCK_TASK,
 ) => {
-  vi.spyOn(useTaskHook, 'useTasks').mockReturnValue({
-    task: MOCK_TASK,
-    tasks,
+  vi.spyOn(useTaskHook, 'useTaskDetail').mockReturnValue({
+    task,
     isError,
-    isLoading: false,
-    methods: {
-      updateTask,
-      deleteTask,
-      createTask: vi.fn(),
-    },
+    isLoading,
+    updateTask,
   });
 };

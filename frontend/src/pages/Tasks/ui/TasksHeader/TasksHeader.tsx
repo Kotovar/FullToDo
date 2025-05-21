@@ -2,6 +2,7 @@ import { Sort, Filter, AddTask } from '@pages/Tasks/ui';
 
 interface TasksHeaderProps {
   title: string;
+  setParams: () => void;
 }
 
 export const TasksHeader = ({ title }: TasksHeaderProps) => {

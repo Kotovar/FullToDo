@@ -1,23 +1,19 @@
 import { useState } from 'react';
-import { Button, LinkCard } from '@shared/ui';
+import { Button, LinkCard, CompletionIcon } from '@shared/ui';
 import { useTasks } from '@entities/Task';
-import { CompletionIcon } from '@shared/ui';
 import { useNotifications } from '@shared/lib/notifications';
 import { getSuccessMessage } from '@shared/api';
 import { getPatch } from '@pages/Tasks/lib';
-
-interface TasksBodyProps {
-  notepadId?: string;
-  notepadPathName: string;
-}
+import type { TasksBodyProps } from './TasksBody.interface';
 
 export const TasksBody = (props: TasksBodyProps) => {
-  const { notepadPathName, notepadId } = props;
+  const { notepadPathName, notepadId, params } = props;
   const [currentModalId, setCurrentModalId] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const { showSuccess, showError } = useNotifications();
   const { tasks, methods } = useTasks({
     notepadId,
+    params,
     onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
     onError: error => showError(error.message),
   });

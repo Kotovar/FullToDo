@@ -23,7 +23,7 @@ type AddTaskResponseBody = {
 
 export const taskHandlers = [
   http.get(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASKS}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
     () => {
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });
@@ -32,7 +32,24 @@ export const taskHandlers = [
     },
   ),
 
-  http.get(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`, () => {
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`, () => {
+    if (testState.forceError) {
+      return new HttpResponse(null, { status: 500 });
+    }
+    return HttpResponse.json(MOCK_SINGE_TASK_RESPONSE);
+  }),
+
+  http.get(
+    `${import.meta.env.VITE_URL}${ROUTES.getNotepadPath(notepadId)}`,
+    () => {
+      if (testState.forceError) {
+        return new HttpResponse(null, { status: 500 });
+      }
+      return HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE);
+    },
+  ),
+
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.TASKS}`, () => {
     if (testState.forceError) {
       return new HttpResponse(null, { status: 500 });
     }
@@ -40,7 +57,7 @@ export const taskHandlers = [
   }),
 
   http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASKS}`,
+    `${import.meta.env.VITE_URL}${ROUTES.getNotepadPath(notepadId)}`,
     async ({ request }) => {
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });
@@ -63,7 +80,7 @@ export const taskHandlers = [
   ),
 
   http.patch<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASKS}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`,
     async ({ request }) => {
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });
@@ -83,7 +100,7 @@ export const taskHandlers = [
   ),
 
   http.delete<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}${ROUTES.TASKS}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`,
     async () => {
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });

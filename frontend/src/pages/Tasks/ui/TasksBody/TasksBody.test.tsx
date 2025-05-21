@@ -3,13 +3,14 @@ import userEvent from '@testing-library/user-event';
 import { renderWithRouter } from '@shared/testing';
 import { MOCK_TASK } from '@shared/mocks/';
 import { setupMockServer } from '@shared/config';
+import { notepadId } from 'shared/schemas';
 import { TasksBody } from './TasksBody';
 import * as useTaskHook from '@entities/Task';
-import { notepadId } from 'shared/schemas';
 
 const props = {
   notepadId: notepadId,
   notepadPathName: '/notepads/1',
+  params: new URLSearchParams(),
 };
 
 const getUseTasksMockWithRender = (
@@ -25,7 +26,6 @@ const getUseTasksMockWithRender = (
     methods: {
       updateTask,
       deleteTask,
-      createTask: vi.fn(),
     },
   });
 

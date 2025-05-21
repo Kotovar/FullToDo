@@ -1,11 +1,11 @@
-import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { screen, waitFor, within } from '@testing-library/react';
 import { getUseBackNavigateMock, renderWithRouter } from '@shared/testing';
 import { TaskDetail } from '@pages/TaskDetail';
 import { setupMockServer } from '@shared/config';
 import { MOCK_TASK } from '@shared/mocks';
+import { getUseTaskDetailsMock } from '@entities/Task';
 import * as taskModule from '@pages/TaskDetail/ui/Subtasks';
-import { getUseTasksMock } from '@entities/Task';
 
 const getUseTaskFormMock = (
   setFormMock = vi.fn(),
@@ -37,16 +37,20 @@ describe('TaskDetail component', () => {
   });
 
   describe('Общие тесты - запуск, кнопка Назад, ошибка', () => {
-    test('корректно запускается', () => {
+    test('корректно запускается', async () => {
       renderWithRouter(<TaskDetail />);
 
-      const heading = screen.getByRole('heading');
-
-      expect(heading).toBeDefined();
+      await waitFor(() =>
+        expect(screen.getByRole('heading')).toBeInTheDocument(),
+      );
     });
 
     test('кнопка Назад вызывает свой метод', async () => {
       renderWithRouter(<TaskDetail />);
+
+      await waitFor(() =>
+        expect(screen.getByRole('heading')).toBeInTheDocument(),
+      );
 
       const button = screen.getByText('Назад');
       button.onclick = onClickBackMock;
@@ -56,7 +60,7 @@ describe('TaskDetail component', () => {
     });
 
     test('показывает ошибку, если задача не найдена', async () => {
-      getUseTasksMock(true);
+      getUseTaskDetailsMock(true);
 
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/unknown/task/404'],
@@ -74,7 +78,7 @@ describe('TaskDetail component', () => {
     setupMockServer();
 
     test('кнопка Сохранить вызывает не updateTask если ничего не изменено', async () => {
-      getUseTasksMock(false, updateTaskMock);
+      getUseTaskDetailsMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/1/task/1'],
@@ -91,7 +95,7 @@ describe('TaskDetail component', () => {
     test('если новый title не совпадает с введённым, то вызывается updateTask и handleGoBack', async () => {
       const updateTaskMock = vi.fn().mockResolvedValue(true);
 
-      getUseTasksMock(false, updateTaskMock);
+      getUseTaskDetailsMock(false, updateTaskMock);
       getUseBackNavigateMock(handleGoBack);
 
       renderWithRouter(<TaskDetail />, {
@@ -112,7 +116,7 @@ describe('TaskDetail component', () => {
     });
 
     test('если новый description не совпадает с введённым, то вызывается updateTask', async () => {
-      getUseTasksMock(false, updateTaskMock);
+      getUseTaskDetailsMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/1/task/1'],
@@ -129,7 +133,7 @@ describe('TaskDetail component', () => {
     });
 
     test('при наличии dueDate в форме передает new Date(dueDate)', async () => {
-      getUseTasksMock(false, updateTaskMock);
+      getUseTaskDetailsMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/1/task/1'],
@@ -161,15 +165,11 @@ describe('TaskDetail component', () => {
     setupMockServer();
 
     test('обновляет подзадачи при действии toggle', async () => {
-      getUseTasksMock();
+      getUseTaskDetailsMock();
 
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/1/task/1'],
         path: '/notepads/:notepadId/task/:taskId',
-      });
-
-      await waitFor(() => {
-        expect(screen.getByDisplayValue('Выучить Node.js')).toBeDefined();
       });
 
       const subtaskItem = screen
@@ -195,7 +195,7 @@ describe('TaskDetail component', () => {
 
   describe('метод handleKeyDown', () => {
     test('Нажатие Enter добавляет подзадачу', async () => {
-      getUseTasksMock(false, updateTaskMock);
+      getUseTaskDetailsMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/1/task/1'],
@@ -291,7 +291,7 @@ describe('TaskDetail component', () => {
     test('Метод возвращает undefined если ничего не введено кроме пробелов', async () => {
       const { setFormMock } = getUseTaskFormMock();
       const updateTaskMock = vi.fn().mockResolvedValue(true);
-      getUseTasksMock(false, updateTaskMock);
+      getUseTaskDetailsMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/1/task/1'],
