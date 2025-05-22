@@ -5,6 +5,7 @@ import {
   TaskQueryParams,
   taskQueryParamsSchema,
 } from '@shared/schemas';
+import { extractInvalidKeys } from '@shared/utils';
 
 export const parseJsonBody = <T>(req: IncomingMessage): Promise<T> => {
   return new Promise((resolve, reject) => {
@@ -68,15 +69,6 @@ export const getValidatedTaskParams = (
   const validParams = filterValidParams(rawParams, invalidKeys);
 
   return taskQueryParamsSchema.parse(validParams);
-};
-
-export const extractInvalidKeys = (error: ZodError): string[] => {
-  return error.issues.flatMap(issue => {
-    if (issue.code === 'unrecognized_keys' && 'keys' in issue) {
-      return issue.keys;
-    }
-    return issue.path[0] ? [String(issue.path[0])] : [];
-  });
 };
 
 const filterValidParams = (

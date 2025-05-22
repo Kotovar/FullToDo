@@ -38,6 +38,7 @@ describe('TaskDetail component', () => {
 
   describe('Общие тесты - запуск, кнопка Назад, ошибка', () => {
     test('корректно запускается', async () => {
+      getUseTaskDetailsMock();
       renderWithRouter(<TaskDetail />);
 
       await waitFor(() =>
@@ -46,6 +47,7 @@ describe('TaskDetail component', () => {
     });
 
     test('кнопка Назад вызывает свой метод', async () => {
+      getUseTaskDetailsMock();
       renderWithRouter(<TaskDetail />);
 
       await waitFor(() =>
