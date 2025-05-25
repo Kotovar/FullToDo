@@ -15,13 +15,14 @@ export const useTasks = (props: UseTasksProps) => {
   const queryClient = useQueryClient();
   const isCommon = isCommonNotepad(notepadId);
   const queryKey = getTaskQueryKey(notepadId);
+  const paramsString = params.toString();
 
   const {
     data: tasks,
     isError: isErrorTasks,
     isLoading: isLoadingTasks,
   } = useQuery({
-    queryKey: ['tasks', notepadId, params],
+    queryKey: ['tasks', notepadId, params, paramsString],
     queryFn: () => taskService.getTasksFromNotepad(notepadId, params),
     select: data => data.data,
     enabled: !isCommon,
@@ -32,7 +33,7 @@ export const useTasks = (props: UseTasksProps) => {
     isError: isErrorTasksAll,
     isLoading: isLoadingTasksAll,
   } = useQuery({
-    queryKey: ['tasks', params],
+    queryKey: ['tasks', params, paramsString],
     queryFn: () => taskService.getAllTasks(params),
     select: data => data.data,
     enabled: isCommon,

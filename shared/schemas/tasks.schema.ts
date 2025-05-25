@@ -96,15 +96,9 @@ export const taskSearchSchema = z
 
 export const taskFilterSchema = z
   .object({
-    isCompleted: z
-      .union([z.literal('true'), z.literal('false'), z.boolean()])
-      .transform(value => value === 'true' || value === true)
-      .optional(),
+    isCompleted: z.union([z.literal('true'), z.literal('false')]).optional(),
     priority: PriorityEnum.optional(),
-    hasDueDate: z
-      .union([z.literal('true'), z.literal('false'), z.boolean()])
-      .transform(value => value === 'true' || value === true)
-      .optional(),
+    hasDueDate: z.union([z.literal('true'), z.literal('false')]).optional(),
   })
   .strict();
 

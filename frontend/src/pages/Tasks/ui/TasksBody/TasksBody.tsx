@@ -4,7 +4,12 @@ import { useTasks } from '@entities/Task';
 import { useNotifications } from '@shared/lib/notifications';
 import { getSuccessMessage } from '@shared/api';
 import { getPatch } from '@pages/Tasks/lib';
-import type { TasksBodyProps } from './TasksBody.interface';
+
+export interface TasksBodyProps {
+  notepadPathName: string;
+  params: URLSearchParams;
+  notepadId: string;
+}
 
 export const TasksBody = (props: TasksBodyProps) => {
   const { notepadPathName, notepadId, params } = props;
