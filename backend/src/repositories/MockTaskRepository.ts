@@ -31,16 +31,17 @@ export class MockTaskRepository implements TaskRepository {
     }
 
     const { isCompleted, hasDueDate, priority, sortBy, order } = params;
-
     let result = [...tasks];
 
     if (isCompleted !== undefined) {
-      result = result.filter(task => task.isCompleted === isCompleted);
+      result = result.filter(task =>
+        isCompleted === 'true' ? task.isCompleted : !task.isCompleted,
+      );
     }
 
     if (hasDueDate !== undefined) {
       result = result.filter(task =>
-        hasDueDate ? !!task.dueDate : !task.dueDate,
+        hasDueDate === 'true' ? !!task.dueDate : !task.dueDate,
       );
     }
 
@@ -68,12 +69,8 @@ export class MockTaskRepository implements TaskRepository {
       });
     }
 
-    if (params.search !== undefined) {
+    if (params.search?.trim()) {
       const searchTerm = params.search.toLowerCase().trim();
-
-      if (searchTerm === '') {
-        return result;
-      }
 
       result = result.filter(
         task =>

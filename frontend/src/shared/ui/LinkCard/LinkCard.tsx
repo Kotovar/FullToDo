@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, JSX, useState } from 'react';
+import { ComponentPropsWithoutRef, JSX, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { Button, COLORS, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
 
@@ -34,6 +34,7 @@ export const LinkCard = (props: LinkCardProps) => {
 
   const [editedTitle, setEditedTitle] = useState(cardTitle);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -106,6 +107,7 @@ export const LinkCard = (props: LinkCardProps) => {
           onClick={handleButtonClick}
           padding='none'
           aria-label='Дополнительное меню'
+          ref={buttonRef}
         >
           <Icon
             name='threeDots'
@@ -115,6 +117,7 @@ export const LinkCard = (props: LinkCardProps) => {
         </Button>
         {isMenuOpen && currentModalId === path && (
           <OptionsMenu
+            buttonRef={buttonRef}
             renameHandler={() => {
               handleClickRename();
               closeMenu();

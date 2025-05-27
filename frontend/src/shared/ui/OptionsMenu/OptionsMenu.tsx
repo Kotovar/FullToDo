@@ -2,6 +2,7 @@ import { ComponentPropsWithRef, RefObject, useRef } from 'react';
 import { useOnClickOutside } from 'usehooks-ts';
 
 interface OptionsMenu extends ComponentPropsWithRef<'div'> {
+  buttonRef: RefObject<HTMLButtonElement | null>;
   path?: string;
   renameHandler: () => void;
   deleteHandler: () => void;
@@ -9,26 +10,29 @@ interface OptionsMenu extends ComponentPropsWithRef<'div'> {
 }
 
 export const OptionsMenu = (props: OptionsMenu) => {
-  const { renameHandler, deleteHandler, closeMenu, ...rest } = props;
+  const { buttonRef, renameHandler, deleteHandler, closeMenu, ...rest } = props;
   const ref = useRef<HTMLDivElement>(null);
 
-  useOnClickOutside(ref as RefObject<HTMLElement>, closeMenu);
+  useOnClickOutside(
+    [ref as RefObject<HTMLElement>, buttonRef as RefObject<HTMLElement>],
+    closeMenu,
+  );
 
   return (
     <div
-      className='border-bg-second absolute flex w-max -translate-x-full flex-col border-1'
+      className='border-bg-second absolute top-full flex w-max -translate-x-full flex-col rounded-md border bg-white p-2 shadow-md'
       ref={ref}
       {...rest}
     >
       <button
-        className='cursor-pointer bg-white p-2 hover:brightness-60'
+        className='relative z-10 w-full cursor-pointer bg-white p-2 hover:brightness-60'
         type='button'
         onClick={renameHandler}
       >
         Переименовать
       </button>
       <button
-        className='bg-bg-second cursor-pointer p-2 hover:brightness-70'
+        className='bg-bg-second relative z-10 w-full cursor-pointer p-2 hover:brightness-70'
         type='button'
         onClick={deleteHandler}
       >

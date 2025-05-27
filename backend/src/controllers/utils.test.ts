@@ -66,7 +66,7 @@ describe('getValidatedTaskParams tests', () => {
   const incorrectUrl = `${correctUrl}&unknown=5`;
   const incorrectUrlWithBadParamsValue = `/notepads/1/tasks?isCompleted=6`;
   const correctParams: TaskQueryParams = {
-    isCompleted: true,
+    isCompleted: 'true',
     search: '5',
   };
 

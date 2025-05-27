@@ -13,6 +13,7 @@ interface FiltersMenuProps {
 const filterGroups = [
   {
     name: 'isCompleted',
+    title: 'статус',
     options: [
       { value: '', label: 'Все' },
       { value: 'true', label: 'Выполненные' },
@@ -21,6 +22,7 @@ const filterGroups = [
   },
   {
     name: 'hasDueDate',
+    title: 'срок',
     options: [
       { value: '', label: 'Все' },
       { value: 'true', label: 'Со сроком' },
@@ -29,6 +31,7 @@ const filterGroups = [
   },
   {
     name: 'priority',
+    title: 'приоритет',
     options: [
       { value: '', label: 'Все' },
       { value: 'low', label: 'Низкий' },
@@ -84,32 +87,32 @@ export const FiltersMenu = ({
 
   return (
     <div
-      className='border-bg-second bg-grey-light absolute w-max translate-y-full flex-col rounded-sm border-2'
+      className='border-bg-second absolute top-full rounded-md border bg-white p-2 shadow-md md:right-0'
       ref={ref}
     >
-      <form onSubmit={handleSubmit} className='flex flex-col'>
+      <form id='filterForm' onSubmit={handleSubmit} className='flex flex-col'>
         {filterGroups.map(group => (
           <RadioGroup
             key={group.name}
-            name={group.name}
+            name={group.title}
             options={group.options}
             value={filters[group.name]}
             onChange={value => handleChange(group.name, value)}
           />
         ))}
       </form>
-      <div className='flex justify-between pt-4'>
+      <div className='flex justify-between gap-1 pt-2 text-sm'>
         <button
           type='button'
           onClick={handleReset}
-          className='text-sm text-gray-600 hover:text-gray-800'
+          className='text-sm hover:underline'
         >
           Сбросить
         </button>
         <button
           type='submit'
-          className='rounded bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600'
-          onClick={handleSubmit}
+          className='bg-accent-lighter rounded px-2 py-1 text-sm text-white hover:bg-blue-600'
+          form='filterForm'
         >
           Применить
         </button>

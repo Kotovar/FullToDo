@@ -55,8 +55,17 @@ export const Filter = ({ params, setParams }: FilterProps) => {
             />
           );
         })}
+        {labels.length > 1 && (
+          <button
+            onClick={() => setParams('')}
+            aria-label='Очистить все фильтры'
+            className='cursor-pointer'
+          >
+            <Icon name='cross' size={ICON_SIZES.DEFAULT} fill={COLORS.ACCENT} />
+          </button>
+        )}
       </div>
-      <div className='flex-end flex items-center gap-2'>
+      <div className='flex-end relative flex items-center gap-2'>
         <span>Фильтры{labels.length > 0 && ` (${labels.length})`}</span>
         <button
           ref={buttonRef}

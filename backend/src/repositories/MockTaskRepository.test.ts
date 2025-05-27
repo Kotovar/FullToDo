@@ -146,8 +146,8 @@ describe('MockTaskRepository', () => {
 
   test('method getAllTasks with filter`s params', async () => {
     const params: TaskQueryParams = {
-      isCompleted: true,
-      hasDueDate: false,
+      isCompleted: 'true',
+      hasDueDate: 'false',
       priority: 'low',
     };
     const responseGet = await repository.getAllTasks(params);
@@ -163,7 +163,7 @@ describe('MockTaskRepository', () => {
     });
 
     const responseGetWithDueDate = await repository.getAllTasks({
-      hasDueDate: true,
+      hasDueDate: 'true',
     });
     const allTasksWithDueDate = allTasks.filter(task => !!task.dueDate);
 
