@@ -1,24 +1,9 @@
+import type { FilterLabel } from '@pages/Tasks/lib';
 import type { TaskFilter } from 'shared/schemas';
-import { FilterLabel } from './types';
+import { commonLabels } from './constants';
 
 type FilterKey = keyof TaskFilter;
 type FilterValue<K extends FilterKey> = NonNullable<TaskFilter[K]>;
-
-const commonLabels = {
-  isCompleted: {
-    true: 'Выполненные',
-    false: 'Активные',
-  },
-  hasDueDate: {
-    true: 'Со сроком',
-    false: 'Без срока',
-  },
-  priority: {
-    low: 'Низкий приоритет',
-    medium: 'Средний приоритет',
-    high: 'Высокий приоритет',
-  },
-} as const;
 
 const isFilterKey = (key: string): key is FilterKey => key in commonLabels;
 

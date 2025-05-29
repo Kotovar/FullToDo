@@ -9,5 +9,9 @@ export const useNotifications = () => {
     toast.success(message);
   };
 
-  return { showError, showSuccess };
+  const showInfo = (message: string) => {
+    toast.info(message);
+  };
+
+  return { showError, showSuccess, showInfo };
 };

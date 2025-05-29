@@ -1,4 +1,4 @@
-import { TaskFilter } from 'shared/schemas';
+import type { TaskFilter, TaskSort } from 'shared/schemas';
 
 export interface TaskOptions {
   title: string;
@@ -12,3 +12,7 @@ export interface FilterLabel {
 }
 
 export type FiltersState = Record<keyof TaskFilter, string>;
+
+export type SortByKey = keyof Pick<TaskSort, 'sortBy'>;
+export type SortState = NonNullable<TaskSort[SortByKey]>;
+export type OrderState = NonNullable<TaskSort['order']>;

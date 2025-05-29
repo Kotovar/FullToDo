@@ -7,11 +7,13 @@ import * as useSharedLibHook from '@shared/lib';
 describe('getUseNotificationsMock', () => {
   const showError = vi.fn();
   const showSuccess = vi.fn();
+  const showInfo = vi.fn();
 
   test('Использует showError по умолчанию, если не указывать ', () => {
     vi.spyOn(useSharedLibHook, 'useNotifications').mockReturnValue({
       showError,
       showSuccess,
+      showInfo,
     });
 
     getUseNotificationsMock();

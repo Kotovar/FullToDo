@@ -7,7 +7,7 @@ import {
   getDeleteResponse,
 } from '@shared/mocks';
 import { taskService } from '@entities/Task';
-import { notepadId, taskId } from 'shared/schemas';
+import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
 import { useTasks } from './useTasks';
 
 const params = new URLSearchParams();
@@ -66,7 +66,7 @@ describe('useTasks hook', () => {
     expect(result.current.tasks).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE.data);
   });
 
-  test('Если указан notepadId, но не указан taskId  - будет получен только 1 refetch, который вызывается при мутации', async () => {
+  test('Если указан notepadId будет вызван метод для получения задач из конкретного блокнота', async () => {
     const getTasksFromNotepadMock = vi.spyOn(
       taskService,
       'getTasksFromNotepad',
@@ -81,6 +81,23 @@ describe('useTasks hook', () => {
 
     expect(getSingleTaskMock).toHaveBeenCalledTimes(0);
     expect(getTasksFromNotepadMock).toHaveBeenCalledTimes(1);
+  });
+
+  test('Если указан общий notepadId - будет вызван метод для получения всех задач', async () => {
+    const getAllTasksMock = vi.spyOn(taskService, 'getAllTasks');
+    const getSingleTaskMock = vi.spyOn(taskService, 'getSingleTask');
+
+    const { result } = renderHook(
+      () => useTasks({ notepadId: commonNotepadId, params }),
+      {
+        wrapper: createWrapper(),
+      },
+    );
+
+    await result.current.methods.updateTask({ title: 'New' }, taskId);
+
+    expect(getSingleTaskMock).toHaveBeenCalledTimes(0);
+    expect(getAllTasksMock).toHaveBeenCalledTimes(1);
   });
 
   test('возвращает список задач из конкретного блокнота', async () => {

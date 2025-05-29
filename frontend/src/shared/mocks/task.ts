@@ -116,6 +116,11 @@ export const MOCK_SINGE_NOTEPAD_RESPONSE = {
     },
   ],
 };
+export const MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS = {
+  status: 200,
+  message: 'Success',
+  data: [],
+};
 
 export const MOCK_TASK_UPDATE_RESPONSE = {
   status: 200,

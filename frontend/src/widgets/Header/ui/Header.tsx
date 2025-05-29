@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef } from 'react';
 import { COLORS, Icon, Input, Button } from '@shared/ui';
+import { useSearch } from './useSearch';
 
 interface Props extends ComponentPropsWithoutRef<'header'> {
   changeVisibility: () => void;
@@ -7,6 +8,7 @@ interface Props extends ComponentPropsWithoutRef<'header'> {
 
 export const Header = (props: Props) => {
   const { changeVisibility, ...rest } = props;
+  const { value, onChange, onClear } = useSearch();
 
   return (
     <header {...rest}>
@@ -26,10 +28,25 @@ export const Header = (props: Props) => {
           <Input
             placeholder='Поиск'
             type='text'
+            value={value}
+            onChange={e => onChange(e.target.value)}
             leftContent={
               <Button appearance='ghost' padding='none' aria-label='Поиск'>
                 <Icon name='loupe' fill={COLORS.ACCENT} />
               </Button>
+            }
+            rightContent={
+              value ? (
+                <Button
+                  appearance='ghost'
+                  padding='none'
+                  aria-label='Очистить поиск'
+                  onClick={onClear}
+                  type='button'
+                >
+                  <Icon name='cross' fill={COLORS.ACCENT} />
+                </Button>
+              ) : null
             }
             className='w-full outline-0'
           />

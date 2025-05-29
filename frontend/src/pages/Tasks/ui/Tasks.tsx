@@ -1,5 +1,6 @@
-import { useNotepad, useTaskParams } from '@pages/Tasks/lib';
 import { ErrorFetching } from '@shared/ui';
+import { useNotepad } from '@pages/Tasks/lib';
+import { useTaskParams } from '@entities/Task';
 import { TasksHeader } from './TasksHeader';
 import { TasksBody } from './TasksBody';
 import { TasksSkeleton } from './TasksSkeleton';

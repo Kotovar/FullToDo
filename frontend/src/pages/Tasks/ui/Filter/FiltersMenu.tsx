@@ -87,7 +87,7 @@ export const FiltersMenu = ({
 
   return (
     <div
-      className='border-bg-second absolute top-full rounded-md border bg-white p-2 shadow-md md:right-0'
+      className='border-bg-second absolute top-full z-10 rounded-md border bg-white p-2 shadow-md md:right-0'
       ref={ref}
     >
       <form id='filterForm' onSubmit={handleSubmit} className='flex flex-col'>
@@ -111,7 +111,7 @@ export const FiltersMenu = ({
         </button>
         <button
           type='submit'
-          className='bg-accent-lighter rounded px-2 py-1 text-sm text-white hover:bg-blue-600'
+          className='bg-accent-lighter hover:bg-accent-lighter/90 rounded px-2 py-1 text-sm text-white'
           form='filterForm'
         >
           Применить

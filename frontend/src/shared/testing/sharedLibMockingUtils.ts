@@ -4,6 +4,7 @@ export const getUseNotificationsMock = (showError = vi.fn()) => {
   vi.spyOn(useSharedLibHook, 'useNotifications').mockReturnValue({
     showError,
     showSuccess: vi.fn(),
+    showInfo: vi.fn(),
   });
 };
 

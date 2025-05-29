@@ -1,9 +1,10 @@
+import { useRef, useState } from 'react';
 import type { SetURLSearchParams } from 'react-router';
 import { COLORS, Icon, ICON_SIZES } from '@shared/ui';
 import { Chip } from '@shared/ui';
-import { FiltersState, useFilterLabels } from '@pages/Tasks/lib';
-import { useRef, useState } from 'react';
 import { FiltersMenu } from './FiltersMenu';
+import { useFilters } from './useFilters';
+import { useFilterLabels } from './useFilterLabels';
 
 interface FilterProps {
   params: URLSearchParams;
@@ -12,36 +13,12 @@ interface FilterProps {
 
 export const Filter = ({ params, setParams }: FilterProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { handleRemoveFilter, handleUpdateFilter } = useFilters(setParams);
   const labels = useFilterLabels(params);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
   const closeMenu = () => setIsMenuOpen(false);
-  const handleRemoveFilter = (key: string) => {
-    setParams(prev => {
-      const newParams = new URLSearchParams(prev);
-      newParams.delete(key);
-
-      return newParams;
-    });
-  };
-
-  const handleUpdateFilter = (newFilters: FiltersState) => {
-    setParams(prev => {
-      const newParams = new URLSearchParams(prev);
-
-      (Object.keys(newFilters) as Array<keyof FiltersState>).forEach(key => {
-        const value = newFilters[key];
-        if (value !== undefined && value) {
-          newParams.set(key, value);
-        } else {
-          newParams.delete(key);
-        }
-      });
-
-      return newParams;
-    });
-  };
 
   return (
     <div className='flex'>
@@ -55,22 +32,13 @@ export const Filter = ({ params, setParams }: FilterProps) => {
             />
           );
         })}
-        {labels.length > 1 && (
-          <button
-            onClick={() => setParams('')}
-            aria-label='Очистить все фильтры'
-            className='cursor-pointer'
-          >
-            <Icon name='cross' size={ICON_SIZES.DEFAULT} fill={COLORS.ACCENT} />
-          </button>
-        )}
       </div>
       <div className='flex-end relative flex items-center gap-2'>
         <span>Фильтры{labels.length > 0 && ` (${labels.length})`}</span>
         <button
           ref={buttonRef}
           aria-label='Сменить фильтр'
-          className='cursor-pointer'
+          className='cursor-pointer p-1 hover:rounded hover:bg-current/10'
           onClick={toggleMenu}
         >
           <Icon

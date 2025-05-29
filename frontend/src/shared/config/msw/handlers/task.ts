@@ -3,6 +3,7 @@ import { type CreateTask, notepadId, ROUTES, taskId } from '@sharedCommon/';
 import {
   getDeleteResponse,
   MOCK_SINGE_NOTEPAD_RESPONSE,
+  MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS,
   MOCK_SINGE_TASK_RESPONSE,
   MOCK_TASK_UPDATE_RESPONSE,
   MOCK_TITLE_EXISTING,
@@ -41,23 +42,58 @@ export const taskHandlers = [
 
   http.get(
     `${import.meta.env.VITE_URL}${ROUTES.getNotepadPath(notepadId)}`,
-    () => {
+    ({ request }) => {
+      const url = new URL(request.url);
+      const hasSearch = url.searchParams.get('search') === 'task';
+
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });
       }
-      return HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE);
+
+      return hasSearch
+        ? HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS)
+        : HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE);
     },
   ),
 
-  http.get(`${import.meta.env.VITE_URL}${ROUTES.TASKS}`, () => {
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.TASKS}`, ({ request }) => {
+    const url = new URL(request.url);
+    const hasSearch = url.searchParams.get('search') === 'task';
+
     if (testState.forceError) {
       return new HttpResponse(null, { status: 500 });
     }
-    return HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE);
+
+    return hasSearch
+      ? HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS)
+      : HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE);
   }),
 
   http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
     `${import.meta.env.VITE_URL}${ROUTES.getNotepadPath(notepadId)}`,
+    async ({ request }) => {
+      if (testState.forceError) {
+        return new HttpResponse(null, { status: 500 });
+      }
+
+      const { title } = await request.json();
+
+      if (title !== MOCK_TITLE_EXISTING) {
+        return HttpResponse.json({
+          status: 201,
+          message: `A task with the title ${title} has been successfully created`,
+        });
+      }
+
+      return HttpResponse.json({
+        status: 409,
+        message: `A task with the title ${MOCK_TITLE_EXISTING} already exists in notepad ${MOCK_TITLE_EXISTING_NOTEPAD}`,
+      });
+    },
+  ),
+
+  http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
+    `${import.meta.env.VITE_URL}${ROUTES.TASKS}`,
     async ({ request }) => {
       if (testState.forceError) {
         return new HttpResponse(null, { status: 500 });

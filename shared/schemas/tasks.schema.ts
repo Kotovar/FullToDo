@@ -84,7 +84,7 @@ export const NotepadWithoutTasksResponse = ResponseWithoutData.extend({
 export const taskSortSchema = z
   .object({
     sortBy: z.enum(['createdDate', 'dueDate', 'priority']).optional(),
-    order: z.enum(['asc', 'desc']).optional().default('asc'),
+    order: z.enum(['asc', 'desc']).optional(),
   })
   .strict();
 
