@@ -11,13 +11,7 @@ export const useNotepad = () => {
   const { notepadId } = useParams();
   const { showError } = useNotifications();
   const { pathname } = useLocation();
-
-  const {
-    data: notepadsData,
-    isError,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data, isError, isLoading, error } = useQuery({
     queryKey: ['notepads'],
     queryFn: notepadService.getNotepads,
     select: data => data.data,
@@ -29,26 +23,50 @@ export const useNotepad = () => {
     }
   }, [isError, error, showError]);
 
-  const { title, resolvedNotepadId } = useMemo(() => {
-    if (!notepadId && pathname === ROUTES.TASKS) {
+  return useMemo(() => {
+    const isCommonNotepad = pathname === ROUTES.TASKS;
+    const currentNotepad = data?.find(notepad => notepad._id === notepadId);
+
+    if (isCommonNotepad) {
       return {
         title: 'Все задачи',
-        resolvedNotepadId: commonNotepadId,
+        notepadId: commonNotepadId,
+        location: pathname,
+        isError: false,
+        isLoading: false,
+        notFound: false,
       };
     }
 
-    const notepad = notepadsData?.find(notepad => notepad._id === notepadId);
-    return {
-      title: notepad?.title ?? '',
-      resolvedNotepadId: notepadId ?? '',
-    };
-  }, [notepadId, pathname, notepadsData]);
+    if (isLoading || !data) {
+      return {
+        title: '',
+        notepadId: '',
+        location: pathname,
+        isError: false,
+        notFound: false,
+        isLoading,
+      };
+    }
 
-  return {
-    title,
-    isError,
-    isLoading,
-    location: pathname,
-    notepadId: resolvedNotepadId,
-  };
+    if (!currentNotepad) {
+      return {
+        title: '',
+        notepadId: '',
+        location: pathname,
+        isError: false,
+        isLoading: false,
+        notFound: true,
+      };
+    }
+
+    return {
+      title: currentNotepad.title,
+      notepadId: currentNotepad._id,
+      location: pathname,
+      isError: false,
+      isLoading: false,
+      notFound: false,
+    };
+  }, [pathname, isLoading, data, notepadId]);
 };

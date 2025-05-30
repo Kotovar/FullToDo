@@ -20,13 +20,11 @@ const getFilterLabels = (params: URLSearchParams): FilterLabel[] => {
   const labels: FilterLabel[] = [];
 
   for (const key in filters) {
-    if (isFilterKey(key)) {
+    if (isFilterKey(key) && filters[key]) {
       const value = filters[key];
-      if (value !== undefined) {
-        const label = getLabelForFilter(key, value);
-        if (label) {
-          labels.push({ key, label, value });
-        }
+      const label = getLabelForFilter(key, value);
+      if (label) {
+        labels.push({ key, label, value });
       }
     }
   }

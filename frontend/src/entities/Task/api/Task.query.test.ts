@@ -1,5 +1,5 @@
 import { COMMON_ERRORS, TASKS_ERRORS } from '@shared/api';
-import { testState, setupMockServer } from '@shared/config';
+import { setupMockServer } from '@shared/config';
 import { taskService } from './Task.query';
 import {
   getDeleteResponse,
@@ -70,6 +70,21 @@ describe('MockTaskService', () => {
         expect.objectContaining({
           message: 'Not found',
           cause: TASKS_ERRORS.UNDEFINED,
+        }),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    test('should handle default error', async () => {
+      const fetchSpy = getFailFetchResponse(500);
+
+      await expect(
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
+      ).rejects.toThrowError(
+        expect.objectContaining({
+          message: 'Server error',
+          cause: TASKS_ERRORS.SERVER_ERROR,
         }),
       );
 
@@ -253,18 +268,6 @@ describe('MockTaskService', () => {
         status: 409,
         message: `A task with the title ${MOCK_TITLE_EXISTING} already exists in notepad ${MOCK_TITLE_EXISTING_NOTEPAD}`,
       });
-    });
-
-    test('return error if network problem', async () => {
-      testState.forceError = true;
-
-      await expect(
-        taskService.updateTask(taskId, {
-          title: MOCK_TITLE_NON_EXISTING,
-        }),
-      ).rejects.toThrow('Server error');
-
-      testState.forceError = false;
     });
 
     test('should throw error if error in not instanceof Error', async () => {

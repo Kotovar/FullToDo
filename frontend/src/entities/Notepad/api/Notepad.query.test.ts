@@ -6,7 +6,7 @@ import {
   getDeleteResponse,
 } from '@shared/mocks';
 import { COMMON_ERRORS, NOTEPAD_ERRORS } from '@shared/api';
-import { testState, setupMockServer } from '@shared/config';
+import { setupMockServer } from '@shared/config';
 import { notepadService } from './Notepad.query';
 import {
   getErrorMock,
@@ -118,13 +118,13 @@ describe('MockNotepadService', () => {
     });
 
     test('return error if network problem', async () => {
-      testState.forceError = true;
+      const fetchSpy = getErrorMock();
 
-      await expect(notepadService.getNotepads()).rejects.toThrow(
-        COMMON_ERRORS.JSON.message,
+      await expect(notepadService.getNotepads()).rejects.toThrowError(
+        expect.objectContaining(getErrorResult(NOTEPAD_ERRORS)),
       );
 
-      testState.forceError = false;
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
   });
 

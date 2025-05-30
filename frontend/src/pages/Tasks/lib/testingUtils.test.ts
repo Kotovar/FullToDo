@@ -9,6 +9,7 @@ describe('getUseNotepadMock', () => {
       location: '1',
       isError: false,
       isLoading: false,
+      notFound: false,
     });
     getUseNotepadMock();
     const result = useNotepadHook.useNotepad();
@@ -19,6 +20,7 @@ describe('getUseNotepadMock', () => {
       location: '1',
       isError: false,
       isLoading: false,
+      notFound: false,
     });
   });
 });

@@ -6,7 +6,6 @@ import {
   MOCK_NOTEPADS_UPDATE_RESPONSE,
   MOCK_TITLE_EXISTING,
 } from '@shared/mocks';
-import { testState } from '@shared/config';
 
 type AddNotepadRequestParams = {
   notepadId: string;
@@ -23,10 +22,6 @@ type AddNotepadResponseBody = {
 
 export const notepadHandlers = [
   http.get(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}`, () => {
-    if (testState.forceError) {
-      return new HttpResponse(null, { status: 500 });
-    }
-
     return HttpResponse.json(MOCK_NOTEPADS_RESPONSE);
   }),
 
@@ -35,10 +30,6 @@ export const notepadHandlers = [
     AddNotepadRequestBody,
     AddNotepadResponseBody
   >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}`, async ({ request }) => {
-    if (testState.forceError) {
-      return new HttpResponse(null, { status: 500 });
-    }
-
     const { title } = await request.json();
 
     if (title !== MOCK_TITLE_EXISTING) {
@@ -61,10 +52,6 @@ export const notepadHandlers = [
   >(
     `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`,
     async ({ request }) => {
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
-      }
-
       const { title } = await request.json();
 
       if (title !== MOCK_TITLE_EXISTING) {
@@ -83,10 +70,6 @@ export const notepadHandlers = [
     AddNotepadRequestBody,
     AddNotepadResponseBody
   >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`, async () => {
-    if (testState.forceError) {
-      return new HttpResponse(null, { status: 500 });
-    }
-
     return HttpResponse.json(getDeleteResponse('Notepad'));
   }),
 ];

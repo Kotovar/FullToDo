@@ -9,7 +9,6 @@ import {
   MOCK_TITLE_EXISTING,
   MOCK_TITLE_EXISTING_NOTEPAD,
 } from '@shared/mocks';
-import { testState } from '@shared/config';
 
 type AddTaskRequestParams = {
   taskId: string;
@@ -26,17 +25,11 @@ export const taskHandlers = [
   http.get(
     `${import.meta.env.VITE_URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
     () => {
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
-      }
       return HttpResponse.json(MOCK_SINGE_TASK_RESPONSE);
     },
   ),
 
   http.get(`${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`, () => {
-    if (testState.forceError) {
-      return new HttpResponse(null, { status: 500 });
-    }
     return HttpResponse.json(MOCK_SINGE_TASK_RESPONSE);
   }),
 
@@ -45,10 +38,6 @@ export const taskHandlers = [
     ({ request }) => {
       const url = new URL(request.url);
       const hasSearch = url.searchParams.get('search') === 'task';
-
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
-      }
 
       return hasSearch
         ? HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS)
@@ -60,10 +49,6 @@ export const taskHandlers = [
     const url = new URL(request.url);
     const hasSearch = url.searchParams.get('search') === 'task';
 
-    if (testState.forceError) {
-      return new HttpResponse(null, { status: 500 });
-    }
-
     return hasSearch
       ? HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS)
       : HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE);
@@ -72,10 +57,6 @@ export const taskHandlers = [
   http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
     `${import.meta.env.VITE_URL}${ROUTES.getNotepadPath(notepadId)}`,
     async ({ request }) => {
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
-      }
-
       const { title } = await request.json();
 
       if (title !== MOCK_TITLE_EXISTING) {
@@ -95,10 +76,6 @@ export const taskHandlers = [
   http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
     `${import.meta.env.VITE_URL}${ROUTES.TASKS}`,
     async ({ request }) => {
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
-      }
-
       const { title } = await request.json();
 
       if (title !== MOCK_TITLE_EXISTING) {
@@ -118,10 +95,6 @@ export const taskHandlers = [
   http.patch<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
     `${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`,
     async ({ request }) => {
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
-      }
-
       const { title } = await request.json();
 
       if (title !== MOCK_TITLE_EXISTING) {
@@ -138,10 +111,6 @@ export const taskHandlers = [
   http.delete<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
     `${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`,
     async () => {
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
-      }
-
       return HttpResponse.json(getDeleteResponse('Task'));
     },
   ),

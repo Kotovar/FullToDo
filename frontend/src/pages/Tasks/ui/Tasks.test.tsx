@@ -32,4 +32,17 @@ describe('Tasks component', () => {
       ).toBeInTheDocument(),
     );
   });
+
+  test('Показывает сообщение об ошибке, если блокнот не найден ', async () => {
+    getUseNotepadMock(false, false, true);
+
+    renderWithRouter(<Tasks />, {
+      initialEntries: ['/notepads/999'],
+      path: '/notepads/:notepadId',
+    });
+
+    await waitFor(() =>
+      expect(screen.getByText('Блокнот не найден')).toBeInTheDocument(),
+    );
+  });
 });

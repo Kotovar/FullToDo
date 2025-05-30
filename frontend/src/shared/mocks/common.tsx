@@ -42,7 +42,7 @@ export const createWrapperWithRouter = (
       <MemoryRouter initialEntries={initialEntries}>
         <Routes>
           <Route path={`${ROUTES.NOTEPADS}/:notepadId`} element={children} />
-          <Route path={ROUTES.TASKS} element={<div>Tasks Page</div>} />
+          <Route path={ROUTES.TASKS} element={children} />
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>
