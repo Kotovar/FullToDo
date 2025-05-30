@@ -172,6 +172,20 @@ describe('MockTaskRepository', () => {
       message: 'Success',
       data: allTasksWithDueDate,
     });
+
+    const responseGetWithIsCompletedFalse = await repository.getAllTasks({
+      ...params,
+      isCompleted: 'false',
+    });
+    const allTasksFilteredWithIsCompletedFalse = allTasks.filter(
+      task => !task.isCompleted && !task.dueDate && task.priority === 'low',
+    );
+
+    expect(responseGetWithIsCompletedFalse).toStrictEqual({
+      status: 200,
+      message: 'Success',
+      data: allTasksFilteredWithIsCompletedFalse,
+    });
   });
 
   test('method getAllTasks with sort`s params - createdDate', async () => {
