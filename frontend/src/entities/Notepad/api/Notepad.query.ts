@@ -4,6 +4,7 @@ import {
   CreateNotepad,
 } from 'shared/schemas';
 import { URL, COMMON_ERRORS, NOTEPAD_ERRORS } from '@shared/api';
+import { ROUTES } from 'shared/routes';
 
 if (!URL) {
   throw new Error(COMMON_ERRORS.URL.message);
@@ -32,7 +33,7 @@ export class NotepadService {
 
   async getNotepads(): Promise<NotepadWithoutTasksResponse> {
     try {
-      const response = await fetch(`${URL}/notepad`);
+      const response = await fetch(`${URL}${ROUTES.NOTEPADS}`);
       return response.json();
     } catch (error) {
       return this.handleError(error);
@@ -41,7 +42,7 @@ export class NotepadService {
 
   async createNotepad(title: string): Promise<NotepadResponse> {
     try {
-      const response = await fetch(`${URL}/notepad`, {
+      const response = await fetch(`${URL}${ROUTES.NOTEPADS}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +60,7 @@ export class NotepadService {
     updatedNotepadFields: Partial<CreateNotepad>,
   ): Promise<NotepadResponse> {
     try {
-      const response = await fetch(`${URL}/notepad/${notepadId}`, {
+      const response = await fetch(`${URL}${ROUTES.NOTEPADS}/${notepadId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +75,7 @@ export class NotepadService {
 
   async deleteNotepad(notepadId: string): Promise<NotepadResponse> {
     try {
-      const response = await fetch(`${URL}/notepad/${notepadId}`, {
+      const response = await fetch(`${URL}${ROUTES.NOTEPADS}/${notepadId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

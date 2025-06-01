@@ -1,20 +1,21 @@
 import { useParams } from 'react-router';
 import { useState } from 'react';
-import { useTasks } from '@entities/Task';
-import type { TaskOptions } from '@pages/Tasks/lib';
+import { useCreateTask } from '@entities/Task';
 import { TaskInput } from '@shared/ui';
 import { useNotifications } from '@shared/lib/notifications';
 import { getSuccessMessage } from '@shared/api';
+import type { TaskOptions } from '@pages/Tasks/lib';
 
 export const AddTask = () => {
-  const { notepadId = '' } = useParams();
+  const { notepadId } = useParams();
   const [value, setValue] = useState<TaskOptions>({
     title: '',
     date: '',
   });
 
   const { showSuccess, showError } = useNotifications();
-  const { methods } = useTasks({
+
+  const { createTask } = useCreateTask({
     notepadId,
     onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
     onError: error => showError(error.message),
@@ -25,10 +26,10 @@ export const AddTask = () => {
       setValue(prev => ({ ...prev, [field]: e.target.value }));
     };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!value.title.trim()) return;
 
-    methods.createTask({
+    await createTask({
       title: value.title,
       dueDate: value?.date ? new Date(value?.date) : undefined,
     });

@@ -1,103 +1,88 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  useMutation,
-  UseMutationResult,
-  useQuery,
-} from '@tanstack/react-query';
-import { CreateTask, Task } from '@sharedCommon/*';
-import { taskService } from '@entities/Task';
-import { type MutationUpdateProps, type UseTasksProps } from './utils';
-import { handleMutationError, type MutationMethods } from '@shared/api';
+  getTaskQueryKey,
+  handleMutation,
+  isCommonNotepad,
+  taskService,
+  type MutationUpdateProps,
+  type UseTasksProps,
+} from '@entities/Task';
+import type { MutationMethods } from '@shared/api';
+import type { Task } from '@sharedCommon/*';
 
 export const useTasks = (props: UseTasksProps) => {
-  const { notepadId = '', taskId = '', onSuccess, onError } = props;
+  const { notepadId, params, onSuccess, onError } = props;
+  const queryClient = useQueryClient();
+  const isCommon = isCommonNotepad(notepadId);
+  const queryKey = getTaskQueryKey(notepadId);
+  const paramsString = params.toString();
 
   const {
     data: tasks,
-    isError,
-    isLoading: isTasksLoading,
-    refetch: refetchTasks,
+    isError: isErrorTasks,
+    isLoading: isLoadingTasks,
   } = useQuery({
-    queryKey: ['tasks', notepadId],
-    queryFn: () => taskService.getTasksFromNotepad(notepadId),
+    queryKey: ['tasks', notepadId, params, paramsString],
+    queryFn: () => taskService.getTasksFromNotepad(notepadId, params),
     select: data => data.data,
-    enabled: !!notepadId,
+    enabled: !isCommon,
   });
 
   const {
-    data: singleTask,
-    isLoading: isSingleTaskLoading,
-    refetch: refetchSingleTask,
+    data: tasksAll,
+    isError: isErrorTasksAll,
+    isLoading: isLoadingTasksAll,
   } = useQuery({
-    queryKey: ['task', notepadId, taskId],
-    queryFn: () => taskService.getSingleTask(notepadId, taskId),
+    queryKey: ['tasks', params, paramsString],
+    queryFn: () => taskService.getAllTasks(params),
     select: data => data.data,
-    enabled: !!notepadId && !!taskId,
-  });
-
-  const handleMutation = async <T, V>(
-    mutation: UseMutationResult<T, unknown, V>,
-    method: MutationMethods,
-    payload: V,
-  ) => {
-    try {
-      await mutation.mutateAsync(payload);
-
-      const refetchPromises = [];
-      refetchPromises.push(refetchTasks());
-
-      if (taskId) {
-        refetchPromises.push(refetchSingleTask());
-      }
-
-      await Promise.all(refetchPromises);
-      onSuccess?.(method);
-
-      return true;
-    } catch (error) {
-      onError?.(handleMutationError(error));
-
-      return false;
-    }
-  };
-
-  const mutationCreate = useMutation({
-    mutationFn: (task: CreateTask) => taskService.createTask(task, notepadId),
+    enabled: isCommon,
   });
 
   const mutationUpdate = useMutation({
     mutationFn: ({ updatedTask, id }: MutationUpdateProps) =>
-      taskService.updateTask(notepadId, id, updatedTask),
+      taskService.updateTask(id, updatedTask),
   });
 
   const mutationDelete = useMutation({
-    mutationFn: (id: string) => taskService.deleteTask(notepadId, id),
+    mutationFn: (id: string) => taskService.deleteTask(id),
   });
-
-  const createTask = async (task: CreateTask) =>
-    handleMutation(mutationCreate, 'create', task);
 
   const updateTask = async (
     updatedTask: Partial<Task>,
     id: string,
     subtaskActionType?: MutationMethods,
   ) =>
-    handleMutation(mutationUpdate, subtaskActionType ?? 'update', {
-      updatedTask,
-      id,
-    });
+    handleMutation(
+      mutationUpdate,
+      subtaskActionType ?? 'update',
+      {
+        updatedTask,
+        id,
+      },
+      {
+        queryClient,
+        queryKey,
+        onSuccess,
+        onError,
+      },
+    );
 
   const deleteTask = (id: string) =>
-    handleMutation(mutationDelete, 'delete', id);
+    handleMutation(mutationDelete, 'delete', id, {
+      queryClient,
+      queryKey,
+      onSuccess,
+      onError,
+    });
 
   return {
-    tasks: tasks ?? [],
-    isError,
-    isLoading: isTasksLoading || isSingleTaskLoading,
-    ...(taskId && { task: singleTask ?? null }),
+    tasks: tasks || tasksAll,
+    isError: isErrorTasks || isErrorTasksAll,
+    isLoading: isLoadingTasks || isLoadingTasksAll,
     methods: {
       updateTask,
       deleteTask,
-      createTask,
     },
   };
 };

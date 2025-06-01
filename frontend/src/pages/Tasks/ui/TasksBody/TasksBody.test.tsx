@@ -1,14 +1,16 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithRouter } from '@shared/testing';
-import { notepadId, MOCK_TASK } from '@shared/mocks/';
+import { MOCK_TASK } from '@shared/mocks/';
 import { setupMockServer } from '@shared/config';
+import { notepadId } from 'shared/schemas';
 import { TasksBody } from './TasksBody';
 import * as useTaskHook from '@entities/Task';
 
 const props = {
   notepadId: notepadId,
-  notepadPathName: '/notepad/1',
+  notepadPathName: '/notepads/1',
+  params: new URLSearchParams(),
 };
 
 const getUseTasksMockWithRender = (
@@ -24,13 +26,12 @@ const getUseTasksMockWithRender = (
     methods: {
       updateTask,
       deleteTask,
-      createTask: vi.fn(),
     },
   });
 
   renderWithRouter(<TasksBody {...props} />, {
-    initialEntries: ['/notepad/1'],
-    path: '/notepad/:notepadId',
+    initialEntries: ['/notepads/1'],
+    path: '/notepads/:notepadId',
   });
 };
 
@@ -138,5 +139,12 @@ describe('TasksBody component', () => {
     const deleteButton = getElements('delete');
     await user.click(deleteButton);
     expect(deleteTaskMock).toHaveBeenCalled();
+  });
+
+  test('Отображается сообщение, когда список задач пустой', async () => {
+    getUseTasksMockWithRender(false, updateTaskMock, deleteTaskMock, []);
+
+    const message = screen.getByText('Ничего не найдено');
+    expect(message).toBeInTheDocument();
   });
 });

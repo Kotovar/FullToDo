@@ -13,9 +13,12 @@ export const Router = () => {
         <Route index element={<Home />} />
 
         <Route element={<Layout />}>
-          <Route path={ROUTES.NOTEPAD} element={<Tasks />} />
+          <Route path={ROUTES.NOTEPADS} element={<Tasks />} />
           <Route path={ROUTES.NOTEPAD_ID} element={<Tasks />} />
-          <Route path={ROUTES.TASK_ID} element={<TaskDetail />} />
+          <Route path={ROUTES.NOTEPAD_TASKS} element={<Tasks />} />
+          <Route path={ROUTES.TASKS} element={<Tasks />} />
+          <Route path={ROUTES.TASK_DETAIL} element={<TaskDetail />} />
+          <Route path={ROUTES.COMMON_TASK_DETAIL} element={<TaskDetail />} />
         </Route>
 
         <Route path='*' element={<Error />} />

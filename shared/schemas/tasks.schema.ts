@@ -31,7 +31,7 @@ export const createTaskSchema = z.object({
 });
 
 export const dbTaskSchema = createTaskSchema.extend({
-  createdDate: z.date(),
+  createdDate: z.coerce.date(),
   notepadId: z.string(),
   _id: z.string(),
   progress: z.string(),
@@ -53,6 +53,7 @@ export const updateTaskSchema = createTaskSchema
   .extend({
     subtasks: z.array(createSubtaskSchema).optional(),
     isCompleted: z.boolean(),
+    notepadId: z.string().optional(),
   })
   .partial()
   .refine(data => Object.keys(data).length > 0, {
@@ -80,6 +81,32 @@ export const NotepadWithoutTasksResponse = ResponseWithoutData.extend({
   data: z.array(notepadWithoutTasksSchema).optional(),
 });
 
+export const taskSortSchema = z
+  .object({
+    sortBy: z.enum(['createdDate', 'dueDate', 'priority']).optional(),
+    order: z.enum(['asc', 'desc']).optional(),
+  })
+  .strict();
+
+export const taskSearchSchema = z
+  .object({
+    search: z.string().min(1).optional(),
+  })
+  .strict();
+
+export const taskFilterSchema = z
+  .object({
+    isCompleted: z.union([z.literal('true'), z.literal('false')]).optional(),
+    priority: PriorityEnum.optional(),
+    hasDueDate: z.union([z.literal('true'), z.literal('false')]).optional(),
+  })
+  .strict();
+
+export const taskQueryParamsSchema = taskFilterSchema
+  .merge(taskSortSchema)
+  .merge(taskSearchSchema)
+  .partial();
+
 export type Notepad = z.infer<typeof dbNotepadSchema>;
 export type Task = z.infer<typeof dbTaskSchema>;
 export type Subtask = z.infer<typeof createSubtaskSchema>;
@@ -92,3 +119,8 @@ export type NotepadResponse = z.infer<typeof NotepadResponse>;
 export type NotepadWithoutTasksResponse = z.infer<
   typeof NotepadWithoutTasksResponse
 >;
+
+export type TaskFilter = z.infer<typeof taskFilterSchema>;
+export type TaskSort = z.infer<typeof taskSortSchema>;
+export type TaskSearch = z.infer<typeof taskSearchSchema>;
+export type TaskQueryParams = z.infer<typeof taskQueryParamsSchema>;

@@ -1,17 +1,19 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useNotepad } from './useNotepad';
 import { setupMockServer } from '@shared/config';
-import { createWrapperWithRouter, notepadId } from '@shared/mocks';
+import { createWrapperWithRouter } from '@shared/mocks';
 import { ROUTES } from 'shared/routes';
 import { notepadService } from '@entities/Notepad';
 import { getUseNotificationsMock } from '@shared/testing';
+import { commonNotepadId, notepadId } from 'shared/schemas';
 
-const getInitialData = async () => {
+const getInitialData = async (isCommon: boolean = false) => {
   const { result } = renderHook(() => useNotepad(), {
-    wrapper: createWrapperWithRouter([ROUTES.getNotepadPath(notepadId)]),
+    wrapper: createWrapperWithRouter(
+      isCommon ? [ROUTES.TASKS] : [`${ROUTES.NOTEPADS}/${notepadId}`],
+    ),
   });
-
-  await waitFor(() => expect(result.current.location).toBeDefined());
+  await waitFor(() => expect(result.current).toBeDefined());
 
   return result;
 };
@@ -25,13 +27,38 @@ describe('useNotepad hook', () => {
   });
 
   test('возвращает определённый блокнот по маршруту', async () => {
-    const result = await getInitialData();
-
+    const result = await getInitialData(false);
+    await waitFor(() => expect(result.current.isLoading).toBeFalsy());
     expect(result.current.notepadId).toBe(notepadId);
-    expect(result.current.location).toBe(ROUTES.getNotepadPath(notepadId));
+    expect(result.current.location).toBe(`${ROUTES.NOTEPADS}/${notepadId}`);
 
     await waitFor(() => {
       expect(result.current.title).toBe('Рабочее');
+    });
+  });
+
+  test('возвращает общий блокнот по маршруту', async () => {
+    const result = await getInitialData(true);
+
+    expect(result.current.location).toBe(ROUTES.TASKS);
+    expect(result.current.notepadId).toBe(commonNotepadId);
+
+    await waitFor(() => {
+      expect(result.current.title).toBe('Все задачи');
+    });
+  });
+
+  test('возвращает пустые данные, если блокнот не найден', async () => {
+    const { result } = renderHook(() => useNotepad(), {
+      wrapper: createWrapperWithRouter([`${ROUTES.NOTEPADS}/999`]),
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBeTruthy());
+    expect(result.current.notepadId).toBe('');
+    expect(result.current.title).toBe('');
+
+    await waitFor(() => {
+      expect(result.current.notFound).toBe(true);
     });
   });
 

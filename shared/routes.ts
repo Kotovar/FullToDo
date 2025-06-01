@@ -1,13 +1,13 @@
 export const ROUTES = {
-  NOTEPAD: '/notepad',
-  ALL_TASKS: '/notepad/all',
-  TODAY_TASKS: '/notepad/today',
-  TASK: '/task',
-  NOTEPAD_ID: '/notepad/:notepadId',
-  TASK_ID: '/notepad/:notepadId/task/:taskId',
+  NOTEPADS: '/notepads',
+  TASKS: '/tasks',
+  NOTEPAD_ID: '/notepads/:notepadId',
+  TASK_DETAIL: '/notepads/:notepadId/tasks/:taskId',
+  COMMON_TASK_DETAIL: '/tasks/:taskId',
+  NOTEPAD_TASKS: '/notepads/:notepadId/tasks',
 
-  getNotepadPath: (id: string) => `${ROUTES.NOTEPAD}/${id}`,
+  getNotepadPath: (id: string) => `${ROUTES.NOTEPADS}/${id}/tasks`,
 
-  getTaskDetailPath: (notepadPath: string, taskId: string) =>
-    `${notepadPath}${ROUTES.TASK}/${taskId}`,
+  getTaskDetailPath: (notepadId: string, taskId: string) =>
+    `${ROUTES.NOTEPADS}/${notepadId}/tasks/${taskId}`,
 } as const;

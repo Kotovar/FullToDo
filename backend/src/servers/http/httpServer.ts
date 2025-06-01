@@ -1,54 +1,29 @@
-import http, { type IncomingMessage, type ServerResponse } from 'http';
+import http from 'http';
 import morgan from 'morgan';
 import { taskRepository } from '../../repositories';
-import { ROUTES } from '@shared/routes';
-import {
-  getAllTasks,
-  getTodayTasks,
-  getSingleNotepadTasks,
-  createNotepad,
-  getAllNotepads,
-  handleNotFound,
-  createTask,
-  deleteTask,
-  updateTask,
-  updateNotepad,
-  getSingleTask,
-  deleteNotepad,
-} from '../../controllers';
-
-const NOTEPAD_ID_REGEX = new RegExp(
-  `^${ROUTES.NOTEPAD_ID.replace(':notepadId', '([^/]+)')}$`,
-);
-const NOTEPAD_CREATE_TASK_REGEX = new RegExp(
-  `^${ROUTES.NOTEPAD_ID.replace(':notepadId', '([^/]+)')}/task$`,
-);
-const TASK_ID_REGEX = new RegExp(
-  `^${ROUTES.TASK_ID.replace(':notepadId', '([^/]+)').replace(':taskId', '([^/]+)')}$`,
-);
+import { BASE_ROUTES, processRoute } from './routes';
+import { handleNotFound } from '../../controllers';
 
 const logger = morgan('tiny');
 
-export const routes: Record<
-  string,
-  (context: { req: IncomingMessage; res: ServerResponse }) => Promise<unknown>
-> = {
-  [`GET ${ROUTES.ALL_TASKS}`]: context => getAllTasks(context, taskRepository),
-  [`GET ${ROUTES.NOTEPAD}`]: context => getAllNotepads(context, taskRepository),
-  [`GET ${ROUTES.TODAY_TASKS}`]: context =>
-    getTodayTasks(context, taskRepository),
-  [`POST ${ROUTES.NOTEPAD}`]: context => createNotepad(context, taskRepository),
+const setHeaders = (res: http.ServerResponse) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PATCH, DELETE, OPTIONS',
+  );
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+};
+
+export const extractPath = (reqUrl?: string): string | undefined => {
+  const { 0: url } = reqUrl?.split('?') ?? [];
+  return url;
 };
 
 export const createHttpServer = () => {
   const server = http.createServer((req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-      'Access-Control-Allow-Methods',
-      'GET, POST, PATCH, DELETE, OPTIONS',
-    );
-
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    logger(req, res, () => {});
+    setHeaders(res);
 
     if (req.method === 'OPTIONS') {
       res.writeHead(204);
@@ -56,51 +31,18 @@ export const createHttpServer = () => {
       return;
     }
 
-    logger(req, res, () => {});
+    const url = extractPath(req.url);
+    const routeKey = `${req.method} ${url}`;
 
-    const key = `${req.method} ${req.url}`;
-
-    if (routes[key]) {
-      return routes[key]({ req, res });
+    if (BASE_ROUTES[routeKey]) {
+      return BASE_ROUTES[routeKey]({ req, res }, taskRepository);
     }
 
-    const notepadMatch = req.url?.match(NOTEPAD_ID_REGEX);
+    const routeResult = processRoute(req, res, url);
 
-    if (notepadMatch) {
-      switch (req.method) {
-        case 'GET':
-          return getSingleNotepadTasks({ req, res }, taskRepository);
-        case 'DELETE':
-          return deleteNotepad({ req, res }, taskRepository);
-        case 'PATCH':
-          return updateNotepad({ req, res }, taskRepository);
-        default:
-          return handleNotFound(res);
-      }
+    if (!routeResult) {
+      return handleNotFound(res);
     }
-
-    const notepadCreateTaskMatch = req.url?.match(NOTEPAD_CREATE_TASK_REGEX);
-
-    if (notepadCreateTaskMatch && req.method === 'POST') {
-      return createTask({ req, res }, taskRepository);
-    }
-
-    const taskMatch = req.url?.match(new RegExp(TASK_ID_REGEX));
-
-    if (taskMatch) {
-      switch (req.method) {
-        case 'GET':
-          return getSingleTask({ req, res }, taskRepository);
-        case 'DELETE':
-          return deleteTask({ req, res }, taskRepository);
-        case 'PATCH':
-          return updateTask({ req, res }, taskRepository);
-        default:
-          return handleNotFound(res);
-      }
-    }
-
-    handleNotFound(res);
   });
 
   return server;

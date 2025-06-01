@@ -5,20 +5,22 @@ describe('getUseNotepadMock', () => {
   test('должен возвращать дефолтные значения при вызове без параметров', () => {
     vi.spyOn(useNotepadHook, 'useNotepad').mockReturnValue({
       title: 'test',
-      notepadId: '/notepad/:notepadId',
+      notepadId: '/notepads/:notepadId',
       location: '1',
       isError: false,
       isLoading: false,
+      notFound: false,
     });
     getUseNotepadMock();
     const result = useNotepadHook.useNotepad();
 
     expect(result).toEqual({
       title: 'test',
-      notepadId: '/notepad/:notepadId',
+      notepadId: '/notepads/:notepadId',
       location: '1',
       isError: false,
       isLoading: false,
+      notFound: false,
     });
   });
 });

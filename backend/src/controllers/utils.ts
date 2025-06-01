@@ -1,9 +1,11 @@
-import { IncomingMessage, ServerResponse } from 'http';
-
-export interface HttpContext {
-  req: IncomingMessage;
-  res: ServerResponse;
-}
+import type { ZodError } from 'zod';
+import type { IncomingMessage, ServerResponse } from 'http';
+import {
+  commonNotepadId,
+  TaskQueryParams,
+  taskQueryParamsSchema,
+} from '@shared/schemas';
+import { extractInvalidKeys } from '@shared/utils';
 
 export const parseJsonBody = <T>(req: IncomingMessage): Promise<T> => {
   return new Promise((resolve, reject) => {
@@ -43,8 +45,57 @@ export const getId = (
   const url = req.url?.split('/') ?? '';
 
   if (idType === 'notepad') {
-    return url[2] ?? '';
+    return url[1] === 'tasks' ? commonNotepadId : (url[2] ?? '');
   }
 
-  return url[4] ?? '';
+  return url.at(-1) ?? '';
+};
+
+export const getValidatedTaskParams = (
+  req: IncomingMessage,
+): TaskQueryParams => {
+  const queryString = req.url?.split('?')[1] ?? '';
+  if (!queryString) return {};
+
+  const params = new URLSearchParams(queryString);
+  const rawParams = Object.fromEntries(params.entries());
+  const validation = taskQueryParamsSchema.safeParse(rawParams);
+
+  if (validation.success) {
+    return validation.data;
+  }
+
+  const invalidKeys = extractInvalidKeys(validation.error);
+  const validParams = filterValidParams(rawParams, invalidKeys);
+
+  return taskQueryParamsSchema.parse(validParams);
+};
+
+const filterValidParams = (
+  params: Record<string, string>,
+  badKeys: string[],
+): Partial<TaskQueryParams> =>
+  Object.fromEntries(
+    Object.entries(params).filter(([key]) => !badKeys.includes(key)),
+  );
+
+export const checkContentType = (
+  req: IncomingMessage,
+  res: ServerResponse,
+): boolean => {
+  if (req.headers['content-type'] !== 'application/json') {
+    res.writeHead(400).end('Invalid Content-Type');
+    return false;
+  }
+  return true;
+};
+
+export const handleValidationError = (res: ServerResponse, error: ZodError) => {
+  res.writeHead(400, { 'Content-Type': 'application/json' });
+  res.end(
+    JSON.stringify({
+      message: 'Invalid data',
+      errors: error.errors,
+    }),
+  );
 };

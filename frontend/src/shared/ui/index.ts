@@ -7,3 +7,5 @@ export * from './OptionsMenu/OptionsMenu';
 export * from './TaskInput';
 export * from './ErrorFetching/ErrorFetching';
 export * from './CompletionIcon/CompletionIcon';
+export * from './Chip/Chip';
+export * from './RadioGroup/RadioGroup';

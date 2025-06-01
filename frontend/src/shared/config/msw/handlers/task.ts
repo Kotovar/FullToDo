@@ -1,16 +1,14 @@
 import { http, HttpResponse } from 'msw';
-import { CreateTask, ROUTES } from '@sharedCommon/';
+import { type CreateTask, notepadId, ROUTES, taskId } from '@sharedCommon/';
 import {
   getDeleteResponse,
   MOCK_SINGE_NOTEPAD_RESPONSE,
+  MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS,
   MOCK_SINGE_TASK_RESPONSE,
   MOCK_TASK_UPDATE_RESPONSE,
   MOCK_TITLE_EXISTING,
   MOCK_TITLE_EXISTING_NOTEPAD,
-  notepadId,
-  taskId,
 } from '@shared/mocks';
-import { testState } from '@shared/config';
 
 type AddTaskRequestParams = {
   taskId: string;
@@ -25,29 +23,59 @@ type AddTaskResponseBody = {
 
 export const taskHandlers = [
   http.get(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}${ROUTES.TASK}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
     () => {
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
-      }
       return HttpResponse.json(MOCK_SINGE_TASK_RESPONSE);
     },
   ),
 
-  http.get(`${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}`, () => {
-    if (testState.forceError) {
-      return new HttpResponse(null, { status: 500 });
-    }
-    return HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE);
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`, () => {
+    return HttpResponse.json(MOCK_SINGE_TASK_RESPONSE);
+  }),
+
+  http.get(
+    `${import.meta.env.VITE_URL}${ROUTES.getNotepadPath(notepadId)}`,
+    ({ request }) => {
+      const url = new URL(request.url);
+      const hasSearch = url.searchParams.get('search') === 'task';
+
+      return hasSearch
+        ? HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS)
+        : HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE);
+    },
+  ),
+
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.TASKS}`, ({ request }) => {
+    const url = new URL(request.url);
+    const hasSearch = url.searchParams.get('search') === 'task';
+
+    return hasSearch
+      ? HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS)
+      : HttpResponse.json(MOCK_SINGE_NOTEPAD_RESPONSE);
   }),
 
   http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}${ROUTES.TASK}`,
+    `${import.meta.env.VITE_URL}${ROUTES.getNotepadPath(notepadId)}`,
     async ({ request }) => {
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
+      const { title } = await request.json();
+
+      if (title !== MOCK_TITLE_EXISTING) {
+        return HttpResponse.json({
+          status: 201,
+          message: `A task with the title ${title} has been successfully created`,
+        });
       }
 
+      return HttpResponse.json({
+        status: 409,
+        message: `A task with the title ${MOCK_TITLE_EXISTING} already exists in notepad ${MOCK_TITLE_EXISTING_NOTEPAD}`,
+      });
+    },
+  ),
+
+  http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
+    `${import.meta.env.VITE_URL}${ROUTES.TASKS}`,
+    async ({ request }) => {
       const { title } = await request.json();
 
       if (title !== MOCK_TITLE_EXISTING) {
@@ -65,12 +93,8 @@ export const taskHandlers = [
   ),
 
   http.patch<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}${ROUTES.TASK}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`,
     async ({ request }) => {
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
-      }
-
       const { title } = await request.json();
 
       if (title !== MOCK_TITLE_EXISTING) {
@@ -85,12 +109,8 @@ export const taskHandlers = [
   ),
 
   http.delete<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPAD}/${notepadId}${ROUTES.TASK}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`,
     async () => {
-      if (testState.forceError) {
-        return new HttpResponse(null, { status: 500 });
-      }
-
       return HttpResponse.json(getDeleteResponse('Task'));
     },
   ),

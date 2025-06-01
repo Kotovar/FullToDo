@@ -1,22 +1,22 @@
 import { COMMON_ERRORS, TASKS_ERRORS } from '@shared/api';
-import { testState, setupMockServer } from '@shared/config';
+import { setupMockServer } from '@shared/config';
 import { taskService } from './Task.query';
 import {
   getDeleteResponse,
   MOCK_SINGE_NOTEPAD_RESPONSE,
+  MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS,
   MOCK_SINGE_TASK_RESPONSE,
   MOCK_TASK_UPDATE_RESPONSE,
   MOCK_TITLE_EXISTING,
   MOCK_TITLE_EXISTING_NOTEPAD,
   MOCK_TITLE_NON_EXISTING,
-  notepadId,
-  taskId,
 } from '@shared/mocks';
 import {
   getErrorMock,
   getErrorResult,
   getFailFetchResponse,
 } from '@shared/testing';
+import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
 
 describe('MockTaskService', () => {
   setupMockServer();
@@ -24,6 +24,9 @@ describe('MockTaskService', () => {
   beforeEach(() => {
     vi.resetModules();
   });
+
+  const emptyParams = new URLSearchParams();
+  const params = new URLSearchParams('search=task');
 
   describe('URL', () => {
     test('get error, if URL is not defined', async () => {
@@ -72,6 +75,21 @@ describe('MockTaskService', () => {
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
+
+    test('should handle default error', async () => {
+      const fetchSpy = getFailFetchResponse(500);
+
+      await expect(
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
+      ).rejects.toThrowError(
+        expect.objectContaining({
+          message: 'Server error',
+          cause: TASKS_ERRORS.SERVER_ERROR,
+        }),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('handleError', () => {
@@ -104,19 +122,14 @@ describe('MockTaskService', () => {
   });
 
   describe('getSingleTask', () => {
-    test('success', async () => {
-      const responseGet = await taskService.getSingleTask(notepadId, taskId);
+    test('success with notepadId', async () => {
+      const responseGet = await taskService.getSingleTask(taskId, notepadId);
       expect(responseGet).toEqual(MOCK_SINGE_TASK_RESPONSE);
     });
 
-    test('return error if network problem', async () => {
-      testState.forceError = true;
-
-      await expect(
-        taskService.getSingleTask(notepadId, taskId),
-      ).rejects.toThrow(COMMON_ERRORS.JSON.message);
-
-      testState.forceError = false;
+    test('success without notepadId', async () => {
+      const responseGet = await taskService.getSingleTask(taskId);
+      expect(responseGet).toEqual(MOCK_SINGE_TASK_RESPONSE);
     });
 
     test('return handleError if catch error', async () => {
@@ -133,27 +146,66 @@ describe('MockTaskService', () => {
   });
 
   describe('getTasksFromNotepad', () => {
-    test('success', async () => {
-      const responseGet = await taskService.getTasksFromNotepad(notepadId);
+    test('success with notepadId', async () => {
+      const responseGet = await taskService.getTasksFromNotepad(
+        notepadId,
+        emptyParams,
+      );
       expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE);
     });
 
-    test('return error if network problem', async () => {
-      testState.forceError = true;
-
-      await expect(taskService.getTasksFromNotepad(notepadId)).rejects.toThrow(
-        COMMON_ERRORS.JSON.message,
+    test('success with empty notepadId', async () => {
+      const responseGet = await taskService.getTasksFromNotepad(
+        '',
+        emptyParams,
       );
+      expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE);
+    });
 
-      testState.forceError = false;
+    test('success with common notepadId', async () => {
+      const responseGet = await taskService.getTasksFromNotepad(
+        commonNotepadId,
+        emptyParams,
+      );
+      expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE);
+    });
+
+    test('success with  params', async () => {
+      const responseGet = await taskService.getTasksFromNotepad(
+        notepadId,
+        params,
+      );
+      expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS);
     });
 
     test('should throw error if error in not instanceof Error', async () => {
       const fetchSpy = getErrorMock();
 
       await expect(
-        taskService.getTasksFromNotepad(notepadId),
+        taskService.getTasksFromNotepad(notepadId, params),
       ).rejects.toThrowError(
+        expect.objectContaining(getErrorResult(TASKS_ERRORS)),
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('getAllTasks', () => {
+    test('success', async () => {
+      const responseGet = await taskService.getAllTasks(emptyParams);
+      expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE);
+    });
+
+    test('success with  params', async () => {
+      const responseGet = await taskService.getAllTasks(params);
+      expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS);
+    });
+
+    test('should throw error if error in not instanceof Error', async () => {
+      const fetchSpy = getErrorMock();
+
+      await expect(taskService.getAllTasks(emptyParams)).rejects.toThrowError(
         expect.objectContaining(getErrorResult(TASKS_ERRORS)),
       );
 
@@ -174,6 +226,17 @@ describe('MockTaskService', () => {
       });
     });
 
+    test('success without notepadId', async () => {
+      const responsePost = await taskService.createTask({
+        title: MOCK_TITLE_NON_EXISTING,
+      });
+
+      expect(responsePost).toStrictEqual({
+        status: 201,
+        message: `A task with the title ${MOCK_TITLE_NON_EXISTING} has been successfully created`,
+      });
+    });
+
     test('return error if title exists', async () => {
       const responsePost = await taskService.createTask(
         { title: MOCK_TITLE_EXISTING },
@@ -185,21 +248,11 @@ describe('MockTaskService', () => {
         message: `A task with the title ${MOCK_TITLE_EXISTING} already exists in notepad ${MOCK_TITLE_EXISTING_NOTEPAD}`,
       });
     });
-
-    test('return error if network problem', async () => {
-      testState.forceError = true;
-
-      await expect(
-        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
-      ).rejects.toThrow('Server error');
-
-      testState.forceError = false;
-    });
   });
 
   describe('updateTask', () => {
     test('success', async () => {
-      const responsePost = await taskService.updateTask(taskId, notepadId, {
+      const responsePost = await taskService.updateTask(taskId, {
         title: MOCK_TITLE_NON_EXISTING,
       });
 
@@ -207,7 +260,7 @@ describe('MockTaskService', () => {
     });
 
     test('return error if title exists', async () => {
-      const responsePost = await taskService.updateTask(taskId, notepadId, {
+      const responsePost = await taskService.updateTask(taskId, {
         title: MOCK_TITLE_EXISTING,
       });
 
@@ -217,23 +270,11 @@ describe('MockTaskService', () => {
       });
     });
 
-    test('return error if network problem', async () => {
-      testState.forceError = true;
-
-      await expect(
-        taskService.updateTask(taskId, notepadId, {
-          title: MOCK_TITLE_NON_EXISTING,
-        }),
-      ).rejects.toThrow('Server error');
-
-      testState.forceError = false;
-    });
-
     test('should throw error if error in not instanceof Error', async () => {
       const fetchSpy = getErrorMock();
 
       await expect(
-        taskService.updateTask(taskId, notepadId, {
+        taskService.updateTask(taskId, {
           title: MOCK_TITLE_NON_EXISTING,
         }),
       ).rejects.toThrowError(
@@ -246,26 +287,14 @@ describe('MockTaskService', () => {
 
   describe('deleteTask', () => {
     test('success', async () => {
-      const responseDelete = await taskService.deleteTask(notepadId, taskId);
+      const responseDelete = await taskService.deleteTask(taskId);
       expect(responseDelete).toStrictEqual(getDeleteResponse('Task'));
-    });
-
-    test('return error if network problem', async () => {
-      testState.forceError = true;
-
-      await expect(taskService.deleteTask(notepadId, taskId)).rejects.toThrow(
-        'Server error',
-      );
-
-      testState.forceError = false;
     });
 
     test('should throw error if error in not instanceof Error', async () => {
       const fetchSpy = getErrorMock();
 
-      await expect(
-        taskService.deleteTask(notepadId, taskId),
-      ).rejects.toThrowError(
+      await expect(taskService.deleteTask(taskId)).rejects.toThrowError(
         expect.objectContaining(getErrorResult(TASKS_ERRORS)),
       );
 

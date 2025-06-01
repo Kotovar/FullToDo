@@ -9,8 +9,8 @@ describe('Tasks component', () => {
 
   test('корректно запускается', async () => {
     renderWithRouter(<Tasks />, {
-      initialEntries: ['/notepad/1'],
-      path: '/notepad/:notepadId',
+      initialEntries: ['/notepads/1'],
+      path: '/notepads/:notepadId',
     });
 
     await waitFor(() => expect(screen.getByRole('heading')).toBeDefined());
@@ -20,8 +20,8 @@ describe('Tasks component', () => {
     getUseNotepadMock(true);
 
     renderWithRouter(<Tasks />, {
-      initialEntries: ['/notepad/1'],
-      path: '/notepad/:notepadId',
+      initialEntries: ['/notepads/1'],
+      path: '/notepads/:notepadId',
     });
 
     await waitFor(() =>
@@ -30,6 +30,19 @@ describe('Tasks component', () => {
           'Не удалось загрузить данные. Повторите попытку позже',
         ),
       ).toBeInTheDocument(),
+    );
+  });
+
+  test('Показывает сообщение об ошибке, если блокнот не найден ', async () => {
+    getUseNotepadMock(false, false, true);
+
+    renderWithRouter(<Tasks />, {
+      initialEntries: ['/notepads/999'],
+      path: '/notepads/:notepadId',
+    });
+
+    await waitFor(() =>
+      expect(screen.getByText('Блокнот не найден')).toBeInTheDocument(),
     );
   });
 });
