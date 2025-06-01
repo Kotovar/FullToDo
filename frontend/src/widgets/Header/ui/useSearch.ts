@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { debounce } from '@shared/lib/debounce';
 import type { TaskSearch } from 'shared/schemas';
 import { useTaskParams } from '@entities/Task';
@@ -17,29 +17,34 @@ export const useSearch = (debounceDelay: number = 300) => {
     setSearchValue(getSearch());
   }, [getSearch]);
 
-  const debouncedUpdateRef = useRef(
-    debounce((value: string) => {
-      setSearchParams(prev => {
-        const newParams = new URLSearchParams(prev);
-        if (value) {
-          newParams.set('search', value);
-        } else {
-          newParams.delete('search');
-        }
-        return newParams;
-      });
-    }, debounceDelay),
+  const debouncedUpdate = useMemo(
+    () =>
+      debounce((value: string) => {
+        setSearchParams(prev => {
+          const newParams = new URLSearchParams(prev);
+          if (value) {
+            newParams.set('search', value);
+          } else {
+            newParams.delete('search');
+          }
+          return newParams;
+        });
+      }, debounceDelay),
+    [setSearchParams, debounceDelay],
   );
 
-  const handleChange = useCallback((value: string) => {
-    setSearchValue(value);
-    debouncedUpdateRef.current(value);
-  }, []);
+  const handleChange = useCallback(
+    (value: string) => {
+      setSearchValue(value);
+      debouncedUpdate(value);
+    },
+    [debouncedUpdate],
+  );
 
   const handleClear = useCallback(() => {
     setSearchValue('');
-    debouncedUpdateRef.current('');
-  }, []);
+    debouncedUpdate('');
+  }, [debouncedUpdate]);
 
   return {
     value: searchValue,

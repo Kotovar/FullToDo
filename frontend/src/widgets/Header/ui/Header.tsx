@@ -1,76 +1,22 @@
-import type { ComponentPropsWithoutRef } from 'react';
-import { COLORS, Icon, Input, Button } from '@shared/ui';
-import { useSearch } from './useSearch';
+import { memo, type ComponentPropsWithoutRef } from 'react';
+import { SearchSection } from './SearchSection';
+import { AdditionalActions } from './AdditionalActions';
+import { MenuButton } from './MenuButton';
 
 interface Props extends ComponentPropsWithoutRef<'header'> {
   changeVisibility: () => void;
 }
 
-export const Header = (props: Props) => {
+export const Header = memo((props: Props) => {
   const { changeVisibility, ...rest } = props;
-  const { value, onChange, onClear } = useSearch();
 
   return (
     <header {...rest}>
       <nav>
-        <button
-          type='button'
-          className='hover:border-accent-light flex items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
-          onClick={changeVisibility}
-          aria-label='Открыть меню'
-        >
-          <Icon name='burger' fill={COLORS.WHITE} size={32} />
-        </button>
+        <MenuButton onClick={changeVisibility} />
       </nav>
-
-      <section aria-label='Поиск' className='flex w-full justify-center'>
-        <div className='flex h-10 w-full items-center gap-x-1 rounded-xl bg-white px-2 md:w-[60%]'>
-          <Input
-            placeholder='Поиск'
-            type='text'
-            value={value}
-            onChange={e => onChange(e.target.value)}
-            leftContent={
-              <Button appearance='ghost' padding='none' aria-label='Поиск'>
-                <Icon name='loupe' fill={COLORS.ACCENT} />
-              </Button>
-            }
-            rightContent={
-              value ? (
-                <Button
-                  appearance='ghost'
-                  padding='none'
-                  aria-label='Очистить поиск'
-                  onClick={onClear}
-                  type='button'
-                >
-                  <Icon name='cross' fill={COLORS.ACCENT} />
-                </Button>
-              ) : null
-            }
-            className='w-full outline-0'
-          />
-        </div>
-      </section>
-
-      <nav className='flex gap-x-2' aria-label='Дополнительные действия'>
-        <button
-          type='button'
-          className='hover:border-accent-light flex items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
-          aria-label='Сменить язык'
-          aria-haspopup='true'
-        >
-          <Icon name='flagRu' />
-          <span className='text-white'>Русский</span>
-        </button>
-        <button
-          type='button'
-          className='hover:border-accent-light flex items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
-          aria-label='Сменить тему'
-        >
-          <Icon name='themeLight' fill={COLORS.WHITE} />
-        </button>
-      </nav>
+      <SearchSection />
+      <AdditionalActions />
     </header>
   );
-};
+});

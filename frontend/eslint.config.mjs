@@ -1,4 +1,3 @@
-import prettier from 'eslint-plugin-prettier';
 import js from '@eslint/js';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -7,7 +6,6 @@ import tseslint from 'typescript-eslint';
 import pluginQuery from '@tanstack/eslint-plugin-query';
 
 export default tseslint.config(
-  { ignores: ['dist'] },
   {
     extends: [
       js.configs.recommended,
@@ -23,7 +21,6 @@ export default tseslint.config(
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
-      prettier,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -36,6 +33,6 @@ export default tseslint.config(
       '@typescript-eslint/no-empty-function': 'off',
       "@typescript-eslint/no-empty-object-type": "off"
     },
-    ignores: ['coverage/'],
+    ignores: ['coverage/', 'dist'],
   },
 );

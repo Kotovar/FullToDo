@@ -4,8 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { notepadService } from '@entities/Notepad';
 import { useNotifications } from '@shared/lib';
 import { handleMutationError } from '@shared/api';
-import { ROUTES } from 'shared/routes';
 import { commonNotepadId } from 'shared/schemas';
+import { ROUTES } from 'shared/routes';
 
 export const useNotepad = () => {
   const { notepadId } = useParams();
@@ -24,10 +24,10 @@ export const useNotepad = () => {
   }, [isError, error, showError]);
 
   return useMemo(() => {
-    const isCommonNotepad = pathname === ROUTES.TASKS;
+    const isCommon = pathname === ROUTES.TASKS;
     const currentNotepad = data?.find(notepad => notepad._id === notepadId);
 
-    if (isCommonNotepad) {
+    if (isCommon) {
       return {
         title: 'Все задачи',
         notepadId: commonNotepadId,
