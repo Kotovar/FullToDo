@@ -1,6 +1,6 @@
 import { ROUTES } from 'shared/routes';
 
-export const getPatch = (
+export const getPath = (
   id: string,
   notepadPathName: string,
   notepadId?: string,

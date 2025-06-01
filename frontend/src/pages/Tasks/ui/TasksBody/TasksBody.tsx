@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { Button, LinkCard, CompletionIcon } from '@shared/ui';
+import { useCallback, useState } from 'react';
 import { useTasks } from '@entities/Task';
 import { useNotifications } from '@shared/lib/notifications';
 import { getSuccessMessage } from '@shared/api';
-import { getPatch } from '@pages/Tasks/lib';
+import { TaskItem } from './TaskItem';
 
 export interface TasksBodyProps {
   notepadPathName: string;
@@ -11,8 +10,11 @@ export interface TasksBodyProps {
   notepadId: string;
 }
 
-export const TasksBody = (props: TasksBodyProps) => {
-  const { notepadPathName, notepadId, params } = props;
+export const TasksBody = ({
+  notepadPathName,
+  notepadId,
+  params,
+}: TasksBodyProps) => {
   const [currentModalId, setCurrentModalId] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const { showSuccess, showError } = useNotifications();
@@ -23,13 +25,13 @@ export const TasksBody = (props: TasksBodyProps) => {
     onError: error => showError(error.message),
   });
 
-  const handleModalId = (id: string) => {
+  const handleModalId = useCallback((id: string) => {
     setCurrentModalId(id);
-  };
+  }, []);
 
-  const renameTask = (id: string) => {
+  const renameTask = useCallback((id: string) => {
     setEditingTaskId(id);
-  };
+  }, []);
 
   const updateTaskStatus = (id: string, status: boolean) => {
     methods.updateTask(
@@ -47,6 +49,7 @@ export const TasksBody = (props: TasksBodyProps) => {
   ) => {
     if (newTitle !== currentTitle) {
       const success = await methods.updateTask({ title: newTitle }, id);
+
       if (!success) {
         return currentTitle;
       }
@@ -55,45 +58,27 @@ export const TasksBody = (props: TasksBodyProps) => {
     return newTitle;
   };
 
-  return (
-    <>
-      {tasks && (
-        <ul className='bg-grey-light my-scroll scrollbar-custom flex flex-col gap-2 overflow-y-auto p-1'>
-          {tasks.map(({ title, progress, isCompleted, _id }) => {
-            const path = getPatch(_id, notepadPathName, notepadId);
+  if (tasks?.length === 0) {
+    return <span className='mt-2 text-center'>Ничего не найдено</span>;
+  }
 
-            return (
-              <LinkCard
-                header={
-                  <Button
-                    appearance='ghost'
-                    onClick={() => updateTaskStatus(_id, isCompleted)}
-                    padding='none'
-                    aria-label={
-                      isCompleted
-                        ? 'Снять отметку о выполнении'
-                        : 'Отметить выполненной'
-                    }
-                  >
-                    <CompletionIcon completed={isCompleted} />
-                  </Button>
-                }
-                cardTitle={title}
-                currentModalId={currentModalId}
-                handleModalId={handleModalId}
-                path={path}
-                handleClickDelete={() => methods.deleteTask(_id)}
-                handleClickRename={() => renameTask(_id)}
-                isEditing={editingTaskId === _id}
-                onSaveTitle={newTitle => handleSaveTitle(_id, newTitle, title)}
-                body={<p className='text-sm'>{progress}</p>}
-                className='hover:bg-accent-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm bg-white p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10'
-                key={_id}
-              />
-            );
-          })}
-        </ul>
-      )}
-    </>
+  return (
+    <ul className='bg-grey-light my-scroll scrollbar-custom flex flex-col gap-2 overflow-y-auto p-1'>
+      {tasks?.map(task => (
+        <TaskItem
+          key={task._id}
+          task={task}
+          notepadPathName={notepadPathName}
+          currentModalId={currentModalId}
+          editingTaskId={editingTaskId}
+          notepadId={notepadId}
+          deleteTask={methods.deleteTask}
+          updateTaskStatus={updateTaskStatus}
+          handleModalId={handleModalId}
+          renameTask={renameTask}
+          handleSaveTitle={handleSaveTitle}
+        />
+      ))}
+    </ul>
   );
 };

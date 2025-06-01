@@ -140,4 +140,11 @@ describe('TasksBody component', () => {
     await user.click(deleteButton);
     expect(deleteTaskMock).toHaveBeenCalled();
   });
+
+  test('Отображается сообщение, когда список задач пустой', async () => {
+    getUseTasksMockWithRender(false, updateTaskMock, deleteTaskMock, []);
+
+    const message = screen.getByText('Ничего не найдено');
+    expect(message).toBeInTheDocument();
+  });
 });
