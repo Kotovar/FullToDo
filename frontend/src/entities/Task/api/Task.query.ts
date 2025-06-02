@@ -18,11 +18,17 @@ class TaskService {
 
     switch (response.status) {
       case 409:
-        throw new Error('Conflict', { cause: TASKS_ERRORS.CONFLICT });
+        throw new Error('Conflict', {
+          cause: TASKS_ERRORS.CONFLICT,
+        });
       case 404:
-        throw new Error('Not found', { cause: TASKS_ERRORS.UNDEFINED });
+        throw new Error('Not found', {
+          cause: TASKS_ERRORS.UNDEFINED,
+        });
       default:
-        throw new Error('Server error', { cause: TASKS_ERRORS.SERVER_ERROR });
+        throw new Error('Server error', {
+          cause: TASKS_ERRORS.SERVER_ERROR,
+        });
     }
   }
 
@@ -30,7 +36,10 @@ class TaskService {
     if (error instanceof Error && error.cause) {
       throw error;
     }
-    throw new Error('Network error', { cause: TASKS_ERRORS.NETWORK_ERROR });
+
+    throw new Error('Network error', {
+      cause: TASKS_ERRORS.NETWORK_ERROR,
+    });
   }
 
   async getSingleTask(

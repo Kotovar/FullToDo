@@ -5,28 +5,31 @@ import { clsx } from 'clsx';
 import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
 import { commonNotepadId, ROUTES } from '@sharedCommon/';
 import { useNotifications } from '@shared/lib/notifications';
-import { getSuccessMessage } from '@shared/api';
 import { useNotepads } from '@widgets/NavigationBar/lib';
 import { NavigationBarSkeleton } from './skeleton';
+import { useSuccessMessage } from '@shared/lib';
 
 interface NavigationBarProps extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
   isHidden: boolean;
 }
 
-export const NavigationBar = (props: NavigationBarProps) => {
-  const { isHidden, turnOffVisibility, ...rest } = props;
-
+export const NavigationBar = ({
+  isHidden,
+  turnOffVisibility,
+  ...rest
+}: NavigationBarProps) => {
   const [currentModalId, setCurrentModalId] = useState('');
   const [title, setTitle] = useState('');
   const [editingNotepadId, setEditingNotepadId] = useState<string | null>(null);
   const { showSuccess, showError } = useNotifications();
+  const getSuccessMessage = useSuccessMessage();
+  const { t } = useTranslation();
   const { notepads, isError, isLoading, methods } = useNotepads({
     onSuccess: method => showSuccess(getSuccessMessage('notepad', method)),
-    onError: error => showError(error.message),
+    onError: error => showError(t(error.message)),
   });
   const basePath = useLocation().pathname;
-  const { t } = useTranslation();
 
   if (isLoading || isError) {
     return <NavigationBarSkeleton isHidden={isHidden} />;

@@ -1,5 +1,6 @@
 {
   "language": "english",
+  "add": "Add",
   "homePage": {
     "mainTitle": "Home page",
     "open": "Open notebooks"
@@ -26,8 +27,31 @@
     "notFound": "Notepad not found",
     "add": "Add a notebook"
   },
+  "tasks": {
+    "create": "creating a task",
+    "add": "Add task",
+    "date": "Completion date",
+    "actions": {
+      "complete": "Mark as done",
+      "incomplete": "Unmark as done"
+    }
+  },
   "errors": {
-    "errorBoundary": "Something went wrong"
+    "errorBoundary": "Something went wrong",
+    "common": {
+      "SERVER_ERROR": "Invalid data",
+      "NETWORK_ERROR": "Network error",
+      "URL": "VITE_URL is not defined in .env file",
+      "JSON": "Unexpected end of JSON input"
+    },
+    "notepad": {
+      "CONFLICT": "A notepad with this name already exists",
+      "UNDEFINED": "Notepad not found or system notepad was selected"
+    },
+    "tasks": {
+      "CONFLICT": "A task with this name already exists",
+      "UNDEFINED": "Notepad not found"
+    }
   },
   "filters": {
     "title": "Filters",
@@ -87,5 +111,22 @@
   },
   "delete": "Delete",
   "reset": "Reset",
-  "apply": "Apply"
+  "apply": "Apply",
+  "notifications": {
+    "tasks": {
+      "create": "Task successfully created",
+      "update": "Task updated successfully",
+      "delete": "Task successfully deleted"
+    },
+    "task": {
+      "create": "Subtask successfully created",
+      "update": "Task updated successfully",
+      "delete": "Subtask successfully deleted"
+    },
+    "notepad": {
+      "create": "The notepad successfully created.",
+      "update": "The notepad successfully renamed.",
+      "delete": "The notepad successfully removed"
+    }
+  }
 }

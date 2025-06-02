@@ -17,7 +17,7 @@ export const AdditionalActions = memo(() => {
     <nav className='flex gap-x-2' aria-label={t('additionalActions')}>
       <button
         type='button'
-        className='hover:border-accent-light flex w-24 items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
+        className='hover:border-accent-light flex w-24 cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
         aria-label={t('change.language')}
         onClick={changeLanguage}
       >
@@ -26,7 +26,7 @@ export const AdditionalActions = memo(() => {
       </button>
       <button
         type='button'
-        className='hover:border-accent-light flex items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
+        className='hover:border-accent-light flex cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
         aria-label={t('change.topic')}
       >
         <Icon name='themeLight' fill={COLORS.WHITE} />

@@ -1,12 +1,13 @@
+import { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getPath } from '@pages/Tasks/lib';
 import { Button, CompletionIcon, LinkCard } from '@shared/ui';
-import { memo, useCallback } from 'react';
 import type { Task } from 'shared/schemas';
 
 const ACTION_LABELS = {
-  complete: 'Отметить выполненной',
-  incomplete: 'Снять отметку о выполнении',
-};
+  complete: 'tasks.actions.complete',
+  incomplete: 'tasks.actions.incomplete',
+} as const;
 
 interface TaskItemProps {
   task: Task;
@@ -38,6 +39,8 @@ export const TaskItem = memo(
     renameTask,
     handleSaveTitle,
   }: TaskItemProps) => {
+    const { t } = useTranslation();
+
     const { title, progress, isCompleted, _id } = task;
     const path = getPath(_id, notepadPathName, notepadId);
 
@@ -60,9 +63,9 @@ export const TaskItem = memo(
             appearance='ghost'
             onClick={handleStatusChange}
             padding='none'
-            aria-label={
-              isCompleted ? ACTION_LABELS.incomplete : ACTION_LABELS.complete
-            }
+            aria-label={t(
+              isCompleted ? ACTION_LABELS.incomplete : ACTION_LABELS.complete,
+            )}
           >
             <CompletionIcon completed={isCompleted} />
           </Button>

@@ -1,10 +1,11 @@
 import { useParams } from 'react-router';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateTask } from '@entities/Task';
 import { TaskInput } from '@shared/ui';
 import { useNotifications } from '@shared/lib/notifications';
-import { getSuccessMessage } from '@shared/api';
 import type { TaskOptions } from '@pages/Tasks/lib';
+import { useSuccessMessage } from '@shared/lib';
 
 export const AddTask = () => {
   const { notepadId } = useParams();
@@ -14,11 +15,13 @@ export const AddTask = () => {
   });
 
   const { showSuccess, showError } = useNotifications();
+  const getSuccessMessage = useSuccessMessage();
+  const { t } = useTranslation();
 
   const { createTask } = useCreateTask({
     notepadId,
     onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
-    onError: error => showError(error.message),
+    onError: error => showError(t(error.message)),
   });
 
   const handleValueChange =
@@ -45,12 +48,12 @@ export const AddTask = () => {
 
   return (
     <fieldset className='flex flex-col gap-2'>
-      <legend className='sr-only'>Создание задачи</legend>
+      <legend className='sr-only'>{t('tasks.create')}</legend>
 
       <TaskInput
         variant='add-task'
         value={value.title}
-        label='Добавить задачу'
+        label={t('tasks.add')}
         onChange={handleValueChange('title')}
         onClick={handleSubmit}
         onKeyDown={handleKeyDown}
@@ -59,7 +62,7 @@ export const AddTask = () => {
       <TaskInput
         variant='add-task'
         value={value.date}
-        label='Дата выполнения'
+        label={t('tasks.date')}
         onChange={handleValueChange('date')}
         onClick={handleSubmit}
         type='date'

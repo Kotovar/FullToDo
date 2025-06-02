@@ -1,8 +1,12 @@
 import { useCallback } from 'react';
 import { useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Button, ErrorFetching, TaskInput } from '@shared/ui';
-import { useNotifications, useBackNavigate } from '@shared/lib';
-import { getSuccessMessage } from '@shared/api';
+import {
+  useNotifications,
+  useBackNavigate,
+  useSuccessMessage,
+} from '@shared/lib';
 import { useTaskDetail } from '@entities/Task';
 import {
   getFormattedDate,
@@ -20,11 +24,13 @@ import type { Task } from '@sharedCommon/*';
 export const TaskDetail = (props: TaskDetailProps) => {
   const { notepadId, taskId = '' } = useParams();
   const { showSuccess, showError } = useNotifications();
+  const getSuccessMessage = useSuccessMessage();
+  const { t } = useTranslation();
   const { task, isError, isLoading, updateTask } = useTaskDetail({
     notepadId,
     taskId,
     onSuccess: method => showSuccess(getSuccessMessage('task', method)),
-    onError: error => showError(error.message),
+    onError: error => showError(t(error.message)),
   });
 
   const { form, subtaskTitle, setForm, setSubtaskTitle } = useTaskForm(task);

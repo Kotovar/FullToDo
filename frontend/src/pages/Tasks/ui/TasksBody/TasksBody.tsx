@@ -2,8 +2,8 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTasks } from '@entities/Task';
 import { useNotifications } from '@shared/lib/notifications';
-import { getSuccessMessage } from '@shared/api';
 import { TaskItem } from './TaskItem';
+import { useSuccessMessage } from '@shared/lib';
 
 interface TasksBodyProps {
   notepadPathName: string;
@@ -19,13 +19,14 @@ export const TasksBody = ({
   const [currentModalId, setCurrentModalId] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const { showSuccess, showError } = useNotifications();
+  const getSuccessMessage = useSuccessMessage();
+  const { t } = useTranslation();
   const { tasks, methods } = useTasks({
     notepadId,
     params,
     onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
-    onError: error => showError(error.message),
+    onError: error => showError(t(error.message)),
   });
-  const { t } = useTranslation();
 
   const handleModalId = useCallback((id: string) => {
     setCurrentModalId(id);
