@@ -1,4 +1,91 @@
 {
-  "react": "Привет из Реакта",
-  "test": "Какой-то текст"
+  "language": "русский",
+  "homePage": {
+    "mainTitle": "Домашняя страница",
+    "open": "Открыть блокноты"
+  },
+  "open": {
+    "menu": "открыть меню"
+  },
+  "card": {
+    "additionalMenu": "дополнительное меню"
+  },
+  "search": {
+    "common": "Поиск",
+    "clear": "очистить поиск"
+  },
+  "additionalActions": "дополнительные действия",
+  "change": {
+    "language": "сменить язык",
+    "topic": "сменить тему"
+  },
+  "common": {
+    "notFound": "Ничего не найдено"
+  },
+  "notepads": {
+    "notFound": "Блокнот не найден",
+    "add": "Добавить блокнот"
+  },
+  "errors": {
+    "errorBoundary": "Что-то пошло не так"
+  },
+  "filters": {
+    "title": "Фильтры",
+    "change": "Сменить фильтр",
+    "groups": {
+      "isCompleted": {
+        "title": "Статус",
+        "options": {
+          "all": "Все",
+          "completed": "Выполненные",
+          "active": "Активные"
+        }
+      },
+      "hasDueDate": {
+        "title": "Срок",
+        "options": {
+          "all": "Все",
+          "withDate": "Со сроком",
+          "withoutDate": "Без срока"
+        }
+      },
+      "priority": {
+        "title": "Приоритет",
+        "options": {
+          "all": "Все",
+          "low": "Низкий",
+          "medium": "Средний",
+          "high": "Высокий"
+        }
+      }
+    },
+    "labels": {
+      "isCompleted": {
+        "true": "Выполненные",
+        "false": "Активные"
+      },
+      "hasDueDate": {
+        "true": "Со сроком",
+        "false": "Без срока"
+      },
+      "priority": {
+        "low": "Низкий приоритет",
+        "medium": "Средний приоритет",
+        "high": "Высокий приоритет"
+      }
+    }
+  },
+  "sort": {
+    "change": "изменить сортировку",
+    "order": "изменить порядок сортировки",
+    "default": "По умолчанию",
+    "labels": {
+      "dueDate": "По дате выполнения",
+      "createdDate": "По дате создания",
+      "priority": "По приоритету"
+    }
+  },
+  "delete": "Удалить",
+  "reset": "Сбросить",
+  "apply": "Применить"
 }

@@ -1,5 +1,6 @@
-import { useState, type ComponentPropsWithoutRef } from 'react';
 import { useLocation } from 'react-router';
+import { useState, type ComponentPropsWithoutRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
 import { commonNotepadId, ROUTES } from '@sharedCommon/';
@@ -25,6 +26,7 @@ export const NavigationBar = (props: NavigationBarProps) => {
     onError: error => showError(error.message),
   });
   const basePath = useLocation().pathname;
+  const { t } = useTranslation();
 
   if (isLoading || isError) {
     return <NavigationBarSkeleton isHidden={isHidden} />;
@@ -96,7 +98,8 @@ export const NavigationBar = (props: NavigationBarProps) => {
         <div className='flex gap-2 p-2'>
           <Input
             className='min-w-0 outline-0'
-            placeholder='Добавить блокнот'
+            placeholder={t('notepads.add')}
+            name='notepad'
             type='text'
             value={title}
             onChange={event => setTitle(event.target.value)}
@@ -106,7 +109,7 @@ export const NavigationBar = (props: NavigationBarProps) => {
                 appearance='ghost'
                 onClick={handleCreateNotepad}
                 padding='none'
-                aria-label='Добавить блокнот'
+                aria-label={t('notepads.add')}
               >
                 <Icon name='plus' stroke={COLORS.ACCENT} />
               </Button>

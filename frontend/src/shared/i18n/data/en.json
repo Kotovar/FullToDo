@@ -1,4 +1,91 @@
 {
-  "react": "Welcome to React and react-i18next",
-  "test": "Some text"
+  "language": "english",
+  "homePage": {
+    "mainTitle": "Home page",
+    "open": "Open notebooks"
+  },
+  "open": {
+    "menu": "open menu"
+  },
+  "card": {
+    "additionalMenu": "additional menu"
+  },
+  "search": {
+    "common": "Search",
+    "clear": "clear search"
+  },
+  "additionalActions": "additional actions",
+  "change": {
+    "language": "change language",
+    "topic": "change topic"
+  },
+  "common": {
+    "notFound": "Nothing found"
+  },
+  "notepads": {
+    "notFound": "Notepad not found",
+    "add": "Add a notebook"
+  },
+  "errors": {
+    "errorBoundary": "Something went wrong"
+  },
+  "filters": {
+    "title": "Filters",
+    "change": "Change filter",
+    "groups": {
+      "isCompleted": {
+        "title": "Status",
+        "options": {
+          "all": "All",
+          "completed": "Completed",
+          "active": "Active"
+        }
+      },
+      "hasDueDate": {
+        "title": "Due date",
+        "options": {
+          "all": "All",
+          "withDate": "With date",
+          "withoutDate": "Without date"
+        }
+      },
+      "priority": {
+        "title": "Priority",
+        "options": {
+          "all": "All",
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        }
+      }
+    },
+    "labels": {
+      "isCompleted": {
+        "true": "Completed",
+        "false": "Active"
+      },
+      "hasDueDate": {
+        "true": "With date",
+        "false": "Without date"
+      },
+      "priority": {
+        "low": "Low priority",
+        "medium": "Medium priority",
+        "high": "High priority"
+      }
+    }
+  },
+  "sort": {
+    "change": "change sorting",
+    "order": "change sort order",
+    "default": "By default",
+    "labels": {
+      "dueDate": "By due date",
+      "createdDate": "By created date",
+      "priority": "By priority"
+    }
+  },
+  "delete": "Delete",
+  "reset": "Reset",
+  "apply": "Apply"
 }

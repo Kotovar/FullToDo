@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
 import { COLORS, Icon, ICON_SIZES } from '@shared/ui';
 import { SortMenu } from './SortMenu';
@@ -13,13 +14,15 @@ export const Sort = ({ params, setParams }: SortProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { sort, order, toggleOrder, updateSort } = useSort(params, setParams);
+  const { t } = useTranslation();
+
   const closeMenu = () => setIsMenuOpen(false);
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
 
   return (
     <div className='relative flex w-60 items-center justify-end-safe gap-2'>
       <button
-        aria-label='Сменить сортировку'
+        aria-label={t('sort.change')}
         className='relative cursor-pointer p-1 hover:rounded hover:bg-current/10'
         ref={buttonRef}
         onClick={toggleMenu}
@@ -34,7 +37,7 @@ export const Sort = ({ params, setParams }: SortProps) => {
         />
       )}
       <button
-        aria-label='Сменить порядок сортировки'
+        aria-label={t('sort.order')}
         className='relative cursor-pointer p-1 hover:rounded hover:bg-current/10'
         onClick={toggleOrder}
       >

@@ -1,5 +1,5 @@
 export const commonLabels = {
-  dueDate: 'По дате выполнения',
-  createdDate: 'По дате создания',
-  priority: 'По приоритету',
+  dueDate: 'sort.labels.dueDate',
+  createdDate: 'sort.labels.createdDate',
+  priority: 'sort.labels.priority',
 } as const;

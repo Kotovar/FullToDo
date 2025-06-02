@@ -1,39 +1,67 @@
+import { useTranslation } from 'react-i18next';
 import type { FilterLabel } from '@pages/Tasks/lib';
-import type { TaskFilter } from 'shared/schemas';
-import { commonLabels } from './constants';
+import type { PriorityEnum, TaskFilter } from 'shared/schemas';
 
 type FilterKey = keyof TaskFilter;
+type BooleanKey = 'true' | 'false';
 type FilterValue<K extends FilterKey> = NonNullable<TaskFilter[K]>;
+type FilterTranslationKeys =
+  | `filters.labels.isCompleted.${BooleanKey}`
+  | `filters.labels.hasDueDate.${BooleanKey}`
+  | `filters.labels.priority.${PriorityEnum}`;
 
-const isFilterKey = (key: string): key is FilterKey => key in commonLabels;
-
-const getLabelForFilter = <K extends FilterKey>(
-  key: K,
-  value: FilterValue<K>,
-): string | undefined => {
-  const labelMap = commonLabels[key] as Record<FilterValue<K>, string>;
-  return labelMap[value];
+const isFilterKey = (key: string): key is FilterKey => {
+  return ['isCompleted', 'hasDueDate', 'priority'].includes(key);
 };
 
-const getFilterLabels = (params: URLSearchParams): FilterLabel[] => {
+const isPriorityValue = (key: string): key is PriorityEnum => {
+  return ['low', 'medium', 'high'].includes(key);
+};
+
+const isBooleanValue = (value: unknown): value is BooleanKey =>
+  value === 'true' || value === 'false';
+
+const getTranslationKey = <K extends FilterKey>(
+  key: K,
+  value: FilterValue<K>,
+): FilterTranslationKeys => {
+  switch (key) {
+    case 'isCompleted':
+      if (isBooleanValue(value)) {
+        return `filters.labels.isCompleted.${value}`;
+      }
+      break;
+    case 'hasDueDate':
+      if (isBooleanValue(value)) {
+        return `filters.labels.hasDueDate.${value}`;
+      }
+      break;
+    case 'priority':
+      if (isPriorityValue(value)) {
+        return `filters.labels.priority.${value}`;
+      }
+      break;
+  }
+  throw new Error(`Invalid filter combination: ${key}.${value}`);
+};
+
+export const useFilterLabels = (params: URLSearchParams): FilterLabel[] => {
+  const { t } = useTranslation();
   const filters: TaskFilter = Object.fromEntries(params);
   const labels: FilterLabel[] = [];
 
   for (const key in filters) {
     if (isFilterKey(key) && filters[key]) {
       const value = filters[key];
-      const label = getLabelForFilter(key, value);
-      if (label) {
+
+      const translationKey = getTranslationKey(key, value);
+      const label = t(translationKey);
+
+      if (label && label !== translationKey) {
         labels.push({ key, label, value });
       }
     }
   }
-
-  return labels;
-};
-
-export const useFilterLabels = (params: URLSearchParams) => {
-  const labels = getFilterLabels(params);
 
   return labels;
 };

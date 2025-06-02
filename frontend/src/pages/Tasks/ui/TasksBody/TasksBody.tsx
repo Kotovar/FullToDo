@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTasks } from '@entities/Task';
 import { useNotifications } from '@shared/lib/notifications';
 import { getSuccessMessage } from '@shared/api';
 import { TaskItem } from './TaskItem';
 
-export interface TasksBodyProps {
+interface TasksBodyProps {
   notepadPathName: string;
   params: URLSearchParams;
   notepadId: string;
@@ -24,6 +25,7 @@ export const TasksBody = ({
     onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
     onError: error => showError(error.message),
   });
+  const { t } = useTranslation();
 
   const handleModalId = useCallback((id: string) => {
     setCurrentModalId(id);
@@ -59,7 +61,7 @@ export const TasksBody = ({
   };
 
   if (tasks?.length === 0) {
-    return <span className='mt-2 text-center'>Ничего не найдено</span>;
+    return <span className='mt-2 text-center'>{t('common.notFound')}</span>;
   }
 
   return (

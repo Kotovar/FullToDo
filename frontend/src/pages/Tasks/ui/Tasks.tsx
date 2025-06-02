@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ErrorFetching } from '@shared/ui';
 import { useNotepad } from '@pages/Tasks/lib';
 import { useTaskParams } from '@entities/Task';
@@ -9,9 +10,10 @@ export const Tasks = () => {
   const { title, notepadId, location, isError, isLoading, notFound } =
     useNotepad();
   const { validParams, setSearchParams } = useTaskParams();
+  const { t } = useTranslation();
 
   if (isLoading) return <TasksSkeleton />;
-  if (notFound) return <ErrorFetching message='Блокнот не найден' />;
+  if (notFound) return <ErrorFetching message={t('notepads.notFound')} />;
   if (isError && !notFound) return <ErrorFetching />;
 
   return (

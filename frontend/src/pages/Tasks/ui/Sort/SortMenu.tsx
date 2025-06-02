@@ -1,4 +1,5 @@
 import { useRef, type RefObject } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOnClickOutside } from 'usehooks-ts';
 import { SortState } from '@pages/Tasks/lib';
 import { commonLabels } from './constants';
@@ -11,6 +12,7 @@ interface SortMenuProps {
 
 export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
   const ref = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useOnClickOutside(
     [ref as RefObject<HTMLElement>, buttonRef as RefObject<HTMLElement>],
@@ -43,7 +45,7 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
             key={sort}
             onClick={e => handleSubmit(e, sort)}
           >
-            {label}
+            {t(label)}
           </span>
         ))}
       </form>

@@ -11,7 +11,7 @@ const StatusResponseEnum = z.union([
 ]);
 
 type StatusResponseEnum = z.infer<typeof StatusResponseEnum>;
-type PriorityEnum = z.infer<typeof PriorityEnum>;
+export type PriorityEnum = z.infer<typeof PriorityEnum>;
 
 export const createNotepadSchema = z.object({
   title: z.coerce.string().min(1, 'Title is required'),
