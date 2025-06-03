@@ -25,11 +25,7 @@ describe('Tasks component', () => {
     });
 
     await waitFor(() =>
-      expect(
-        screen.getByText(
-          'Не удалось загрузить данные. Повторите попытку позже',
-        ),
-      ).toBeInTheDocument(),
+      expect(screen.getByText('errors.loadingFail')).toBeInTheDocument(),
     );
   });
 
@@ -42,7 +38,7 @@ describe('Tasks component', () => {
     });
 
     await waitFor(() =>
-      expect(screen.getByText('Блокнот не найден')).toBeInTheDocument(),
+      expect(screen.getByText('notepads.notFound')).toBeInTheDocument(),
     );
   });
 });

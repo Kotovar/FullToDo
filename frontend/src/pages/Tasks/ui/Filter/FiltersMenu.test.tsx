@@ -23,11 +23,11 @@ describe('FiltersMenu component', () => {
       },
     );
 
-    const buttonApply = screen.getByText('Применить');
+    const buttonApply = screen.getByText('apply');
     await user.click(buttonApply);
     expect(mockOnApply).toBeCalled();
 
-    const buttonCancel = screen.getByText('Сбросить');
+    const buttonCancel = screen.getByText('reset');
     await user.click(buttonCancel);
     expect(mockCloseMenu).toBeCalled();
   });
@@ -46,9 +46,17 @@ describe('FiltersMenu component', () => {
       },
     );
 
-    await user.click(screen.getByRole('radio', { name: 'Активные' }));
-    await user.click(screen.getByRole('radio', { name: 'Высокий' }));
-    await user.click(screen.getByText('Применить'));
+    await user.click(
+      screen.getByRole('radio', {
+        name: 'filters.groups.isCompleted.options.active',
+      }),
+    );
+    await user.click(
+      screen.getByRole('radio', {
+        name: 'filters.groups.priority.options.high',
+      }),
+    );
+    await user.click(screen.getByText('apply'));
 
     expect(mockOnApply).toHaveBeenCalledWith({
       isCompleted: 'false',

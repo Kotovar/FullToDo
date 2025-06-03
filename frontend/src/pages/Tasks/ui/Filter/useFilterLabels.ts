@@ -9,17 +9,27 @@ type FilterTranslationKeys =
   | `filters.labels.isCompleted.${BooleanKey}`
   | `filters.labels.hasDueDate.${BooleanKey}`
   | `filters.labels.priority.${PriorityEnum}`;
+type CorrectValue = BooleanKey | PriorityEnum;
 
-const isFilterKey = (key: string): key is FilterKey => {
-  return ['isCompleted', 'hasDueDate', 'priority'].includes(key);
+const isFilterKey = (key: unknown): key is FilterKey => {
+  return (
+    typeof key === 'string' &&
+    ['isCompleted', 'hasDueDate', 'priority'].includes(key)
+  );
 };
 
 const isPriorityValue = (key: string): key is PriorityEnum => {
   return ['low', 'medium', 'high'].includes(key);
 };
 
-const isBooleanValue = (value: unknown): value is BooleanKey =>
+const isBooleanValue = (value: string): value is BooleanKey =>
   value === 'true' || value === 'false';
+
+const isCorrectValue = (value: string | undefined): value is CorrectValue => {
+  return (
+    value !== undefined && (isPriorityValue(value) || isBooleanValue(value))
+  );
+};
 
 const getTranslationKey = <K extends FilterKey>(
   key: K,
@@ -51,7 +61,7 @@ export const useFilterLabels = (params: URLSearchParams): FilterLabel[] => {
   const labels: FilterLabel[] = [];
 
   for (const key in filters) {
-    if (isFilterKey(key) && filters[key]) {
+    if (isFilterKey(key) && isCorrectValue(filters[key])) {
       const value = filters[key];
 
       const translationKey = getTranslationKey(key, value);

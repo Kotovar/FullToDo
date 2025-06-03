@@ -19,7 +19,7 @@ describe('Filter component', () => {
     expect(chip).toBeDefined();
 
     const chipButton = screen.getByRole('button', {
-      name: `Удалить ${chipTitle}`,
+      name: `delete ${chipTitle}`,
     });
 
     await user.click(chipButton);
@@ -33,12 +33,12 @@ describe('Filter component', () => {
     });
 
     const filterButton = screen.getByRole('button', {
-      name: 'Сменить фильтр',
+      name: 'filters.change',
     });
 
     await user.click(filterButton);
     const dropdownButton = screen.getByRole('button', {
-      name: 'Применить',
+      name: 'apply',
     });
     expect(dropdownButton).toBeInTheDocument();
   });

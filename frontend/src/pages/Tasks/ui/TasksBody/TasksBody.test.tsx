@@ -40,11 +40,11 @@ const getElements = (
 ) => {
   switch (element) {
     case 'menu':
-      return screen.getAllByLabelText('Дополнительное меню')[0];
+      return screen.getAllByLabelText('card.additionalMenu')[0];
     case 'delete':
-      return screen.getByText('Удалить');
+      return screen.getByText('delete');
     case 'rename':
-      return screen.getByText('Переименовать');
+      return screen.getByText('rename');
     case 'input':
       return screen.getByRole('textbox');
     default:
@@ -78,7 +78,7 @@ describe('TasksBody component', () => {
   test('вызывается метод updateTaskStatus', async () => {
     getUseTasksMockWithRender(false, updateTaskMock);
 
-    const button = getElements('Отметить выполненной');
+    const button = getElements('tasks.actions.complete');
     expect(button).toBeInTheDocument();
 
     await user.click(button);
@@ -97,7 +97,7 @@ describe('TasksBody component', () => {
       tasksWithCompletedField,
     );
 
-    const button = getElements('Снять отметку о выполнении');
+    const button = getElements('tasks.actions.incomplete');
     expect(button).toBeInTheDocument();
   });
 
@@ -144,7 +144,7 @@ describe('TasksBody component', () => {
   test('Отображается сообщение, когда список задач пустой', async () => {
     getUseTasksMockWithRender(false, updateTaskMock, deleteTaskMock, []);
 
-    const message = screen.getByText('Ничего не найдено');
+    const message = screen.getByText('common.notFound');
     expect(message).toBeInTheDocument();
   });
 });

@@ -49,8 +49,7 @@
     "actions": {
       "complete": "Отметить выполненной",
       "incomplete": "Снять отметку о выполнении"
-    },
-    "taskProgress": "{completed} из {total}"
+    }
   },
   "errors": {
     "notFound": "Страница не найдена",

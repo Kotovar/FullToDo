@@ -21,13 +21,13 @@ describe('Header component', () => {
   test('change input', async () => {
     renderWithRouter(<Header changeVisibility={mockChangeVisibility} />);
 
-    const input = screen.getByPlaceholderText('Поиск');
+    const input = screen.getByPlaceholderText('search.common');
     await user.type(input, typedValue);
 
     expect(mockChange).toHaveBeenCalled();
 
     const clearButton = screen.getByRole('button', {
-      name: 'Очистить поиск',
+      name: 'search.clear',
     });
 
     expect(clearButton).toBeInTheDocument();
