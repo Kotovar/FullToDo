@@ -27,6 +27,10 @@ export const useTaskDetail = (props: UseTaskDetailProps) => {
   const mutationUpdate = useMutation({
     mutationFn: ({ updatedTask, id }: MutationUpdateProps) =>
       taskService.updateTask(id, updatedTask),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['task', notepadId, taskId] });
+      queryClient.invalidateQueries({ queryKey });
+    },
   });
 
   const updateTask = async (

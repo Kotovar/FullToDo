@@ -7,6 +7,7 @@
   "delete": "Delete",
   "reset": "Reset",
   "apply": "Apply",
+  "of": "of",
   "homePage": {
     "mainTitle": "Home page",
     "open": "Open notebooks"

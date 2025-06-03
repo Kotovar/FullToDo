@@ -7,6 +7,7 @@
   "delete": "Удалить",
   "reset": "Сбросить",
   "apply": "Применить",
+  "of": "из",
   "homePage": {
     "mainTitle": "Домашняя страница",
     "open": "Открыть блокноты"
@@ -48,7 +49,8 @@
     "actions": {
       "complete": "Отметить выполненной",
       "incomplete": "Снять отметку о выполнении"
-    }
+    },
+    "taskProgress": "{completed} из {total}"
   },
   "errors": {
     "notFound": "Страница не найдена",

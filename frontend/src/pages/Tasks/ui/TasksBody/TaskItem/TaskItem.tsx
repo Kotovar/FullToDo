@@ -45,7 +45,7 @@ export const TaskItem = memo(
     const path = getPath(_id, notepadPathName, notepadId);
 
     const handleStatusChange = useCallback(() => {
-      updateTaskStatus(_id, isCompleted);
+      updateTaskStatus(_id, !isCompleted);
     }, [_id, isCompleted, updateTaskStatus]);
 
     const handleDelete = useCallback(() => {
@@ -78,7 +78,9 @@ export const TaskItem = memo(
         handleClickRename={handleRename}
         isEditing={editingTaskId === _id}
         onSaveTitle={newTitle => handleSaveTitle(_id, newTitle, title)}
-        body={<p className='text-sm'>{progress}</p>}
+        body={
+          <p className='text-sm'>{progress.replace('/', ` ${t('of')} `)}</p>
+        }
         className='hover:bg-accent-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm bg-white p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10'
       />
     );

@@ -39,7 +39,7 @@ export const TasksBody = ({
   const updateTaskStatus = (id: string, status: boolean) => {
     methods.updateTask(
       {
-        isCompleted: !status,
+        isCompleted: status,
       },
       id,
     );
