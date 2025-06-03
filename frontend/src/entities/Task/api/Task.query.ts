@@ -47,14 +47,13 @@ class TaskService {
     notepadId?: string,
   ): Promise<TaskResponse> {
     try {
-      if (notepadId) {
-        const response = await fetch(
-          `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
-        );
-        return response.json();
-      }
-      const response = await fetch(`${URL}${ROUTES.TASKS}/${taskId}`);
-      return response.json();
+      const response = await fetch(
+        notepadId
+          ? `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`
+          : `${URL}${ROUTES.TASKS}/${taskId}`,
+      );
+
+      return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);
     }
@@ -80,7 +79,7 @@ class TaskService {
       const response = await fetch(
         `${URL}${endpoint}${queryString ? `?${queryString}` : ''}`,
       );
-      return response.json();
+      return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);
     }
@@ -93,7 +92,7 @@ class TaskService {
       const response = await fetch(
         `${URL}${ROUTES.TASKS}${queryString ? `?${queryString}` : ''}`,
       );
-      return response.json();
+      return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);
     }

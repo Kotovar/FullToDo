@@ -113,7 +113,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
         onClick={handleGoBack}
         padding='s'
       >
-        Назад
+        {t('back')}
       </Button>
 
       <TaskTitle
@@ -126,13 +126,15 @@ export const TaskDetail = (props: TaskDetailProps) => {
       )}
 
       <fieldset className='flex flex-col gap-2'>
-        <legend className='sr-only'>Детали задачи</legend>
+        <legend className='sr-only'>{t('tasks.detail')}</legend>
 
         <TaskInput
           value={subtaskTitle}
-          label='Добавить подзадачу'
+          label={t('tasks.addSubtask')}
           placeholder={
-            form.subtasks.length > 0 ? 'Следующий шаг' : 'Первый шаг'
+            form.subtasks.length > 0
+              ? t('tasks.steps.next')
+              : t('tasks.steps.first')
           }
           onChange={e => setSubtaskTitle(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -141,13 +143,13 @@ export const TaskDetail = (props: TaskDetailProps) => {
 
         <TaskInput
           value={form.dueDate}
-          label='Дата выполнения'
+          label={t('tasks.date')}
           onChange={e => setForm({ ...form, dueDate: e.target.value })}
           type='date'
         />
 
         <TaskTextarea
-          label='Описание'
+          label={t('tasks.description')}
           value={form.description}
           onChange={e => setForm({ ...form, description: e.target.value })}
         />
@@ -160,7 +162,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
         className='self-center'
         onClick={handleUpdateTask}
       >
-        Сохранить
+        {t('save')}
       </Button>
     </section>
   );

@@ -41,7 +41,7 @@ export const useSort = (
       const newParams = new URLSearchParams(prev);
       const currentSort = newParams.get('sortBy');
       if (!currentSort) {
-        showInfo('Не выбрана сортировка');
+        showInfo(t('sort.error'));
         return newParams;
       }
       const currentOrder = newParams.get('order') ?? 'desc';

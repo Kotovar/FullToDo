@@ -1,6 +1,12 @@
 {
   "language": "english",
   "add": "Add",
+  "back": "Back",
+  "save": "Save",
+  "rename": "Rename",
+  "delete": "Delete",
+  "reset": "Reset",
+  "apply": "Apply",
   "homePage": {
     "mainTitle": "Home page",
     "open": "Open notebooks"
@@ -29,19 +35,28 @@
   },
   "tasks": {
     "create": "creating a task",
-    "add": "Add task",
+    "add": "Add a task",
+    "addSubtask": "Add a subtask",
+    "deleteSubtask": "Delete subtask",
     "date": "Completion date",
+    "detail": "Task details",
+    "description": "Description",
+    "steps": {
+      "first": "First step",
+      "next": "Next step"
+    },
     "actions": {
       "complete": "Mark as done",
       "incomplete": "Unmark as done"
     }
   },
   "errors": {
+    "notFound": "Page not found",
     "errorBoundary": "Something went wrong",
+    "loadingFail": "Failed to load data. Please try again later",
     "common": {
       "SERVER_ERROR": "Invalid data",
       "NETWORK_ERROR": "Network error",
-      "URL": "VITE_URL is not defined in .env file",
       "JSON": "Unexpected end of JSON input"
     },
     "notepad": {
@@ -103,15 +118,13 @@
     "change": "change sorting",
     "order": "change sort order",
     "default": "By default",
+    "error": "No sorting selected",
     "labels": {
       "dueDate": "By due date",
       "createdDate": "By created date",
       "priority": "By priority"
     }
   },
-  "delete": "Delete",
-  "reset": "Reset",
-  "apply": "Apply",
   "notifications": {
     "tasks": {
       "create": "Task successfully created",

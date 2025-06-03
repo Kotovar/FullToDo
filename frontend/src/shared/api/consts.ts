@@ -11,7 +11,6 @@ export type ErrorType =
 type TranslationKeys =
   | 'errors.common.SERVER_ERROR'
   | 'errors.common.NETWORK_ERROR'
-  | 'errors.common.URL'
   | 'errors.common.JSON'
   | 'errors.notepad.CONFLICT'
   | 'errors.notepad.UNDEFINED'
@@ -24,7 +23,7 @@ type BaseErrorType = Extract<
 >;
 export type ErrorDetail = {
   type: ErrorType;
-  message: TranslationKeys;
+  message: TranslationKeys | string;
 };
 
 export const COMMON_ERRORS: Record<BaseErrorType, ErrorDetail> = {
@@ -38,7 +37,7 @@ export const COMMON_ERRORS: Record<BaseErrorType, ErrorDetail> = {
   },
   URL: {
     type: 'URL',
-    message: 'errors.common.URL',
+    message: 'VITE_URL is not defined in .env file',
   },
   JSON: {
     type: 'JSON',

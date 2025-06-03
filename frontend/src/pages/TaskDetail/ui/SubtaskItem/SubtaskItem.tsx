@@ -1,4 +1,5 @@
 import { useState, useEffect, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, COLORS, Icon, Input, CompletionIcon } from '@shared/ui';
 import type { Subtask } from '@sharedCommon/*';
 import type { SubtaskAction } from '../Subtasks/types';
@@ -16,6 +17,7 @@ export const SubtaskItem = memo(function SubtaskItem({
 
   const [localTitle, setLocalTitle] = useState(title);
   const [localCompleted, setLocalCompleted] = useState(isCompleted);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (localTitle === title && localCompleted === isCompleted) {
@@ -41,7 +43,9 @@ export const SubtaskItem = memo(function SubtaskItem({
         onClick={handleToggleCompleted}
         padding='none'
         aria-label={
-          localCompleted ? 'Снять отметку о выполнении' : 'Отметить выполненной'
+          localCompleted
+            ? t('tasks.actions.incomplete')
+            : t('tasks.actions.complete')
         }
       >
         <CompletionIcon completed={localCompleted} />
@@ -56,7 +60,7 @@ export const SubtaskItem = memo(function SubtaskItem({
         appearance='ghost'
         onClick={() => updateSubtask({ type: 'delete', id: _id })}
         padding='none'
-        aria-label='Удалить подзадачу'
+        aria-label={t('tasks.deleteSubtask')}
       >
         <Icon name='cross' fill={COLORS.ACCENT} />
       </Button>
