@@ -539,7 +539,7 @@ describe('MockTaskRepository', () => {
 
     const response = await repository.updateTask(realId, updatedTask);
     expect(response?.data?.progress).toBe(
-      `${updatedTask.subtasks.filter(task => task.isCompleted).length} из ${updatedTask.subtasks.length}`,
+      `${updatedTask.subtasks.filter(task => task.isCompleted).length}/${updatedTask.subtasks.length}`,
     );
   });
 
