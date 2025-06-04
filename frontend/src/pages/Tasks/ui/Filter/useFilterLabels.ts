@@ -2,9 +2,9 @@ import { useTranslation } from 'react-i18next';
 import type { FilterLabel } from '@pages/Tasks/lib';
 import type { PriorityEnum, TaskFilter } from 'shared/schemas';
 
+export type FilterValue<K extends FilterKey> = NonNullable<TaskFilter[K]>;
 type FilterKey = keyof TaskFilter;
 type BooleanKey = 'true' | 'false';
-type FilterValue<K extends FilterKey> = NonNullable<TaskFilter[K]>;
 type FilterTranslationKeys =
   | `filters.labels.isCompleted.${BooleanKey}`
   | `filters.labels.hasDueDate.${BooleanKey}`
@@ -31,7 +31,7 @@ const isCorrectValue = (value: string | undefined): value is CorrectValue => {
   );
 };
 
-const getTranslationKey = <K extends FilterKey>(
+export const getTranslationKey = <K extends FilterKey>(
   key: K,
   value: FilterValue<K>,
 ): FilterTranslationKeys => {

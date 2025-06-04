@@ -10,7 +10,7 @@ interface IconProps {
 }
 
 export const Icon = (props: IconProps) => {
-  const { name, fill = 'none', stroke, size = 24, ariaLabel } = props;
+  const { name, stroke, ariaLabel, fill = 'none', size = 24 } = props;
 
   const IconComponent = iconsNames[name];
 

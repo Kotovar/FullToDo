@@ -188,7 +188,7 @@ describe('TaskDetail component', () => {
 
       expect(toggleButton).toHaveAttribute(
         'aria-label',
-        'tasks.actions.complete',
+        'tasks.actions.incomplete',
       );
     });
   });
