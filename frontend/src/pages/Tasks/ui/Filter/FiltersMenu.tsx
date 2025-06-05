@@ -1,7 +1,9 @@
 import { type RefObject, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOnClickOutside } from 'usehooks-ts';
 import { RadioGroup } from '@shared/ui';
 import type { FilterLabel, FiltersState } from '@pages/Tasks/lib';
+import { getFilterGroups } from './constants';
 
 interface FiltersMenuProps {
   labels: FilterLabel[];
@@ -10,37 +12,6 @@ interface FiltersMenuProps {
   onApply: (newFilters: FiltersState) => void;
 }
 
-const filterGroups = [
-  {
-    name: 'isCompleted',
-    title: 'статус',
-    options: [
-      { value: '', label: 'Все' },
-      { value: 'true', label: 'Выполненные' },
-      { value: 'false', label: 'Активные' },
-    ],
-  },
-  {
-    name: 'hasDueDate',
-    title: 'срок',
-    options: [
-      { value: '', label: 'Все' },
-      { value: 'true', label: 'Со сроком' },
-      { value: 'false', label: 'Без срока' },
-    ],
-  },
-  {
-    name: 'priority',
-    title: 'приоритет',
-    options: [
-      { value: '', label: 'Все' },
-      { value: 'low', label: 'Низкий' },
-      { value: 'medium', label: 'Средний' },
-      { value: 'high', label: 'Высокий' },
-    ],
-  },
-] as const;
-
 export const FiltersMenu = ({
   labels,
   buttonRef,
@@ -48,6 +19,7 @@ export const FiltersMenu = ({
   onApply,
 }: FiltersMenuProps) => {
   const ref = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<FiltersState>(() => {
     const initialFilters: FiltersState = {
       isCompleted: '',
@@ -85,6 +57,8 @@ export const FiltersMenu = ({
     });
   };
 
+  const filterGroups = getFilterGroups(t);
+
   return (
     <div
       className='border-bg-second absolute top-full z-10 rounded-md border bg-white p-2 shadow-md md:right-0'
@@ -105,16 +79,16 @@ export const FiltersMenu = ({
         <button
           type='button'
           onClick={handleReset}
-          className='text-sm hover:underline'
+          className='w-16 text-sm hover:underline'
         >
-          Сбросить
+          {t('reset')}
         </button>
         <button
           type='submit'
-          className='bg-accent-lighter hover:bg-accent-lighter/90 rounded px-2 py-1 text-sm text-white'
+          className='bg-accent-lighter hover:bg-accent-lighter/90 w-20 rounded px-2 py-1 text-sm text-white'
           form='filterForm'
         >
-          Применить
+          {t('apply')}
         </button>
       </div>
     </div>

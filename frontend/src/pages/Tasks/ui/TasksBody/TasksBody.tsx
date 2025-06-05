@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTasks } from '@entities/Task';
 import { useNotifications } from '@shared/lib/notifications';
-import { getSuccessMessage } from '@shared/api';
 import { TaskItem } from './TaskItem';
+import { useSuccessMessage } from '@shared/lib';
 
-export interface TasksBodyProps {
+interface TasksBodyProps {
   notepadPathName: string;
   params: URLSearchParams;
   notepadId: string;
@@ -18,11 +19,13 @@ export const TasksBody = ({
   const [currentModalId, setCurrentModalId] = useState('');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const { showSuccess, showError } = useNotifications();
+  const getSuccessMessage = useSuccessMessage();
+  const { t } = useTranslation();
   const { tasks, methods } = useTasks({
     notepadId,
     params,
     onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
-    onError: error => showError(error.message),
+    onError: error => showError(t(error.message)),
   });
 
   const handleModalId = useCallback((id: string) => {
@@ -36,7 +39,7 @@ export const TasksBody = ({
   const updateTaskStatus = (id: string, status: boolean) => {
     methods.updateTask(
       {
-        isCompleted: !status,
+        isCompleted: status,
       },
       id,
     );
@@ -59,7 +62,7 @@ export const TasksBody = ({
   };
 
   if (tasks?.length === 0) {
-    return <span className='mt-2 text-center'>Ничего не найдено</span>;
+    return <span className='mt-2 text-center'>{t('common.notFound')}</span>;
   }
 
   return (

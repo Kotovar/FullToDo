@@ -1,1 +1,7 @@
-export const ErrorFallback = () => <h1>Что-то пошло не так.</h1>;
+import { useTranslation } from 'react-i18next';
+
+export const ErrorFallback = () => {
+  const { t } = useTranslation();
+
+  return <h1>{t('errors.errorBoundary')}</h1>;
+};

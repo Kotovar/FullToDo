@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Button, COLORS, Icon, Input } from '@shared/ui';
 
 interface SubtaskInputProps {
@@ -16,30 +17,34 @@ export const SubtaskInput = ({
   onChange,
   onKeyDown,
   onClick,
-}: SubtaskInputProps) => (
-  <div className='flex items-center gap-2 p-1'>
-    <label htmlFor='subtask-input' className='sr-only'>
-      {label}
-    </label>
+}: SubtaskInputProps) => {
+  const { t } = useTranslation();
 
-    <Input
-      placeholder={placeholder}
-      type='text'
-      id='subtask-input'
-      className='w-full outline-0'
-      value={value}
-      onChange={onChange}
-      onKeyDown={onKeyDown}
-      leftContent={
-        <Button
-          appearance='ghost'
-          onClick={onClick}
-          padding='s'
-          aria-label='Добавить подзадачу'
-        >
-          <Icon name='plus' stroke={COLORS.ACCENT} />
-        </Button>
-      }
-    />
-  </div>
-);
+  return (
+    <div className='flex items-center gap-2 p-1'>
+      <label htmlFor='subtask-input' className='sr-only'>
+        {label}
+      </label>
+
+      <Input
+        placeholder={placeholder}
+        type='text'
+        id='subtask-input'
+        className='w-full outline-0'
+        value={value}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        leftContent={
+          <Button
+            appearance='ghost'
+            onClick={onClick}
+            padding='s'
+            aria-label={t('tasks.addSubtask')}
+          >
+            <Icon name='plus' stroke={COLORS.ACCENT} />
+          </Button>
+        }
+      />
+    </div>
+  );
+};

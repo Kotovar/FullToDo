@@ -1,4 +1,5 @@
 import type { ComponentPropsWithRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, COLORS, Icon } from '..';
 
 export interface ChipProps extends ComponentPropsWithRef<'div'> {
@@ -6,8 +7,8 @@ export interface ChipProps extends ComponentPropsWithRef<'div'> {
   onDelete: () => void;
 }
 
-export const Chip = (props: ChipProps) => {
-  const { label, onDelete, ...rest } = props;
+export const Chip = ({ label, onDelete, ...rest }: ChipProps) => {
+  const { t } = useTranslation();
 
   return (
     <div
@@ -19,7 +20,7 @@ export const Chip = (props: ChipProps) => {
         appearance='ghost'
         onClick={onDelete}
         padding='s'
-        aria-label={`Удалить ${label}`}
+        aria-label={`${t('delete')} ${label}`}
       >
         <Icon name='cross' fill={COLORS.ACCENT} />
       </Button>

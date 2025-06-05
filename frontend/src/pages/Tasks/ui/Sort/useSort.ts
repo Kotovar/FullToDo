@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
 import { useNotifications } from '@shared/lib';
 import { commonLabels } from './constants';
@@ -16,14 +17,19 @@ export const useSort = (
   setParams: SetURLSearchParams,
 ) => {
   const { showInfo } = useNotifications();
-  const getSortLabels = (params: URLSearchParams): SortLabel => {
-    const { sortBy }: TaskSort = Object.fromEntries(params);
-    return {
-      key: 'sortBy',
-      label: sortBy ? commonLabels[sortBy] : 'По умолчанию',
-      value: sortBy ?? 'createdDate',
-    };
-  };
+  const { t } = useTranslation();
+
+  const getSortLabels = useCallback(
+    (params: URLSearchParams): SortLabel => {
+      const { sortBy }: TaskSort = Object.fromEntries(params);
+      return {
+        key: 'sortBy',
+        label: sortBy ? t(commonLabels[sortBy]) : t('sort.default'),
+        value: sortBy ?? 'createdDate',
+      };
+    },
+    [t],
+  );
 
   const getSortOrder = (params: URLSearchParams): OrderState => {
     const order = params.get('order');
@@ -35,7 +41,7 @@ export const useSort = (
       const newParams = new URLSearchParams(prev);
       const currentSort = newParams.get('sortBy');
       if (!currentSort) {
-        showInfo('Не выбрана сортировка');
+        showInfo(t('sort.error'));
         return newParams;
       }
       const currentOrder = newParams.get('order') ?? 'desc';
@@ -53,7 +59,7 @@ export const useSort = (
     });
   };
 
-  const sort = useMemo(() => getSortLabels(params), [params]);
+  const sort = useMemo(() => getSortLabels(params), [getSortLabels, params]);
   const order = useMemo(() => getSortOrder(params), [params]);
 
   return { sort, order, toggleOrder, updateSort };

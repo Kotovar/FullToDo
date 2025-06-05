@@ -18,16 +18,31 @@ describe('SubtaskItem component', () => {
     const input = screen.getByDisplayValue(props.subtask.title);
 
     await user.type(input, 'Подзадача Новая');
+    await user.tab();
 
     await waitFor(() => {
       expect(props.updateSubtask).toHaveBeenCalled();
     });
   });
 
+  test('Не вызывается сохранение названия подзадачи, если оно не менялось', async () => {
+    renderWithRouter(<SubtaskItem {...props} />);
+
+    const input = screen.getByDisplayValue(props.subtask.title);
+
+    await user.clear(input);
+    await user.type(input, MOCK_SUBTASK.title);
+    await user.tab();
+
+    await waitFor(() => {
+      expect(props.updateSubtask).not.toHaveBeenCalled();
+    });
+  });
+
   test('При клике на кнопку удаления вызывается метод обновления подзадачи', async () => {
     renderWithRouter(<SubtaskItem {...props} />);
 
-    const button = screen.getByLabelText('Удалить подзадачу');
+    const button = screen.getByLabelText('tasks.deleteSubtask');
 
     button.click();
 

@@ -1,4 +1,146 @@
 {
-  "react": "Welcome to React and react-i18next",
-  "test": "Some text"
+  "language": "english",
+  "add": "Add",
+  "back": "Back",
+  "save": "Save",
+  "rename": "Rename",
+  "delete": "Delete",
+  "reset": "Reset",
+  "apply": "Apply",
+  "of": "of",
+  "homePage": {
+    "mainTitle": "Home page",
+    "open": "Open notebooks"
+  },
+  "open": {
+    "menu": "open menu"
+  },
+  "card": {
+    "additionalMenu": "additional menu"
+  },
+  "search": {
+    "common": "Search",
+    "clear": "clear search"
+  },
+  "additionalActions": "additional actions",
+  "change": {
+    "language": "change language",
+    "topic": "change topic"
+  },
+  "common": {
+    "notFound": "Nothing found"
+  },
+  "notepads": {
+    "notFound": "Notepad not found",
+    "add": "Add a notebook"
+  },
+  "tasks": {
+    "create": "creating a task",
+    "add": "Add a task",
+    "addSubtask": "Add a subtask",
+    "deleteSubtask": "Delete subtask",
+    "date": "Completion date",
+    "detail": "Task details",
+    "description": "Description",
+    "steps": {
+      "first": "First step",
+      "next": "Next step"
+    },
+    "actions": {
+      "complete": "Mark as done",
+      "incomplete": "Unmark as done"
+    }
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "errorBoundary": "Something went wrong",
+    "loadingFail": "Failed to load data. Please try again later",
+    "common": {
+      "SERVER_ERROR": "Invalid data",
+      "NETWORK_ERROR": "Network error",
+      "JSON": "Unexpected end of JSON input"
+    },
+    "notepad": {
+      "CONFLICT": "A notepad with this name already exists",
+      "UNDEFINED": "Notepad not found or system notepad was selected"
+    },
+    "tasks": {
+      "CONFLICT": "A task with this name already exists",
+      "UNDEFINED": "Notepad not found"
+    }
+  },
+  "filters": {
+    "title": "Filters",
+    "change": "Change filter",
+    "groups": {
+      "isCompleted": {
+        "title": "Status",
+        "options": {
+          "all": "All",
+          "completed": "Completed",
+          "active": "Active"
+        }
+      },
+      "hasDueDate": {
+        "title": "Due date",
+        "options": {
+          "all": "All",
+          "withDate": "With date",
+          "withoutDate": "Without date"
+        }
+      },
+      "priority": {
+        "title": "Priority",
+        "options": {
+          "all": "All",
+          "low": "Low",
+          "medium": "Medium",
+          "high": "High"
+        }
+      }
+    },
+    "labels": {
+      "isCompleted": {
+        "true": "Completed",
+        "false": "Active"
+      },
+      "hasDueDate": {
+        "true": "With date",
+        "false": "Without date"
+      },
+      "priority": {
+        "low": "Low priority",
+        "medium": "Medium priority",
+        "high": "High priority"
+      }
+    }
+  },
+  "sort": {
+    "change": "change sorting",
+    "order": "change sort order",
+    "default": "By default",
+    "error": "No sorting selected",
+    "labels": {
+      "dueDate": "By due date",
+      "createdDate": "By created date",
+      "priority": "By priority"
+    }
+  },
+  "notifications": {
+    "tasks": {
+      "create": "Task successfully created",
+      "update": "Task updated successfully",
+      "delete": "Task successfully deleted"
+    },
+    "task": {
+      "create": "Subtask successfully created",
+      "update": "Task updated successfully",
+      "delete": "Subtask successfully deleted"
+    },
+    "notepad": {
+      "create": "The notepad successfully created.",
+      "update": "The notepad successfully renamed.",
+      "delete": "The notepad successfully removed"
+    }
+  }
 }

@@ -37,11 +37,11 @@ const getElements = (
 ) => {
   switch (element) {
     case 'menu':
-      return screen.getAllByLabelText('Дополнительное меню')[NOTEPAD_INDEX];
+      return screen.getAllByLabelText('card.additionalMenu')[NOTEPAD_INDEX];
     case 'delete':
-      return screen.getByText('Удалить');
+      return screen.getByText('delete');
     case 'rename':
-      return screen.getByText('Переименовать');
+      return screen.getByText('rename');
     case 'input':
       return screen.getAllByRole('textbox')[NOTEPAD_INDEX];
     default:
@@ -63,11 +63,11 @@ describe('NavigationBar component', () => {
   test('Создаётся блокнот, если указано название блокнота и нажат Enter или кнопка Сохранить', async () => {
     getUseNotepadsMockWithRender(false, createNotepadMock);
 
-    const input = screen.getByPlaceholderText('Добавить блокнот');
+    const input = screen.getByPlaceholderText('notepads.add');
     await user.type(input, 'Новое название');
     expect(input).toHaveValue('Новое название');
 
-    const addButton = screen.getByLabelText('Добавить блокнот');
+    const addButton = screen.getByLabelText('notepads.add');
     await user.click(addButton);
 
     expect(input).toHaveValue('');
@@ -96,7 +96,7 @@ describe('NavigationBar component', () => {
     await user.clear(input);
     await user.type(input, 'Новое');
 
-    const addButton = screen.getByLabelText('Добавить блокнот');
+    const addButton = screen.getByLabelText('notepads.add');
     await user.click(addButton);
 
     expect(updateNotepadTitleMock).toHaveBeenCalledWith(

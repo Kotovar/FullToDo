@@ -1,8 +1,14 @@
 import { renderHook } from '@testing-library/react';
 import { createWrapper } from '@shared/mocks';
-import { useFilterLabels } from './useFilterLabels';
+import {
+  useFilterLabels,
+  getTranslationKey,
+  FilterValue,
+} from './useFilterLabels';
 
-const mockParams = new URLSearchParams('isCompleted=true&unknown=123');
+const mockParams = new URLSearchParams(
+  'isCompleted=true&unknown=123&priority=low',
+);
 
 const getInitialData = async () => {
   const { result } = renderHook(() => useFilterLabels(mockParams), {
@@ -30,5 +36,43 @@ describe('useFilterLabels', () => {
     );
 
     expect(result.current).toEqual([]);
+  });
+});
+
+describe('getTranslationKey', () => {
+  test('getTranslationKey - isCompleted', async () => {
+    expect(getTranslationKey('isCompleted', 'true')).toBe(
+      'filters.labels.isCompleted.true',
+    );
+  });
+
+  test('getTranslationKey - isCompleted - error', () => {
+    expect(() =>
+      getTranslationKey('isCompleted', 'low' as FilterValue<'isCompleted'>),
+    ).toThrowError('Invalid filter combination: isCompleted.low');
+  });
+
+  test('getTranslationKey - hasDueDate', () => {
+    expect(getTranslationKey('hasDueDate', 'true')).toBe(
+      'filters.labels.hasDueDate.true',
+    );
+  });
+
+  test('getTranslationKey - hasDueDate - error', () => {
+    expect(() =>
+      getTranslationKey('hasDueDate', 'low' as FilterValue<'hasDueDate'>),
+    ).toThrowError(`Invalid filter combination: hasDueDate.low`);
+  });
+
+  test('getTranslationKey - priority', () => {
+    expect(getTranslationKey('priority', 'low')).toBe(
+      'filters.labels.priority.low',
+    );
+  });
+
+  test('getTranslationKey - priority - error', () => {
+    expect(() =>
+      getTranslationKey('priority', 'true' as FilterValue<'priority'>),
+    ).toThrowError(`Invalid filter combination: priority.true`);
   });
 });

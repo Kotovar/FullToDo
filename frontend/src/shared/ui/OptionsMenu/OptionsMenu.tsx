@@ -1,5 +1,6 @@
 import { ComponentPropsWithRef, RefObject, useRef } from 'react';
 import { useOnClickOutside } from 'usehooks-ts';
+import { useTranslation } from 'react-i18next';
 
 interface OptionsMenu extends ComponentPropsWithRef<'div'> {
   buttonRef: RefObject<HTMLButtonElement | null>;
@@ -12,6 +13,7 @@ interface OptionsMenu extends ComponentPropsWithRef<'div'> {
 export const OptionsMenu = (props: OptionsMenu) => {
   const { buttonRef, renameHandler, deleteHandler, closeMenu, ...rest } = props;
   const ref = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useOnClickOutside(
     [ref as RefObject<HTMLElement>, buttonRef as RefObject<HTMLElement>],
@@ -29,14 +31,14 @@ export const OptionsMenu = (props: OptionsMenu) => {
         type='button'
         onClick={renameHandler}
       >
-        Переименовать
+        {t('rename')}
       </button>
       <button
         className='bg-bg-second relative z-10 w-full cursor-pointer p-2 hover:brightness-70'
         type='button'
         onClick={deleteHandler}
       >
-        Удалить
+        {t('delete')}
       </button>
     </div>
   );

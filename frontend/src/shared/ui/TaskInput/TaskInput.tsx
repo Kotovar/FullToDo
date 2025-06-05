@@ -1,4 +1,5 @@
 import { useId, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { Button, Input, COLORS, Icon } from '@shared/ui';
 import { ICONS, styles, TaskInputProps } from './utils';
@@ -15,6 +16,7 @@ export const TaskInput = ({
 }: TaskInputProps) => {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
 
   const handleOpenCalendar = () => {
     inputRef.current?.showPicker();
@@ -25,7 +27,7 @@ export const TaskInput = ({
   const rightContent =
     variant === 'add-task' && type === 'date' ? (
       <Button onClick={onClick} appearance='secondary' padding='s'>
-        Добавить
+        {t('add')}
       </Button>
     ) : null;
 

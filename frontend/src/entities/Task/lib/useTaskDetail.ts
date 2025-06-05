@@ -18,6 +18,7 @@ export const useTaskDetail = (props: UseTaskDetailProps) => {
     data: task,
     isLoading,
     isError,
+    refetch,
   } = useQuery({
     queryKey: ['task', notepadId, taskId],
     queryFn: () => taskService.getSingleTask(taskId, notepadId),
@@ -27,6 +28,7 @@ export const useTaskDetail = (props: UseTaskDetailProps) => {
   const mutationUpdate = useMutation({
     mutationFn: ({ updatedTask, id }: MutationUpdateProps) =>
       taskService.updateTask(id, updatedTask),
+    onSuccess: () => refetch(),
   });
 
   const updateTask = async (

@@ -99,7 +99,7 @@ export class MockTaskRepository implements TaskRepository {
   private calculateProgress(subtasks?: Subtask[]): string {
     if (!subtasks?.length) return '';
     const completed = subtasks.filter(subtask => subtask.isCompleted).length;
-    return `${completed} из ${subtasks.length}`;
+    return `${completed}/${subtasks.length}`;
   }
 
   async createNotepad({ title }: CreateNotepad): Promise<NotepadResponse> {

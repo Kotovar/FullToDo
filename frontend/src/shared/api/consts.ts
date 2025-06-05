@@ -7,24 +7,33 @@ export type ErrorType =
   | 'NETWORK_ERROR'
   | 'URL'
   | 'JSON';
-type SuccessfulType = 'create' | 'update' | 'delete';
+
+type TranslationKeys =
+  | 'errors.common.SERVER_ERROR'
+  | 'errors.common.NETWORK_ERROR'
+  | 'errors.common.JSON'
+  | 'errors.notepad.CONFLICT'
+  | 'errors.notepad.UNDEFINED'
+  | 'errors.tasks.CONFLICT'
+  | 'errors.tasks.UNDEFINED';
+
 type BaseErrorType = Extract<
   ErrorType,
   'SERVER_ERROR' | 'NETWORK_ERROR' | 'URL' | 'JSON'
 >;
 export type ErrorDetail = {
   type: ErrorType;
-  message: string;
+  message: TranslationKeys | string;
 };
 
 export const COMMON_ERRORS: Record<BaseErrorType, ErrorDetail> = {
   SERVER_ERROR: {
     type: 'SERVER_ERROR',
-    message: 'Некорректные данные',
+    message: 'errors.common.SERVER_ERROR',
   },
   NETWORK_ERROR: {
     type: 'NETWORK_ERROR',
-    message: 'Сетевая ошибка',
+    message: 'errors.common.NETWORK_ERROR',
   },
   URL: {
     type: 'URL',
@@ -32,53 +41,30 @@ export const COMMON_ERRORS: Record<BaseErrorType, ErrorDetail> = {
   },
   JSON: {
     type: 'JSON',
-    message: 'Unexpected end of JSON input',
+    message: 'errors.common.JSON',
   },
-};
+} as const;
 
 export const NOTEPAD_ERRORS: Record<ErrorType, ErrorDetail> = {
   CONFLICT: {
     type: 'CONFLICT',
-    message: 'Блокнот с таким названием уже существует',
+    message: 'errors.notepad.CONFLICT',
   },
   UNDEFINED: {
     type: 'UNDEFINED',
-    message: 'Такой блокнот не найден или был выбран системный блокнот',
+    message: 'errors.notepad.UNDEFINED',
   },
   ...COMMON_ERRORS,
-};
+} as const;
 
 export const TASKS_ERRORS: Record<ErrorType, ErrorDetail> = {
   CONFLICT: {
     type: 'CONFLICT',
-    message: 'Задача с таким названием уже существует',
+    message: 'errors.tasks.CONFLICT',
   },
   UNDEFINED: {
     type: 'UNDEFINED',
-    message: 'Такой блокнот не найден',
+    message: 'errors.tasks.UNDEFINED',
   },
   ...COMMON_ERRORS,
-};
-
-export const SUCCESSFUL_MESSAGES = {
-  tasks: {
-    create: 'Задача успешно создана',
-    update: 'Задача успешно обновлена',
-    delete: 'Задача успешно удалена',
-  },
-  task: {
-    create: 'Подзадача успешно создана',
-    update: 'Задача успешно обновлена',
-    delete: 'Подзадача успешно удалена',
-  },
-  notepad: {
-    create: 'Блокнот успешно создан',
-    update: 'Блокнот успешно переименован',
-    delete: 'Блокнот успешно удалён',
-  },
 } as const;
-
-export const getSuccessMessage = (
-  entity: keyof typeof SUCCESSFUL_MESSAGES,
-  method: SuccessfulType,
-) => SUCCESSFUL_MESSAGES[entity][method];

@@ -54,7 +54,7 @@ describe('TaskDetail component', () => {
         expect(screen.getByRole('heading')).toBeInTheDocument(),
       );
 
-      const button = screen.getByText('Назад');
+      const button = screen.getByText('back');
       button.onclick = onClickBackMock;
 
       await user.click(button);
@@ -69,9 +69,7 @@ describe('TaskDetail component', () => {
         path: '/notepads/:notepadId/task/:taskId',
       });
 
-      const error = await screen.findByText(
-        'Не удалось загрузить данные. Повторите попытку позже',
-      );
+      const error = await screen.findByText('errors.loadingFail');
       expect(error).toBeDefined();
     });
   });
@@ -87,7 +85,7 @@ describe('TaskDetail component', () => {
         path: '/notepads/:notepadId/task/:taskId',
       });
 
-      const button = screen.getByText('Сохранить');
+      const button = screen.getByText('save');
 
       await user.click(button);
 
@@ -108,7 +106,7 @@ describe('TaskDetail component', () => {
       const input = screen.getByDisplayValue('Задача 1');
       await user.type(input, 'Выучить Node.js и deno');
 
-      const button = screen.getByText('Сохранить');
+      const button = screen.getByText('save');
       await user.click(button);
 
       expect(updateTaskMock).toHaveBeenCalled();
@@ -128,7 +126,7 @@ describe('TaskDetail component', () => {
       const textarea = screen.getByDisplayValue('Описание для задачи 1');
       await user.type(textarea, 'Выучить Node.js и deno');
 
-      const button = screen.getByText('Сохранить');
+      const button = screen.getByText('save');
       await user.click(button);
 
       expect(updateTaskMock).toHaveBeenCalled();
@@ -142,13 +140,13 @@ describe('TaskDetail component', () => {
         path: '/notepads/:notepadId/task/:taskId',
       });
 
-      const dateInput = screen.getByLabelText('Дата выполнения', {
+      const dateInput = screen.getByLabelText('tasks.date', {
         selector: 'input',
       });
       await user.clear(dateInput);
       await user.type(dateInput, '2025-04-20');
 
-      const saveButton = screen.getByText('Сохранить');
+      const saveButton = screen.getByText('save');
       await user.click(saveButton);
 
       await waitFor(() => {
@@ -178,19 +176,19 @@ describe('TaskDetail component', () => {
         .getByDisplayValue('Выучить Node.js')
         .closest('li');
       const toggleButton = within(subtaskItem!).getByRole('button', {
-        name: /отметить выполненной/i,
+        name: 'tasks.actions.complete',
       });
 
       expect(toggleButton).toHaveAttribute(
         'aria-label',
-        'Отметить выполненной',
+        'tasks.actions.complete',
       );
 
       await user.click(toggleButton);
 
       expect(toggleButton).toHaveAttribute(
         'aria-label',
-        'Снять отметку о выполнении',
+        'tasks.actions.incomplete',
       );
     });
   });
@@ -204,7 +202,7 @@ describe('TaskDetail component', () => {
         path: '/notepads/:notepadId/task/:taskId',
       });
 
-      const input = screen.getByPlaceholderText('Следующий шаг');
+      const input = screen.getByPlaceholderText('tasks.steps.next');
       await user.type(input, 'Новая{Enter}');
 
       await waitFor(() => {
@@ -249,10 +247,10 @@ describe('TaskDetail component', () => {
       });
 
       await waitFor(() =>
-        expect(screen.getByPlaceholderText('Первый шаг')).toBeDefined(),
+        expect(screen.getByPlaceholderText('tasks.steps.first')).toBeDefined(),
       );
 
-      const input = screen.getByPlaceholderText('Первый шаг');
+      const input = screen.getByPlaceholderText('tasks.steps.first');
       await user.type(input, 'Подзадача Новая');
 
       await waitFor(() => {
@@ -270,13 +268,13 @@ describe('TaskDetail component', () => {
 
       await waitFor(() =>
         expect(
-          screen.getByLabelText('Дата выполнения', {
+          screen.getByLabelText('tasks.date', {
             selector: 'input',
           }),
         ).toBeDefined(),
       );
 
-      const input = screen.getByLabelText('Дата выполнения', {
+      const input = screen.getByLabelText('tasks.date', {
         selector: 'input',
       });
       await user.type(input, '2025-04-19');
@@ -305,11 +303,11 @@ describe('TaskDetail component', () => {
       );
 
       const input = screen.getByRole('textbox', {
-        name: /добавить подзадачу/i,
+        name: 'tasks.addSubtask',
       });
       await user.type(input, '    {Enter}');
       const button = screen.getByRole('button', {
-        name: 'Добавить подзадачу',
+        name: 'tasks.addSubtask',
       });
       await user.click(button);
 

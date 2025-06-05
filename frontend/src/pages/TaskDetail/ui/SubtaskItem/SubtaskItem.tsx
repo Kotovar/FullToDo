@@ -1,4 +1,5 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, memo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, COLORS, Icon, Input, CompletionIcon } from '@shared/ui';
 import type { Subtask } from '@sharedCommon/*';
 import type { SubtaskAction } from '../Subtasks/types';
@@ -14,24 +15,36 @@ export const SubtaskItem = memo(function SubtaskItem({
 }: SubtaskItemProps) {
   const { _id, title, isCompleted } = subtask;
 
-  const [localTitle, setLocalTitle] = useState(title);
-  const [localCompleted, setLocalCompleted] = useState(isCompleted);
+  const [draftTitle, setDraftTitle] = useState(title);
 
   useEffect(() => {
-    if (localTitle === title && localCompleted === isCompleted) {
-      return;
-    }
+    setDraftTitle(title);
+  }, [title]);
 
+  const { t } = useTranslation();
+
+  const handleToggleCompleted = () => {
     updateSubtask({
       type: 'update',
       id: _id,
-      title: localTitle,
-      isCompleted: localCompleted,
+      title,
+      isCompleted: !isCompleted,
     });
-  }, [_id, isCompleted, localCompleted, localTitle, title, updateSubtask]);
+  };
 
-  const handleToggleCompleted = () => {
-    setLocalCompleted(prev => !prev);
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDraftTitle(e.target.value);
+  };
+
+  const saveTitle = () => {
+    if (draftTitle !== title) {
+      updateSubtask({
+        type: 'update',
+        id: _id,
+        title: draftTitle,
+        isCompleted,
+      });
+    }
   };
 
   return (
@@ -41,22 +54,25 @@ export const SubtaskItem = memo(function SubtaskItem({
         onClick={handleToggleCompleted}
         padding='none'
         aria-label={
-          localCompleted ? 'Снять отметку о выполнении' : 'Отметить выполненной'
+          isCompleted
+            ? t('tasks.actions.incomplete')
+            : t('tasks.actions.complete')
         }
       >
-        <CompletionIcon completed={localCompleted} />
+        <CompletionIcon completed={isCompleted} />
       </Button>
       <Input
         type='text'
-        value={localTitle}
-        onChange={e => setLocalTitle(e.target.value)}
+        value={draftTitle}
+        onChange={handleTitleChange}
+        onBlur={saveTitle}
         className='w-full outline-0'
       />
       <Button
         appearance='ghost'
         onClick={() => updateSubtask({ type: 'delete', id: _id })}
         padding='none'
-        aria-label='Удалить подзадачу'
+        aria-label={t('tasks.deleteSubtask')}
       >
         <Icon name='cross' fill={COLORS.ACCENT} />
       </Button>

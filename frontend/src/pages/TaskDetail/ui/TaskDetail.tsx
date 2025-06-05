@@ -1,8 +1,12 @@
 import { useCallback } from 'react';
 import { useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { Button, ErrorFetching, TaskInput } from '@shared/ui';
-import { useNotifications, useBackNavigate } from '@shared/lib';
-import { getSuccessMessage } from '@shared/api';
+import {
+  useNotifications,
+  useBackNavigate,
+  useSuccessMessage,
+} from '@shared/lib';
 import { useTaskDetail } from '@entities/Task';
 import {
   getFormattedDate,
@@ -20,11 +24,13 @@ import type { Task } from '@sharedCommon/*';
 export const TaskDetail = (props: TaskDetailProps) => {
   const { notepadId, taskId = '' } = useParams();
   const { showSuccess, showError } = useNotifications();
+  const getSuccessMessage = useSuccessMessage();
+  const { t } = useTranslation();
   const { task, isError, isLoading, updateTask } = useTaskDetail({
     notepadId,
     taskId,
     onSuccess: method => showSuccess(getSuccessMessage('task', method)),
-    onError: error => showError(error.message),
+    onError: error => showError(t(error.message)),
   });
 
   const { form, subtaskTitle, setForm, setSubtaskTitle } = useTaskForm(task);
@@ -107,7 +113,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
         onClick={handleGoBack}
         padding='s'
       >
-        Назад
+        {t('back')}
       </Button>
 
       <TaskTitle
@@ -120,13 +126,15 @@ export const TaskDetail = (props: TaskDetailProps) => {
       )}
 
       <fieldset className='flex flex-col gap-2'>
-        <legend className='sr-only'>Детали задачи</legend>
+        <legend className='sr-only'>{t('tasks.detail')}</legend>
 
         <TaskInput
           value={subtaskTitle}
-          label='Добавить подзадачу'
+          label={t('tasks.addSubtask')}
           placeholder={
-            form.subtasks.length > 0 ? 'Следующий шаг' : 'Первый шаг'
+            form.subtasks.length > 0
+              ? t('tasks.steps.next')
+              : t('tasks.steps.first')
           }
           onChange={e => setSubtaskTitle(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -135,13 +143,13 @@ export const TaskDetail = (props: TaskDetailProps) => {
 
         <TaskInput
           value={form.dueDate}
-          label='Дата выполнения'
+          label={t('tasks.date')}
           onChange={e => setForm({ ...form, dueDate: e.target.value })}
           type='date'
         />
 
         <TaskTextarea
-          label='Описание'
+          label={t('tasks.description')}
           value={form.description}
           onChange={e => setForm({ ...form, description: e.target.value })}
         />
@@ -154,7 +162,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
         className='self-center'
         onClick={handleUpdateTask}
       >
-        Сохранить
+        {t('save')}
       </Button>
     </section>
   );

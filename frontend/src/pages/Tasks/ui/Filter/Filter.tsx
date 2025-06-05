@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
 import { COLORS, Icon, ICON_SIZES } from '@shared/ui';
 import { Chip } from '@shared/ui';
@@ -14,8 +15,9 @@ interface FilterProps {
 export const Filter = ({ params, setParams }: FilterProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { handleRemoveFilter, handleUpdateFilter } = useFilters(setParams);
-  const labels = useFilterLabels(params);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { t } = useTranslation();
+  const labels = useFilterLabels(params);
 
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
   const closeMenu = () => setIsMenuOpen(false);
@@ -34,10 +36,13 @@ export const Filter = ({ params, setParams }: FilterProps) => {
         })}
       </div>
       <div className='flex-end relative flex items-center gap-2'>
-        <span>Фильтры{labels.length > 0 && ` (${labels.length})`}</span>
+        {t('filters.title')}
+        {labels.length > 0 && (
+          <span className='hidden md:inline'>{` (${labels.length})`}</span>
+        )}
         <button
           ref={buttonRef}
-          aria-label='Сменить фильтр'
+          aria-label={t('filters.change')}
           className='cursor-pointer p-1 hover:rounded hover:bg-current/10'
           onClick={toggleMenu}
         >

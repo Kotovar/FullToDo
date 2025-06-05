@@ -25,12 +25,12 @@ describe('Sort component', () => {
     );
 
     const sortButton = screen.getByRole('button', {
-      name: 'Сменить сортировку',
+      name: 'sort.change',
     });
 
     await user.click(sortButton);
 
-    const sortSpan = screen.getByText('По приоритету');
+    const sortSpan = screen.getByText('sort.labels.priority');
     expect(sortSpan).toBeInTheDocument();
 
     await user.click(sortSpan);
@@ -43,7 +43,7 @@ describe('Sort component', () => {
     );
 
     const orderButton = screen.getByRole('button', {
-      name: 'Сменить порядок сортировки',
+      name: 'sort.order',
     });
 
     await user.click(orderButton);

@@ -1,28 +1,33 @@
-import { useState, type ComponentPropsWithoutRef } from 'react';
 import { useLocation } from 'react-router';
+import { useState, type ComponentPropsWithoutRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
 import { commonNotepadId, ROUTES } from '@sharedCommon/';
 import { useNotifications } from '@shared/lib/notifications';
-import { getSuccessMessage } from '@shared/api';
 import { useNotepads } from '@widgets/NavigationBar/lib';
 import { NavigationBarSkeleton } from './skeleton';
+import { useSuccessMessage } from '@shared/lib';
 
 interface NavigationBarProps extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
   isHidden: boolean;
 }
 
-export const NavigationBar = (props: NavigationBarProps) => {
-  const { isHidden, turnOffVisibility, ...rest } = props;
-
+export const NavigationBar = ({
+  isHidden,
+  turnOffVisibility,
+  ...rest
+}: NavigationBarProps) => {
   const [currentModalId, setCurrentModalId] = useState('');
   const [title, setTitle] = useState('');
   const [editingNotepadId, setEditingNotepadId] = useState<string | null>(null);
   const { showSuccess, showError } = useNotifications();
+  const getSuccessMessage = useSuccessMessage();
+  const { t } = useTranslation();
   const { notepads, isError, isLoading, methods } = useNotepads({
     onSuccess: method => showSuccess(getSuccessMessage('notepad', method)),
-    onError: error => showError(error.message),
+    onError: error => showError(t(error.message)),
   });
   const basePath = useLocation().pathname;
 
@@ -96,7 +101,8 @@ export const NavigationBar = (props: NavigationBarProps) => {
         <div className='flex gap-2 p-2'>
           <Input
             className='min-w-0 outline-0'
-            placeholder='Добавить блокнот'
+            placeholder={t('notepads.add')}
+            name='notepad'
             type='text'
             value={title}
             onChange={event => setTitle(event.target.value)}
@@ -106,7 +112,7 @@ export const NavigationBar = (props: NavigationBarProps) => {
                 appearance='ghost'
                 onClick={handleCreateNotepad}
                 padding='none'
-                aria-label='Добавить блокнот'
+                aria-label={t('notepads.add')}
               >
                 <Icon name='plus' stroke={COLORS.ACCENT} />
               </Button>

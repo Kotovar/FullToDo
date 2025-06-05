@@ -12,15 +12,15 @@ vi.mock('@entities/Task', () => ({
 const mockCreateTask = vi.fn();
 
 const getElements = () => {
-  const textInput = screen.getByLabelText('Добавить задачу', {
+  const textInput = screen.getByLabelText('tasks.add', {
     selector: 'input',
   });
 
-  const dateInput = screen.getByLabelText('Дата выполнения', {
+  const dateInput = screen.getByLabelText('tasks.date', {
     selector: 'input',
   });
 
-  const saveButton = screen.getByText('Добавить');
+  const saveButton = screen.getByText('add');
 
   return { textInput, dateInput, saveButton };
 };
