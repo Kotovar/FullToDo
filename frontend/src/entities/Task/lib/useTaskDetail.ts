@@ -28,7 +28,9 @@ export const useTaskDetail = (props: UseTaskDetailProps) => {
   const mutationUpdate = useMutation({
     mutationFn: ({ updatedTask, id }: MutationUpdateProps) =>
       taskService.updateTask(id, updatedTask),
-    onSuccess: () => refetch(),
+    onSuccess: async () => {
+      await refetch();
+    },
   });
 
   const updateTask = async (

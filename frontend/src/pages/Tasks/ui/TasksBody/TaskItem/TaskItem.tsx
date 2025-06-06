@@ -81,7 +81,7 @@ export const TaskItem = memo(
         body={
           <p className='text-sm'>{progress.replace('/', ` ${t('of')} `)}</p>
         }
-        className='hover:bg-accent-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm bg-white p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10'
+        className='bg-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10 hover:bg-current/10'
       />
     );
   },

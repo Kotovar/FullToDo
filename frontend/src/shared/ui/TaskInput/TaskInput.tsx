@@ -26,7 +26,12 @@ export const TaskInput = ({
 
   const rightContent =
     variant === 'add-task' && type === 'date' ? (
-      <Button onClick={onClick} appearance='secondary' padding='s'>
+      <Button
+        onClick={onClick}
+        appearance='primary'
+        padding='s'
+        className='dark:border-dark border-1'
+      >
         {t('add')}
       </Button>
     ) : null;

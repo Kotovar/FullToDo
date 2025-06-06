@@ -1,9 +1,11 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { COLORS, Icon } from '@shared/ui';
+import { useDarkMode } from '@shared/lib/hooks';
 
 export const AdditionalActions = memo(() => {
   const { t, i18n } = useTranslation();
+  const { isDarkMode, toggle } = useDarkMode();
 
   const changeLanguage = async () => {
     const newLang = i18n.language === 'ru' ? 'en' : 'ru';
@@ -17,7 +19,7 @@ export const AdditionalActions = memo(() => {
     <nav className='flex gap-x-2' aria-label={t('additionalActions')}>
       <button
         type='button'
-        className='hover:border-accent-light flex w-24 cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
+        className='hover:border-light flex w-24 cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
         aria-label={t('change.language')}
         onClick={changeLanguage}
       >
@@ -26,10 +28,14 @@ export const AdditionalActions = memo(() => {
       </button>
       <button
         type='button'
-        className='hover:border-accent-light flex cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
+        className='hover:border-light flex cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
         aria-label={t('change.topic')}
+        onClick={toggle}
       >
-        <Icon name='themeLight' fill={COLORS.WHITE} />
+        <Icon
+          name={isDarkMode ? 'themeLight' : 'themeDark'}
+          fill={COLORS.WHITE}
+        />
       </button>
     </nav>
   );

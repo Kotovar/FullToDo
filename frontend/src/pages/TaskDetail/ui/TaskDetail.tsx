@@ -108,7 +108,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   return (
     <section {...props} className='flex flex-col gap-1 p-1'>
       <Button
-        className='self-start'
+        className='dark:border-dark self-start border-1'
         appearance='primary'
         onClick={handleGoBack}
         padding='s'
@@ -159,7 +159,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
         appearance='primary'
         type='submit'
         padding='s'
-        className='self-center'
+        className='dark:border-dark self-center border-1'
         onClick={handleUpdateTask}
       >
         {t('save')}

@@ -17,7 +17,7 @@ export const Layout = () => {
       <div className='bg-grey-light text-dark relative flex h-full w-full pt-16 text-2xl'>
         <NavigationBar
           className={clsx(
-            'flex flex-auto bg-white p-4 break-all md:w-[30%] md:flex-none',
+            'bg-light flex flex-auto p-4 break-all md:w-[30%] md:flex-none',
             {
               ['hidden']: isHidden,
             },

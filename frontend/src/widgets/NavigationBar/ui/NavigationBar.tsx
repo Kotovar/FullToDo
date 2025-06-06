@@ -77,9 +77,9 @@ export const NavigationBar = ({
         currentModalId={currentModalId}
         handleModalId={id => setCurrentModalId(id)}
         className={clsx(
-          'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] content-center items-center justify-items-center rounded-lg p-2 break-words',
+          'text-dark grid min-h-16 grid-cols-[1fr_2rem] content-center items-center justify-items-center rounded-lg p-2 break-words hover:bg-current/10',
           {
-            ['bg-grey-light']: path === basePath,
+            ['bg-grey/40']: path === basePath,
           },
         )}
         handleLinkClick={turnOffVisibility}
@@ -100,7 +100,7 @@ export const NavigationBar = ({
         {notepadList}
         <div className='flex gap-2 p-2'>
           <Input
-            className='min-w-0 outline-0'
+            className='placeholder:text-grey min-w-0 outline-0'
             placeholder={t('notepads.add')}
             name='notepad'
             type='text'
