@@ -28,7 +28,9 @@ describe('useNotifications hook', () => {
     result.current.showError(errorMessage);
 
     expect(toast.error).toHaveBeenCalledTimes(1);
-    expect(toast.error).toHaveBeenCalledWith(errorMessage);
+    expect(toast.error).toHaveBeenCalledWith(errorMessage, {
+      toastId: 'error',
+    });
   });
 
   test('showSuccess', async () => {
@@ -36,6 +38,8 @@ describe('useNotifications hook', () => {
     result.current.showSuccess(successMessage);
 
     expect(toast.success).toHaveBeenCalledTimes(1);
-    expect(toast.success).toHaveBeenCalledWith(successMessage);
+    expect(toast.success).toHaveBeenCalledWith(successMessage, {
+      toastId: 'success',
+    });
   });
 });

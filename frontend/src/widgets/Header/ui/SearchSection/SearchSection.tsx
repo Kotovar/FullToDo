@@ -27,6 +27,7 @@ export const SearchSection = memo(() => {
               appearance='ghost'
               padding='none'
               aria-label={t('search.common')}
+              className='hover:bg-grey p-1'
             >
               <Icon
                 name='loupe'
@@ -42,6 +43,7 @@ export const SearchSection = memo(() => {
                 aria-label={t('search.clear')}
                 onClick={onClear}
                 type='button'
+                className='hover:bg-grey p-1'
               >
                 <Icon
                   name='cross'

@@ -27,15 +27,6 @@
 }
 
 @layer base {
-  :root {
-    --color-accent: #0057a8;
-    --color-light: #ffffff;
-    --color-grey: #757575;
-    --color-grey-light: #eaeaea;
-    --color-dark: #212121;
-    --color-bg-second: #d9d9d9;
-  }
-
   .dark {
     --color-accent: #1c3454;
     --color-light: #354864;
