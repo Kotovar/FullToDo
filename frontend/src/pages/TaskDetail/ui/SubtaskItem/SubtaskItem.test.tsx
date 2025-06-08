@@ -3,14 +3,28 @@ import userEvent from '@testing-library/user-event';
 import { renderWithRouter } from '@shared/testing';
 import { SubtaskItem } from './SubtaskItem';
 import { MOCK_SUBTASK } from '@shared/mocks';
+import { useDarkMode } from '@shared/lib';
 
 const props = {
   subtask: MOCK_SUBTASK,
   updateSubtask: vi.fn(),
 };
 
+vi.mock('@shared/lib', () => ({
+  useDarkMode: vi.fn(),
+}));
+
 describe('SubtaskItem component', () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useDarkMode).mockReturnValue({
+      isDarkMode: false,
+      toggle: vi.fn(),
+      fill: '',
+    });
+  });
 
   test('При вводе текста в Input - вызывается метод обновления подзадачи', async () => {
     renderWithRouter(<SubtaskItem {...props} />);

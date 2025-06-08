@@ -1,6 +1,5 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor } from '@testing-library/react';
-import type { Mock } from 'vitest';
 import { renderWithRouter } from '@shared/testing';
 import { useCreateTask } from '@entities/Task';
 import { AddTask } from './AddTask';
@@ -30,8 +29,7 @@ describe('AddTask component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    (useCreateTask as Mock).mockReturnValue({
+    vi.mocked(useCreateTask).mockReturnValue({
       createTask: mockCreateTask,
     });
   });

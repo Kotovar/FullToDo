@@ -1,9 +1,9 @@
 import { useState, memo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, COLORS, Icon, Input, CompletionIcon } from '@shared/ui';
+import { Button, Icon, Input, CompletionIcon } from '@shared/ui';
+import { useDarkMode } from '@shared/lib';
 import type { Subtask } from '@sharedCommon/*';
 import type { SubtaskAction } from '../Subtasks/types';
-import { useDarkMode } from '@shared/lib/hooks';
 
 interface SubtaskItemProps {
   subtask: Subtask;
@@ -17,7 +17,7 @@ export const SubtaskItem = memo(function SubtaskItem({
   const { _id, title, isCompleted } = subtask;
 
   const [draftTitle, setDraftTitle] = useState(title);
-  const { isDarkMode } = useDarkMode();
+  const { fill } = useDarkMode();
 
   useEffect(() => {
     setDraftTitle(title);
@@ -76,7 +76,7 @@ export const SubtaskItem = memo(function SubtaskItem({
         padding='none'
         aria-label={t('tasks.deleteSubtask')}
       >
-        <Icon name='cross' fill={isDarkMode ? COLORS.WHITE : COLORS.ACCENT} />
+        <Icon name='cross' fill={fill} />
       </Button>
     </li>
   );

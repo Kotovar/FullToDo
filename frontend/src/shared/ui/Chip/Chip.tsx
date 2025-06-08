@@ -1,6 +1,6 @@
 import type { ComponentPropsWithRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, COLORS, Icon } from '..';
+import { Button, Icon } from '..';
 import { useDarkMode } from '@shared/lib/hooks';
 
 export interface ChipProps extends ComponentPropsWithRef<'div'> {
@@ -10,7 +10,7 @@ export interface ChipProps extends ComponentPropsWithRef<'div'> {
 
 export const Chip = ({ label, onDelete, ...rest }: ChipProps) => {
   const { t } = useTranslation();
-  const { isDarkMode } = useDarkMode();
+  const { fill } = useDarkMode();
 
   return (
     <div
@@ -24,7 +24,7 @@ export const Chip = ({ label, onDelete, ...rest }: ChipProps) => {
         padding='s'
         aria-label={`${t('delete')} ${label}`}
       >
-        <Icon name='cross' fill={isDarkMode ? COLORS.WHITE : COLORS.ACCENT} />
+        <Icon name='cross' fill={fill} />
       </Button>
     </div>
   );

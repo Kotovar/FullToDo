@@ -1,5 +1,6 @@
-import { useLayoutEffect } from 'react';
+import { useCallback, useLayoutEffect, useMemo } from 'react';
 import { useLocalStorage, useMediaQuery } from 'usehooks-ts';
+import { COLORS } from '@shared/ui';
 
 const LOCAL_STORAGE_KEY = 'dark-mode';
 const COLOR_SCHEME_QUERY = '(prefers-color-scheme: dark)';
@@ -10,6 +11,7 @@ type DarkModeOptions = {
 
 type DarkModeReturn = {
   isDarkMode: boolean;
+  fill: string;
   toggle: () => void;
 };
 
@@ -20,7 +22,7 @@ export function useDarkMode({
 
   const [isDarkMode, setDarkMode] = useLocalStorage<boolean>(
     localStorageKey,
-    isDarkOS ?? false,
+    isDarkOS,
   );
 
   useLayoutEffect(() => {
@@ -33,8 +35,15 @@ export function useDarkMode({
     }
   }, [isDarkMode]);
 
+  const toggle = useCallback(() => setDarkMode(prev => !prev), [setDarkMode]);
+  const fill = useMemo(
+    () => (isDarkMode ? COLORS.WHITE : COLORS.ACCENT),
+    [isDarkMode],
+  );
+
   return {
     isDarkMode,
-    toggle: () => setDarkMode(prev => !prev),
+    fill,
+    toggle,
   };
 }

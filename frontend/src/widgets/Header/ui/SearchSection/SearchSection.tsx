@@ -1,13 +1,13 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, COLORS, Icon, Input } from '@shared/ui';
+import { Button, Icon, Input } from '@shared/ui';
 import { useSearch } from '../useSearch';
 import { useDarkMode } from '@shared/lib/hooks';
 
 export const SearchSection = memo(() => {
   const { value, onChange, onClear } = useSearch();
   const { t } = useTranslation();
-  const { isDarkMode } = useDarkMode();
+  const { fill } = useDarkMode();
 
   return (
     <section
@@ -29,10 +29,7 @@ export const SearchSection = memo(() => {
               aria-label={t('search.common')}
               className='hover:bg-grey p-1'
             >
-              <Icon
-                name='loupe'
-                fill={isDarkMode ? COLORS.WHITE : COLORS.ACCENT}
-              />
+              <Icon name='loupe' fill={fill} />
             </Button>
           }
           rightContent={
@@ -45,10 +42,7 @@ export const SearchSection = memo(() => {
                 type='button'
                 className='hover:bg-grey p-1'
               >
-                <Icon
-                  name='cross'
-                  fill={isDarkMode ? COLORS.WHITE : COLORS.ACCENT}
-                />
+                <Icon name='cross' fill={fill} />
               </Button>
             ) : null
           }

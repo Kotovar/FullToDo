@@ -4,11 +4,11 @@ import { clsx } from 'clsx';
 import { useVisibility } from '@app/layout/useVisibility';
 import { Header } from '@widgets/Header';
 import { NavigationBar } from '@widgets/NavigationBar';
-import { useDarkMode } from '@shared/lib';
+import { useDarkToast } from './utils';
 
 export const Layout = () => {
   const [isHidden, handleVisibility, turnOffVisibility] = useVisibility();
-  const { isDarkMode } = useDarkMode();
+  const { toastClassName, theme } = useDarkToast();
 
   return (
     <div className='font-display bg-grey-light h-screen'>
@@ -34,21 +34,13 @@ export const Layout = () => {
         >
           <Outlet />
           <ToastContainer
-            toastClassName={() =>
-              clsx(
-                'relative flex p-4 min-h-10 rounded-md cursor-pointer border-1 text-dark',
-                {
-                  'bg-accent border-dark': isDarkMode,
-                  'bg-light border-accent': !isDarkMode,
-                },
-              )
-            }
+            toastClassName={toastClassName}
             position='top-right'
             transition={Slide}
             autoClose={1000}
             hideProgressBar={true}
             limit={3}
-            theme={isDarkMode ? 'dark' : 'light'}
+            theme={theme}
             closeOnClick
             draggable
             stacked
