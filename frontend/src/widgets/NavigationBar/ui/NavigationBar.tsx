@@ -2,12 +2,12 @@ import { useLocation } from 'react-router';
 import { useState, type ComponentPropsWithoutRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
-import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
+import { LinkCard, Input, Icon, Button } from '@shared/ui';
 import { commonNotepadId, ROUTES } from '@sharedCommon/';
 import { useNotifications } from '@shared/lib/notifications';
 import { useNotepads } from '@widgets/NavigationBar/lib';
 import { NavigationBarSkeleton } from './skeleton';
-import { useSuccessMessage } from '@shared/lib';
+import { useDarkMode, useSuccessMessage } from '@shared/lib';
 
 interface NavigationBarProps extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
@@ -30,6 +30,7 @@ export const NavigationBar = ({
     onError: error => showError(t(error.message)),
   });
   const basePath = useLocation().pathname;
+  const { fill } = useDarkMode();
 
   if (isLoading || isError) {
     return <NavigationBarSkeleton isHidden={isHidden} />;
@@ -114,7 +115,7 @@ export const NavigationBar = ({
                 padding='none'
                 aria-label={t('notepads.add')}
               >
-                <Icon name='plus' stroke={COLORS.ACCENT} />
+                <Icon name='plus' stroke={fill} />
               </Button>
             }
           />

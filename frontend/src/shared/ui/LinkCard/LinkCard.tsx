@@ -1,7 +1,8 @@
 import { ComponentPropsWithoutRef, JSX, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Button, COLORS, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
+import { Button, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
+import { useDarkMode } from '@shared/lib';
 
 interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   path: string;
@@ -37,6 +38,7 @@ export const LinkCard = (props: LinkCardProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { t } = useTranslation();
+  const { fill } = useDarkMode();
 
   const closeMenu = () => setIsMenuOpen(false);
 
@@ -111,11 +113,7 @@ export const LinkCard = (props: LinkCardProps) => {
           aria-label={t('card.additionalMenu')}
           ref={buttonRef}
         >
-          <Icon
-            name='threeDots'
-            fill={COLORS.ACCENT}
-            size={ICON_SIZES.DEFAULT}
-          />
+          <Icon name='threeDots' fill={fill} size={ICON_SIZES.DEFAULT} />
         </Button>
         {isMenuOpen && currentModalId === path && (
           <OptionsMenu

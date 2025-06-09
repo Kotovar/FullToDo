@@ -37,7 +37,7 @@ export function useDarkMode({
 
   const toggle = useCallback(() => setDarkMode(prev => !prev), [setDarkMode]);
   const fill = useMemo(
-    () => (isDarkMode ? COLORS.WHITE : COLORS.ACCENT),
+    () => (isDarkMode ? COLORS.ACCENT_DARK : COLORS.ACCENT),
     [isDarkMode],
   );
 

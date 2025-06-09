@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
-import { COLORS, Icon, ICON_SIZES } from '@shared/ui';
-import { Chip } from '@shared/ui';
+import { Icon, Chip, ICON_SIZES } from '@shared/ui';
+import { useDarkMode } from '@shared/lib';
 import { FiltersMenu } from './FiltersMenu';
 import { useFilters } from './useFilters';
 import { useFilterLabels } from './useFilterLabels';
@@ -18,6 +18,7 @@ export const Filter = ({ params, setParams }: FilterProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { t } = useTranslation();
   const labels = useFilterLabels(params);
+  const { fill } = useDarkMode();
 
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
   const closeMenu = () => setIsMenuOpen(false);
@@ -46,11 +47,7 @@ export const Filter = ({ params, setParams }: FilterProps) => {
           className='cursor-pointer p-1 hover:rounded hover:bg-current/10'
           onClick={toggleMenu}
         >
-          <Icon
-            name='filter'
-            size={ICON_SIZES.FILTERS}
-            stroke={COLORS.ACCENT}
-          />
+          <Icon name='filter' size={ICON_SIZES.FILTERS} stroke={fill} />
         </button>
         {isMenuOpen && (
           <FiltersMenu
