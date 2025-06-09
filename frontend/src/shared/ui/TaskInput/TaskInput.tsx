@@ -1,8 +1,9 @@
 import { useId, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { Button, Input, COLORS, Icon } from '@shared/ui';
+import { Button, Input, Icon } from '@shared/ui';
 import { ICONS, styles, TaskInputProps } from './utils';
+import { useDarkMode } from '@shared/lib';
 
 export const TaskInput = ({
   label,
@@ -17,6 +18,7 @@ export const TaskInput = ({
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
+  const { fill } = useDarkMode();
 
   const handleOpenCalendar = () => {
     inputRef.current?.showPicker();
@@ -26,7 +28,12 @@ export const TaskInput = ({
 
   const rightContent =
     variant === 'add-task' && type === 'date' ? (
-      <Button onClick={onClick} appearance='secondary' padding='s'>
+      <Button
+        onClick={onClick}
+        appearance='primary'
+        padding='s'
+        className='dark:border-dark border-1'
+      >
         {t('add')}
       </Button>
     ) : null;
@@ -65,7 +72,7 @@ export const TaskInput = ({
             onClick={handleButtonClick}
             aria-label={label}
           >
-            <Icon name={ICONS[type]} stroke={COLORS.ACCENT} />
+            <Icon name={ICONS[type]} stroke={fill} />
           </Button>
         }
         rightContent={rightContent}

@@ -1,4 +1,5 @@
-import { COLORS, Icon } from '..';
+import { useDarkMode } from '@shared/lib';
+import { Icon } from '..';
 
 interface CompletionIconProps {
   completed: boolean;
@@ -9,9 +10,11 @@ type IconProps =
   | { name: 'circleEmpty'; stroke: string };
 
 export const CompletionIcon = ({ completed }: CompletionIconProps) => {
+  const { fill } = useDarkMode();
+
   const iconProps: IconProps = completed
-    ? { name: 'circleFilled', fill: COLORS.ACCENT }
-    : { name: 'circleEmpty', stroke: COLORS.ACCENT };
+    ? { name: 'circleFilled', fill: fill }
+    : { name: 'circleEmpty', stroke: fill };
 
   return <Icon {...iconProps} />;
 };

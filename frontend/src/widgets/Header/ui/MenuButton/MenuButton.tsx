@@ -8,7 +8,7 @@ export const MenuButton = memo(({ onClick }: { onClick: () => void }) => {
   return (
     <button
       type='button'
-      className='hover:border-accent-light flex cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
+      className='hover:border-light flex cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
       onClick={onClick}
       aria-label={t('open.menu')}
     >

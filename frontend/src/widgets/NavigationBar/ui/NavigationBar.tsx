@@ -2,12 +2,12 @@ import { useLocation } from 'react-router';
 import { useState, type ComponentPropsWithoutRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
-import { LinkCard, Input, COLORS, Icon, Button } from '@shared/ui';
+import { LinkCard, Input, Icon, Button } from '@shared/ui';
 import { commonNotepadId, ROUTES } from '@sharedCommon/';
 import { useNotifications } from '@shared/lib/notifications';
 import { useNotepads } from '@widgets/NavigationBar/lib';
 import { NavigationBarSkeleton } from './skeleton';
-import { useSuccessMessage } from '@shared/lib';
+import { useDarkMode, useSuccessMessage } from '@shared/lib';
 
 interface NavigationBarProps extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
@@ -30,6 +30,7 @@ export const NavigationBar = ({
     onError: error => showError(t(error.message)),
   });
   const basePath = useLocation().pathname;
+  const { fill } = useDarkMode();
 
   if (isLoading || isError) {
     return <NavigationBarSkeleton isHidden={isHidden} />;
@@ -77,9 +78,9 @@ export const NavigationBar = ({
         currentModalId={currentModalId}
         handleModalId={id => setCurrentModalId(id)}
         className={clsx(
-          'text-dark hover:bg-accent-light grid min-h-16 grid-cols-[1fr_2rem] content-center items-center justify-items-center rounded-lg p-2 break-words',
+          'text-dark grid min-h-16 grid-cols-[1fr_2rem] content-center items-center justify-items-center rounded-lg p-2 break-words hover:bg-current/10',
           {
-            ['bg-grey-light']: path === basePath,
+            ['bg-grey/40']: path === basePath,
           },
         )}
         handleLinkClick={turnOffVisibility}
@@ -100,7 +101,7 @@ export const NavigationBar = ({
         {notepadList}
         <div className='flex gap-2 p-2'>
           <Input
-            className='min-w-0 outline-0'
+            className='placeholder:text-grey min-w-0 outline-0'
             placeholder={t('notepads.add')}
             name='notepad'
             type='text'
@@ -114,7 +115,7 @@ export const NavigationBar = ({
                 padding='none'
                 aria-label={t('notepads.add')}
               >
-                <Icon name='plus' stroke={COLORS.ACCENT} />
+                <Icon name='plus' stroke={fill} />
               </Button>
             }
           />

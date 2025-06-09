@@ -1,11 +1,7 @@
 export const enum COLORS {
-  ACCENT = '#0057a8',
-  ACCENT_LIGHT = '#d5e2fa',
-  GREY = '#595959',
-  GREY_LIGHT = '#eaeaea',
-  DARK = '#212121',
-  BG_SECONDS = '#d9d9d9',
-  WHITE = '#ffffff',
+  ACCENT = 'oklch(0.5 0.14 255)',
+  ACCENT_DARK = 'oklch(0.74 0.06 256)',
+  WHITE = 'oklch(1 0 0)',
 }
 
 export const enum ICON_SIZES {

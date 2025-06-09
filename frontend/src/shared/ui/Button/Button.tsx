@@ -1,7 +1,7 @@
 import type { ComponentPropsWithRef } from 'react';
 import { clsx } from 'clsx';
 
-type ButtonAppearance = 'primary' | 'secondary' | 'ghost';
+type ButtonAppearance = 'primary' | 'ghost';
 type ButtonPadding = 'none' | 's';
 
 interface ButtonProps extends ComponentPropsWithRef<'button'> {
@@ -22,9 +22,7 @@ export const Button = (props: ButtonProps) => {
   const baseStyles = 'rounded cursor-pointer';
 
   const variantStyles: Record<ButtonAppearance, string> = {
-    primary: 'bg-accent hover:bg-accent-lighter text-white',
-    secondary:
-      'hover:bg-accent-light bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]',
+    primary: 'bg-accent hover:bg-accent/80 text-white',
     ghost: '',
   };
 

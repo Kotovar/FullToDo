@@ -1,12 +1,14 @@
 import { Outlet } from 'react-router';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, Slide } from 'react-toastify';
 import { clsx } from 'clsx';
 import { useVisibility } from '@app/layout/useVisibility';
 import { Header } from '@widgets/Header';
 import { NavigationBar } from '@widgets/NavigationBar';
+import { useDarkToast } from './utils';
 
 export const Layout = () => {
   const [isHidden, handleVisibility, turnOffVisibility] = useVisibility();
+  const { toastClassName, theme } = useDarkToast();
 
   return (
     <div className='font-display bg-grey-light h-screen'>
@@ -17,7 +19,7 @@ export const Layout = () => {
       <div className='bg-grey-light text-dark relative flex h-full w-full pt-16 text-2xl'>
         <NavigationBar
           className={clsx(
-            'flex flex-auto bg-white p-4 break-all md:w-[30%] md:flex-none',
+            'bg-light flex flex-auto p-4 break-all md:w-[30%] md:flex-none',
             {
               ['hidden']: isHidden,
             },
@@ -32,11 +34,16 @@ export const Layout = () => {
         >
           <Outlet />
           <ToastContainer
+            toastClassName={toastClassName}
             position='top-right'
-            autoClose={2000}
-            hideProgressBar={false}
+            transition={Slide}
+            autoClose={1000}
+            hideProgressBar={true}
+            limit={3}
+            theme={theme}
             closeOnClick
             draggable
+            stacked
           />
         </main>
       </div>

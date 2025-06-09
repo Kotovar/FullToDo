@@ -1,7 +1,10 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-i18n.use(initReactI18next).init({
+const testI18n = i18n.createInstance();
+
+testI18n.use(initReactI18next).init({
+  lng: 'ru',
   resources: {
     ru: {
       translation: {
@@ -9,7 +12,6 @@ i18n.use(initReactI18next).init({
       },
     },
   },
-  lng: 'ru',
 });
 
-export default i18n;
+export default testI18n;

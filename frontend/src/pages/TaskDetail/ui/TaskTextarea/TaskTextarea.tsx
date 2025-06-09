@@ -18,7 +18,7 @@ export const TaskTextarea = ({
       {label}
     </label>
     <Textarea
-      className='outline-bg-second w-full rounded-sm bg-white p-2'
+      className='outline-bg-second bg-light placeholder:text-grey w-full rounded-sm p-2'
       placeholder={placeholder}
       value={value}
       onChange={onChange}

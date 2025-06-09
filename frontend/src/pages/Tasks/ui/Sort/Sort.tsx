@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
-import { COLORS, Icon, ICON_SIZES } from '@shared/ui';
-import { SortMenu } from './SortMenu';
-import { useSort } from './useSort';
+import { Icon, ICON_SIZES } from '@shared/ui';
+import { useDarkMode } from '@shared/lib';
+import { SortMenu, useSort } from '.';
 
 interface SortProps {
   params: URLSearchParams;
@@ -15,6 +15,7 @@ export const Sort = ({ params, setParams }: SortProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const { sort, order, toggleOrder, updateSort } = useSort(params, setParams);
   const { t } = useTranslation();
+  const { fill } = useDarkMode();
 
   const closeMenu = () => setIsMenuOpen(false);
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
@@ -45,7 +46,7 @@ export const Sort = ({ params, setParams }: SortProps) => {
           name={order === 'desc' ? 'arrowDown' : 'arrowUp'}
           ariaLabel={order === 'desc' ? 'sort descending' : 'sort ascending'}
           size={ICON_SIZES.FILTERS}
-          fill={COLORS.ACCENT}
+          fill={fill}
         />
       </button>
     </div>

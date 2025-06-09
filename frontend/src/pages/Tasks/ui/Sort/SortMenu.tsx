@@ -35,7 +35,7 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
 
   return (
     <div
-      className='border-bg-second absolute top-full flex w-max flex-col items-center rounded-md border bg-white p-2 shadow-md md:left-0'
+      className='border-bg-dark bg-light absolute top-full flex w-max flex-col items-center rounded-md border p-2 shadow-md md:left-0'
       ref={ref}
     >
       <form className='flex flex-col items-end text-base'>
