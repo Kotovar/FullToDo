@@ -67,6 +67,8 @@ export const LinkCard = (props: LinkCardProps) => {
       type='text'
       value={editedTitle}
       className='h-full w-full cursor-pointer border-none bg-transparent outline-none'
+      aria-label={`${t('essence')} ${editedTitle}`}
+      name={editedTitle}
       readOnly
     />
   );
