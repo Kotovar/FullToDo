@@ -113,7 +113,6 @@ export const NavigationBar = ({
                 <Button
                   appearance='ghost'
                   onClick={handleCreateNotepad}
-                  padding='none'
                   aria-label={t('notepads.add')}
                 >
                   <Icon name='plus' stroke={fill} />

@@ -70,6 +70,7 @@ export const LinkCard = (props: LinkCardProps) => {
       aria-label={`${t('essence')} ${editedTitle}`}
       name={editedTitle}
       readOnly
+      tabIndex={-1}
     />
   );
 

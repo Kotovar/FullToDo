@@ -1,8 +1,8 @@
 import { useRef, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useOnClickOutside } from 'usehooks-ts';
 import { SortState } from '@pages/Tasks/lib';
 import { commonLabels } from './constants';
+import { useFocusTrap } from '@shared/lib';
 
 interface SortMenuProps {
   buttonRef: RefObject<HTMLButtonElement | null>;
@@ -11,13 +11,10 @@ interface SortMenuProps {
 }
 
 export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
-  useOnClickOutside(
-    [ref as RefObject<HTMLElement>, buttonRef as RefObject<HTMLElement>],
-    closeMenu,
-  );
+  useFocusTrap(menuRef, buttonRef, closeMenu);
 
   const handleSubmit = (e: React.FormEvent, sort: SortState) => {
     e.preventDefault();
@@ -36,17 +33,18 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
   return (
     <div
       className='border-bg-dark bg-light absolute top-full flex w-max flex-col items-center rounded-md border p-2 shadow-md md:left-0'
-      ref={ref}
+      ref={menuRef}
     >
       <form className='flex flex-col items-end text-base'>
         {sortGroups.map(([sort, label]) => (
-          <span
+          <button
             className='cursor-pointer px-2 hover:rounded hover:bg-current/10'
+            type='button'
             key={sort}
             onClick={e => handleSubmit(e, sort)}
           >
             {t(label)}
-          </span>
+          </button>
         ))}
       </form>
     </div>

@@ -1,7 +1,7 @@
 import { type RefObject, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useOnClickOutside } from 'usehooks-ts';
 import { RadioGroup } from '@shared/ui';
+import { useFocusTrap } from '@shared/lib';
 import type { FilterLabel, FiltersState } from '@pages/Tasks/lib';
 import { getFilterGroups } from './constants';
 
@@ -18,7 +18,7 @@ export const FiltersMenu = ({
   closeMenu,
   onApply,
 }: FiltersMenuProps) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const [filters, setFilters] = useState<FiltersState>(() => {
     const initialFilters: FiltersState = {
@@ -34,10 +34,7 @@ export const FiltersMenu = ({
     return initialFilters;
   });
 
-  useOnClickOutside(
-    [ref as RefObject<HTMLElement>, buttonRef as RefObject<HTMLElement>],
-    closeMenu,
-  );
+  useFocusTrap(menuRef, buttonRef, closeMenu);
 
   const handleChange = (name: keyof FiltersState, value: string) => {
     setFilters(prev => ({ ...prev, [name]: value }));
@@ -62,7 +59,7 @@ export const FiltersMenu = ({
   return (
     <div
       className='border-bg-dark bg-light absolute top-full z-10 rounded-md border p-2 shadow-md md:right-0'
-      ref={ref}
+      ref={menuRef}
     >
       <form id='filterForm' onSubmit={handleSubmit} className='flex flex-col'>
         {filterGroups.map(group => (
