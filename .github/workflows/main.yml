@@ -27,7 +27,7 @@ jobs:
 
       - name: FSD Validation
         working-directory: ./frontend
-        run: npm run fsd:check
+        run: npm run fsd-check
 
       - name: Lint Frontend
         working-directory: ./frontend

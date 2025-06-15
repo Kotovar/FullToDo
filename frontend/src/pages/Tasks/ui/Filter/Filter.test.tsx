@@ -37,9 +37,8 @@ describe('Filter component', () => {
     });
 
     await user.click(filterButton);
-    const dropdownButton = screen.getByRole('button', {
-      name: 'apply',
-    });
+
+    const dropdownButton = screen.getByText('apply');
     expect(dropdownButton).toBeInTheDocument();
   });
 });

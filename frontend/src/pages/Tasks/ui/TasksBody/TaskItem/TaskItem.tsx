@@ -66,6 +66,7 @@ export const TaskItem = memo(
             aria-label={t(
               isCompleted ? ACTION_LABELS.incomplete : ACTION_LABELS.complete,
             )}
+            className='h-8 w-8 place-items-center'
           >
             <CompletionIcon completed={isCompleted} />
           </Button>

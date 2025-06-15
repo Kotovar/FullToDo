@@ -21,6 +21,7 @@ export const Icon = (props: IconProps) => {
       fill={fill}
       stroke={stroke}
       aria-label={ariaLabel}
+      className='shrink-0'
     />
   );
 };

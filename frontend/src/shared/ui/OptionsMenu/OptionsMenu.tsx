@@ -1,8 +1,8 @@
 import { ComponentPropsWithRef, RefObject, useRef } from 'react';
-import { useOnClickOutside } from 'usehooks-ts';
 import { useTranslation } from 'react-i18next';
+import { useFocusTrap } from '@shared/lib';
 
-interface OptionsMenu extends ComponentPropsWithRef<'div'> {
+interface OptionsMenu extends ComponentPropsWithRef<'dialog'> {
   buttonRef: RefObject<HTMLButtonElement | null>;
   path?: string;
   renameHandler: () => void;
@@ -12,18 +12,17 @@ interface OptionsMenu extends ComponentPropsWithRef<'div'> {
 
 export const OptionsMenu = (props: OptionsMenu) => {
   const { buttonRef, renameHandler, deleteHandler, closeMenu, ...rest } = props;
-  const ref = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
 
-  useOnClickOutside(
-    [ref as RefObject<HTMLElement>, buttonRef as RefObject<HTMLElement>],
-    closeMenu,
-  );
+  useFocusTrap(menuRef, buttonRef, closeMenu);
 
   return (
-    <div
+    <dialog
       className='border-bg-dark bg-light absolute top-full flex w-max -translate-x-full flex-col gap-0.5 rounded-md border p-2 shadow-md'
-      ref={ref}
+      ref={menuRef}
+      aria-modal='true'
+      aria-labelledby='modal'
       {...rest}
     >
       <button
@@ -40,6 +39,6 @@ export const OptionsMenu = (props: OptionsMenu) => {
       >
         {t('delete')}
       </button>
-    </div>
+    </dialog>
   );
 };

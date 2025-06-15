@@ -22,16 +22,7 @@ export const SearchSection = memo(() => {
           onChange={e => onChange(e.target.value)}
           className='text-dark placeholder:text-grey w-full outline-0'
           name='search'
-          leftContent={
-            <Button
-              appearance='ghost'
-              padding='none'
-              aria-label={t('search.common')}
-              className='hover:bg-grey p-1'
-            >
-              <Icon name='loupe' fill={fill} />
-            </Button>
-          }
+          leftContent={<Icon name='loupe' fill={fill} />}
           rightContent={
             value ? (
               <Button

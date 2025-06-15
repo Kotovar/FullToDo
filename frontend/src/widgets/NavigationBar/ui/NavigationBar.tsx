@@ -99,27 +99,28 @@ export const NavigationBar = ({
     <nav {...rest}>
       <ul className='w-full'>
         {notepadList}
-        <div className='flex gap-2 p-2'>
-          <Input
-            className='placeholder:text-grey min-w-0 outline-0'
-            placeholder={t('notepads.add')}
-            name='notepad'
-            type='text'
-            value={title}
-            onChange={event => setTitle(event.target.value)}
-            onKeyDown={handleKeyDown}
-            leftContent={
-              <Button
-                appearance='ghost'
-                onClick={handleCreateNotepad}
-                padding='none'
-                aria-label={t('notepads.add')}
-              >
-                <Icon name='plus' stroke={fill} />
-              </Button>
-            }
-          />
-        </div>
+        <li>
+          <div className='flex gap-2 p-2'>
+            <Input
+              className='placeholder:text-grey min-w-0 outline-0'
+              placeholder={t('notepads.add')}
+              name='notepad'
+              type='text'
+              value={title}
+              onChange={event => setTitle(event.target.value)}
+              onKeyDown={handleKeyDown}
+              leftContent={
+                <Button
+                  appearance='ghost'
+                  onClick={handleCreateNotepad}
+                  aria-label={t('notepads.add')}
+                >
+                  <Icon name='plus' stroke={fill} />
+                </Button>
+              }
+            />
+          </div>
+        </li>
       </ul>
     </nav>
   );

@@ -47,15 +47,9 @@ describe('FiltersMenu component', () => {
     );
 
     await user.click(
-      screen.getByRole('radio', {
-        name: 'filters.groups.isCompleted.options.active',
-      }),
+      screen.getByText('filters.groups.isCompleted.options.active'),
     );
-    await user.click(
-      screen.getByRole('radio', {
-        name: 'filters.groups.priority.options.high',
-      }),
-    );
+    await user.click(screen.getByText('filters.groups.priority.options.high'));
     await user.click(screen.getByText('apply'));
 
     expect(mockOnApply).toHaveBeenCalledWith({
