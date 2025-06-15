@@ -58,7 +58,7 @@ export const FiltersMenu = ({
 
   return (
     <dialog
-      className='border-bg-dark bg-light absolute top-full z-10 rounded-md border p-2 shadow-md md:right-0'
+      className='border-bg-dark bg-light absolute top-full z-10 block rounded-md border p-2 shadow-md md:right-0'
       aria-modal='true'
       aria-labelledby='modal'
       ref={menuRef}

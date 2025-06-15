@@ -27,7 +27,6 @@ export const useFocusTrap = (
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const activeElement = document.activeElement;
-      if (!activeElement) return;
 
       if (e.key === 'Tab') {
         if (!e.shiftKey && activeElement === lastElement) {
