@@ -69,6 +69,7 @@ export const SubtaskItem = memo(function SubtaskItem({
         onChange={handleTitleChange}
         onBlur={saveTitle}
         className='w-full outline-0'
+        name={_id}
       />
       <Button
         appearance='ghost'

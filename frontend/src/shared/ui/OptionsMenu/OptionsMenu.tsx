@@ -22,6 +22,7 @@ export const OptionsMenu = (props: OptionsMenu) => {
       className='border-bg-dark bg-light absolute top-full flex w-max -translate-x-full flex-col gap-0.5 rounded-md border p-2 shadow-md'
       ref={menuRef}
       aria-modal='true'
+      aria-labelledby='modal'
       {...rest}
     >
       <button

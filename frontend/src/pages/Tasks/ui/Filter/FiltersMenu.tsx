@@ -18,7 +18,7 @@ export const FiltersMenu = ({
   closeMenu,
   onApply,
 }: FiltersMenuProps) => {
-  const menuRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
   const [filters, setFilters] = useState<FiltersState>(() => {
     const initialFilters: FiltersState = {
@@ -57,8 +57,10 @@ export const FiltersMenu = ({
   const filterGroups = getFilterGroups(t);
 
   return (
-    <div
+    <dialog
       className='border-bg-dark bg-light absolute top-full z-10 rounded-md border p-2 shadow-md md:right-0'
+      aria-modal='true'
+      aria-labelledby='modal'
       ref={menuRef}
     >
       <form id='filterForm' onSubmit={handleSubmit} className='flex flex-col'>
@@ -88,6 +90,6 @@ export const FiltersMenu = ({
           {t('apply')}
         </button>
       </div>
-    </div>
+    </dialog>
   );
 };

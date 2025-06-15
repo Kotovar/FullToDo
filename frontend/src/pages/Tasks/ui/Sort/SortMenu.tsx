@@ -11,7 +11,7 @@ interface SortMenuProps {
 }
 
 export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
-  const menuRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
 
   useFocusTrap(menuRef, buttonRef, closeMenu);
@@ -31,8 +31,10 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
   >;
 
   return (
-    <div
+    <dialog
       className='border-bg-dark bg-light absolute top-full flex w-max flex-col items-center rounded-md border p-2 shadow-md md:left-0'
+      aria-modal='true'
+      aria-labelledby='modal'
       ref={menuRef}
     >
       <form className='flex flex-col items-end text-base'>
@@ -47,6 +49,6 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
           </button>
         ))}
       </form>
-    </div>
+    </dialog>
   );
 };
