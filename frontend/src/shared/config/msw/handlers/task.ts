@@ -98,7 +98,10 @@ export const taskHandlers = [
       const { title } = await request.json();
 
       if (title !== MOCK_TITLE_EXISTING) {
-        return HttpResponse.json(MOCK_TASK_UPDATE_RESPONSE);
+        return HttpResponse.json({
+          ...MOCK_TASK_UPDATE_RESPONSE,
+          message: MOCK_TASK_UPDATE_RESPONSE.message ?? '',
+        });
       }
 
       return HttpResponse.json({

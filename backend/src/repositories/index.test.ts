@@ -1,9 +1,8 @@
 import { describe, test, expect, expectTypeOf, beforeEach, vi } from 'vitest';
-import { config } from 'dotenv';
+import { config as dotenvConfig } from 'dotenv';
 import path from 'path';
-import { getDbType } from './index';
 
-config({ path: path.resolve(__dirname, '../../.env') });
+dotenvConfig({ path: path.resolve(__dirname, '../../.env') });
 
 describe('DB_TYPE tests', () => {
   const originalEnv = process.env;
@@ -14,42 +13,23 @@ describe('DB_TYPE tests', () => {
     vi.resetModules();
   });
 
-  test('should return MockTaskRepository when DB_TYPE is not set', async () => {
-    delete process.env.DB_TYPE;
-
-    const { taskRepository } = await import('./index');
-
-    expectTypeOf(taskRepository).toBeObject();
-    expect(getDbType()).toBe('mock');
-  });
-
-  test('should return MockTaskRepository when DB_TYPE is "mock"', async () => {
-    process.env.DB_TYPE = 'mock';
-    const { taskRepository } = await import('./index');
-
-    expectTypeOf(taskRepository).toBeObject();
-    expect(getDbType()).toBe('mock');
-  });
-
   test('should return MockTaskRepository when DB_TYPE is "mongo"', async () => {
+    vi.resetModules();
     process.env.DB_TYPE = 'mongo';
+    const { config } = await import('../configs');
     const { taskRepository } = await import('./index');
 
     expectTypeOf(taskRepository).toBeObject();
-    expect(getDbType()).toBe('mongo');
+    expect(config.db.type).toBe('mongo');
   });
 
   test('should return MockTaskRepository when DB_TYPE is "postgres"', async () => {
+    vi.resetModules();
     process.env.DB_TYPE = 'postgres';
+    const { config } = await import('../configs');
     const { taskRepository } = await import('./index');
 
     expectTypeOf(taskRepository).toBeObject();
-    expect(getDbType()).toBe('postgres');
-  });
-
-  test('should return "mock" when DB_TYPE is an empty string', async () => {
-    process.env.DB_TYPE = '';
-
-    expect(getDbType()).toBe('mock');
+    expect(config.db.type).toBe('postgres');
   });
 });

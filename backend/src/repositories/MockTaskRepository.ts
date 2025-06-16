@@ -273,7 +273,7 @@ export class MockTaskRepository implements TaskRepository {
     return {
       status: 200,
       message: `A notepad with the id ${notepadId} has been successfully updated`,
-      data: [this.notepads[notepadIndex]],
+      data: this.notepads[notepadIndex],
     };
   }
 

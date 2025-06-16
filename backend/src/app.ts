@@ -1,13 +1,10 @@
-import { config } from 'dotenv';
-import path from 'path';
 import { createHttpServer, createExpressServer } from './servers';
+import { config } from './configs';
 
-config({ path: path.resolve(__dirname, '../../.env') });
+const {
+  server: { type, port },
+} = config;
 
-const SERVER_TYPE = process.env.SERVER_TYPE || 'http';
-const PORT = Number(process.env.PORT) || 3000;
+const server = type === 'express' ? createExpressServer() : createHttpServer();
 
-const server =
-  SERVER_TYPE === 'express' ? createExpressServer() : createHttpServer();
-
-server.listen(PORT);
+server.listen(port);

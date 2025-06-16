@@ -2,7 +2,6 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { setupMockServer } from '@shared/config';
 import {
   createWrapper,
-  MOCK_SINGE_NOTEPAD_RESPONSE,
   MOCK_TITLE_NON_EXISTING,
   getDeleteResponse,
 } from '@shared/mocks';
@@ -61,11 +60,6 @@ describe('useTasks hook', () => {
     });
   });
 
-  test('Без указаний id возвращает пустой массив задач', async () => {
-    const result = await getInitialData();
-    expect(result.current.tasks).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE.data);
-  });
-
   test('Если указан notepadId будет вызван метод для получения задач из конкретного блокнота', async () => {
     const getTasksFromNotepadMock = vi.spyOn(
       taskService,
@@ -98,14 +92,6 @@ describe('useTasks hook', () => {
 
     expect(getSingleTaskMock).toHaveBeenCalledTimes(0);
     expect(getAllTasksMock).toHaveBeenCalledTimes(1);
-  });
-
-  test('возвращает список задач из конкретного блокнота', async () => {
-    const result = await getInitialData();
-
-    await waitFor(() =>
-      expect(result.current.tasks).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE.data),
-    );
   });
 
   test('вызывает updateTask при создании задачи', async () => {

@@ -20,7 +20,7 @@ describe('useTasks hook', () => {
 
     await waitFor(() => {
       expect(result.current.form.dueDate).toBe(
-        getFormattedDate(MOCK_TASK.dueDate),
+        getFormattedDate(MOCK_TASK.dueDate ?? new Date()),
       );
     });
   });
@@ -40,7 +40,7 @@ describe('useTasks hook', () => {
     await waitFor(() => {
       expect(result.current.form).toEqual({
         title: MOCK_TASK.title,
-        dueDate: getFormattedDate(MOCK_TASK.dueDate),
+        dueDate: getFormattedDate(MOCK_TASK.dueDate ?? new Date()),
         description: 'Описание для задачи 1',
         subtasks: MOCK_TASK.subtasks,
       });

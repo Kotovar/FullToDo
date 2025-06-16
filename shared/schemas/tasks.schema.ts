@@ -74,7 +74,7 @@ export const TaskResponse = ResponseWithoutData.extend({
 });
 
 export const NotepadResponse = ResponseWithoutData.extend({
-  data: z.array(dbNotepadSchema).optional(),
+  data: dbNotepadSchema.optional(),
 });
 
 export const NotepadWithoutTasksResponse = ResponseWithoutData.extend({
