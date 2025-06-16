@@ -1,4 +1,4 @@
-import { useId, useRef } from 'react';
+import { useId, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { Button, Input, Icon } from '@shared/ui';
@@ -24,10 +24,12 @@ export const TaskInput = ({
     inputRef.current?.showPicker();
   };
 
-  const handleButtonClick = type === 'date' ? handleOpenCalendar : onClick;
+  const isDate = useMemo(() => type === 'date', [type]);
+
+  const handleButtonClick = isDate ? handleOpenCalendar : onClick;
 
   const rightContent =
-    variant === 'add-task' && type === 'date' ? (
+    variant === 'add-task' && isDate ? (
       <Button
         onClick={onClick}
         appearance='primary'
@@ -45,7 +47,7 @@ export const TaskInput = ({
           [styles.addSubtask]: variant === 'add-subtask',
           [styles.addTask]: variant === 'add-task',
           [styles.addTaskText]: variant === 'add-task' && type === 'text',
-          [styles.addTaskDate]: variant === 'add-task' && type === 'date',
+          [styles.addTaskDate]: variant === 'add-task' && isDate,
         },
         'p-2',
       )}
@@ -61,9 +63,9 @@ export const TaskInput = ({
         value={value}
         onChange={onChange}
         onKeyDown={onKeyDown}
-        ref={type === 'date' ? inputRef : null}
+        ref={isDate ? inputRef : null}
         className={clsx(styles.input, {
-          [styles.dateInput]: type === 'date',
+          [styles.dateInput]: isDate,
         })}
         leftContent={
           <Button

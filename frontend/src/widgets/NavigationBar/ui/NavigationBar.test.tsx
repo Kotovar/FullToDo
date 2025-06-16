@@ -13,7 +13,7 @@ const getUseNotepadsMockWithRender = (
   createNotepad = vi.fn(),
   updateNotepadTitle = vi.fn(),
   deleteNotepad = vi.fn(),
-  notepads = MOCK_NOTEPADS_RESPONSE.data,
+  notepads = MOCK_NOTEPADS_RESPONSE.data ?? [],
 ) => {
   vi.spyOn(useNotepadsHook, 'useNotepads').mockReturnValue({
     notepads,
@@ -100,7 +100,7 @@ describe('NavigationBar component', () => {
     await user.click(addButton);
 
     expect(updateNotepadTitleMock).toHaveBeenCalledWith(
-      MOCK_NOTEPADS_RESPONSE.data[NOTEPAD_INDEX]._id,
+      MOCK_NOTEPADS_RESPONSE.data?.[NOTEPAD_INDEX]._id,
       'Новое',
     );
   });

@@ -62,7 +62,7 @@ export const updateTaskSchema = createTaskSchema
 
 const ResponseWithoutData = z.object({
   status: StatusResponseEnum,
-  message: z.string().optional(),
+  message: z.string(),
 });
 
 export const TasksResponse = ResponseWithoutData.extend({
