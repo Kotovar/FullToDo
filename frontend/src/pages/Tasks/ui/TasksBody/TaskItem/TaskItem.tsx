@@ -1,4 +1,4 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getPath } from '@pages/Tasks/lib';
 import { Button, CompletionIcon, LinkCard } from '@shared/ui';
@@ -8,6 +8,9 @@ const ACTION_LABELS = {
   complete: 'tasks.actions.complete',
   incomplete: 'tasks.actions.incomplete',
 } as const;
+
+const CARD_CLASSES =
+  'bg-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10 hover:bg-current/10';
 
 interface TaskItemProps {
   task: Task;
@@ -56,6 +59,17 @@ export const TaskItem = memo(
       renameTask(_id);
     }, [_id, renameTask]);
 
+    const taskProgress = useMemo(
+      () =>
+        progress ? progress.replace('/', ` ${t('of')} `) : t('tasks.empty'),
+      [progress, t],
+    );
+
+    const onSaveTitle = useCallback(
+      (newTitle: string) => handleSaveTitle(_id, newTitle, title),
+      [_id, handleSaveTitle, title],
+    );
+
     return (
       <LinkCard
         header={
@@ -78,11 +92,9 @@ export const TaskItem = memo(
         handleClickDelete={handleDelete}
         handleClickRename={handleRename}
         isEditing={editingTaskId === _id}
-        onSaveTitle={newTitle => handleSaveTitle(_id, newTitle, title)}
-        body={
-          <p className='text-sm'>{progress.replace('/', ` ${t('of')} `)}</p>
-        }
-        className='bg-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10 hover:bg-current/10'
+        onSaveTitle={onSaveTitle}
+        body={<p className='text-sm'>{taskProgress}</p>}
+        className={CARD_CLASSES}
       />
     );
   },

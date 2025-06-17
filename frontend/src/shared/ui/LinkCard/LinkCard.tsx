@@ -1,4 +1,4 @@
-import { ComponentPropsWithoutRef, JSX, useRef, useState } from 'react';
+import { ComponentPropsWithoutRef, JSX, memo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
@@ -18,7 +18,7 @@ interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   onSaveTitle?: (newTitle: string) => Promise<string | void>;
 }
 
-export const LinkCard = (props: LinkCardProps) => {
+export const LinkCard = memo((props: LinkCardProps) => {
   const {
     header,
     cardTitle,
@@ -135,4 +135,4 @@ export const LinkCard = (props: LinkCardProps) => {
       </div>
     </li>
   );
-};
+});

@@ -43,6 +43,7 @@
     "date": "Completion date",
     "detail": "Task details",
     "description": "Description",
+    "empty": "No subtasks",
     "steps": {
       "first": "First step",
       "next": "Next step"
