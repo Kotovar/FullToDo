@@ -1,5 +1,6 @@
 import type { FiltersState } from '@pages/Tasks/lib';
 import type { SetURLSearchParams } from 'react-router';
+import { getTypedKeys } from '@shared/lib';
 
 export const useFilters = (setParams: SetURLSearchParams) => {
   const handleRemoveFilter = (key: string) => {
@@ -14,9 +15,11 @@ export const useFilters = (setParams: SetURLSearchParams) => {
     setParams(prev => {
       const newParams = new URLSearchParams(prev);
 
-      (Object.keys(newFilters) as Array<keyof FiltersState>).forEach(key => {
+      const filters = getTypedKeys(newFilters);
+
+      filters.forEach(key => {
         const value = newFilters[key];
-        if (value !== undefined && value) {
+        if (value) {
           newParams.set(key, value);
         } else {
           newParams.delete(key);

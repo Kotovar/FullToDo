@@ -2,7 +2,7 @@ import { useRef, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SortState } from '@pages/Tasks/lib';
 import { commonLabels } from './constants';
-import { useFocusTrap } from '@shared/lib';
+import { getTypedEntries, useFocusTrap } from '@shared/lib';
 
 interface SortMenuProps {
   buttonRef: RefObject<HTMLButtonElement | null>;
@@ -22,13 +22,7 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
     closeMenu();
   };
 
-  type Entries<T> = {
-    [K in keyof T]: [K, T[K]];
-  }[keyof T][];
-
-  const sortGroups = Object.entries(commonLabels) as Entries<
-    typeof commonLabels
-  >;
+  const sortGroups = getTypedEntries(commonLabels);
 
   return (
     <dialog
