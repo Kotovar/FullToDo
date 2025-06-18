@@ -26,7 +26,7 @@ export const createSubtaskSchema = z.object({
 export const createTaskSchema = z.object({
   title: z.coerce.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  dueDate: z.coerce.date().optional(),
+  dueDate: z.coerce.date().nullable().optional(),
   priority: PriorityEnum.optional(),
 });
 

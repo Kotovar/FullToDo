@@ -34,8 +34,8 @@ const getSortedAllTasks = (
       const valA = a[type];
       const valB = b[type];
 
-      if (valA === undefined) return order === 'asc' ? 1 : -1;
-      if (valB === undefined) return order === 'asc' ? -1 : 1;
+      if (valA === undefined || valA === null) return order === 'asc' ? 1 : -1;
+      if (valB === undefined || valB === null) return order === 'asc' ? -1 : 1;
       if (valA === valB) return 0;
 
       return order === 'asc' ? (valA < valB ? -1 : 1) : valA < valB ? 1 : -1;
@@ -418,13 +418,11 @@ describe('MockTaskRepository', () => {
     expect(responseUpdate).toStrictEqual({
       status: 200,
       message: `A notepad with the id ${realId} has been successfully updated`,
-      data: [
-        {
-          title: newTitleNotepad.title,
-          _id: realId,
-          tasks: NOTEPADS[0].tasks,
-        },
-      ],
+      data: {
+        title: newTitleNotepad.title,
+        _id: realId,
+        tasks: NOTEPADS[0].tasks,
+      },
     });
 
     const responseUpdateDouble = await repository.updateNotepad(

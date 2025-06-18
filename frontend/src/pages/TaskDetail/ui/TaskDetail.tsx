@@ -64,13 +64,17 @@ export const TaskDetail = (props: TaskDetailProps) => {
       updates.description = form.description;
     }
 
-    const currentDueDate = task?.dueDate
-      ? getFormattedDate(task.dueDate)
-      : null;
-    const newDueDate = form.dueDate ? form.dueDate : null;
+    if (form.dueDate === '' && task?.dueDate) {
+      updates.dueDate = null;
+    } else if (form.dueDate) {
+      const currentDueDate = task?.dueDate
+        ? getFormattedDate(task.dueDate)
+        : null;
+      const newDueDate = form.dueDate;
 
-    if (currentDueDate !== newDueDate) {
-      updates.dueDate = form.dueDate ? new Date(form.dueDate) : undefined;
+      if (currentDueDate !== newDueDate) {
+        updates.dueDate = new Date(form.dueDate);
+      }
     }
 
     if (

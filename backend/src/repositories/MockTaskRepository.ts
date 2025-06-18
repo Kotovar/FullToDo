@@ -61,8 +61,10 @@ export class MockTaskRepository implements TaskRepository {
         const valA = a[sortBy];
         const valB = b[sortBy];
 
-        if (valA === undefined) return order === 'asc' ? 1 : -1;
-        if (valB === undefined) return order === 'asc' ? -1 : 1;
+        if (valA === null || valA === undefined)
+          return order === 'asc' ? 1 : -1;
+        if (valB === null || valB === undefined)
+          return order === 'asc' ? -1 : 1;
         if (valA === valB) return 0;
 
         return order === 'asc' ? (valA < valB ? -1 : 1) : valA < valB ? 1 : -1;
@@ -326,6 +328,12 @@ export class MockTaskRepository implements TaskRepository {
       progress,
       subtasks,
     };
+
+    if (updatedTaskFields.dueDate === null) {
+      delete updatedTask.dueDate;
+    } else if (updatedTaskFields.dueDate !== undefined) {
+      updatedTask.dueDate = updatedTaskFields.dueDate;
+    }
 
     this.tasks[taskIndex] = updatedTask;
     const shouldMoveNotepad = newNotepadId !== currentTask.notepadId;
