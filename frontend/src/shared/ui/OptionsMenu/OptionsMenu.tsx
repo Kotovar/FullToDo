@@ -1,8 +1,16 @@
-import { ComponentPropsWithRef, RefObject, useRef } from 'react';
+import {
+  ComponentPropsWithRef,
+  RefObject,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFocusTrap } from '@shared/lib';
+import { clsx } from 'clsx';
 
-interface OptionsMenu extends ComponentPropsWithRef<'dialog'> {
+interface OptionsMenuProps extends ComponentPropsWithRef<'dialog'> {
   buttonRef: RefObject<HTMLButtonElement | null>;
   path?: string;
   renameHandler: () => void;
@@ -10,16 +18,58 @@ interface OptionsMenu extends ComponentPropsWithRef<'dialog'> {
   closeMenu: () => void;
 }
 
-export const OptionsMenu = (props: OptionsMenu) => {
+export const OptionsMenu = (props: OptionsMenuProps) => {
   const { buttonRef, renameHandler, deleteHandler, closeMenu, ...rest } = props;
   const menuRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
+  const [position, setPosition] = useState<'top' | 'bottom'>('bottom');
+
+  const updateMenuPosition = useCallback(() => {
+    if (!menuRef.current || !buttonRef.current) return;
+
+    const dialogRect = menuRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const isOverflowBottom = dialogRect.bottom > viewportHeight;
+
+    setPosition(isOverflowBottom ? 'top' : 'bottom');
+  }, [buttonRef]);
+
+  useLayoutEffect(() => {
+    const menu = menuRef.current;
+    if (!menu) return;
+
+    menu.setAttribute('inert', '');
+
+    requestAnimationFrame(() => {
+      menu.removeAttribute('inert');
+    });
+
+    updateMenuPosition();
+  }, [updateMenuPosition]);
+
+  const handleRename = useCallback(() => {
+    renameHandler();
+    closeMenu();
+  }, [closeMenu, renameHandler]);
+
+  const handleDelete = useCallback(() => {
+    deleteHandler();
+    closeMenu();
+  }, [closeMenu, deleteHandler]);
 
   useFocusTrap(menuRef, buttonRef, closeMenu);
 
+  const buttonHeight = buttonRef.current?.clientHeight ?? 0;
+  const positionTopStyle = `-translate-y-[calc(100%+${buttonHeight}px)]`;
+
   return (
     <dialog
-      className='border-bg-dark bg-light absolute top-full flex w-max -translate-x-full flex-col gap-0.5 rounded-md border p-2 shadow-md'
+      className={clsx(
+        {
+          [positionTopStyle]: position === 'top',
+        },
+        'border-bg-dark bg-light absolute top-full flex w-max -translate-x-full flex-col gap-0.5 rounded-md border p-2 shadow-md',
+      )}
       ref={menuRef}
       aria-modal='true'
       aria-labelledby='modal'
@@ -28,14 +78,14 @@ export const OptionsMenu = (props: OptionsMenu) => {
       <button
         className='bg-light relative z-10 w-full cursor-pointer rounded-md p-2 hover:brightness-60'
         type='button'
-        onClick={renameHandler}
+        onClick={handleRename}
       >
         {t('rename')}
       </button>
       <button
         className='bg-bg-second relative z-10 w-full cursor-pointer rounded-md p-2 hover:brightness-70'
         type='button'
-        onClick={deleteHandler}
+        onClick={handleDelete}
       >
         {t('delete')}
       </button>

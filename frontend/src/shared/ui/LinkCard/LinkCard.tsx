@@ -121,14 +121,8 @@ export const LinkCard = memo((props: LinkCardProps) => {
         {isMenuOpen && currentModalId === path && (
           <OptionsMenu
             buttonRef={buttonRef}
-            renameHandler={() => {
-              handleClickRename();
-              closeMenu();
-            }}
-            deleteHandler={() => {
-              handleClickDelete();
-              closeMenu();
-            }}
+            renameHandler={handleClickRename}
+            deleteHandler={handleClickDelete}
             closeMenu={closeMenu}
           />
         )}

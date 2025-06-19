@@ -10,7 +10,7 @@ const ACTION_LABELS = {
 } as const;
 
 const CARD_CLASSES =
-  'bg-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10 hover:bg-current/10';
+  'bg-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] hover:bg-current/10';
 
 interface TaskItemProps {
   task: Task;

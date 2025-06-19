@@ -9,7 +9,12 @@ export const useFocusTrap = (
 ) => {
   const refs = getRefs(menuRef, buttonRef);
 
-  useOnClickOutside(refs, closeMenu);
+  useOnClickOutside(refs, event => {
+    const { target } = event;
+    if (target instanceof Node && !menuRef.current?.contains(target)) {
+      closeMenu();
+    }
+  });
 
   useEffect(() => {
     const menu = menuRef.current;
