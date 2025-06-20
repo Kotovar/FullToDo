@@ -21,8 +21,35 @@
 }
 
 @layer utilities {
-  .scrollbar-custom {
-    scrollbar-color: var(--color-accent) var(--color-grey-light);
+  :is(.scrollbar-tasks, .scrollbar-notepads)::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  :is(.scrollbar-tasks, .scrollbar-notepads)::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  :is(.scrollbar-tasks, .scrollbar-notepads)::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+    border-radius: 4px;
+  }
+
+  .scrollbar-tasks::-webkit-resizer {
+    background-color: var(--color-accent);
+    border-radius: 100%;
+  }
+
+  .scrollbar-tasks::-webkit-scrollbar-corner {
+    background-color: var(--color-grey-light);
+  }
+
+  .scrollbar-tasks::-webkit-scrollbar-track {
+    background: var(--color-grey-light);
+  }
+
+  .scrollbar-notepads::-webkit-scrollbar-track {
+    background: var(--color-light);
   }
 }
 

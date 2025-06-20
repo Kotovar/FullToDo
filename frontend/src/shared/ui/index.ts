@@ -2,7 +2,6 @@ export * from './Button/Button';
 export * from './Icon';
 export * from './Input/Input';
 export * from './LinkCard/LinkCard';
-export * from './Textarea/Textarea';
 export * from './OptionsMenu/OptionsMenu';
 export * from './TaskInput';
 export * from './ErrorFetching/ErrorFetching';

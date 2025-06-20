@@ -110,7 +110,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   };
 
   return (
-    <section {...props} className='flex flex-col gap-1 p-1'>
+    <section {...props} className='flex h-full flex-col gap-1 p-1'>
       <Button
         className='dark:border-dark self-start border-1'
         appearance='primary'
@@ -129,7 +129,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
         <Subtasks subtasks={form.subtasks} updateSubtask={updateSubtask} />
       )}
 
-      <fieldset className='flex flex-col gap-2'>
+      <fieldset className='mt-auto flex flex-col gap-2'>
         <legend className='sr-only'>{t('tasks.detail')}</legend>
 
         <TaskInput

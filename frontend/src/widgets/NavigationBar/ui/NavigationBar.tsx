@@ -78,7 +78,7 @@ export const NavigationBar = ({
         currentModalId={currentModalId}
         handleModalId={id => setCurrentModalId(id)}
         className={clsx(
-          'text-dark grid min-h-16 grid-cols-[1fr_2rem] content-center items-center justify-items-center rounded-lg p-2 break-words hover:bg-current/10',
+          'text-dark grid min-h-16 grid-cols-[1fr_2rem] content-center items-center justify-items-center rounded-lg p-2 hover:bg-current/10',
           {
             ['bg-grey/40']: path === basePath,
           },

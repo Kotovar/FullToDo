@@ -1,4 +1,4 @@
-import { useState, memo, useEffect } from 'react';
+import { useState, memo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon, Input, CompletionIcon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
@@ -15,15 +15,15 @@ export const SubtaskItem = memo(function SubtaskItem({
   updateSubtask,
 }: SubtaskItemProps) {
   const { _id, title, isCompleted } = subtask;
-
   const [draftTitle, setDraftTitle] = useState(title);
+  const [isEditing, setIsEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { fill } = useDarkMode();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setDraftTitle(title);
   }, [title]);
-
-  const { t } = useTranslation();
 
   const handleToggleCompleted = () => {
     updateSubtask({
@@ -38,7 +38,8 @@ export const SubtaskItem = memo(function SubtaskItem({
     setDraftTitle(e.target.value);
   };
 
-  const saveTitle = () => {
+  const handleSaveTitle = () => {
+    setIsEditing(false);
     if (draftTitle !== title) {
       updateSubtask({
         type: 'update',
@@ -46,6 +47,23 @@ export const SubtaskItem = memo(function SubtaskItem({
         title: draftTitle,
         isCompleted,
       });
+    }
+  };
+
+  const handleClick = () => {
+    setIsEditing(true);
+
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+    });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSaveTitle();
+    } else if (e.key === 'Escape') {
+      setDraftTitle(title);
+      setIsEditing(false);
     }
   };
 
@@ -63,14 +81,24 @@ export const SubtaskItem = memo(function SubtaskItem({
       >
         <CompletionIcon completed={isCompleted} />
       </Button>
-      <Input
-        type='text'
-        value={draftTitle}
-        onChange={handleTitleChange}
-        onBlur={saveTitle}
-        className='w-full outline-0'
-        name={_id}
-      />
+
+      {isEditing ? (
+        <Input
+          ref={inputRef}
+          type='text'
+          value={draftTitle}
+          onChange={handleTitleChange}
+          onBlur={handleSaveTitle}
+          onKeyDown={handleKeyDown}
+          className='w-full outline-0'
+          autoFocus
+        />
+      ) : (
+        <span onClick={handleClick} className='w-full'>
+          {draftTitle}
+        </span>
+      )}
+
       <Button
         appearance='ghost'
         onClick={() => updateSubtask({ type: 'delete', id: _id })}

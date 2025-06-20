@@ -14,7 +14,10 @@ export const Subtasks = ({
   ...rest
 }: SubtasksProps) => {
   return (
-    <ul className='flex list-none flex-col' {...rest}>
+    <ul
+      className='scrollbar-tasks flex list-none flex-col overflow-y-scroll pr-2'
+      {...rest}
+    >
       {subtasks.map(subtask => (
         <SubtaskItem
           key={subtask._id}

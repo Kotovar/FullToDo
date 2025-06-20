@@ -66,7 +66,7 @@ export const TasksBody = ({
   }
 
   return (
-    <ul className='bg-grey-light my-scroll scrollbar-custom flex h-full flex-col gap-2 overflow-y-scroll p-1'>
+    <ul className='bg-grey-light scrollbar-tasks flex h-full flex-col gap-2 overflow-y-scroll p-1'>
       {tasks?.map(task => (
         <TaskItem
           key={task._id}

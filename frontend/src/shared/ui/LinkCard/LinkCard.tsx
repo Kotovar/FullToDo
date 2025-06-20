@@ -66,7 +66,7 @@ export const LinkCard = memo((props: LinkCardProps) => {
     <input
       type='text'
       value={editedTitle}
-      className='h-full w-full cursor-pointer border-none bg-transparent outline-none'
+      className='h-full w-full cursor-pointer truncate border-none bg-transparent outline-none'
       aria-label={`${t('essence')} ${editedTitle}`}
       name={editedTitle}
       readOnly

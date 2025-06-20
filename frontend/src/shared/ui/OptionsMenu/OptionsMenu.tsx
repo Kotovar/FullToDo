@@ -18,6 +18,8 @@ interface OptionsMenuProps extends ComponentPropsWithRef<'dialog'> {
   closeMenu: () => void;
 }
 
+const POSITION_TOP_WITH_BUTTON_HEIGHT = `-translate-y-[calc(100%+36px)]`;
+
 export const OptionsMenu = (props: OptionsMenuProps) => {
   const { buttonRef, renameHandler, deleteHandler, closeMenu, ...rest } = props;
   const menuRef = useRef<HTMLDialogElement>(null);
@@ -43,7 +45,6 @@ export const OptionsMenu = (props: OptionsMenuProps) => {
     requestAnimationFrame(() => {
       menu.removeAttribute('inert');
     });
-
     updateMenuPosition();
   }, [updateMenuPosition]);
 
@@ -59,14 +60,11 @@ export const OptionsMenu = (props: OptionsMenuProps) => {
 
   useFocusTrap(menuRef, buttonRef, closeMenu);
 
-  const buttonHeight = buttonRef.current?.clientHeight ?? 0;
-  const positionTopStyle = `-translate-y-[calc(100%+${buttonHeight}px)]`;
-
   return (
     <dialog
       className={clsx(
         {
-          [positionTopStyle]: position === 'top',
+          [POSITION_TOP_WITH_BUTTON_HEIGHT]: position === 'top',
         },
         'border-bg-dark bg-light absolute top-full flex w-max -translate-x-full flex-col gap-0.5 rounded-md border p-2 shadow-md',
       )}

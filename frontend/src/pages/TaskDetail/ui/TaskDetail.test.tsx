@@ -172,9 +172,7 @@ describe('TaskDetail component', () => {
         path: '/notepads/:notepadId/task/:taskId',
       });
 
-      const subtaskItem = screen
-        .getByDisplayValue('Выучить Node.js')
-        .closest('li');
+      const subtaskItem = screen.getByText('Выучить Node.js').closest('li');
       const toggleButton = within(subtaskItem!).getByRole('button', {
         name: 'tasks.actions.complete',
       });
