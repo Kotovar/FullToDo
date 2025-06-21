@@ -1,8 +1,8 @@
 import { useRef, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SortState } from '@pages/Tasks/lib';
-import { commonLabels } from './constants';
 import { getTypedEntries, useFocusTrap } from '@shared/lib';
+import { commonLabels } from '.';
 
 interface SortMenuProps {
   buttonRef: RefObject<HTMLButtonElement | null>;

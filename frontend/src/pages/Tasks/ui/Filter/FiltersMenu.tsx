@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { RadioGroup } from '@shared/ui';
 import { useFocusTrap } from '@shared/lib';
 import type { FilterLabel, FiltersState } from '@pages/Tasks/lib';
-import { getFilterGroups } from './constants';
+import { getFilterGroups } from '.';
 
 interface FiltersMenuProps {
   labels: FilterLabel[];

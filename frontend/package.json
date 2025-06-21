@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit --pretty false",
     "fsd-check": "npx steiger ./src",
     "preview": "vite preview",
     "lint-staged": "lint-staged"

@@ -2,7 +2,7 @@ import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import { renderWithRouter } from '@shared/testing';
 import { Header } from './Header';
-import * as useSearchHook from './useSearch';
+import * as useSearchHook from '../lib/useSearch';
 
 describe('Header component', () => {
   const mockChangeVisibility = vi.fn();

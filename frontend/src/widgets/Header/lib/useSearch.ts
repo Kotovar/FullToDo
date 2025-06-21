@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { debounce } from '@shared/lib/debounce';
-import type { TaskSearch } from 'shared/schemas';
 import { useTaskParams } from '@entities/Task';
+import type { TaskSearch } from 'shared/schemas';
 
 export const useSearch = (debounceDelay: number = 300) => {
   const { validParams, setSearchParams } = useTaskParams();

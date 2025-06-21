@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon, Input } from '@shared/ui';
-import { useSearch } from '../useSearch';
+import { useSearch } from '@widgets/Header/lib';
 import { useDarkMode } from '@shared/lib/hooks';
 
 export const SearchSection = memo(() => {

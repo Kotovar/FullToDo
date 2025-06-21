@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { COLORS, Icon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib/hooks';
-import { useLanguage } from './utils';
+import { useLanguage } from '.';
 
 export const AdditionalActions = memo(() => {
   const { isDarkMode, toggle } = useDarkMode();

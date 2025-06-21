@@ -2,8 +2,8 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTasks } from '@entities/Task';
 import { useNotifications } from '@shared/lib/notifications';
-import { TaskItem } from './TaskItem';
 import { useSuccessMessage } from '@shared/lib';
+import { TaskItem } from '.';
 
 interface TasksBodyProps {
   notepadPathName: string;

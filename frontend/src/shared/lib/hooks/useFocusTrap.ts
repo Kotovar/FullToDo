@@ -1,6 +1,6 @@
 import { RefObject, useEffect } from 'react';
 import { useOnClickOutside } from 'usehooks-ts';
-import { getRefs } from './utils';
+import { getRefs } from '..';
 
 export const useFocusTrap = (
   menuRef: RefObject<HTMLElement | null>,
