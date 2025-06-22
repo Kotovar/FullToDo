@@ -1,8 +1,8 @@
 {
   "*.{js,ts}": [
     "prettier --write",
-    "eslint --ignore-pattern .gitignore --fix",
-    "bash -c tsc --noEmit"
+    "eslint --ignore-pattern .gitignore",
+    "vitest related --run"
   ],
   "*.{json,md}": ["prettier --write"]
 }

@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTasks } from '@entities/Task';
 import { useNotifications } from '@shared/lib/notifications';
-import { useSuccessMessage } from '@shared/lib';
+import { useAutoScrollToNewItem, useSuccessMessage } from '@shared/lib';
 import { TaskItem } from '.';
 
 interface TasksBodyProps {
@@ -27,6 +27,7 @@ export const TasksBody = ({
     onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
     onError: error => showError(t(error.message)),
   });
+  const listRef = useAutoScrollToNewItem<HTMLUListElement>(notepadId, tasks);
 
   const handleModalId = useCallback((id: string) => {
     setCurrentModalId(id);
@@ -66,7 +67,10 @@ export const TasksBody = ({
   }
 
   return (
-    <ul className='bg-grey-light scrollbar-tasks flex h-full flex-col gap-2 overflow-y-scroll p-1'>
+    <ul
+      ref={listRef}
+      className='bg-grey-light scrollbar-tasks flex h-full flex-col gap-2 overflow-y-scroll p-1'
+    >
       {tasks?.map(task => (
         <TaskItem
           key={task._id}

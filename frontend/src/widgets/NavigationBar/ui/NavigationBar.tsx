@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router';
-import { useState, type ComponentPropsWithoutRef } from 'react';
+import { useRef, useState, type ComponentPropsWithoutRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { LinkCard, Input, Icon, Button } from '@shared/ui';
@@ -31,15 +31,28 @@ export const NavigationBar = ({
   });
   const basePath = useLocation().pathname;
   const { fill } = useDarkMode();
+  const listRef = useRef<HTMLUListElement>(null);
 
   if (isLoading || isError) {
     return <NavigationBarSkeleton isHidden={isHidden} />;
   }
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
-    if (event.key === 'Enter' && title) {
-      methods.createNotepad(title);
+  const handleCreateNotepad = async () => {
+    if (title) {
+      const isCreatedSuccessful = await methods.createNotepad(title);
       setTitle('');
+      if (isCreatedSuccessful) {
+        listRef.current?.lastElementChild?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        });
+      }
+    }
+  };
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
+    if (event.key === 'Enter') {
+      handleCreateNotepad();
     }
   };
 
@@ -56,13 +69,6 @@ export const NavigationBar = ({
     }
     setEditingNotepadId(null);
     return newTitle;
-  };
-
-  const handleCreateNotepad = () => {
-    if (title) {
-      methods.createNotepad(title);
-      setTitle('');
-    }
   };
 
   const notepadList = notepads?.map(({ title, _id }) => {
@@ -97,7 +103,7 @@ export const NavigationBar = ({
 
   return (
     <nav {...rest}>
-      <ul className='w-full'>
+      <ul className='w-full' ref={listRef}>
         {notepadList}
         <li>
           <div className='flex gap-2 p-2'>
