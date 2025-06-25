@@ -368,7 +368,7 @@ describe('MockTaskRepository', () => {
     expect(responseGetAgain).toStrictEqual({
       status: 200,
       message: 'Success',
-      data: allTasks,
+      data: allTasks.reverse(),
     });
   });
 
