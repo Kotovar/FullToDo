@@ -126,11 +126,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
       />
 
       {task && (
-        <Subtasks
-          subtasks={form.subtasks}
-          updateSubtask={updateSubtask}
-          notepadId={notepadId}
-        />
+        <Subtasks subtasks={form.subtasks} updateSubtask={updateSubtask} />
       )}
 
       <fieldset className='mt-auto flex flex-col gap-2'>

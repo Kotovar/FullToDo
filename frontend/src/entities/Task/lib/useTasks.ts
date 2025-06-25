@@ -16,7 +16,6 @@ export const useTasks = (props: UseTasksProps) => {
   const isCommon = isCommonNotepad(notepadId);
   const queryKey = getTaskQueryKey(notepadId);
   const paramsString = params.toString();
-
   const {
     data: tasks,
     isError: isErrorTasks,

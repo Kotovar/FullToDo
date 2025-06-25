@@ -23,16 +23,6 @@ const getUseTaskFormMock = (
     setSubtaskTitle: setSubtaskTitleMock,
   });
 
-  vi.mock('@shared/lib/hooks/useAutoScrollToNewItem', () => ({
-    useAutoScrollToNewItem: vi.fn().mockReturnValue({
-      current: {
-        lastElementChild: {
-          scrollIntoView: vi.fn(),
-        },
-      },
-    }),
-  }));
-
   return { setFormMock, setSubtaskTitleMock };
 };
 

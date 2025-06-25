@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router';
-import { useRef, useState, type ComponentPropsWithoutRef } from 'react';
+import { useState, type ComponentPropsWithoutRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { LinkCard, Input, Icon, Button } from '@shared/ui';
@@ -31,7 +31,6 @@ export const NavigationBar = ({
   });
   const basePath = useLocation().pathname;
   const { fill } = useDarkMode();
-  const listRef = useRef<HTMLUListElement>(null);
 
   if (isLoading || isError) {
     return <NavigationBarSkeleton isHidden={isHidden} />;
@@ -39,14 +38,9 @@ export const NavigationBar = ({
 
   const handleCreateNotepad = async () => {
     if (title) {
-      const isCreatedSuccessful = await methods.createNotepad(title);
+      await methods.createNotepad(title);
+
       setTitle('');
-      if (isCreatedSuccessful) {
-        listRef.current?.lastElementChild?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-        });
-      }
     }
   };
 
@@ -86,7 +80,7 @@ export const NavigationBar = ({
         className={clsx(
           'text-dark grid min-h-16 grid-cols-[1fr_2rem] content-center items-center justify-items-center rounded-lg p-2 hover:bg-current/10',
           {
-            ['bg-grey/40']: path === basePath,
+            ['bg-grey/40']: basePath.startsWith(path),
           },
         )}
         handleLinkClick={turnOffVisibility}
@@ -103,7 +97,7 @@ export const NavigationBar = ({
 
   return (
     <nav {...rest}>
-      <ul className='w-full' ref={listRef}>
+      <ul className='w-full'>
         {notepadList}
         <li>
           <div className='flex gap-2 p-2'>
