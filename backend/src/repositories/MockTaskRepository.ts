@@ -16,6 +16,10 @@ import type {
 import { commonNotepadId } from '@shared/schemas';
 import type { TaskRepository } from './TaskRepository';
 
+export const DEFAULT_TASK_PARAMS: TaskQueryParams = {
+  sortBy: 'createdDate',
+};
+
 export class MockTaskRepository implements TaskRepository {
   private tasks: Task[];
   private notepads: Notepad[];
@@ -30,7 +34,14 @@ export class MockTaskRepository implements TaskRepository {
       return tasks;
     }
 
-    const { isCompleted, hasDueDate, priority, sortBy, order } = params;
+    const {
+      isCompleted,
+      hasDueDate,
+      priority,
+      sortBy: sortByOriginal,
+      order,
+    } = params;
+    const sortBy = sortByOriginal ?? DEFAULT_TASK_PARAMS.sortBy;
     let result = [...tasks];
 
     if (isCompleted !== undefined) {
