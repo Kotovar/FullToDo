@@ -143,6 +143,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
           onChange={e => setSubtaskTitle(e.target.value)}
           onKeyDown={handleKeyDown}
           onClick={handleCreateSubtask}
+          className='bg-light rounded-sm'
         />
 
         <TaskInput
@@ -150,6 +151,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
           label={t('tasks.date')}
           onChange={e => setForm({ ...form, dueDate: e.target.value })}
           type='date'
+          className='bg-light rounded-sm'
         />
 
         <TaskTextarea

@@ -8,6 +8,7 @@ import { useDarkMode } from '@shared/lib';
 export const TaskInput = ({
   label,
   value,
+  className = '',
   variant = 'add-subtask',
   type = 'text',
   placeholder = label,
@@ -50,6 +51,7 @@ export const TaskInput = ({
           [styles.addTaskDate]: variant === 'add-task' && isDate,
         },
         'p-2',
+        className,
       )}
     >
       <label htmlFor={inputId} className='sr-only'>

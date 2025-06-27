@@ -1,17 +1,27 @@
 import { Input } from '@shared/ui';
+import { useTranslation } from 'react-i18next';
 
 interface TaskTitleProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const TaskTitle = ({ value, onChange }: TaskTitleProps) => (
-  <h1>
-    <Input
-      type='text'
-      value={value}
-      onChange={onChange}
-      className='w-full p-2 outline-0'
-    />
-  </h1>
-);
+export const TaskTitle = ({ value, onChange }: TaskTitleProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <h1>
+      <label htmlFor='taskTitleInput' className='sr-only'>
+        {t('tasks.title')}
+      </label>
+
+      <Input
+        type='text'
+        value={value}
+        onChange={onChange}
+        className='w-full p-2 outline-0'
+        id='taskTitleInput'
+      />
+    </h1>
+  );
+};

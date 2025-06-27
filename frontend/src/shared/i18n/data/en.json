@@ -37,6 +37,7 @@
   },
   "tasks": {
     "create": "creating a task",
+    "title": "task title",
     "add": "Add a task",
     "addSubtask": "Add a subtask",
     "deleteSubtask": "Delete subtask",
