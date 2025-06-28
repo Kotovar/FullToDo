@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { useLocation, useParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { notepadService } from '@entities/Notepad';
 import { useNotifications } from '@shared/lib';
@@ -17,11 +18,13 @@ export const useNotepad = () => {
     select: data => data.data,
   });
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     if (isError && error) {
-      showError(handleMutationError(error).message);
+      showError(t(handleMutationError(error).message));
     }
-  }, [isError, error, showError]);
+  }, [isError, error, showError, t]);
 
   return useMemo(() => {
     const isCommon = pathname === ROUTES.TASKS;
@@ -68,5 +71,5 @@ export const useNotepad = () => {
       isLoading: false,
       notFound: false,
     };
-  }, [pathname, isLoading, data, notepadId]);
+  }, [pathname, data, isLoading, notepadId]);
 };

@@ -59,7 +59,7 @@
     "errorBoundary": "Something went wrong",
     "loadingFail": "Failed to load data. Please try again later",
     "common": {
-      "SERVER_ERROR": "Invalid data",
+      "SERVER_ERROR": "Server error",
       "NETWORK_ERROR": "Network error",
       "JSON": "Unexpected end of JSON input"
     },

@@ -23,6 +23,7 @@ export const SearchSection = memo(() => {
           className='text-dark placeholder:text-grey w-full outline-0'
           name='search'
           leftContent={<Icon name='loupe' fill={fill} />}
+          inputMode='search'
           rightContent={
             value ? (
               <Button
