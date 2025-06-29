@@ -1,8 +1,10 @@
 import { ComponentPropsWithoutRef, JSX, memo, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import { clsx } from 'clsx';
 import { Button, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
+import { ROUTES } from 'shared/routes';
 
 interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   path: string;
@@ -11,6 +13,7 @@ interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   header?: JSX.Element;
   body?: JSX.Element;
   isEditing?: boolean;
+  linkClassName?: string;
   handleModalId: (id: string) => void;
   handleClickRename: () => void;
   handleClickDelete: () => void;
@@ -25,6 +28,7 @@ export const LinkCard = memo((props: LinkCardProps) => {
     path,
     body,
     currentModalId,
+    linkClassName,
     isEditing = false,
     handleLinkClick,
     handleModalId,
@@ -82,7 +86,10 @@ export const LinkCard = memo((props: LinkCardProps) => {
         onChange={e => setEditedTitle(e.target.value)}
         onBlur={handleSave}
         onKeyDown={handleKeyDown}
-        className='h-full w-full leading-normal outline-2 outline-transparent'
+        className={clsx(
+          'h-full w-full leading-normal outline-2 outline-transparent',
+          linkClassName,
+        )}
         autoFocus
       />
       {body}
@@ -91,7 +98,7 @@ export const LinkCard = memo((props: LinkCardProps) => {
     <Link
       to={path}
       onClick={handleLinkClick || undefined}
-      className='block h-full w-full'
+      className={clsx('block h-full w-full', linkClassName)}
     >
       {body ? (
         <div className='w-full'>
@@ -104,29 +111,33 @@ export const LinkCard = memo((props: LinkCardProps) => {
     </Link>
   );
 
+  const isNotMainNotepad = path !== ROUTES.TASKS;
+
   return (
     <li {...rest}>
       {header}
       {title}
-      <div className='relative flex'>
-        <Button
-          appearance='ghost'
-          onClick={handleButtonClick}
-          padding='none'
-          aria-label={t('card.additionalMenu')}
-          ref={buttonRef}
-        >
-          <Icon name='threeDots' fill={fill} size={ICON_SIZES.DEFAULT} />
-        </Button>
-        {isMenuOpen && currentModalId === path && (
-          <OptionsMenu
-            buttonRef={buttonRef}
-            renameHandler={handleClickRename}
-            deleteHandler={handleClickDelete}
-            closeMenu={closeMenu}
-          />
-        )}
-      </div>
+      {isNotMainNotepad && (
+        <div className='relative flex'>
+          <Button
+            appearance='ghost'
+            onClick={handleButtonClick}
+            padding='none'
+            aria-label={t('card.additionalMenu')}
+            ref={buttonRef}
+          >
+            <Icon name='threeDots' fill={fill} size={ICON_SIZES.DEFAULT} />
+          </Button>
+          {isMenuOpen && currentModalId === path && (
+            <OptionsMenu
+              buttonRef={buttonRef}
+              renameHandler={handleClickRename}
+              deleteHandler={handleClickDelete}
+              closeMenu={closeMenu}
+            />
+          )}
+        </div>
+      )}
     </li>
   );
 });

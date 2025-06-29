@@ -6,7 +6,7 @@ import { setupMockServer } from '@shared/config';
 import { NavigationBar } from './NavigationBar';
 import * as useNotepadsHook from '@widgets/NavigationBar/lib';
 
-const NOTEPAD_INDEX = 1;
+const FIRST_SPECIFIC_NOTEPAD_INDEX = 1;
 
 const getUseNotepadsMockWithRender = (
   isError = false,
@@ -37,13 +37,13 @@ const getElements = (
 ) => {
   switch (element) {
     case 'menu':
-      return screen.getAllByLabelText('card.additionalMenu')[NOTEPAD_INDEX];
+      return screen.findByLabelText('card.additionalMenu');
     case 'delete':
       return screen.getByText('delete');
     case 'rename':
       return screen.getByText('rename');
     case 'input':
-      return screen.getAllByRole('textbox')[NOTEPAD_INDEX];
+      return screen.getAllByRole('textbox')[FIRST_SPECIFIC_NOTEPAD_INDEX];
     default:
       return screen.getByPlaceholderText(element);
   }
@@ -88,11 +88,12 @@ describe('NavigationBar component', () => {
       updateNotepadTitleMock,
     );
 
-    const menuButton = getElements('menu');
+    const menuButton = await getElements('menu');
     await user.click(menuButton);
-    await user.click(getElements('rename'));
+    const renameButton = await getElements('rename');
+    await user.click(renameButton);
 
-    const input = getElements('input');
+    const input = await getElements('input');
     await user.clear(input);
     await user.type(input, 'Новое');
 
@@ -100,7 +101,7 @@ describe('NavigationBar component', () => {
     await user.click(addButton);
 
     expect(updateNotepadTitleMock).toHaveBeenCalledWith(
-      MOCK_NOTEPADS_RESPONSE.data?.[NOTEPAD_INDEX]._id,
+      MOCK_NOTEPADS_RESPONSE.data?.[FIRST_SPECIFIC_NOTEPAD_INDEX]._id,
       'Новое',
     );
   });
@@ -112,11 +113,12 @@ describe('NavigationBar component', () => {
       updateNotepadTitleMock,
     );
 
-    const menuButton = getElements('menu');
+    const menuButton = await getElements('menu');
     await user.click(menuButton);
-    await user.click(getElements('rename'));
+    const renameButton = await getElements('rename');
+    await user.click(renameButton);
 
-    const input = getElements('input');
+    const input = await getElements('input');
     await user.clear(input);
     await user.type(input, 'Рабочее{enter}');
 
@@ -131,10 +133,10 @@ describe('NavigationBar component', () => {
       deleteNotepadTitleMock,
     );
 
-    const menuButton = getElements('menu');
+    const menuButton = await getElements('menu');
     await user.click(menuButton);
 
-    const deleteButton = getElements('delete');
+    const deleteButton = await getElements('delete');
     await user.click(deleteButton);
     expect(deleteNotepadTitleMock).toHaveBeenCalled();
   });

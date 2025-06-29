@@ -19,7 +19,7 @@ export const Layout = () => {
       <div className='bg-grey-light text-dark relative flex h-full w-full pt-16 text-2xl'>
         <NavigationBar
           className={clsx(
-            'bg-light scrollbar-notepads flex flex-auto overflow-y-scroll p-2 break-all md:w-3xs md:flex-none md:p-4 lg:w-80 2xl:max-w-100',
+            'bg-light scrollbar-notepads flex flex-auto overflow-y-scroll p-2 break-all md:w-3xs md:flex-none md:p-4 md:pr-2 lg:w-80 2xl:max-w-100',
             {
               ['hidden']: isHidden,
             },
@@ -33,19 +33,19 @@ export const Layout = () => {
           })}
         >
           <Outlet />
-          <ToastContainer
-            toastClassName={toastClassName}
-            position='top-right'
-            transition={Slide}
-            autoClose={1000}
-            hideProgressBar={true}
-            limit={3}
-            theme={theme}
-            closeOnClick
-            draggable
-            stacked
-          />
         </main>
+        <ToastContainer
+          toastClassName={toastClassName}
+          position='top-right'
+          transition={Slide}
+          autoClose={1000}
+          hideProgressBar={true}
+          limit={3}
+          theme={theme}
+          closeOnClick
+          draggable
+          stacked
+        />
       </div>
     </div>
   );
