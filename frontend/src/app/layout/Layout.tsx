@@ -26,6 +26,7 @@ export const Layout = () => {
           )}
           turnOffVisibility={turnOffVisibility}
           isHidden={isHidden}
+          aria-expanded={!isHidden}
         />
         <main
           className={clsx('flex flex-auto flex-col p-4 md:flex md:w-full', {
