@@ -51,7 +51,7 @@ export const updateNotepad: RequestHandler = async (
   try {
     if (!checkContentType(req, res)) return;
 
-    const notepadId = getId(req, 'notepad');
+    const { notepadId } = getId(req, 'notepad');
     const rawNotepad = await parseJsonBody<unknown>(req);
     const validationResult = createNotepadSchema.safeParse(rawNotepad);
 
@@ -77,7 +77,7 @@ export const deleteNotepad: RequestHandler = async (
   repository,
 ) => {
   try {
-    const notepadId = getId(req, 'notepad');
+    const { notepadId } = getId(req, 'notepad');
     const result = await repository.deleteNotepad(notepadId);
 
     res

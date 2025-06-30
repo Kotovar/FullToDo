@@ -57,7 +57,7 @@
   "errors": {
     "notFound": "Page not found",
     "errorBoundary": "Something went wrong",
-    "loadingFail": "Failed to load data. Please try again later",
+    "loadingFail": "Task not found. It may have been deleted or the link is incorrect.",
     "common": {
       "SERVER_ERROR": "Server error",
       "NETWORK_ERROR": "Network error",

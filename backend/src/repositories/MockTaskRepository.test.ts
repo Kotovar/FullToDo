@@ -373,7 +373,7 @@ describe('MockTaskRepository', () => {
   });
 
   test('method getSingleTask', async () => {
-    const responseGet = await repository.getSingleTask(realId);
+    const responseGet = await repository.getSingleTask(realId, realId);
 
     expect(responseGet).toStrictEqual({
       status: 200,
@@ -381,7 +381,7 @@ describe('MockTaskRepository', () => {
       data: NOTEPADS[0].tasks[0],
     });
 
-    const incorrectResponseGet = await repository.getSingleTask(taskId);
+    const incorrectResponseGet = await repository.getSingleTask(realId, taskId);
 
     expect(incorrectResponseGet).toStrictEqual({
       status: 404,

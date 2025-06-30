@@ -38,18 +38,23 @@ export const handleNotFound = async (res: ServerResponse) => {
   res.end(JSON.stringify({ message: 'Route not found' }));
 };
 
-export const getId = (
+export function getId(
   req: IncomingMessage,
-  idType: 'notepad' | 'task',
-): string => {
-  const url = req.url?.split('/') ?? '';
+  idType: 'notepad',
+): { notepadId: string };
+export function getId(
+  req: IncomingMessage,
+  idType: 'task',
+): { notepadId: string; taskId: string };
+export function getId(req: IncomingMessage, idType: 'notepad' | 'task') {
+  const url = req.url?.split('/').filter(Boolean) ?? [];
+  const isCommonPath = url[0] === 'tasks';
 
-  if (idType === 'notepad') {
-    return url[1] === 'tasks' ? commonNotepadId : (url[2] ?? '');
-  }
+  const notepadId = isCommonPath ? commonNotepadId : (url[1] ?? '');
+  const taskId = isCommonPath ? (url[1] ?? '') : (url[3] ?? '');
 
-  return url.at(-1) ?? '';
-};
+  return idType === 'notepad' ? { notepadId } : { notepadId, taskId };
+}
 
 export const getValidatedTaskParams = (
   req: IncomingMessage,

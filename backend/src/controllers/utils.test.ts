@@ -45,8 +45,8 @@ describe('getId tests', () => {
     const req = {} as IncomingMessage;
     const emptyResponse = '';
 
-    const notepadId = getId(req, 'notepad');
-    const taskId = getId(req, 'task');
+    const { notepadId } = getId(req, 'notepad');
+    const { taskId } = getId(req, 'task');
 
     expect(taskId).toBe(emptyResponse);
     expect(notepadId).toBe(emptyResponse);
@@ -55,7 +55,7 @@ describe('getId tests', () => {
   test('get all if idType === notepad and url has task ', async () => {
     const url = `/tasks/1`;
     const req = { url } as IncomingMessage;
-    const notepadId = getId(req, 'notepad');
+    const { notepadId } = getId(req, 'notepad');
 
     expect(notepadId).toBe(commonNotepadId);
   });

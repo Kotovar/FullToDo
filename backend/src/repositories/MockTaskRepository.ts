@@ -211,10 +211,15 @@ export class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getSingleTask(taskId: string): Promise<TaskResponse> {
+  async getSingleTask(
+    notepadId: string,
+    taskId: string,
+  ): Promise<TaskResponse> {
     const task = this.tasks.find(task => task._id === taskId);
+    const suitableNotepad =
+      notepadId === commonNotepadId || task?.notepadId === notepadId;
 
-    if (task) {
+    if (suitableNotepad && task) {
       return {
         status: 200,
         message: 'Success',

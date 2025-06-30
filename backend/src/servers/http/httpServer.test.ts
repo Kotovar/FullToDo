@@ -145,7 +145,10 @@ describe('httpServer GET', () => {
 
     expect(response.status).toBe(updateResponse.status);
     expect(response.body).toEqual(updateResponse);
-    expect(taskRepository.getSingleTask).toHaveBeenCalledWith(taskId);
+    expect(taskRepository.getSingleTask).toHaveBeenCalledWith(
+      notepadId,
+      taskId,
+    );
   });
 
   test(`should return 500 if an internal server error occurs - /notepads/${notepadId}/task/${taskId}`, async () => {
