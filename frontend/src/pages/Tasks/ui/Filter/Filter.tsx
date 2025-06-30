@@ -3,9 +3,8 @@ import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
 import { Icon, Chip, ICON_SIZES } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
-import { FiltersMenu } from './FiltersMenu';
-import { useFilters } from './useFilters';
-import { useFilterLabels } from './useFilterLabels';
+import { FiltersMenu } from './components';
+import { useFilters, useFilterLabels } from './hooks';
 
 interface FilterProps {
   params: URLSearchParams;
@@ -36,7 +35,7 @@ export const Filter = ({ params, setParams }: FilterProps) => {
           );
         })}
       </div>
-      <div className='flex-end relative flex items-center gap-2'>
+      <div className='flex-end relative flex items-center gap-2 select-none'>
         {t('filters.title')}
         {labels.length > 0 && (
           <span className='hidden md:inline'>{` (${labels.length})`}</span>

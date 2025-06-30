@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
 import { useNotifications } from '@shared/lib';
-import { commonLabels } from '.';
+import { commonLabels } from '../constants';
 import type { TaskSort } from 'shared/schemas';
 import type { OrderState, SortByKey, SortState } from '@pages/Tasks/lib';
 

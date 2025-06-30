@@ -24,7 +24,7 @@ export const Sort = ({ params, setParams }: SortProps) => {
     <div className='relative flex w-60 items-center justify-end-safe gap-2'>
       <button
         aria-label={t('sort.change')}
-        className='relative cursor-pointer p-1 hover:rounded hover:bg-current/10'
+        className='relative cursor-pointer p-1 select-none hover:rounded hover:bg-current/10'
         ref={buttonRef}
         onClick={toggleMenu}
       >

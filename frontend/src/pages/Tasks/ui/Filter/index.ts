@@ -1,2 +1,2 @@
 export * from './Filter';
-export * from './filterGroups';
+export * from './utils';
