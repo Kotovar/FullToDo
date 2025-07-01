@@ -1,4 +1,4 @@
-export const SubtasksSkeleton = () => (
+export const TaskDetailSkeleton = () => (
   <div className='flex flex-col gap-1 p-1'>
     <div className='bg-accent/50 h-12 w-21 animate-pulse self-start rounded'></div>
     <p className='bg-light h-12 w-1/2 animate-pulse rounded'></p>

@@ -11,13 +11,13 @@ import {
   createSubtask,
   TaskTextarea,
   TaskTitle,
-  SubtasksSkeleton,
+  TaskDetailSkeleton,
   SubtaskItem,
 } from '@pages/TaskDetail/ui';
 import type { SubtaskAction, TaskDetailProps } from '@pages/TaskDetail/ui';
 import type { Task } from '@sharedCommon/*';
 
-export const TaskDetail = (props: TaskDetailProps) => {
+const TaskDetail = (props: TaskDetailProps) => {
   const { notepadId, taskId = '' } = useParams();
   const { t } = useTranslation();
   const { task, isError, isLoading, updateTask } = useTaskDetail({
@@ -56,7 +56,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
   }, [form.subtasks, updateSubtask]);
 
   if (isLoading) {
-    return <SubtasksSkeleton />;
+    return <TaskDetailSkeleton />;
   }
 
   if (isError) {
@@ -181,3 +181,5 @@ export const TaskDetail = (props: TaskDetailProps) => {
     </section>
   );
 };
+
+export default TaskDetail;

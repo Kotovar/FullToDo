@@ -1,10 +1,10 @@
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor, within } from '@testing-library/react';
 import { getUseBackNavigateMock, renderWithRouter } from '@shared/testing';
-import { TaskDetail } from '@pages/TaskDetail';
 import { setupMockServer } from '@shared/config';
 import { MOCK_TASK } from '@shared/mocks';
 import { getUseTaskDetailsMock } from '@entities/Task';
+import TaskDetail from '@pages/TaskDetail';
 import * as taskModule from '@pages/TaskDetail/ui/Subtasks';
 
 const getUseTaskFormMock = (

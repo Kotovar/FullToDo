@@ -1,1 +1,2 @@
-export * from './ui/TaskDetail';
+export * from './ui';
+export { default } from './ui/TaskDetail';

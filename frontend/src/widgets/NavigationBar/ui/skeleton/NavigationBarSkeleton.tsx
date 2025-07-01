@@ -10,7 +10,7 @@ export const NavigationBarSkeleton = ({
   return (
     <nav
       className={clsx(
-        'bg-light flex flex-auto p-4 break-all md:w-[30%] md:flex-none',
+        'bg-light flex flex-auto p-2 break-all md:w-3xs md:flex-none md:p-4 md:pr-2 lg:w-80 2xl:max-w-100',
         {
           ['hidden']: isHidden,
         },

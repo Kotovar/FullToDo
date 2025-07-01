@@ -6,7 +6,7 @@ import { Header } from '@widgets/Header';
 import { NavigationBar } from '@widgets/NavigationBar';
 import { useDarkToast } from './utils';
 
-export const Layout = () => {
+const Layout = () => {
   const [isHidden, handleVisibility, turnOffVisibility] = useVisibility();
   const { toastClassName, theme } = useDarkToast();
 
@@ -51,3 +51,5 @@ export const Layout = () => {
     </div>
   );
 };
+
+export default Layout;
