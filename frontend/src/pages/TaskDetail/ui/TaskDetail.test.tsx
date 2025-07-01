@@ -184,9 +184,11 @@ describe('TaskDetail component', () => {
 
       await user.click(toggleButton);
 
-      expect(toggleButton).toHaveAttribute(
-        'aria-label',
-        'tasks.actions.incomplete',
+      waitFor(() =>
+        expect(toggleButton).toHaveAttribute(
+          'aria-label',
+          'tasks.actions.incomplete',
+        ),
       );
     });
   });

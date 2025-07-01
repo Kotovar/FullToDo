@@ -5,22 +5,20 @@ import {
   type UseMutationResult,
 } from '@tanstack/react-query';
 import { notepadService } from '@entities/Notepad';
-import {
-  handleMutationSuccess,
-  type MutationUpdateProps,
-  type UseNotepadsProps,
-} from './utils';
+import { handleMutationSuccess, type MutationUpdateProps } from './utils';
 import { ROUTES } from 'shared/routes';
 import { handleMutationError, type MutationMethods } from '@shared/api';
+import { useApiNotifications } from '@shared/lib';
 
-export const useNotepads = (props: UseNotepadsProps) => {
-  const { onSuccess, onError } = props;
+export const useNotepads = () => {
   const navigate = useNavigate();
   const { data, isError, isLoading, refetch } = useQuery({
     queryKey: ['notepads'],
     queryFn: notepadService.getNotepads,
     select: data => data.data,
   });
+
+  const { onSuccess, onError } = useApiNotifications('notepad');
 
   const handleMutation = async <T, V>(
     mutation: UseMutationResult<T, unknown, V>,

@@ -12,9 +12,12 @@ import { useTasks } from './useTasks';
 const params = new URLSearchParams();
 
 const getInitialData = async () => {
-  const { result } = renderHook(() => useTasks({ notepadId, params }), {
-    wrapper: createWrapper(),
-  });
+  const { result } = renderHook(
+    () => useTasks({ notepadId, params, entity: 'task' }),
+    {
+      wrapper: createWrapper(),
+    },
+  );
 
   await waitFor(() => expect(result.current.isLoading).toBeFalsy());
 
@@ -67,9 +70,12 @@ describe('useTasks hook', () => {
     );
     const getSingleTaskMock = vi.spyOn(taskService, 'getSingleTask');
 
-    const { result } = renderHook(() => useTasks({ notepadId, params }), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderHook(
+      () => useTasks({ notepadId, params, entity: 'task' }),
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     await result.current.methods.updateTask({ title: 'New' }, taskId);
 
@@ -82,7 +88,7 @@ describe('useTasks hook', () => {
     const getSingleTaskMock = vi.spyOn(taskService, 'getSingleTask');
 
     const { result } = renderHook(
-      () => useTasks({ notepadId: commonNotepadId, params }),
+      () => useTasks({ notepadId: commonNotepadId, params, entity: 'task' }),
       {
         wrapper: createWrapper(),
       },

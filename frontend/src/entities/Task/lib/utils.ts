@@ -1,4 +1,4 @@
-import type { QueryClient, UseMutationResult } from '@tanstack/react-query';
+import type { QueryClient } from '@tanstack/react-query';
 import {
   handleMutationError,
   type QueryError,
@@ -13,7 +13,7 @@ export const getTaskQueryKey = (notepadId?: string) =>
   notepadId && notepadId !== commonNotepadId ? ['tasks', notepadId] : ['tasks'];
 
 export const handleMutation = async <T, V>(
-  mutation: UseMutationResult<T, unknown, V>,
+  mutateAsync: (payload: V) => Promise<T>,
   method: MutationMethods,
   payload: V,
   options: {
@@ -26,7 +26,7 @@ export const handleMutation = async <T, V>(
   const { queryClient, queryKey, onSuccess, onError } = options;
 
   try {
-    await mutation.mutateAsync(payload);
+    await mutateAsync(payload);
 
     await queryClient.refetchQueries({
       queryKey,

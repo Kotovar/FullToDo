@@ -8,9 +8,12 @@ describe('useTaskDetail hook', () => {
   setupMockServer();
 
   test('success', async () => {
-    const { result } = renderHook(() => useTaskDetail({ notepadId, taskId }), {
-      wrapper: createWrapper(),
-    });
+    const { result } = renderHook(
+      () => useTaskDetail({ notepadId, taskId, entity: 'task' }),
+      {
+        wrapper: createWrapper(),
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

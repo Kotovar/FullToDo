@@ -9,9 +9,9 @@ import {
 } from '@entities/Task';
 import type { MutationMethods } from '@shared/api';
 import type { Task } from '@sharedCommon/*';
+import { useApiNotifications } from '@shared/lib';
 
-export const useTasks = (props: UseTasksProps) => {
-  const { notepadId, params, onSuccess, onError } = props;
+export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
   const isCommon = isCommonNotepad(notepadId);
   const queryKey = getTaskQueryKey(notepadId);
@@ -38,14 +38,15 @@ export const useTasks = (props: UseTasksProps) => {
     enabled: isCommon,
   });
 
-  const mutationUpdate = useMutation({
+  const { mutateAsync: mutationUpdate } = useMutation({
     mutationFn: ({ updatedTask, id }: MutationUpdateProps) =>
       taskService.updateTask(id, updatedTask),
   });
 
-  const mutationDelete = useMutation({
+  const { mutateAsync: mutationDelete } = useMutation({
     mutationFn: (id: string) => taskService.deleteTask(id),
   });
+  const { onSuccess, onError } = useApiNotifications(entity);
 
   const updateTask = async (
     updatedTask: Partial<Task>,

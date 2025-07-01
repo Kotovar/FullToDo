@@ -4,10 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { LinkCard, Input, Icon, Button } from '@shared/ui';
 import { commonNotepadId, ROUTES } from '@sharedCommon/';
-import { useNotifications } from '@shared/lib/notifications';
 import { useNotepads } from '@widgets/NavigationBar/lib';
 import { NavigationBarSkeleton } from './skeleton';
-import { useDarkMode, useSuccessMessage } from '@shared/lib';
+import { useDarkMode } from '@shared/lib';
 
 interface NavigationBarProps extends ComponentPropsWithoutRef<'nav'> {
   turnOffVisibility?: () => void;
@@ -22,13 +21,8 @@ export const NavigationBar = ({
   const [currentModalId, setCurrentModalId] = useState('');
   const [title, setTitle] = useState('');
   const [editingNotepadId, setEditingNotepadId] = useState<string | null>(null);
-  const { showSuccess, showError } = useNotifications();
-  const getSuccessMessage = useSuccessMessage();
   const { t } = useTranslation();
-  const { notepads, isError, isLoading, methods } = useNotepads({
-    onSuccess: method => showSuccess(getSuccessMessage('notepad', method)),
-    onError: error => showError(t(error.message)),
-  });
+  const { notepads, isError, isLoading, methods } = useNotepads();
   const basePath = useLocation().pathname;
   const { fill } = useDarkMode();
 

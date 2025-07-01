@@ -1,36 +1,29 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Button, ErrorFetching, TaskInput } from '@shared/ui';
-import {
-  useNotifications,
-  useBackNavigate,
-  useSuccessMessage,
-} from '@shared/lib';
+import { useBackNavigate } from '@shared/lib';
 import { useTaskDetail } from '@entities/Task';
 import {
   getFormattedDate,
   handleSubtaskAction,
   useTaskForm,
   createSubtask,
-  Subtasks,
   TaskTextarea,
   TaskTitle,
   SubtasksSkeleton,
+  SubtaskItem,
 } from '@pages/TaskDetail/ui';
 import type { SubtaskAction, TaskDetailProps } from '@pages/TaskDetail/ui';
 import type { Task } from '@sharedCommon/*';
 
 export const TaskDetail = (props: TaskDetailProps) => {
   const { notepadId, taskId = '' } = useParams();
-  const { showSuccess, showError } = useNotifications();
-  const getSuccessMessage = useSuccessMessage();
   const { t } = useTranslation();
   const { task, isError, isLoading, updateTask } = useTaskDetail({
     notepadId,
     taskId,
-    onSuccess: method => showSuccess(getSuccessMessage('task', method)),
-    onError: error => showError(t(error.message)),
+    entity: 'task',
   });
 
   const { form, subtaskTitle, setForm, setSubtaskTitle } = useTaskForm(task);
@@ -38,12 +31,29 @@ export const TaskDetail = (props: TaskDetailProps) => {
 
   const updateSubtask = useCallback(
     (action: SubtaskAction) => {
-      const updatedSubtasks = handleSubtaskAction(form.subtasks, action);
-      setForm(prev => ({ ...prev, subtasks: updatedSubtasks }));
-      updateTask({ subtasks: updatedSubtasks }, taskId, action.type);
+      setForm(prev => {
+        const updatedSubtasks = handleSubtaskAction(prev.subtasks, action);
+        updateTask({ subtasks: updatedSubtasks }, taskId, action.type);
+
+        return { ...prev, subtasks: updatedSubtasks };
+      });
     },
-    [form.subtasks, setForm, taskId, updateTask],
+    [setForm, taskId, updateTask],
   );
+
+  const subtasksList = useMemo(() => {
+    return (
+      <ul className='scrollbar-tasks flex list-none flex-col overflow-y-scroll pr-2'>
+        {form.subtasks.map(subtask => (
+          <SubtaskItem
+            key={subtask._id + subtask.title + subtask.isCompleted}
+            subtask={subtask}
+            updateSubtask={updateSubtask}
+          />
+        ))}
+      </ul>
+    );
+  }, [form.subtasks, updateSubtask]);
 
   if (isLoading) {
     return <SubtasksSkeleton />;
@@ -125,9 +135,7 @@ export const TaskDetail = (props: TaskDetailProps) => {
         onChange={e => setForm({ ...form, title: e.target.value })}
       />
 
-      {task && (
-        <Subtasks subtasks={form.subtasks} updateSubtask={updateSubtask} />
-      )}
+      {subtasksList}
 
       <fieldset className='mt-auto flex flex-col gap-2'>
         <legend className='sr-only'>{t('tasks.detail')}</legend>

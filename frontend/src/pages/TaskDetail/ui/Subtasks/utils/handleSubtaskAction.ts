@@ -9,14 +9,26 @@ export const handleSubtaskAction = (
   const index = currentSubtasks.findIndex(subtask => subtask._id === id);
 
   if (index === -1) return currentSubtasks;
+  const existing = currentSubtasks[index];
 
-  if (type === 'delete') {
-    return currentSubtasks.toSpliced(index, 1);
+  switch (type) {
+    case 'delete':
+      return currentSubtasks.filter(subtasks => subtasks._id !== id);
+
+    case 'update':
+      if (
+        existing.title === action.title &&
+        existing.isCompleted === action.isCompleted
+      ) {
+        return currentSubtasks;
+      }
+      return currentSubtasks.map(subtask =>
+        subtask._id === id
+          ? { _id: id, isCompleted: action.isCompleted, title: action.title }
+          : subtask,
+      );
+
+    default:
+      return currentSubtasks;
   }
-
-  return currentSubtasks.toSpliced(index, 1, {
-    isCompleted: action.isCompleted,
-    title: action.title,
-    _id: id,
-  });
 };

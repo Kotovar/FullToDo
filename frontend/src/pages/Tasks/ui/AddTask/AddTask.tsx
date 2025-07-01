@@ -3,9 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCreateTask } from '@entities/Task';
 import { TaskInput } from '@shared/ui';
-import { useNotifications } from '@shared/lib/notifications';
 import type { TaskOptions } from '@pages/Tasks/lib';
-import { useSuccessMessage } from '@shared/lib';
 
 export const AddTask = () => {
   const { notepadId } = useParams();
@@ -14,14 +12,11 @@ export const AddTask = () => {
     date: '',
   });
 
-  const { showSuccess, showError } = useNotifications();
-  const getSuccessMessage = useSuccessMessage();
   const { t } = useTranslation();
 
   const { createTask } = useCreateTask({
     notepadId,
-    onSuccess: method => showSuccess(getSuccessMessage('tasks', method)),
-    onError: error => showError(t(error.message)),
+    entity: 'tasks',
   });
 
   const handleValueChange =

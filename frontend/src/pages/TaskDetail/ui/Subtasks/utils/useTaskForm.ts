@@ -24,8 +24,8 @@ export const useTaskForm = (initialTask?: Task | null) => {
 
   return {
     form,
-    setForm,
     subtaskTitle,
+    setForm,
     setSubtaskTitle,
   };
 };

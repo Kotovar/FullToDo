@@ -11,7 +11,7 @@ import { useNotepads } from './useNotepads';
 import { notepadId } from 'shared/schemas';
 
 const getInitialData = async () => {
-  const { result } = renderHook(() => useNotepads({}), {
+  const { result } = renderHook(() => useNotepads(), {
     wrapper: createWrapperWithRouter(),
   });
 
