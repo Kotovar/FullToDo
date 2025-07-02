@@ -21,8 +21,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "morgan": "^1.10.0",
-    "shared": "file:../shared",
-    "uuid": "^11.1.0"
+    "shared": "file:../shared"
   },
   "devDependencies": {
     "@types/express": "^5.0.2",
@@ -36,9 +35,9 @@
     "globals": "^16.2.0",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.1",
-    "typescript-eslint": "^8.33.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "typescript-eslint": "^8.33.1",
     "vitest": "^3.2.1"
   }
 }

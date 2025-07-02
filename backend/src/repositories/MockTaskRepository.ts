@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 import { NOTEPADS } from '../db/mock/mock-db';
 import type {
   Task,
@@ -106,7 +104,7 @@ export class MockTaskRepository implements TaskRepository {
   }
 
   private generateTaskId(): string {
-    return uuidv4();
+    return globalThis.crypto.randomUUID();
   }
 
   private calculateProgress(subtasks?: Subtask[]): string {
@@ -122,9 +120,8 @@ export class MockTaskRepository implements TaskRepository {
         message: `A notebook with the title ${title} already exists`,
       };
     }
-
     this.notepads.push({
-      _id: uuidv4(),
+      _id: this.generateTaskId(),
       title: title,
       tasks: [],
     });

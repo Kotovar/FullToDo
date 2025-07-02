@@ -26,13 +26,7 @@ export function useDarkMode({
   );
 
   useLayoutEffect(() => {
-    const html = document.documentElement;
-
-    if (isDarkMode) {
-      html.classList.add('dark');
-    } else {
-      html.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
 
   const toggle = useCallback(() => setDarkMode(prev => !prev), [setDarkMode]);
