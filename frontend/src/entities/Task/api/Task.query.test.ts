@@ -1,6 +1,6 @@
 import { COMMON_ERRORS, TASKS_ERRORS } from '@shared/api';
 import { setupMockServer } from '@shared/config';
-import { taskService } from './Task.query';
+import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
 import {
   getDeleteResponse,
   MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS,
@@ -15,7 +15,7 @@ import {
   getErrorResult,
   getFailFetchResponse,
 } from '@shared/testing';
-import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
+import { taskService } from './Task.query';
 
 describe('MockTaskService', () => {
   setupMockServer();

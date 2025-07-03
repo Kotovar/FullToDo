@@ -74,14 +74,14 @@ export const OptionsMenu = (props: OptionsMenuProps) => {
       {...rest}
     >
       <button
-        className='bg-light relative z-10 w-full cursor-pointer rounded-md p-2 hover:brightness-60'
+        className='bg-light text text-dark relative z-10 w-full cursor-pointer rounded-md p-2 hover:brightness-60'
         type='button'
         onClick={handleRename}
       >
         {t('rename')}
       </button>
       <button
-        className='bg-bg-second relative z-10 w-full cursor-pointer rounded-md p-2 hover:brightness-70'
+        className='bg-bg-second text-dark relative z-10 w-full cursor-pointer rounded-md p-2 hover:brightness-70'
         type='button'
         onClick={handleDelete}
       >

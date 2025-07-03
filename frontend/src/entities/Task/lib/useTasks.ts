@@ -4,12 +4,12 @@ import {
   handleMutation,
   isCommonNotepad,
   taskService,
-  type MutationUpdateProps,
-  type UseTasksProps,
+  MutationUpdateProps,
+  UseTasksProps,
 } from '@entities/Task';
+import { useApiNotifications } from '@shared/lib';
 import type { MutationMethods } from '@shared/api';
 import type { Task } from '@sharedCommon/*';
-import { useApiNotifications } from '@shared/lib';
 
 export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();

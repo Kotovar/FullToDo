@@ -5,8 +5,8 @@ import {
   MOCK_TITLE_NON_EXISTING,
   getDeleteResponse,
 } from '@shared/mocks';
-import { taskService } from '@entities/Task';
 import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
+import { taskService } from '@entities/Task';
 import { useTasks } from './useTasks';
 
 const params = new URLSearchParams();

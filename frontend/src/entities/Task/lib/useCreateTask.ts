@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useApiNotifications } from '@shared/lib';
 import {
   getTaskQueryKey,
   handleMutation,
   taskService,
-  type UseCreateTaskProps,
+  UseCreateTaskProps,
 } from '@entities/Task';
 import type { CreateTask } from '@sharedCommon/*';
-import { useApiNotifications } from '@shared/lib';
 
 export const useCreateTask = ({ notepadId, entity }: UseCreateTaskProps) => {
   const queryClient = useQueryClient();
