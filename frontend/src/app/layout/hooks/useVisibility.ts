@@ -6,6 +6,7 @@ export const useVisibility = () => {
   const [isHidden, setIsHidden] = useState(false);
 
   const handleVisibility = useCallback(() => setIsHidden(prev => !prev), []);
+
   const turnOffVisibility = useCallback(() => {
     if (window.innerWidth < DESKTOP_WIDTH) {
       setIsHidden(true);

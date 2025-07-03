@@ -1,25 +1,24 @@
 import { Outlet } from 'react-router';
 import { ToastContainer, Slide } from 'react-toastify';
 import { clsx } from 'clsx';
-import { useVisibility } from '@app/layout/useVisibility';
 import { Header } from '@widgets/Header';
 import { NavigationBar } from '@widgets/NavigationBar';
-import { useDarkToast } from './utils';
+import { useVisibility, useDarkToast } from './hooks';
 
 const Layout = () => {
   const [isHidden, handleVisibility, turnOffVisibility] = useVisibility();
-  const { toastClassName, theme } = useDarkToast();
+  const { theme, toastClassName } = useDarkToast();
 
   return (
-    <div className='font-display bg-grey-light h-screen'>
+    <div className='font-display h-screen'>
       <Header
-        className='bg-accent fixed z-10 flex h-16 w-full items-center justify-between gap-x-1 px-2'
+        className='bg-accent fixed z-10 flex h-16 w-full items-center gap-x-1 px-2'
         changeVisibility={handleVisibility}
       />
-      <div className='bg-grey-light text-dark relative flex h-full w-full pt-16 text-2xl'>
+      <main className='bg-grey-light text-dark flex h-full pt-16 text-2xl'>
         <NavigationBar
           className={clsx(
-            'bg-light scrollbar-notepads flex flex-auto overflow-y-scroll p-2 break-all md:w-3xs md:flex-none md:p-4 md:pr-2 lg:w-80 2xl:max-w-100',
+            'bg-light scrollbar-notepads flex flex-auto overflow-y-scroll p-2 md:w-3xs md:flex-none md:p-4 md:pr-2 lg:w-80 2xl:max-w-100',
             {
               ['hidden']: isHidden,
             },
@@ -28,18 +27,19 @@ const Layout = () => {
           isHidden={isHidden}
           aria-expanded={!isHidden}
         />
-        <main
-          className={clsx('flex flex-auto flex-col p-4 md:flex md:w-full', {
+        <section
+          className={clsx('flex flex-col p-4 md:flex md:w-full', {
             ['hidden']: !isHidden,
           })}
+          aria-live='polite'
         >
           <Outlet />
-        </main>
+        </section>
         <ToastContainer
           toastClassName={toastClassName}
           position='top-right'
           transition={Slide}
-          autoClose={1000}
+          autoClose={1500}
           hideProgressBar={true}
           limit={3}
           theme={theme}
@@ -47,7 +47,7 @@ const Layout = () => {
           draggable
           stacked
         />
-      </div>
+      </main>
     </div>
   );
 };
