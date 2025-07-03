@@ -1,14 +1,20 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
+import { lazy, ReactNode, Suspense } from 'react';
 import { Tasks } from '@pages/Tasks';
 import { Error } from '@pages/Error';
 import { Home } from '@pages/Home';
-import { ROUTES } from '@sharedCommon/';
-import { lazy, ReactNode, Suspense } from 'react';
 import { TaskDetailSkeleton } from '@pages/TaskDetail';
+import { ROUTES } from '@sharedCommon/';
 import { NavigationBarSkeleton } from '@widgets/NavigationBar';
 
 const TaskDetail = lazy(() => import('@pages/TaskDetail'));
 const Layout = lazy(() => import('@app/layout'));
+
+const LayoutSkeleton = () => (
+  <div className='bg-light h-dvh'>
+    <NavigationBarSkeleton isHidden={false} />
+  </div>
+);
 
 const WithSuspense = ({
   children,
@@ -26,7 +32,7 @@ export const Router = () => {
 
         <Route
           element={
-            <WithSuspense fallback={<NavigationBarSkeleton isHidden={false} />}>
+            <WithSuspense fallback={<LayoutSkeleton />}>
               <Layout />
             </WithSuspense>
           }

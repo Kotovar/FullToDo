@@ -22,7 +22,8 @@ export const Button = (props: ButtonProps) => {
   const baseStyles = 'rounded cursor-pointer';
 
   const variantStyles: Record<ButtonAppearance, string> = {
-    primary: 'bg-accent hover:bg-accent/80 text-white',
+    primary:
+      'bg-accent hover:bg-accent/80 text-white dark:border-dark border-1',
     ghost: '',
   };
 
