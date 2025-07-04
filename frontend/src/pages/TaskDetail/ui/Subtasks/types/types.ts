@@ -1,5 +1,5 @@
-import type { MutationMethods } from '@shared/api';
 import type { ComponentPropsWithoutRef } from 'react';
+import type { MutationMethods } from '@shared/api';
 import type { Subtask, Task } from 'shared/schemas';
 
 export type ValueType = {

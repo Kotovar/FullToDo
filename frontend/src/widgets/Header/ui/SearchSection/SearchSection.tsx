@@ -28,7 +28,6 @@ export const SearchSection = memo(() => {
             value ? (
               <Button
                 appearance='ghost'
-                padding='none'
                 aria-label={t('search.clear')}
                 onClick={onClear}
                 type='button'

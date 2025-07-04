@@ -13,7 +13,7 @@ interface ButtonProps extends ComponentPropsWithRef<'button'> {
 export const Button = memo((props: ButtonProps) => {
   const {
     appearance = 'primary',
-    padding = 's',
+    padding = 'none',
     className,
     children,
     ...rest

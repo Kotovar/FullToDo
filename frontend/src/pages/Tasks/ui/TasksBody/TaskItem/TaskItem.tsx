@@ -76,7 +76,6 @@ export const TaskItem = memo(
           <Button
             appearance='ghost'
             onClick={handleStatusChange}
-            padding='none'
             aria-label={t(
               isCompleted ? ACTION_LABELS.incomplete : ACTION_LABELS.complete,
             )}

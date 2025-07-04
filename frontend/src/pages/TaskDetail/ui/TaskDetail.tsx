@@ -60,12 +60,7 @@ const TaskDetail = (props: TaskDetailProps) => {
 
   return (
     <section {...props} className='flex h-full flex-col gap-1 p-1'>
-      <Button
-        className='dark:border-dark self-start border-1'
-        appearance='primary'
-        onClick={handleGoBack}
-        padding='s'
-      >
+      <Button className='self-start' onClick={handleGoBack} padding='s'>
         {t('back')}
       </Button>
 
@@ -79,15 +74,12 @@ const TaskDetail = (props: TaskDetailProps) => {
         <TaskInput
           value={subtaskTitle}
           label={t('tasks.addSubtask')}
-          placeholder={
-            form.subtasks.length > 0
-              ? t('tasks.steps.next')
-              : t('tasks.steps.first')
-          }
+          placeholder={t(
+            `tasks.steps.${form.subtasks.length > 0 ? 'next' : 'first'}`,
+          )}
           onChange={onChangeSubtaskTitle}
           onKeyDown={handleKeyDown}
           onClick={onCreateSubtask}
-          className='bg-light rounded-sm'
         />
 
         <TaskInput
@@ -95,7 +87,6 @@ const TaskDetail = (props: TaskDetailProps) => {
           label={t('tasks.date')}
           onChange={onChangeDueDate}
           type='date'
-          className='bg-light rounded-sm'
         />
 
         <TaskTextarea
@@ -106,10 +97,9 @@ const TaskDetail = (props: TaskDetailProps) => {
       </fieldset>
 
       <Button
-        appearance='primary'
         type='submit'
         padding='s'
-        className='dark:border-dark self-center border-1'
+        className='self-center'
         onClick={onUpdateTask}
       >
         {t('save')}

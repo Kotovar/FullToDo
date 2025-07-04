@@ -1,12 +1,13 @@
-import { Input } from '@shared/ui';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Input } from '@shared/ui';
 
 interface TaskTitleProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const TaskTitle = ({ value, onChange }: TaskTitleProps) => {
+export const TaskTitle = memo(({ value, onChange }: TaskTitleProps) => {
   const { t } = useTranslation();
 
   return (
@@ -24,4 +25,4 @@ export const TaskTitle = ({ value, onChange }: TaskTitleProps) => {
       />
     </h1>
   );
-};
+});

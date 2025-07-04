@@ -1,112 +1,82 @@
-import { useState, memo, useEffect, useRef } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon, Input, CompletionIcon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
 import type { Subtask } from '@sharedCommon/*';
 import type { SubtaskAction } from '../Subtasks/types';
+import { useSubtaskItem } from './hooks';
 
 interface SubtaskItemProps {
   subtask: Subtask;
   updateSubtask: (action: SubtaskAction) => void;
 }
 
-export const SubtaskItem = memo(function SubtaskItem({
-  subtask,
-  updateSubtask,
-}: SubtaskItemProps) {
-  const { _id, title, isCompleted } = subtask;
-  const [draftTitle, setDraftTitle] = useState(title);
-  const [isEditing, setIsEditing] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { fill } = useDarkMode();
-  const { t } = useTranslation();
+export const SubtaskItem = memo(
+  ({ subtask, updateSubtask }: SubtaskItemProps) => {
+    const { isCompleted } = subtask;
+    const { fill } = useDarkMode();
+    const { t } = useTranslation();
 
-  useEffect(() => {
-    setDraftTitle(title);
-  }, [title]);
+    const { methods, inputRef, isEditing, draftTitle } = useSubtaskItem(
+      subtask,
+      updateSubtask,
+    );
 
-  const handleToggleCompleted = () => {
-    updateSubtask({
-      type: 'update',
-      id: _id,
-      title,
-      isCompleted: !isCompleted,
-    });
-  };
+    const {
+      onDeleteSubtask,
+      onEnableEditing,
+      onSaveTitle,
+      onChangeTitle,
+      onKeyDown,
+      onToggleStatus,
+    } = methods;
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDraftTitle(e.target.value);
-  };
+    const completionIcon = useMemo(
+      () => <CompletionIcon completed={isCompleted} />,
+      [isCompleted],
+    );
 
-  const handleSaveTitle = () => {
-    setIsEditing(false);
-    if (draftTitle !== title) {
-      updateSubtask({
-        type: 'update',
-        id: _id,
-        title: draftTitle,
-        isCompleted,
-      });
-    }
-  };
+    const deleteIcon = useMemo(() => <Icon name='cross' fill={fill} />, [fill]);
 
-  const handleClick = () => {
-    setIsEditing(true);
+    const completionLabel = useMemo(
+      () => t(`tasks.actions.${isCompleted ? 'incomplete' : 'complete'}`),
+      [isCompleted, t],
+    );
 
-    requestAnimationFrame(() => {
-      inputRef.current?.focus();
-    });
-  };
+    return (
+      <li className='odd:bg-bg-second even:bg-grey-light grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-md p-2'>
+        <Button
+          appearance='ghost'
+          onClick={onToggleStatus}
+          aria-label={completionLabel}
+        >
+          {completionIcon}
+        </Button>
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSaveTitle();
-    } else if (e.key === 'Escape') {
-      setDraftTitle(title);
-      setIsEditing(false);
-    }
-  };
+        {isEditing ? (
+          <Input
+            ref={inputRef}
+            type='text'
+            value={draftTitle}
+            onChange={onChangeTitle}
+            onBlur={onSaveTitle}
+            onKeyDown={onKeyDown}
+            className='w-full outline-0'
+          />
+        ) : (
+          <span onClick={onEnableEditing} className='w-full'>
+            {draftTitle}
+          </span>
+        )}
 
-  return (
-    <li className='odd:bg-bg-second even:bg-grey-light grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-md p-2'>
-      <Button
-        appearance='ghost'
-        onClick={handleToggleCompleted}
-        padding='none'
-        aria-label={
-          isCompleted
-            ? t('tasks.actions.incomplete')
-            : t('tasks.actions.complete')
-        }
-      >
-        <CompletionIcon completed={isCompleted} />
-      </Button>
-
-      {isEditing ? (
-        <Input
-          ref={inputRef}
-          type='text'
-          value={draftTitle}
-          onChange={handleTitleChange}
-          onBlur={handleSaveTitle}
-          onKeyDown={handleKeyDown}
-          className='w-full outline-0'
-          autoFocus
-        />
-      ) : (
-        <span onClick={handleClick} className='w-full'>
-          {draftTitle}
-        </span>
-      )}
-
-      <Button
-        appearance='ghost'
-        onClick={() => updateSubtask({ type: 'delete', id: _id })}
-        padding='none'
-        aria-label={t('tasks.deleteSubtask')}
-      >
-        <Icon name='cross' fill={fill} />
-      </Button>
-    </li>
-  );
-});
+        <Button
+          appearance='ghost'
+          onClick={onDeleteSubtask}
+          aria-label={t('tasks.deleteSubtask')}
+        >
+          {deleteIcon}
+        </Button>
+      </li>
+    );
+  },
+);

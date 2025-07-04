@@ -34,7 +34,7 @@ export const TaskInput = memo(
 
     const rightContent =
       variant === 'add-task' && isDate ? (
-        <Button onClick={onClick} appearance='primary' padding='s'>
+        <Button onClick={onClick} padding='s'>
           {t('add')}
         </Button>
       ) : null;

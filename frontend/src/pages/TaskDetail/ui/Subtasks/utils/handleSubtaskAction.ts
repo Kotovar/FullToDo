@@ -1,5 +1,5 @@
 import { Subtask } from '@sharedCommon/*';
-import { SubtaskAction } from '..';
+import type { SubtaskAction } from '../types';
 
 export const handleSubtaskAction = (
   currentSubtasks: Subtask[],
@@ -22,6 +22,7 @@ export const handleSubtaskAction = (
       ) {
         return currentSubtasks;
       }
+
       return currentSubtasks.map(subtask =>
         subtask._id === id
           ? { _id: id, isCompleted: action.isCompleted, title: action.title }

@@ -1,5 +1,5 @@
 export const styles = {
-  addSubtask: 'flex items-center gap-2',
+  addSubtask: 'flex items-center gap-2 bg-light rounded-sm',
   addTask:
     'shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] bg-grey-light rounded grid gap-x-2',
   addTaskText: 'grid-cols-[auto_1fr] bg-light',

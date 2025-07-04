@@ -1,4 +1,3 @@
-export * from './SubtaskInput';
 export * from './SubtaskItem';
 export * from './Subtasks';
 export * from './TaskTextarea';

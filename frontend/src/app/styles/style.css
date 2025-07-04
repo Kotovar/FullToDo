@@ -22,22 +22,18 @@
 
 @layer utilities {
   :is(.scrollbar-tasks, .scrollbar-notepads)::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  :is(.scrollbar-tasks, .scrollbar-notepads)::-webkit-scrollbar-button {
-    display: none;
+    width: 0.5rem;
+    height: 0.5rem;
   }
 
   :is(.scrollbar-tasks, .scrollbar-notepads)::-webkit-scrollbar-thumb {
-    background: var(--color-accent);
+    background: var(--color-grey);
     border-radius: 4px;
   }
 
   .scrollbar-tasks::-webkit-resizer {
-    background-color: var(--color-accent);
-    border-radius: 100%;
+    background-color: var(--color-grey);
+    border-radius: 40%;
   }
 
   .scrollbar-tasks::-webkit-scrollbar-corner {

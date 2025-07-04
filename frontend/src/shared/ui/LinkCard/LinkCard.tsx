@@ -122,7 +122,6 @@ export const LinkCard = memo((props: LinkCardProps) => {
           <Button
             appearance='ghost'
             onClick={handleButtonClick}
-            padding='none'
             aria-label={t('card.additionalMenu')}
             ref={buttonRef}
           >
