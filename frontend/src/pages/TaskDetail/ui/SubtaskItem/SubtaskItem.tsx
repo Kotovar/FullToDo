@@ -9,10 +9,6 @@ interface SubtaskItemProps {
   subtask: Subtask;
   updateSubtask: (action: SubtaskAction) => void;
 }
-const areEqual = (prev: SubtaskItemProps, next: SubtaskItemProps) =>
-  prev.subtask._id === next.subtask._id &&
-  prev.subtask.title === next.subtask.title &&
-  prev.subtask.isCompleted === next.subtask.isCompleted;
 
 export const SubtaskItem = memo(function SubtaskItem({
   subtask,
@@ -113,4 +109,4 @@ export const SubtaskItem = memo(function SubtaskItem({
       </Button>
     </li>
   );
-}, areEqual);
+});

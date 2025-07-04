@@ -1,45 +1,40 @@
-import { useCallback, useMemo } from 'react';
-import { useParams } from 'react-router';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ErrorFetching, TaskInput } from '@shared/ui';
 import { useBackNavigate } from '@shared/lib';
 import { useTaskDetail } from '@entities/Task';
 import {
-  getFormattedDate,
-  handleSubtaskAction,
-  useTaskForm,
-  createSubtask,
   TaskTextarea,
   TaskTitle,
   TaskDetailSkeleton,
   SubtaskItem,
+  useTaskForm,
+  TaskDetailProps,
 } from '@pages/TaskDetail/ui';
-import type { SubtaskAction, TaskDetailProps } from '@pages/TaskDetail/ui';
-import type { Task } from '@sharedCommon/*';
 
 const TaskDetail = (props: TaskDetailProps) => {
-  const { notepadId, taskId = '' } = useParams();
   const { t } = useTranslation();
   const { task, isError, isLoading, updateTask } = useTaskDetail({
-    notepadId,
-    taskId,
     entity: 'task',
   });
-
-  const { form, subtaskTitle, setForm, setSubtaskTitle } = useTaskForm(task);
   const handleGoBack = useBackNavigate();
 
-  const updateSubtask = useCallback(
-    (action: SubtaskAction) => {
-      setForm(prev => {
-        const updatedSubtasks = handleSubtaskAction(prev.subtasks, action);
-        updateTask({ subtasks: updatedSubtasks }, taskId, action.type);
-
-        return { ...prev, subtasks: updatedSubtasks };
-      });
-    },
-    [setForm, taskId, updateTask],
+  const { form, subtaskTitle, methods } = useTaskForm(
+    task,
+    updateTask,
+    handleGoBack,
   );
+
+  const {
+    onUpdateTask,
+    onCreateSubtask,
+    onChangeTitle,
+    onChangeSubtaskTitle,
+    onChangeDueDate,
+    onChangeDescription,
+    handleKeyDown,
+    updateSubtask,
+  } = methods;
 
   const subtasksList = useMemo(() => {
     return (
@@ -63,62 +58,6 @@ const TaskDetail = (props: TaskDetailProps) => {
     return <ErrorFetching />;
   }
 
-  const handleUpdateTask = async () => {
-    const updates: Partial<Task> = {};
-
-    if (task?.title !== form.title) {
-      updates.title = form.title;
-    }
-
-    if (task?.description !== form.description) {
-      updates.description = form.description;
-    }
-
-    if (form.dueDate === '' && task?.dueDate) {
-      updates.dueDate = null;
-    } else if (form.dueDate) {
-      const currentDueDate = task?.dueDate
-        ? getFormattedDate(task.dueDate)
-        : null;
-      const newDueDate = form.dueDate;
-
-      if (currentDueDate !== newDueDate) {
-        updates.dueDate = new Date(form.dueDate);
-      }
-    }
-
-    if (
-      Object.keys(updates).length > 0 &&
-      (await updateTask(updates, taskId, 'update'))
-    ) {
-      handleGoBack();
-    }
-  };
-
-  const handleCreateSubtask = () => {
-    if (!subtaskTitle.trim()) {
-      return;
-    }
-
-    const newSubtask = createSubtask(subtaskTitle);
-    const updatedSubtasks = [...form.subtasks, newSubtask];
-
-    updateTask({ subtasks: updatedSubtasks }, taskId, 'create');
-
-    setForm(prev => ({
-      ...prev,
-      subtasks: updatedSubtasks,
-    }));
-    setSubtaskTitle('');
-  };
-
-  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
-    if (event.key === 'Enter' && subtaskTitle) {
-      event.preventDefault();
-      handleCreateSubtask();
-    }
-  };
-
   return (
     <section {...props} className='flex h-full flex-col gap-1 p-1'>
       <Button
@@ -130,10 +69,7 @@ const TaskDetail = (props: TaskDetailProps) => {
         {t('back')}
       </Button>
 
-      <TaskTitle
-        value={form.title}
-        onChange={e => setForm({ ...form, title: e.target.value })}
-      />
+      <TaskTitle value={form.title} onChange={onChangeTitle} />
 
       {subtasksList}
 
@@ -148,16 +84,16 @@ const TaskDetail = (props: TaskDetailProps) => {
               ? t('tasks.steps.next')
               : t('tasks.steps.first')
           }
-          onChange={e => setSubtaskTitle(e.target.value)}
+          onChange={onChangeSubtaskTitle}
           onKeyDown={handleKeyDown}
-          onClick={handleCreateSubtask}
+          onClick={onCreateSubtask}
           className='bg-light rounded-sm'
         />
 
         <TaskInput
           value={form.dueDate}
           label={t('tasks.date')}
-          onChange={e => setForm({ ...form, dueDate: e.target.value })}
+          onChange={onChangeDueDate}
           type='date'
           className='bg-light rounded-sm'
         />
@@ -165,7 +101,7 @@ const TaskDetail = (props: TaskDetailProps) => {
         <TaskTextarea
           label={t('tasks.description')}
           value={form.description}
-          onChange={e => setForm({ ...form, description: e.target.value })}
+          onChange={onChangeDescription}
         />
       </fieldset>
 
@@ -174,7 +110,7 @@ const TaskDetail = (props: TaskDetailProps) => {
         type='submit'
         padding='s'
         className='dark:border-dark self-center border-1'
-        onClick={handleUpdateTask}
+        onClick={onUpdateTask}
       >
         {t('save')}
       </Button>

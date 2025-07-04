@@ -1,12 +1,13 @@
+import type { MutationMethods } from '@shared/api';
 import type { ComponentPropsWithoutRef } from 'react';
-import type { Subtask } from 'shared/schemas';
+import type { Subtask, Task } from 'shared/schemas';
 
-export interface ValueType {
+export type ValueType = {
   title: string;
   dueDate: string;
   description: string;
   subtasks: Subtask[];
-}
+};
 
 export type SubtaskAction =
   | {
@@ -21,3 +22,9 @@ export type SubtaskAction =
     };
 
 export type TaskDetailProps = ComponentPropsWithoutRef<'div'>;
+
+export type UpdateTask = (
+  updatedTask: Partial<Task>,
+  id: string,
+  subtaskActionType: MutationMethods,
+) => Promise<boolean>;

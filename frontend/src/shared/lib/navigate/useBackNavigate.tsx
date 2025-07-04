@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { ROUTES } from 'shared/routes';
 
@@ -7,7 +8,7 @@ export const useBackNavigate = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const goBack = () => {
+  return useCallback(() => {
     const parts = pathname.split('/').filter(Boolean);
 
     if (parts[0] === 'tasks' && parts.length === 2) {
@@ -21,7 +22,5 @@ export const useBackNavigate = () => {
     } else {
       navigate(-1);
     }
-  };
-
-  return goBack;
+  }, [navigate, pathname]);
 };

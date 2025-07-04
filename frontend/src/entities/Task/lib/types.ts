@@ -6,8 +6,8 @@ interface TaskBase {
   entity: Entity;
 }
 
-export interface UseTaskDetailProps extends TaskBase {
-  taskId: string;
+export interface UseTaskDetailProps {
+  entity: Entity;
 }
 
 export interface UseCreateTaskProps extends TaskBase {}

@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const SUCCESSFUL_MESSAGES = {
@@ -21,8 +22,11 @@ export const SUCCESSFUL_MESSAGES = {
 export const useSuccessMessage = () => {
   const { t } = useTranslation();
 
-  return (
-    entity: keyof typeof SUCCESSFUL_MESSAGES,
-    method: keyof (typeof SUCCESSFUL_MESSAGES)[keyof typeof SUCCESSFUL_MESSAGES],
-  ) => t(SUCCESSFUL_MESSAGES[entity][method]);
+  return useCallback(
+    (
+      entity: keyof typeof SUCCESSFUL_MESSAGES,
+      method: keyof (typeof SUCCESSFUL_MESSAGES)[keyof typeof SUCCESSFUL_MESSAGES],
+    ) => t(SUCCESSFUL_MESSAGES[entity][method]),
+    [t],
+  );
 };

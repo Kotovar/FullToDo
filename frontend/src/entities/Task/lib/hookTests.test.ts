@@ -15,12 +15,9 @@ const getInitialDataCreateTask = async () => {
 };
 
 const getInitialDataTaskDetail = async () => {
-  const { result } = renderHook(
-    () => useTaskDetail({ notepadId, taskId, entity: 'task' }),
-    {
-      wrapper: createWrapper(),
-    },
-  );
+  const { result } = renderHook(() => useTaskDetail({ entity: 'task' }), {
+    wrapper: createWrapper(),
+  });
 
   return result;
 };

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getTaskQueryKey,
@@ -10,14 +10,12 @@ import {
 import type { MutationMethods } from '@shared/api';
 import type { Task } from '@sharedCommon/*';
 import { useApiNotifications } from '@shared/lib';
+import { useParams } from 'react-router';
 
-export const useTaskDetail = ({
-  notepadId,
-  taskId,
-  entity,
-}: UseTaskDetailProps) => {
+export const useTaskDetail = ({ entity }: UseTaskDetailProps) => {
+  const { notepadId, taskId = '' } = useParams();
   const queryClient = useQueryClient();
-  const queryKey = getTaskQueryKey(notepadId);
+  const queryKey = useMemo(() => getTaskQueryKey(notepadId), [notepadId]);
 
   const {
     data: task,

@@ -7,6 +7,10 @@ import { getUseTaskDetailsMock } from '@entities/Task';
 import TaskDetail from '@pages/TaskDetail';
 import * as taskModule from '@pages/TaskDetail/ui/Subtasks';
 
+const onChangeTitleMock = vi.fn();
+const onChangeSubtaskTitleMock = vi.fn();
+const onChangeDueDateMock = vi.fn();
+
 const getUseTaskFormMock = (
   setFormMock = vi.fn(),
   setSubtaskTitleMock = vi.fn(),
@@ -18,12 +22,26 @@ const getUseTaskFormMock = (
       description: '',
       subtasks: [],
     },
-    setForm: setFormMock,
     subtaskTitle: '',
-    setSubtaskTitle: setSubtaskTitleMock,
+    methods: {
+      onUpdateTask: vi.fn(),
+      onCreateSubtask: vi.fn(),
+      onChangeTitle: onChangeTitleMock,
+      onChangeSubtaskTitle: onChangeSubtaskTitleMock,
+      onChangeDueDate: onChangeDueDateMock,
+      onChangeDescription: vi.fn(),
+      handleKeyDown: vi.fn(),
+      updateSubtask: vi.fn(),
+    },
   });
 
-  return { setFormMock, setSubtaskTitleMock };
+  return {
+    setFormMock,
+    setSubtaskTitleMock,
+    onChangeTitleMock,
+    onChangeSubtaskTitleMock,
+    onChangeDueDateMock,
+  };
 };
 
 describe('TaskDetail component', () => {
@@ -216,8 +234,8 @@ describe('TaskDetail component', () => {
   describe('метод onChange для TaskTitle', () => {
     setupMockServer();
 
-    test('Ввод текста в title вызывает setForm', async () => {
-      const { setFormMock } = getUseTaskFormMock();
+    test('Ввод текста в title вызывает onChangeTitle', async () => {
+      const { onChangeTitleMock } = getUseTaskFormMock();
 
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/1/task/1'],
@@ -232,7 +250,7 @@ describe('TaskDetail component', () => {
       await user.type(input, 'Задача Новая');
 
       await waitFor(() => {
-        expect(setFormMock).toHaveBeenCalled();
+        expect(onChangeTitleMock).toHaveBeenCalled();
       });
     });
   });
@@ -241,7 +259,7 @@ describe('TaskDetail component', () => {
     setupMockServer();
 
     test('Ввод текста в subtitle вызывает setSubtaskTitle', async () => {
-      const { setSubtaskTitleMock } = getUseTaskFormMock();
+      const { onChangeSubtaskTitleMock } = getUseTaskFormMock();
 
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/1/tasks/1'],
@@ -256,12 +274,12 @@ describe('TaskDetail component', () => {
       await user.type(input, 'Подзадача Новая');
 
       await waitFor(() => {
-        expect(setSubtaskTitleMock).toHaveBeenCalled();
+        expect(onChangeSubtaskTitleMock).toHaveBeenCalled();
       });
     });
 
     test('Изменение даты вызывает setForm', async () => {
-      const { setFormMock } = getUseTaskFormMock();
+      const { onChangeDueDateMock } = getUseTaskFormMock();
 
       renderWithRouter(<TaskDetail />, {
         initialEntries: ['/notepads/1/tasks/1'],
@@ -282,7 +300,7 @@ describe('TaskDetail component', () => {
       await user.type(input, '2025-04-19');
 
       await waitFor(() => {
-        expect(setFormMock).toHaveBeenCalled();
+        expect(onChangeDueDateMock).toHaveBeenCalled();
       });
     });
   });

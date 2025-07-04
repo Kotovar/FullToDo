@@ -2,12 +2,18 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { Task } from '@sharedCommon/*';
 import { MOCK_TASK } from '@shared/mocks';
 import { useTaskForm } from './useTaskForm';
-import { getFormattedDate } from './getFormattedDate';
+import { getFormattedDate } from '..';
+
+const updateTaskMock = vi.fn();
+const onSuccessMock = vi.fn();
 
 const getInitialData = async (initialTask?: Task | null) => {
-  const { result, rerender } = renderHook(({ task }) => useTaskForm(task), {
-    initialProps: { task: initialTask },
-  });
+  const { result, rerender } = renderHook(
+    ({ task }) => useTaskForm(task, updateTaskMock, onSuccessMock),
+    {
+      initialProps: { task: initialTask },
+    },
+  );
 
   await waitFor(() => expect(result.current.form).toBeDefined());
 

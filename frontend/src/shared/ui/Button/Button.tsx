@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef } from 'react';
+import { memo, type ComponentPropsWithRef } from 'react';
 import { clsx } from 'clsx';
 
 type ButtonAppearance = 'primary' | 'ghost';
@@ -10,7 +10,7 @@ interface ButtonProps extends ComponentPropsWithRef<'button'> {
   className?: string;
 }
 
-export const Button = (props: ButtonProps) => {
+export const Button = memo((props: ButtonProps) => {
   const {
     appearance = 'primary',
     padding = 's',
@@ -18,7 +18,6 @@ export const Button = (props: ButtonProps) => {
     children,
     ...rest
   } = props;
-
   const baseStyles = 'rounded cursor-pointer';
 
   const variantStyles: Record<ButtonAppearance, string> = {
@@ -46,4 +45,4 @@ export const Button = (props: ButtonProps) => {
       {children}
     </button>
   );
-};
+});
