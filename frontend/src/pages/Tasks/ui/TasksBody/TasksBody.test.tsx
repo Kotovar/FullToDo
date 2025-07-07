@@ -1,8 +1,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithRouter } from '@shared/testing';
+import { renderWithRouter, setupMockServer } from '@shared/testing';
 import { MOCK_TASK } from '@shared/mocks/';
-import { setupMockServer } from '@shared/config';
 import { notepadId } from 'shared/schemas';
 import { TasksBody } from './TasksBody';
 import * as useTaskHook from '@entities/Task';

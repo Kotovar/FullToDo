@@ -1,11 +1,11 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { setupMockServer } from '@shared/config';
 import {
   createWrapper,
   MOCK_TITLE_NON_EXISTING,
   getDeleteResponse,
 } from '@shared/mocks';
 import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
+import { setupMockServer } from '@shared/testing';
 import { taskService } from '@entities/Task';
 import { useTasks } from './useTasks';
 

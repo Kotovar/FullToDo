@@ -61,7 +61,8 @@
     "common": {
       "SERVER_ERROR": "Server error",
       "NETWORK_ERROR": "Network error",
-      "JSON": "Unexpected end of JSON input"
+      "JSON": "Unexpected end of JSON input",
+      "URL": "VITE_URL is not defined in .env file"
     },
     "notepad": {
       "CONFLICT": "A notepad with this name already exists",

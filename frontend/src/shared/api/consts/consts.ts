@@ -1,10 +1,7 @@
+import type { BaseErrorType, ErrorDetail, ErrorType } from '../types';
+
 export const URL = import.meta.env.VITE_URL;
 export const HEADERS = { 'Content-Type': 'application/json' };
-
-export type ErrorDetail = {
-  type: ErrorType;
-  message: TranslationKeys | string;
-};
 
 export const COMMON_ERRORS: Record<BaseErrorType, ErrorDetail> = {
   SERVER_ERROR: {
@@ -17,7 +14,7 @@ export const COMMON_ERRORS: Record<BaseErrorType, ErrorDetail> = {
   },
   URL: {
     type: 'URL',
-    message: 'VITE_URL is not defined in .env file',
+    message: 'errors.common.URL',
   },
   JSON: {
     type: 'JSON',
@@ -48,25 +45,3 @@ export const TASKS_ERRORS: Record<ErrorType, ErrorDetail> = {
   },
   ...COMMON_ERRORS,
 } as const;
-
-export type ErrorType =
-  | 'CONFLICT'
-  | 'SERVER_ERROR'
-  | 'UNDEFINED'
-  | 'NETWORK_ERROR'
-  | 'URL'
-  | 'JSON';
-
-type TranslationKeys =
-  | 'errors.common.SERVER_ERROR'
-  | 'errors.common.NETWORK_ERROR'
-  | 'errors.common.JSON'
-  | 'errors.notepad.CONFLICT'
-  | 'errors.notepad.UNDEFINED'
-  | 'errors.tasks.CONFLICT'
-  | 'errors.tasks.UNDEFINED';
-
-type BaseErrorType = Extract<
-  ErrorType,
-  'SERVER_ERROR' | 'NETWORK_ERROR' | 'URL' | 'JSON'
->;

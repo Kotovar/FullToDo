@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { setupMockServer } from '@shared/config';
 import { createWrapper } from '@shared/mocks';
+import { setupMockServer } from '@shared/testing';
 import { useTaskDetail } from './useTaskDetail';
 
 describe('useTaskDetail hook', () => {

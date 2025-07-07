@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react';
-import { renderWithRouter } from '@shared/testing';
-import { setupMockServer } from '@shared/config';
+import { renderWithRouter, setupMockServer } from '@shared/testing';
 import { getUseNotepadMock } from '@pages/Tasks/lib';
 import { Tasks } from './Tasks';
 

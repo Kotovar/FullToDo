@@ -1,10 +1,9 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useNotepad } from './useNotepad';
-import { setupMockServer } from '@shared/config';
 import { createWrapperWithRouter } from '@shared/mocks';
 import { ROUTES } from 'shared/routes';
 import { notepadService } from '@entities/Notepad';
-import { getUseNotificationsMock } from '@shared/testing';
+import { getUseNotificationsMock, setupMockServer } from '@shared/testing';
 import { commonNotepadId, notepadId } from 'shared/schemas';
 
 const getInitialData = async (isCommon: boolean = false) => {

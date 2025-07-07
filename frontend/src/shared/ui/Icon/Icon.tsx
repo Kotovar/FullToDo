@@ -1,6 +1,7 @@
-import { IconName } from '@shared/config';
-import { iconsNames } from './IconsNames';
 import { memo } from 'react';
+import { iconsNames } from './IconsNames';
+
+type IconName = keyof typeof iconsNames;
 
 interface IconProps {
   name: IconName;

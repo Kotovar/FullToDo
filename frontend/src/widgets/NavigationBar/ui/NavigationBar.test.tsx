@@ -1,8 +1,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithRouter } from '@shared/testing';
+import { renderWithRouter, setupMockServer } from '@shared/testing';
 import { MOCK_NOTEPADS_RESPONSE } from '@shared/mocks/';
-import { setupMockServer } from '@shared/config';
 import { NavigationBar } from './NavigationBar';
 import * as useNotepadsHook from '@widgets/NavigationBar/lib';
 

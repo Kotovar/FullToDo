@@ -1,5 +1,4 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { setupMockServer } from '@shared/config';
 import {
   createWrapperWithRouter,
   getDeleteResponse,
@@ -8,6 +7,7 @@ import {
 } from '@shared/mocks';
 import { notepadService } from '@entities/Notepad';
 import { useNotepads } from './useNotepads';
+import { setupMockServer } from '@shared/testing';
 import { notepadId } from 'shared/schemas';
 
 const getInitialData = async () => {

@@ -1,5 +1,4 @@
 import { COMMON_ERRORS, TASKS_ERRORS } from '@shared/api';
-import { setupMockServer } from '@shared/config';
 import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
 import {
   getDeleteResponse,
@@ -14,6 +13,7 @@ import {
   getErrorMock,
   getErrorResult,
   getFailFetchResponse,
+  setupMockServer,
 } from '@shared/testing';
 import { taskService } from './Task.query';
 
