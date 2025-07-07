@@ -1,12 +1,14 @@
+import { Translation } from '@shared/i18n';
 import { useTranslation } from 'react-i18next';
 
 interface ErrorFetchingProps {
-  message?: string;
+  message?: Translation;
 }
 
-export const ErrorFetching = ({ message }: ErrorFetchingProps) => {
+export const ErrorFetching = ({
+  message = 'errors.loadingFail',
+}: ErrorFetchingProps) => {
   const { t } = useTranslation();
-  return (
-    <div className='text-center'>{message ?? t('errors.loadingFail')}</div>
-  );
+
+  return <div className='text-center'>{t(message)}</div>;
 };

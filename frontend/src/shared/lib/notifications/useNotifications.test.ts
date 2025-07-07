@@ -16,8 +16,8 @@ vi.mock('react-toastify', () => ({
 }));
 
 describe('useNotifications hook', () => {
-  const errorMessage = 'This is an error message';
-  const successMessage = 'This is a success message';
+  const errorMessage = 'errors.common.SERVER_ERROR';
+  const successMessage = 'notifications.tasks.update';
 
   beforeEach(() => {
     vi.clearAllMocks();

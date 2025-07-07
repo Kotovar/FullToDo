@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
 import { useNotifications } from '.';
 import { useSuccessMessage } from '../hooks';
@@ -7,7 +6,6 @@ import type { Entity } from '@shared/lib';
 
 export const useApiNotifications = (entity: Entity) => {
   const { showSuccess, showError } = useNotifications();
-  const { t } = useTranslation();
   const getSuccessMessage = useSuccessMessage();
 
   const onSuccess = useCallback(
@@ -16,8 +14,8 @@ export const useApiNotifications = (entity: Entity) => {
     [entity, getSuccessMessage, showSuccess],
   );
   const onError = useCallback(
-    (error: QueryError): void => showError(t(error.message)),
-    [showError, t],
+    (error: QueryError): void => showError(error.message),
+    [showError],
   );
 
   return { onSuccess, onError };
