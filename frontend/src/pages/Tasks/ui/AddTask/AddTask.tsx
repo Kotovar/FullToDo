@@ -1,12 +1,14 @@
-import { useParams } from 'react-router';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useCreateTask } from '@entities/Task';
 import { TaskInput } from '@shared/ui';
 import type { TaskOptions } from '@pages/Tasks/lib';
 
-export const AddTask = () => {
-  const { notepadId } = useParams();
+interface AddTaskProps {
+  notepadId: string;
+}
+
+export const AddTask = memo(({ notepadId }: AddTaskProps) => {
   const [value, setValue] = useState<TaskOptions>({
     title: '',
     date: '',
@@ -64,4 +66,4 @@ export const AddTask = () => {
       />
     </fieldset>
   );
-};
+});

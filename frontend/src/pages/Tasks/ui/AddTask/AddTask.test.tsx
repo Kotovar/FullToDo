@@ -35,7 +35,7 @@ describe('AddTask component', () => {
   });
 
   test('Проверка ввода текста в input для заголовка новой задачи', async () => {
-    renderWithRouter(<AddTask />, {
+    renderWithRouter(<AddTask notepadId='1' />, {
       initialEntries: ['/notepads/1'],
       path: '/notepads/:notepadId',
     });
@@ -48,7 +48,7 @@ describe('AddTask component', () => {
   });
 
   test('Если название задачи пустое - не добавлять её при подтверждении и наоборот', async () => {
-    renderWithRouter(<AddTask />, {
+    renderWithRouter(<AddTask notepadId='1' />, {
       initialEntries: ['/notepads/1'],
       path: '/notepads/:notepadId',
     });
@@ -66,7 +66,7 @@ describe('AddTask component', () => {
   });
 
   test('при наличии dueDate в форме передает new Date(dueDate)', async () => {
-    renderWithRouter(<AddTask />, {
+    renderWithRouter(<AddTask notepadId='1' />, {
       initialEntries: ['/notepads/1'],
       path: '/notepads/:notepadId',
     });

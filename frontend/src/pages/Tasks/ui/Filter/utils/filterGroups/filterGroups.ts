@@ -1,6 +1,6 @@
 import type { TFunction } from 'i18next';
 
-export const getFilterGroups = (t: TFunction<'ruTranslation', undefined>) =>
+export const getFilterGroups = (t: TFunction<'ruTranslation'>) =>
   [
     {
       name: 'isCompleted',

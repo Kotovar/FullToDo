@@ -17,6 +17,7 @@ export const Tasks = () => {
       <TasksHeader
         title={title}
         params={validParams}
+        notepadId={notepadId}
         setParams={setSearchParams}
       />
       <TasksBody

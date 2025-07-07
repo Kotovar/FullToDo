@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getTaskQueryKey,
@@ -14,7 +15,7 @@ import type { Task } from '@sharedCommon/*';
 export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
   const isCommon = isCommonNotepad(notepadId);
-  const queryKey = getTaskQueryKey(notepadId);
+  const queryKey = useMemo(() => getTaskQueryKey(notepadId), [notepadId]);
   const paramsString = params.toString();
   const {
     data: tasks,
@@ -48,41 +49,44 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   });
   const { onSuccess, onError } = useApiNotifications(entity);
 
-  const updateTask = async (
-    updatedTask: Partial<Task>,
-    id: string,
-    subtaskActionType?: MutationMethods,
-  ) =>
-    handleMutation(
-      mutationUpdate,
-      subtaskActionType ?? 'update',
-      {
-        updatedTask,
-        id,
-      },
-      {
+  const updateTask = useCallback(
+    async (
+      updatedTask: Partial<Task>,
+      id: string,
+      subtaskActionType?: MutationMethods,
+    ) =>
+      handleMutation(
+        mutationUpdate,
+        subtaskActionType ?? 'update',
+        { updatedTask, id },
+        { queryClient, queryKey, onSuccess, onError },
+      ),
+    [mutationUpdate, onError, onSuccess, queryClient, queryKey],
+  );
+
+  const deleteTask = useCallback(
+    (id: string) =>
+      handleMutation(mutationDelete, 'delete', id, {
         queryClient,
         queryKey,
         onSuccess,
         onError,
-      },
-    );
+      }),
+    [mutationDelete, queryClient, queryKey, onSuccess, onError],
+  );
 
-  const deleteTask = (id: string) =>
-    handleMutation(mutationDelete, 'delete', id, {
-      queryClient,
-      queryKey,
-      onSuccess,
-      onError,
-    });
+  const methods = useMemo(
+    () => ({
+      updateTask,
+      deleteTask,
+    }),
+    [deleteTask, updateTask],
+  );
 
   return {
     tasks: tasks || tasksAll,
     isError: isErrorTasks || isErrorTasksAll,
     isLoading: isLoadingTasks || isLoadingTasksAll,
-    methods: {
-      updateTask,
-      deleteTask,
-    },
+    methods,
   };
 };

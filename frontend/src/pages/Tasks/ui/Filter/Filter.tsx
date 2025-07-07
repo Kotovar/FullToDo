@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
 import { Icon, Chip, ICON_SIZES } from '@shared/ui';
@@ -11,7 +11,7 @@ interface FilterProps {
   setParams: SetURLSearchParams;
 }
 
-export const Filter = ({ params, setParams }: FilterProps) => {
+export const Filter = memo(({ params, setParams }: FilterProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { handleRemoveFilter, handleUpdateFilter } = useFilters(setParams);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -21,6 +21,10 @@ export const Filter = ({ params, setParams }: FilterProps) => {
 
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
   const closeMenu = () => setIsMenuOpen(false);
+
+  const numberActiveChips = labels.length > 0 && (
+    <span className='hidden md:inline'>{` (${labels.length})`}</span>
+  );
 
   return (
     <div className='flex'>
@@ -37,9 +41,7 @@ export const Filter = ({ params, setParams }: FilterProps) => {
       </div>
       <div className='flex-end relative flex items-center gap-2 select-none'>
         {t('filters.title')}
-        {labels.length > 0 && (
-          <span className='hidden md:inline'>{` (${labels.length})`}</span>
-        )}
+        {numberActiveChips}
         <button
           ref={buttonRef}
           aria-label={t('filters.change')}
@@ -59,4 +61,4 @@ export const Filter = ({ params, setParams }: FilterProps) => {
       </div>
     </div>
   );
-};
+});

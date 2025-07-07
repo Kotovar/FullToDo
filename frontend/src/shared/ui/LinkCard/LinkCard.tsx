@@ -1,4 +1,11 @@
-import { ComponentPropsWithoutRef, JSX, memo, useRef, useState } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  JSX,
+  memo,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
@@ -61,10 +68,10 @@ export const LinkCard = memo((props: LinkCardProps) => {
     }
   };
 
-  const handleButtonClick = () => {
+  const handleButtonClick = useCallback(() => {
     handleModalId(path);
-    setIsMenuOpen(!isMenuOpen);
-  };
+    setIsMenuOpen(prev => !prev);
+  }, [handleModalId, path]);
 
   const inputTitle = (
     <input

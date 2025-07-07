@@ -1,5 +1,6 @@
 import { IconName } from '@shared/config';
 import { iconsNames } from './IconsNames';
+import { memo } from 'react';
 
 interface IconProps {
   name: IconName;
@@ -9,7 +10,7 @@ interface IconProps {
   ariaLabel?: string;
 }
 
-export const Icon = (props: IconProps) => {
+export const Icon = memo((props: IconProps) => {
   const { name, stroke, ariaLabel, fill = 'none', size = 24 } = props;
 
   const IconComponent = iconsNames[name];
@@ -24,4 +25,4 @@ export const Icon = (props: IconProps) => {
       className='shrink-0'
     />
   );
-};
+});
