@@ -1,9 +1,6 @@
+import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import {
-  useMutation,
-  useQuery,
-  type UseMutationResult,
-} from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { notepadService } from '@entities/Notepad';
 import { handleMutationSuccess, type MutationUpdateProps } from './utils';
 import { ROUTES } from 'shared/routes';
@@ -20,57 +17,72 @@ export const useNotepads = () => {
 
   const { onSuccess, onError } = useApiNotifications('notepad');
 
-  const handleMutation = async <T, V>(
-    mutation: UseMutationResult<T, unknown, V>,
-    method: MutationMethods,
-    payload: V,
-  ) => {
-    try {
-      await mutation.mutateAsync(payload);
-      onSuccess?.(method);
-      return true;
-    } catch (error) {
-      onError?.(handleMutationError(error));
-      return false;
-    }
-  };
+  const handleMutation = useCallback(
+    async <T, V>(
+      mutationFn: (payload: V) => Promise<T>,
+      method: MutationMethods,
+      payload: V,
+    ) => {
+      try {
+        await mutationFn(payload);
+        onSuccess?.(method);
+        return true;
+      } catch (error) {
+        onError?.(handleMutationError(error));
+        return false;
+      }
+    },
+    [onError, onSuccess],
+  );
 
-  const mutationCreate = useMutation({
+  const { mutateAsync: mutateCreate } = useMutation({
     mutationFn: (title: string) => notepadService.createNotepad(title),
     onSuccess: () => handleMutationSuccess(refetch),
   });
 
-  const mutationUpdate = useMutation({
+  const { mutateAsync: mutationUpdate } = useMutation({
     mutationFn: ({ notepadId, updatedNotepad }: MutationUpdateProps) =>
       notepadService.updateNotepad(notepadId, updatedNotepad),
     onSuccess: () => handleMutationSuccess(refetch),
   });
 
-  const mutationDelete = useMutation({
+  const { mutateAsync: mutationDelete } = useMutation({
     mutationFn: (notepadId: string) => notepadService.deleteNotepad(notepadId),
     onSuccess: () => handleMutationSuccess(refetch, navigate, ROUTES.TASKS),
   });
 
-  const createNotepad = async (title: string) =>
-    handleMutation(mutationCreate, 'create', title);
+  const createNotepad = useCallback(
+    async (title: string) => handleMutation(mutateCreate, 'create', title),
+    [handleMutation, mutateCreate],
+  );
 
-  const deleteNotepad = async (id: string) =>
-    handleMutation(mutationDelete, 'delete', id);
+  const deleteNotepad = useCallback(
+    async (id: string) => handleMutation(mutationDelete, 'delete', id),
+    [handleMutation, mutationDelete],
+  );
 
-  const updateNotepadTitle = async (id: string, newTitle: string) =>
-    handleMutation(mutationUpdate, 'update', {
-      notepadId: id,
-      updatedNotepad: { title: newTitle },
-    });
+  const updateNotepadTitle = useCallback(
+    async (id: string, newTitle: string) =>
+      handleMutation(mutationUpdate, 'update', {
+        notepadId: id,
+        updatedNotepad: { title: newTitle },
+      }),
+    [handleMutation, mutationUpdate],
+  );
+
+  const methods = useMemo(
+    () => ({
+      updateNotepadTitle,
+      deleteNotepad,
+      createNotepad,
+    }),
+    [createNotepad, deleteNotepad, updateNotepadTitle],
+  );
 
   return {
     notepads: data ?? [],
     isLoading,
     isError,
-    methods: {
-      updateNotepadTitle,
-      deleteNotepad,
-      createNotepad,
-    },
+    methods,
   };
 };

@@ -104,8 +104,8 @@ export const useTaskForm = (
   const handleKeyDown = useCallback<
     React.KeyboardEventHandler<HTMLInputElement>
   >(
-    event => {
-      if (event.key === 'Enter') onCreateSubtask();
+    e => {
+      if (e.key === 'Enter') onCreateSubtask();
     },
     [onCreateSubtask],
   );

@@ -1,7 +1,7 @@
 import { memo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
-import { Icon, Chip, ICON_SIZES } from '@shared/ui';
+import { Icon, Chip, ICON_SIZES, Button } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
 import { FiltersMenu } from './components';
 import { useFilters, useFilterLabels } from './hooks';
@@ -42,14 +42,16 @@ export const Filter = memo(({ params, setParams }: FilterProps) => {
       <div className='flex-end relative flex items-center gap-2 select-none'>
         {t('filters.title')}
         {numberActiveChips}
-        <button
-          ref={buttonRef}
-          aria-label={t('filters.change')}
-          className='cursor-pointer p-1 hover:rounded hover:bg-current/10'
+        <Button
           onClick={toggleMenu}
+          appearance='ghost'
+          className='relative p-1 hover:bg-current/10'
+          aria-label={t('filters.change')}
+          ref={buttonRef}
+          border='none'
         >
-          <Icon name='filter' size={ICON_SIZES.FILTERS} stroke={fill} />
-        </button>
+          <Icon name='filter' size={ICON_SIZES.DEFAULT} stroke={fill} />
+        </Button>
         {isMenuOpen && (
           <FiltersMenu
             labels={labels}

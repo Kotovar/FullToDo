@@ -4,7 +4,6 @@ export const enum COLORS {
   WHITE = 'oklch(1 0 0)',
 }
 
-export const enum ICON_SIZES {
-  DEFAULT = 36,
-  FILTERS = 32,
-}
+export const ICON_SIZES = {
+  DEFAULT: 32,
+} as const;

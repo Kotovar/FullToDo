@@ -46,7 +46,7 @@ export const createWrapperWithRouter = (
       <I18nextProvider i18n={i18nForTests}>
         <MemoryRouter initialEntries={initialEntries}>
           <Routes>
-            <Route path={`${ROUTES.NOTEPADS}/:notepadId`} element={children} />
+            <Route path={ROUTES.NOTEPAD_ID} element={children} />
             <Route path={ROUTES.TASKS} element={children} />
           </Routes>
         </MemoryRouter>

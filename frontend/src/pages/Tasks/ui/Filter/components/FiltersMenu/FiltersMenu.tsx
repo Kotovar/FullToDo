@@ -1,9 +1,9 @@
 import { type RefObject, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RadioGroup } from '@shared/ui';
+import { Button, RadioGroup } from '@shared/ui';
 import { useFocusTrap } from '@shared/lib';
-import type { FilterLabel, FiltersState } from '@pages/Tasks/lib';
 import { getFilterGroups } from '../..';
+import type { FilterLabel, FiltersState } from '@pages/Tasks/lib';
 
 interface FiltersMenuProps {
   labels: FilterLabel[];
@@ -75,20 +75,16 @@ export const FiltersMenu = ({
         ))}
       </form>
       <div className='flex justify-between gap-1 pt-2 text-sm'>
-        <button
-          type='button'
-          onClick={handleReset}
-          className='w-16 text-sm hover:underline'
-        >
+        <Button appearance='ghost' onClick={handleReset} className='px-2 py-1'>
           {t('reset')}
-        </button>
-        <button
-          type='submit'
-          className='bg-accent hover:bg-accent/80 dark:border-dark w-22 rounded border-1 px-2 py-1 text-sm text-white'
+        </Button>
+        <Button
+          className='focus-visible:ring-dark px-2 py-1 focus:outline-none focus-visible:ring-2'
           form='filterForm'
+          type='submit'
         >
           {t('apply')}
-        </button>
+        </Button>
       </div>
     </dialog>
   );

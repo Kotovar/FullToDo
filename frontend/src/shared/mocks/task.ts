@@ -126,6 +126,7 @@ export const MOCK_SINGE_NOTEPAD_RESPONSE: NotepadResponse = {
     ],
   },
 };
+
 export const MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS: NotepadWithoutTasksResponse =
   {
     status: 200,

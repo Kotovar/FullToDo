@@ -1,7 +1,8 @@
-import { useRef, type RefObject } from 'react';
+import { useRef, RefObject, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SortState } from '@pages/Tasks/lib';
 import { getTypedEntries, useFocusTrap } from '@shared/lib';
+import { Button } from '@shared/ui';
 import { commonLabels } from '../constants';
 
 interface SortMenuProps {
@@ -16,11 +17,19 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
 
   useFocusTrap(menuRef, buttonRef, closeMenu);
 
-  const handleSubmit = (e: React.FormEvent, sort: SortState) => {
-    e.preventDefault();
-    onApply(sort);
-    closeMenu();
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent, sort: SortState) => {
+      e.preventDefault();
+      onApply(sort);
+      closeMenu();
+    },
+    [closeMenu, onApply],
+  );
+
+  const handleSortClick = useCallback(
+    (sort: SortState) => (e: React.FormEvent) => handleSubmit(e, sort),
+    [handleSubmit],
+  );
 
   const sortGroups = getTypedEntries(commonLabels);
 
@@ -33,14 +42,15 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
     >
       <form className='flex flex-col items-end text-base'>
         {sortGroups.map(([sort, label]) => (
-          <button
-            className='cursor-pointer px-2 hover:rounded hover:bg-current/10'
-            type='button'
+          <Button
+            onClick={handleSortClick(sort)}
+            appearance='ghost'
+            className='relative p-1 hover:bg-current/10'
+            border='none'
             key={sort}
-            onClick={e => handleSubmit(e, sort)}
           >
             {t(label)}
-          </button>
+          </Button>
         ))}
       </form>
     </dialog>

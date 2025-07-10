@@ -1,6 +1,6 @@
 import { memo, useId, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import clsx from 'clsx';
+import { clsx } from 'clsx';
 import { Button, Input, Icon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
 import { ICONS, styles, TaskInputProps } from './utils';
@@ -46,6 +46,7 @@ export const TaskInput = memo(
           padding='s'
           onClick={handleButtonClick}
           aria-label={label}
+          className='focus-visible:outline-dark'
         >
           <Icon name={ICONS[type]} stroke={fill} />
         </Button>

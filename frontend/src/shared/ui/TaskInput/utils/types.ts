@@ -1,3 +1,5 @@
+import type { ChangeEvent, KeyboardEventHandler } from 'react';
+
 type TaskInputVariant = 'add-subtask' | 'add-task';
 type InputType = 'text' | 'date';
 
@@ -8,7 +10,7 @@ export interface TaskInputProps {
   value?: string;
   placeholder?: string;
   variant?: TaskInputVariant;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onClick?: () => void;
-  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>;
 }

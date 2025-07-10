@@ -13,9 +13,6 @@
     "mainTitle": "Home page",
     "open": "Open notebooks"
   },
-  "open": {
-    "menu": "open menu"
-  },
   "card": {
     "additionalMenu": "additional menu"
   },
@@ -26,7 +23,8 @@
   "additionalActions": "additional actions",
   "change": {
     "language": "change language",
-    "topic": "change topic"
+    "topic": "change topic",
+    "menu": "open/close menu"
   },
   "common": {
     "notFound": "Nothing found"

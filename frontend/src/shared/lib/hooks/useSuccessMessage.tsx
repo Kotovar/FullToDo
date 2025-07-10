@@ -18,12 +18,12 @@ export const SUCCESSFUL_MESSAGES = {
   },
 } as const;
 
+type Entity = keyof typeof SUCCESSFUL_MESSAGES;
+type Method = keyof typeof SUCCESSFUL_MESSAGES.tasks;
+
 export const useSuccessMessage = () => {
   return useCallback(
-    (
-      entity: keyof typeof SUCCESSFUL_MESSAGES,
-      method: keyof (typeof SUCCESSFUL_MESSAGES)[keyof typeof SUCCESSFUL_MESSAGES],
-    ) => SUCCESSFUL_MESSAGES[entity][method],
+    (entity: Entity, method: Method) => SUCCESSFUL_MESSAGES[entity][method],
     [],
   );
 };

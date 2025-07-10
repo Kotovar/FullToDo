@@ -37,8 +37,8 @@ export const AddTask = memo(({ notepadId }: AddTaskProps) => {
     setValue({ title: '', date: '' });
   };
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
-    if (event.key === 'Enter') {
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = e => {
+    if (e.key === 'Enter') {
       handleSubmit();
     }
   };

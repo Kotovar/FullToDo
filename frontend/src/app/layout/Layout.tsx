@@ -7,7 +7,7 @@ import { useVisibility, useDarkToast } from './hooks';
 
 const Layout = () => {
   const [isHidden, handleVisibility, turnOffVisibility] = useVisibility();
-  const { theme, toastClassName } = useDarkToast();
+  const { theme } = useDarkToast();
 
   return (
     <div className='font-display h-screen'>
@@ -36,7 +36,9 @@ const Layout = () => {
           <Outlet />
         </section>
         <ToastContainer
-          toastClassName={toastClassName}
+          toastClassName={
+            'relative flex p-40 min-h-10 rounded-md cursor-pointer text-dark bg-red-50'
+          }
           position='top-right'
           transition={Slide}
           autoClose={1500}

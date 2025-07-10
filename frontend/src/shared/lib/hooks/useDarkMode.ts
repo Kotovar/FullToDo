@@ -5,23 +5,17 @@ import { COLORS } from '@shared/ui';
 const LOCAL_STORAGE_KEY = 'dark-mode';
 const COLOR_SCHEME_QUERY = '(prefers-color-scheme: dark)';
 
-type DarkModeOptions = {
-  localStorageKey?: string;
-};
-
 type DarkModeReturn = {
   isDarkMode: boolean;
   fill: string;
   toggle: () => void;
 };
 
-export function useDarkMode({
-  localStorageKey = LOCAL_STORAGE_KEY,
-}: DarkModeOptions = {}): DarkModeReturn {
+export const useDarkMode = (): DarkModeReturn => {
   const isDarkOS = useMediaQuery(COLOR_SCHEME_QUERY);
 
   const [isDarkMode, setDarkMode] = useLocalStorage<boolean>(
-    localStorageKey,
+    LOCAL_STORAGE_KEY,
     isDarkOS,
   );
 
@@ -41,4 +35,4 @@ export function useDarkMode({
     fill,
     toggle,
   };
-}
+};

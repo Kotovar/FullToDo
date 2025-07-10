@@ -13,8 +13,6 @@ describe('useDarkToast', () => {
     });
 
     const { result } = renderHook(() => useDarkToast());
-    expect(result.current.toastClassName).toBe(
-      'relative flex p-4 min-h-10 rounded-md cursor-pointer text-dark bg-accent',
-    );
+    expect(result.current.theme).toBe('dark');
   });
 });

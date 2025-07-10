@@ -36,7 +36,7 @@ export const useSort = (
     return order === 'asc' || order === 'desc' ? order : 'desc';
   };
 
-  const toggleOrder = () => {
+  const toggleOrder = useCallback(() => {
     setParams(prev => {
       const newParams = new URLSearchParams(prev);
       const currentSort = newParams.get('sortBy');
@@ -49,15 +49,18 @@ export const useSort = (
 
       return newParams;
     });
-  };
+  }, [setParams, showInfo]);
 
-  const updateSort = (sort: SortState) => {
-    setParams(prev => {
-      const newParams = new URLSearchParams(prev);
-      newParams.set('sortBy', sort);
-      return newParams;
-    });
-  };
+  const updateSort = useCallback(
+    (sort: SortState) => {
+      setParams(prev => {
+        const newParams = new URLSearchParams(prev);
+        newParams.set('sortBy', sort);
+        return newParams;
+      });
+    },
+    [setParams],
+  );
 
   const sort = useMemo(() => getSortLabels(params), [getSortLabels, params]);
   const order = useMemo(() => getSortOrder(params), [params]);

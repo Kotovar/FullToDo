@@ -7,8 +7,8 @@ import {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFocusTrap } from '@shared/lib';
 import { clsx } from 'clsx';
+import { useFocusTrap } from '@shared/lib';
 
 interface OptionsMenuProps extends ComponentPropsWithRef<'dialog'> {
   buttonRef: RefObject<HTMLButtonElement | null>;

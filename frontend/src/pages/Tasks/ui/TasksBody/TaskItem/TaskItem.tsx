@@ -10,7 +10,7 @@ const ACTION_LABELS = {
 } as const;
 
 const CARD_CLASSES =
-  'bg-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] hover:bg-current/10';
+  'bg-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] hover:bg-current/10 has-[a:focus]:ring-2';
 
 interface TaskItemProps {
   task: Task;
@@ -79,7 +79,7 @@ export const TaskItem = memo(
             aria-label={t(
               isCompleted ? ACTION_LABELS.incomplete : ACTION_LABELS.complete,
             )}
-            className='h-8 w-8 place-items-center'
+            className='focus-visible:ring-dark h-8 w-8 place-items-center focus:outline-none focus-visible:ring-2'
           >
             <CompletionIcon completed={isCompleted} />
           </Button>
