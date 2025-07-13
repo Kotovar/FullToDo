@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { ComponentPropsWithoutRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { Button, ErrorFetching, TaskInput } from '@shared/ui';
@@ -10,8 +10,9 @@ import {
   TaskDetailSkeleton,
   SubtaskItem,
   useTaskForm,
-  TaskDetailProps,
 } from '@pages/TaskDetail/ui';
+
+type TaskDetailProps = ComponentPropsWithoutRef<'div'>;
 
 const TaskDetail = (props: TaskDetailProps) => {
   const { t } = useTranslation();

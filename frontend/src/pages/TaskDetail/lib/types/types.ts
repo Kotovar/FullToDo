@@ -1,4 +1,3 @@
-import type { ComponentPropsWithoutRef } from 'react';
 import type { MutationMethods } from '@shared/api';
 import type { Subtask, Task } from 'shared/schemas';
 
@@ -20,8 +19,6 @@ export type SubtaskAction =
       type: 'delete';
       id: string;
     };
-
-export type TaskDetailProps = ComponentPropsWithoutRef<'div'>;
 
 export type UpdateTask = (
   updatedTask: Partial<Task>,

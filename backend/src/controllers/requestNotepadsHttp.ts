@@ -5,7 +5,7 @@ import {
   handleValidationError,
   parseJsonBody,
 } from './utils';
-import { createNotepadSchema } from '@shared/schemas';
+import { createNotepadSchema } from '@sharedCommon/schemas';
 import type { RequestHandler } from './types';
 
 export const createNotepad: RequestHandler = async (

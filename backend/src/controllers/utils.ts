@@ -4,8 +4,8 @@ import {
   commonNotepadId,
   TaskQueryParams,
   taskQueryParamsSchema,
-} from '@shared/schemas';
-import { extractInvalidKeys } from '@shared/utils';
+} from '@sharedCommon/schemas';
+import { extractInvalidKeys } from '@sharedCommon/utils';
 
 export const parseJsonBody = <T>(req: IncomingMessage): Promise<T> => {
   return new Promise((resolve, reject) => {

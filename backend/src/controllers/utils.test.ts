@@ -8,8 +8,8 @@ import {
   getId,
   getValidatedTaskParams,
 } from './utils';
-import { commonNotepadId, TaskQueryParams } from '@shared/schemas';
-import { extractInvalidKeys } from '@shared/utils';
+import { commonNotepadId, TaskQueryParams } from '@sharedCommon/schemas';
+import { extractInvalidKeys } from '@sharedCommon/utils';
 
 describe('parseJsonBody tests', () => {
   test('should reject JSON Error if catch Error', async () => {

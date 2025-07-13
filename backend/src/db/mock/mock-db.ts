@@ -1,4 +1,4 @@
-import type { Task, Notepad } from '@shared/schemas';
+import type { Task, Notepad } from '@sharedCommon/schemas';
 
 export const TASKS1: Task[] = [
   {

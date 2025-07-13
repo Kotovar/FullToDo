@@ -1,9 +1,9 @@
 import http from 'http';
 import { ROUTE_REGEX } from './routeRegex';
-import { taskRepository } from '../../repositories';
-import { ROUTES } from '@shared/routes';
-import type { RequestHandler } from '../../controllers/types';
-import * as controllers from '../../controllers';
+import { ROUTES } from '@sharedCommon/routes';
+import { taskRepository } from '@repositories';
+import * as controllers from '@controllers';
+import type { RequestHandler } from '@controllers/types';
 
 export const BASE_ROUTES: Record<string, RequestHandler> = {
   [`POST ${ROUTES.NOTEPADS}`]: controllers.createNotepad,

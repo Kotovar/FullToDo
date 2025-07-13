@@ -1,8 +1,8 @@
 import { describe, test, expect, vi } from 'vitest';
 import type { IncomingMessage, ServerResponse } from 'http';
 import { processRoute } from './routes';
-import { taskRepository } from '../../repositories';
-import * as controllers from '../../controllers';
+import { taskRepository } from '@repositories';
+import * as controllers from '@controllers';
 
 describe('processRoute', () => {
   const res = {

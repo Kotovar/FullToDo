@@ -1,4 +1,4 @@
-import { NOTEPADS } from '../db/mock/mock-db';
+import { NOTEPADS } from '@db/mock/mock-db';
 import type {
   Task,
   Notepad,
@@ -10,8 +10,8 @@ import type {
   CreateTask,
   Subtask,
   TaskQueryParams,
-} from '@shared/schemas';
-import { commonNotepadId } from '@shared/schemas';
+} from '@sharedCommon/schemas';
+import { commonNotepadId } from '@sharedCommon/schemas';
 import type { TaskRepository } from './TaskRepository';
 
 export const DEFAULT_TASK_PARAMS: TaskQueryParams = {

@@ -3,9 +3,9 @@ import {
   commonNotepadId,
   type TaskQueryParams,
   type Task,
-} from '@shared/schemas';
+} from '@sharedCommon/schemas';
 import taskRepository, { MockTaskRepository } from './MockTaskRepository';
-import { NOTEPADS } from '../db/mock/mock-db';
+import { NOTEPADS } from '@db/mock/mock-db';
 import {
   allTasks,
   customNotepad,
@@ -16,7 +16,7 @@ import {
   dates,
   newTask,
   realId,
-} from '../tests/mocks';
+} from '@tests/mocks';
 
 const newTitleNotepad = { title: 'Test Notepad' };
 const notepadId = '999';

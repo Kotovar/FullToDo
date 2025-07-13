@@ -3,7 +3,7 @@ import {
   type NotepadWithoutTasksResponse,
   type TaskResponse,
   type TasksResponse,
-} from '@shared/schemas';
+} from '@sharedCommon/schemas';
 import { TASKS1 } from './mock-db';
 
 export const validTasksData: TasksResponse = {

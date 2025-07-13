@@ -1,5 +1,5 @@
-import { commonNotepadId, type Notepad } from '@shared/schemas';
-import { NOTEPADS } from '../../db/mock';
+import { NOTEPADS } from '@db/mock';
+import { commonNotepadId, type Notepad } from '@sharedCommon/schemas';
 
 const sameDate = new Date();
 

@@ -7,7 +7,7 @@ import type {
   NotepadResponse,
   NotepadWithoutTasksResponse,
   TaskQueryParams,
-} from '@shared/schemas';
+} from '@sharedCommon/schemas';
 
 export interface TaskRepository {
   createNotepad(notepad: CreateNotepad): Promise<NotepadResponse>;

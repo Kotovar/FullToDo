@@ -1,8 +1,8 @@
 import http from 'http';
 import morgan from 'morgan';
-import { taskRepository } from '../../repositories';
+import { taskRepository } from '@repositories';
+import { handleNotFound } from '@controllers';
 import { BASE_ROUTES, processRoute } from './routes';
-import { handleNotFound } from '../../controllers';
 
 const logger = morgan('tiny');
 

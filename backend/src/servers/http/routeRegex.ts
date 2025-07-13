@@ -1,4 +1,4 @@
-import { ROUTES } from '@shared/routes';
+import { ROUTES } from '@sharedCommon/routes';
 
 export const ROUTE_REGEX = {
   NOTEPAD_TASKS: new RegExp(

@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ZodError, type ZodIssue } from 'zod';
-import { ROUTES } from '@shared/routes';
+import { ROUTES } from '@sharedCommon/routes';
 import {
   type NotepadResponse,
   type TaskResponse,
@@ -9,14 +9,14 @@ import {
   createTaskSchema,
   notepadId,
   taskId,
-} from '@shared/schemas';
-import { createHttpServer, extractPath } from './httpServer';
-import { taskRepository } from '../../repositories';
+} from '@sharedCommon/schemas';
+import { taskRepository } from '@repositories';
 import {
   validNotepadWithoutTasksData,
   validTaskData,
   validTasksData,
-} from '../../db/mock';
+} from '@db/mock';
+import { createHttpServer, extractPath } from './httpServer';
 
 const port = 3000;
 const server = createHttpServer();

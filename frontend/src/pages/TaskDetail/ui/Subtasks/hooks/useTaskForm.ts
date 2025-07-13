@@ -1,8 +1,12 @@
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { getFormattedDate, handleSubtaskAction, createSubtask } from '..';
-import type { SubtaskAction, UpdateTask, ValueType } from '..';
 import type { Task } from '@sharedCommon/*';
+import type {
+  SubtaskAction,
+  UpdateTask,
+  ValueType,
+} from '@pages/TaskDetail/lib';
 
 const getForm = (initialTask?: Task | null) => {
   return {

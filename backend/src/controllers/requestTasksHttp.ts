@@ -1,4 +1,4 @@
-import { createTaskSchema, updateTaskSchema } from '@shared/schemas';
+import { createTaskSchema, updateTaskSchema } from '@sharedCommon/schemas';
 import {
   checkContentType,
   errorHandler,

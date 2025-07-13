@@ -19,7 +19,15 @@
     "baseUrl": "..",
     "skipLibCheck": true,
     "paths": {
-      "@shared/*": ["shared/*"]
+      "@sharedCommon/*": ["shared/*"],
+      "@db/*": ["backend/src/db/*"],
+      "@configs": ["backend/src/configs/index.ts"],
+      "@configs/*": ["backend/src/configs/*"],
+      "@tests/*": ["backend/src/tests/*"],
+      "@controllers": ["backend/src/controllers/index.ts"],
+      "@controllers/*": ["backend/src/controllers/*"],
+      "@repositories": ["backend/src/repositories/index.ts"],
+      "@repositories/*": ["backend/src/repositories/*"]
     }
   }
 }

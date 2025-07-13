@@ -1,4 +1,4 @@
-import { config } from '../configs';
+import { config } from '@configs';
 import MockTaskRepository from './MockTaskRepository';
 
 const {
