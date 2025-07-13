@@ -160,8 +160,8 @@ export class MockTaskRepository implements TaskRepository {
       const targetNotepad = this.notepads.find(
         notepad => notepad._id === notepadId,
       );
+
       if (targetNotepad) {
-        targetNotepad.tasks ??= [];
         targetNotepad.tasks.push(newTask);
       }
     }

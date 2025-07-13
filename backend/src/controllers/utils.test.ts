@@ -59,6 +59,15 @@ describe('getId tests', () => {
 
     expect(notepadId).toBe(commonNotepadId);
   });
+
+  test('get empty taskId if url[1] isn`t exists', async () => {
+    const url = `/tasks`;
+    const req = { url } as IncomingMessage;
+    const { notepadId, taskId } = getId(req, 'task');
+
+    expect(notepadId).toBe(commonNotepadId);
+    expect(taskId).toBe('');
+  });
 });
 
 describe('getValidatedTaskParams tests', () => {

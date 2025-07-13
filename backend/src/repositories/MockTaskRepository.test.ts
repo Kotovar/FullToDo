@@ -461,10 +461,44 @@ describe('MockTaskRepository', () => {
     });
   });
 
-  test('method updateTask and undefined notepad', async () => {
+  test('method updateTask and undefined notepad', async () => {});
+
+  test('method updateTask and undefined dueDate', async () => {
     const responseUpdate = await repository.updateTask(realId, {
       ...updatedTask,
-      notepadId: 'undefined',
+      dueDate: null,
+    });
+
+    const updatedData = { ...NOTEPADS[0].tasks[0] };
+    delete updatedData.dueDate;
+
+    expect(responseUpdate).toEqual({
+      status: 200,
+      message: `A task with the _id ${realId} has been successfully updated`,
+      data: { ...updatedData, notepadId: realId, title: updatedTask.title },
+    });
+  });
+
+  test('method updateTask and not undefined dueDate', async () => {
+    const newDueDate = new Date();
+    const responseUpdate = await repository.updateTask(realId, {
+      ...updatedTask,
+      dueDate: newDueDate,
+    });
+
+    const updatedData = { ...NOTEPADS[0].tasks[0], dueDate: newDueDate };
+
+    expect(responseUpdate).toEqual({
+      status: 200,
+      message: `A task with the _id ${realId} has been successfully updated`,
+      data: { ...updatedData, notepadId: realId, title: updatedTask.title },
+    });
+  });
+
+  test('method updateTask and notepadError', async () => {
+    const responseUpdate = await repository.updateTask(realId, {
+      ...updatedTask,
+      notepadId: notepadId,
     });
 
     expect(responseUpdate).toEqual({
