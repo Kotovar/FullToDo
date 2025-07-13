@@ -1,6 +1,6 @@
 import { handleSubtaskAction } from './handleSubtaskAction';
 import { MOCK_SUBTASK } from '@shared/mocks';
-import type { SubtaskAction } from '..';
+import type { SubtaskAction } from '@pages/TaskDetail/lib';
 
 const getAction = (
   id = '1',

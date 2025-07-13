@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { SubtaskAction } from '../../Subtasks';
 import type { Subtask } from '@sharedCommon/*';
+import type { SubtaskAction } from '@pages/TaskDetail/lib';
 
 export const useSubtaskItem = (
   subtask: Subtask,

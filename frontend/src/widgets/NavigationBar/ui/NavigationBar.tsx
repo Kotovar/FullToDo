@@ -27,32 +27,26 @@ export const NavigationBar = ({
 
   const { notepads, isLoading, title, editingNotepadId } = state;
 
-  const leftContent = useMemo(() => {
-    return (
-      <Button
-        appearance='ghost'
-        onClick={actions.create.onClick}
-        aria-label={t('notepads.add')}
-      >
-        <Icon name='plus' stroke={fill} />
-      </Button>
-    );
-  }, [actions.create.onClick, fill, t]);
+  const leftContent = (
+    <Button
+      appearance='ghost'
+      onClick={actions.create.onClick}
+      aria-label={t('notepads.add')}
+    >
+      <Icon name='plus' stroke={fill} />
+    </Button>
+  );
 
   const notepadList = useMemo(
     () =>
       notepads.map(({ title, _id }) => {
-        let path: string;
-        if (_id === commonNotepadId) {
-          path = ROUTES.TASKS;
-        } else {
-          path = ROUTES.getNotepadPath(_id);
-        }
+        const path =
+          _id === commonNotepadId ? ROUTES.TASKS : ROUTES.getNotepadPath(_id);
 
         return (
           <LinkCard
             currentModalId={currentModalId}
-            handleModalId={id => setCurrentModalId(id)}
+            handleModalId={setCurrentModalId}
             className={clsx(
               'text-dark grid grid-cols-[1fr_2rem] items-center rounded-lg hover:bg-current/10 has-[a:focus]:ring-2',
               {

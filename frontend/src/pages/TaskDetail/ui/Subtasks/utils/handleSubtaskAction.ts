@@ -1,5 +1,5 @@
-import { Subtask } from '@sharedCommon/*';
-import type { SubtaskAction } from '../types';
+import { SubtaskAction } from '@pages/TaskDetail/lib';
+import type { Subtask } from '@sharedCommon/*';
 
 export const handleSubtaskAction = (
   currentSubtasks: Subtask[],

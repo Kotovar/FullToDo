@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNotepads } from '../../lib';
+import { useNotepads } from './useNotepads';
 
 export const useNavigationBar = () => {
   const [title, setTitle] = useState('');
@@ -49,28 +49,24 @@ export const useNavigationBar = () => {
     [deleteNotepad],
   );
 
-  const actions = useMemo(() => {
-    return {
+  const actions = useMemo(
+    () => ({
       create: {
         onClick: handleCreateNotepad,
         onChange: onChangeTitle,
         onKeyDown: handleKeyDown,
       },
-      edit: {
-        saveTitle: handleSaveTitle,
-        setId: setEditingNotepadId,
-      },
-      delete: {
-        onClick: handleDeleteNotepad,
-      },
-    };
-  }, [
-    handleCreateNotepad,
-    handleDeleteNotepad,
-    handleKeyDown,
-    handleSaveTitle,
-    onChangeTitle,
-  ]);
+      edit: { saveTitle: handleSaveTitle, setId: setEditingNotepadId },
+      delete: { onClick: handleDeleteNotepad },
+    }),
+    [
+      handleCreateNotepad,
+      handleDeleteNotepad,
+      handleKeyDown,
+      handleSaveTitle,
+      onChangeTitle,
+    ],
+  );
 
   return {
     state: {

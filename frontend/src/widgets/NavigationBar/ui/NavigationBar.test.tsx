@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { renderWithRouter, setupMockServer } from '@shared/testing';
 import { MOCK_NOTEPADS_RESPONSE } from '@shared/mocks/';
 import { NavigationBar } from './NavigationBar';
-import * as useNotepadsHook from '@widgets/NavigationBar/lib';
+import * as useNotepadsHook from './hooks/useNotepads';
 
 const FIRST_SPECIFIC_NOTEPAD_INDEX = 1;
 

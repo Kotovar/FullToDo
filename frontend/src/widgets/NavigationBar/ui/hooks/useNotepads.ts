@@ -2,10 +2,13 @@ import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { notepadService } from '@entities/Notepad';
-import { handleMutationSuccess, type MutationUpdateProps } from './utils';
 import { ROUTES } from 'shared/routes';
 import { handleMutationError, type MutationMethods } from '@shared/api';
 import { useApiNotifications } from '@shared/lib';
+import {
+  handleMutationSuccess,
+  MutationUpdateProps,
+} from '@widgets/NavigationBar/lib';
 
 export const useNotepads = () => {
   const navigate = useNavigate();

@@ -70,20 +70,24 @@ export const TaskItem = memo(
       [_id, handleSaveTitle, title],
     );
 
+    const header = useMemo(() => {
+      return (
+        <Button
+          appearance='ghost'
+          onClick={handleStatusChange}
+          aria-label={t(
+            isCompleted ? ACTION_LABELS.incomplete : ACTION_LABELS.complete,
+          )}
+          className='focus-visible:ring-dark h-8 w-8 place-items-center focus:outline-none focus-visible:ring-2'
+        >
+          <CompletionIcon completed={isCompleted} />
+        </Button>
+      );
+    }, [handleStatusChange, isCompleted, t]);
+
     return (
       <LinkCard
-        header={
-          <Button
-            appearance='ghost'
-            onClick={handleStatusChange}
-            aria-label={t(
-              isCompleted ? ACTION_LABELS.incomplete : ACTION_LABELS.complete,
-            )}
-            className='focus-visible:ring-dark h-8 w-8 place-items-center focus:outline-none focus-visible:ring-2'
-          >
-            <CompletionIcon completed={isCompleted} />
-          </Button>
-        }
+        header={header}
         cardTitle={title}
         currentModalId={currentModalId}
         handleModalId={handleModalId}

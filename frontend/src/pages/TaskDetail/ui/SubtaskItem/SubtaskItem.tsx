@@ -2,9 +2,9 @@ import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon, Input, CompletionIcon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
-import type { Subtask } from '@sharedCommon/*';
-import type { SubtaskAction } from '../Subtasks/types';
 import { useSubtaskItem } from './hooks';
+import type { Subtask } from '@sharedCommon/*';
+import type { SubtaskAction } from '@pages/TaskDetail/lib';
 
 interface SubtaskItemProps {
   subtask: Subtask;
