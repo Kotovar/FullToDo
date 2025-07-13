@@ -28,7 +28,7 @@ const Layout = () => {
           aria-expanded={!isHidden}
         />
         <section
-          className={clsx('flex w-full flex-col p-4 md:flex', {
+          className={clsx('flex w-full flex-col p-4 md:flex landscape:p-1', {
             ['hidden']: !isHidden,
           })}
           aria-live='polite'

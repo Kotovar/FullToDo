@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { clsx } from 'clsx';
 import { Button, ErrorFetching, TaskInput } from '@shared/ui';
 import { useBackNavigate } from '@shared/lib';
 import { useTaskDetail } from '@entities/Task';
@@ -38,7 +39,7 @@ const TaskDetail = (props: TaskDetailProps) => {
 
   const subtasksList = useMemo(() => {
     return (
-      <ul className='scrollbar-tasks flex list-none flex-col overflow-y-scroll pr-2'>
+      <ul className='scrollbar-tasks mls:col-1 mls:pr-0 flex list-none flex-col overflow-y-scroll pr-2 empty:hidden'>
         {form.subtasks.map(subtask => (
           <SubtaskItem
             key={subtask._id + subtask.title + subtask.isCompleted}
@@ -59,8 +60,15 @@ const TaskDetail = (props: TaskDetailProps) => {
   }
 
   return (
-    <section {...props} className='flex h-full flex-col gap-1 p-1'>
-      <Button className='self-start' onClick={handleGoBack} padding='md'>
+    <section
+      {...props}
+      className='mls:grid mls:grid-cols-3 mls:grid-rows-min flex h-full flex-col gap-1 p-1'
+    >
+      <Button
+        className='mls:col-1 mls:place-self-center self-start'
+        onClick={handleGoBack}
+        padding='md'
+      >
         {t('back')}
       </Button>
 
@@ -68,7 +76,11 @@ const TaskDetail = (props: TaskDetailProps) => {
 
       {subtasksList}
 
-      <fieldset className='mt-auto flex flex-col gap-2'>
+      <fieldset
+        className={clsx('mls:col-span-2 mls:mt-0 mt-auto flex flex-col gap-2', {
+          ['mls:col-span-full']: form.subtasks.length === 0,
+        })}
+      >
         <legend className='sr-only'>{t('tasks.detail')}</legend>
 
         <TaskInput
@@ -99,7 +111,7 @@ const TaskDetail = (props: TaskDetailProps) => {
       <Button
         type='submit'
         padding='md'
-        className='self-center'
+        className='mls:col-3 mls:row-1 mls:justify-self-center self-center'
         onClick={onUpdateTask}
       >
         {t('save')}

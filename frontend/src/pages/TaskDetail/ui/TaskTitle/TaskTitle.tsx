@@ -20,7 +20,7 @@ export const TaskTitle = memo(({ value, onChange }: TaskTitleProps) => {
         type='text'
         value={value}
         onChange={onChange}
-        className='w-full p-2 outline-0'
+        className='mls:col-2 w-full p-2 outline-0'
         id='taskTitleInput'
       />
     </h1>
