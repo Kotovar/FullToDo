@@ -16,8 +16,9 @@ export const AdditionalActions = memo(() => {
       <Button
         onClick={changeLanguage}
         aria-label={t('change.language')}
-        className='hover:border-light flex w-24 gap-x-2 rounded-xl border-1 border-transparent p-1'
+        className='hover:border-light flex w-24 gap-x-2 rounded-xl border-1 border-transparent'
         appearance='ghost'
+        padding='sm'
       >
         <Icon name={iconNameLanguage} />
         <span className='text-white capitalize'>{t('language')}</span>
@@ -25,8 +26,9 @@ export const AdditionalActions = memo(() => {
       <Button
         onClick={toggle}
         aria-label={t('change.topic')}
-        className='hover:border-light flex gap-x-2 rounded-xl border-1 border-transparent p-1'
+        className='hover:border-light flex gap-x-2 rounded-xl border-1 border-transparent'
         appearance='ghost'
+        padding='sm'
       >
         <Icon name={iconNameTheme} fill={COLORS.WHITE} />
       </Button>

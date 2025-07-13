@@ -1,8 +1,8 @@
-import { type RefObject, useRef, useState } from 'react';
+import { type RefObject, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, RadioGroup } from '@shared/ui';
 import { useFocusTrap } from '@shared/lib';
-import { getFilterGroups } from '../..';
+import { getEmptyFilters, getInitialFilters, getFilterGroups } from './utils';
 import type { FilterLabel, FiltersState } from '@pages/Tasks/lib';
 
 interface FiltersMenuProps {
@@ -20,39 +20,31 @@ export const FiltersMenu = ({
 }: FiltersMenuProps) => {
   const menuRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
-  const [filters, setFilters] = useState<FiltersState>(() => {
-    const initialFilters: FiltersState = {
-      isCompleted: '',
-      hasDueDate: '',
-      priority: '',
-    };
-
-    labels.forEach(label => {
-      initialFilters[label.key] = label.value;
-    });
-
-    return initialFilters;
-  });
+  const [filters, setFilters] = useState<FiltersState>(() =>
+    getInitialFilters(labels),
+  );
 
   useFocusTrap(menuRef, buttonRef, closeMenu);
 
-  const handleChange = (name: keyof FiltersState, value: string) => {
-    setFilters(prev => ({ ...prev, [name]: value }));
-  };
+  const handleChange = useCallback(
+    <K extends keyof FiltersState>(name: K, value: FiltersState[K]) => {
+      setFilters(prev => ({ ...prev, [name]: value }));
+    },
+    [],
+  );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onApply(filters);
-    closeMenu();
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      onApply(filters);
+      closeMenu();
+    },
+    [closeMenu, filters, onApply],
+  );
 
-  const handleReset = () => {
-    setFilters({
-      isCompleted: '',
-      hasDueDate: '',
-      priority: '',
-    });
-  };
+  const handleReset = useCallback(() => {
+    setFilters(getEmptyFilters());
+  }, []);
 
   const filterGroups = getFilterGroups(t);
 
@@ -75,12 +67,18 @@ export const FiltersMenu = ({
         ))}
       </form>
       <div className='flex justify-between gap-1 pt-2 text-sm'>
-        <Button appearance='ghost' onClick={handleReset} className='px-2 py-1'>
+        <Button
+          appearance='ghost'
+          onClick={handleReset}
+          padding='sm'
+          className='hover:underline'
+        >
           {t('reset')}
         </Button>
         <Button
-          className='focus-visible:ring-dark px-2 py-1 focus:outline-none focus-visible:ring-2'
+          className='focus-visible:ring-dark focus:outline-none focus-visible:ring-2'
           form='filterForm'
+          padding='sm'
           type='submit'
         >
           {t('apply')}

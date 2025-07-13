@@ -60,7 +60,7 @@ const TaskDetail = (props: TaskDetailProps) => {
 
   return (
     <section {...props} className='flex h-full flex-col gap-1 p-1'>
-      <Button className='self-start' onClick={handleGoBack} padding='s'>
+      <Button className='self-start' onClick={handleGoBack} padding='md'>
         {t('back')}
       </Button>
 
@@ -98,7 +98,7 @@ const TaskDetail = (props: TaskDetailProps) => {
 
       <Button
         type='submit'
-        padding='s'
+        padding='md'
         className='self-center'
         onClick={onUpdateTask}
       >

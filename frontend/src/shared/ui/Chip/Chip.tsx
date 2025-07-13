@@ -18,7 +18,7 @@ export const Chip = memo(({ label, onDelete }: ChipProps) => {
       <Button
         appearance='ghost'
         onClick={onDelete}
-        padding='s'
+        padding='md'
         aria-label={`${t('delete')} ${label}`}
       >
         <Icon name='cross' fill={fill} />

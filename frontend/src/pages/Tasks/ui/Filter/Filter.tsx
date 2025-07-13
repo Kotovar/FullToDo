@@ -45,9 +45,10 @@ export const Filter = memo(({ params, setParams }: FilterProps) => {
         <Button
           onClick={toggleMenu}
           appearance='ghost'
-          className='relative p-1 hover:bg-current/10'
+          className='relative hover:bg-current/10'
           aria-label={t('filters.change')}
           ref={buttonRef}
+          padding='sm'
           border='none'
         >
           <Icon name='filter' size={ICON_SIZES.DEFAULT} stroke={fill} />

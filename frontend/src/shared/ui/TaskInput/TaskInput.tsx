@@ -34,7 +34,7 @@ export const TaskInput = memo(
 
     const rightContent =
       variant === 'add-task' && isDate ? (
-        <Button onClick={onClick} padding='s'>
+        <Button onClick={onClick} padding='md'>
           {t('add')}
         </Button>
       ) : null;
@@ -43,7 +43,7 @@ export const TaskInput = memo(
       () => (
         <Button
           appearance='ghost'
-          padding='s'
+          padding='md'
           onClick={handleButtonClick}
           aria-label={label}
           className='focus-visible:outline-dark'

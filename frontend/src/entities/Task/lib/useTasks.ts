@@ -16,7 +16,8 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
   const isCommon = isCommonNotepad(notepadId);
   const queryKey = useMemo(() => getTaskQueryKey(notepadId), [notepadId]);
-  const paramsString = params.toString();
+  const paramsString = useMemo(() => params.toString(), [params]);
+
   const {
     data: tasks,
     isError: isErrorTasks,
@@ -47,6 +48,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const { mutateAsync: mutationDelete } = useMutation({
     mutationFn: (id: string) => taskService.deleteTask(id),
   });
+
   const { onSuccess, onError } = useApiNotifications(entity);
 
   const updateTask = useCallback(
@@ -55,7 +57,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       id: string,
       subtaskActionType?: MutationMethods,
     ) =>
-      handleMutation(
+      await handleMutation(
         mutationUpdate,
         subtaskActionType ?? 'update',
         { updatedTask, id },
@@ -65,8 +67,8 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   );
 
   const deleteTask = useCallback(
-    (id: string) =>
-      handleMutation(mutationDelete, 'delete', id, {
+    async (id: string) =>
+      await handleMutation(mutationDelete, 'delete', id, {
         queryClient,
         queryKey,
         onSuccess,

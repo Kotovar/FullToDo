@@ -42,8 +42,9 @@ export const Sort = ({ params, setParams }: SortProps) => {
       <Button
         onClick={toggleOrder}
         appearance='ghost'
-        className='relative p-1 hover:bg-current/10'
+        className='relative hover:bg-current/10'
         aria-label={t('sort.order')}
+        padding='sm'
         border='none'
       >
         <Icon

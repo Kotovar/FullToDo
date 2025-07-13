@@ -45,8 +45,9 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
           <Button
             onClick={handleSortClick(sort)}
             appearance='ghost'
-            className='relative p-1 hover:bg-current/10'
+            className='relative hover:bg-current/10'
             border='none'
+            padding='sm'
             key={sort}
           >
             {t(label)}

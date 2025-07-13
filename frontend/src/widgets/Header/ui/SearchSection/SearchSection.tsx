@@ -21,7 +21,8 @@ export const SearchSection = memo(() => {
           aria-label={t('search.clear')}
           onClick={onClear}
           type='button'
-          className='hover:bg-grey p-1'
+          className='hover:bg-grey'
+          padding='sm'
         >
           <Icon name='cross' fill={fill} />
         </Button>
