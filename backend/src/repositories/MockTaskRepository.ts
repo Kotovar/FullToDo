@@ -139,22 +139,8 @@ export class MockTaskRepository implements TaskRepository {
       notepadId,
       isCommonNotepad,
     );
+
     if (notepadError) return notepadError;
-
-    const existingTask = this.tasks.some(
-      task => task.title === title && task.notepadId === notepadId,
-    );
-
-    if (existingTask) {
-      const notepadTitle = isCommonNotepad
-        ? commonNotepadId
-        : this.notepads.find(notepad => notepad._id === notepadId)?.title;
-
-      return {
-        status: 409,
-        message: `Task with title ${title} already exists in ${notepadTitle}`,
-      };
-    }
 
     const newTask: Task = {
       _id: this.generateTaskId(),
@@ -310,24 +296,6 @@ export class MockTaskRepository implements TaskRepository {
     );
 
     if (notepadError) return notepadError;
-
-    if (updatedTaskFields.title) {
-      const tasksToCheck = isCommonNotepad
-        ? this.tasks.filter(task => task.notepadId === commonNotepadId)
-        : (this.notepads.find(notepad => notepad._id === newNotepadId)?.tasks ??
-          []);
-
-      const titleExists = tasksToCheck.some(
-        task => task.title === updatedTaskFields.title,
-      );
-
-      if (titleExists) {
-        return {
-          status: 409,
-          message: `Task with title ${updatedTaskFields.title} already exists`,
-        };
-      }
-    }
 
     const subtasks = updatedTaskFields.subtasks ?? currentTask.subtasks;
     const progress = updatedTaskFields.subtasks

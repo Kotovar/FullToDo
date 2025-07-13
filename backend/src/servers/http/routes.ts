@@ -2,14 +2,26 @@ import http from 'http';
 import { ROUTE_REGEX } from './routeRegex';
 import { ROUTES } from '@sharedCommon/routes';
 import { taskRepository } from '@repositories';
-import * as controllers from '@controllers';
 import type { RequestHandler } from '@controllers/types';
+import {
+  createNotepad,
+  createTask,
+  deleteNotepad,
+  deleteTask,
+  getAllNotepads,
+  getAllTasks,
+  getSingleNotepadTasks,
+  getSingleTask,
+  handleNotFound,
+  updateNotepad,
+  updateTask,
+} from '@controllers';
 
 export const BASE_ROUTES: Record<string, RequestHandler> = {
-  [`POST ${ROUTES.NOTEPADS}`]: controllers.createNotepad,
-  [`POST ${ROUTES.TASKS}`]: controllers.createTask,
-  [`GET ${ROUTES.NOTEPADS}`]: controllers.getAllNotepads,
-  [`GET ${ROUTES.TASKS}`]: controllers.getAllTasks,
+  [`POST ${ROUTES.NOTEPADS}`]: createNotepad,
+  [`POST ${ROUTES.TASKS}`]: createTask,
+  [`GET ${ROUTES.NOTEPADS}`]: getAllNotepads,
+  [`GET ${ROUTES.TASKS}`]: getAllTasks,
 };
 
 export const processRoute = (
@@ -24,11 +36,11 @@ export const processRoute = (
   if (notepadTasksMatch) {
     switch (req.method) {
       case 'POST':
-        return controllers.createTask({ req, res }, taskRepository);
+        return createTask({ req, res }, taskRepository);
       case 'GET':
-        return controllers.getSingleNotepadTasks({ req, res }, taskRepository);
+        return getSingleNotepadTasks({ req, res }, taskRepository);
       default:
-        return controllers.handleNotFound(res);
+        return handleNotFound(res);
     }
   }
 
@@ -37,13 +49,13 @@ export const processRoute = (
   if (commonTaskDetailMatch) {
     switch (req.method) {
       case 'GET':
-        return controllers.getSingleTask({ req, res }, taskRepository);
+        return getSingleTask({ req, res }, taskRepository);
       case 'PATCH':
-        return controllers.updateTask({ req, res }, taskRepository);
+        return updateTask({ req, res }, taskRepository);
       case 'DELETE':
-        return controllers.deleteTask({ req, res }, taskRepository);
+        return deleteTask({ req, res }, taskRepository);
       default:
-        return controllers.handleNotFound(res);
+        return handleNotFound(res);
     }
   }
 
@@ -52,13 +64,13 @@ export const processRoute = (
   if (taskDetailMatch) {
     switch (req.method) {
       case 'GET':
-        return controllers.getSingleTask({ req, res }, taskRepository);
+        return getSingleTask({ req, res }, taskRepository);
       case 'PATCH':
-        return controllers.updateTask({ req, res }, taskRepository);
+        return updateTask({ req, res }, taskRepository);
       case 'DELETE':
-        return controllers.deleteTask({ req, res }, taskRepository);
+        return deleteTask({ req, res }, taskRepository);
       default:
-        return controllers.handleNotFound(res);
+        return handleNotFound(res);
     }
   }
 
@@ -67,11 +79,11 @@ export const processRoute = (
   if (notepadMatch) {
     switch (req.method) {
       case 'PATCH':
-        return controllers.updateNotepad({ req, res }, taskRepository);
+        return updateNotepad({ req, res }, taskRepository);
       case 'DELETE':
-        return controllers.deleteNotepad({ req, res }, taskRepository);
+        return deleteNotepad({ req, res }, taskRepository);
       default:
-        return controllers.handleNotFound(res);
+        return handleNotFound(res);
     }
   }
 
