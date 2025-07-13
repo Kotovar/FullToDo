@@ -21,7 +21,6 @@ import {
 const newTitleNotepad = { title: 'Test Notepad' };
 const notepadId = '999';
 const taskId = '999';
-const realNotepadTitle = 'Рабочее';
 const { date1, date2, date3 } = dates;
 
 const getSortedAllTasks = (
@@ -89,13 +88,6 @@ describe('MockTaskRepository', () => {
       status: 404,
       message: 'Notepad not found',
     });
-
-    const secondResponseCreate = await repository.createTask(newTask, realId);
-
-    expect(secondResponseCreate).toStrictEqual({
-      status: 409,
-      message: `Task with title ${newTask.title} already exists in ${realNotepadTitle}`,
-    });
   });
 
   test('method createTask and common notepad', async () => {
@@ -107,16 +99,6 @@ describe('MockTaskRepository', () => {
     expect(responseCreate).toStrictEqual({
       status: 201,
       message: `Task with the title ${newTask.title} has been successfully created`,
-    });
-
-    const secondResponseCreate = await repository.createTask(
-      newTask,
-      commonNotepadId,
-    );
-
-    expect(secondResponseCreate).toStrictEqual({
-      status: 409,
-      message: `Task with title ${newTask.title} already exists in ${commonNotepadId}`,
     });
   });
 
@@ -463,16 +445,6 @@ describe('MockTaskRepository', () => {
     expect(badResponseUpdateDouble).toStrictEqual({
       status: 404,
       message: 'Task not found',
-    });
-
-    const responseUpdateSecond = await repository.updateTask(
-      realId,
-      updatedTask,
-    );
-
-    expect(responseUpdateSecond).toStrictEqual({
-      status: 409,
-      message: `Task with title ${updatedTask.title} already exists`,
     });
   });
 

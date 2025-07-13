@@ -1,6 +1,5 @@
 import request from 'supertest';
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ZodError, type ZodIssue } from 'zod';
 import { ROUTES } from '@sharedCommon/routes';
 import {
   type NotepadResponse,
@@ -17,11 +16,14 @@ import {
   validTasksData,
 } from '@db/mock';
 import { createHttpServer, extractPath } from './httpServer';
+import { ZodError } from 'zod';
 
 const port = 3000;
 const server = createHttpServer();
 const internalError = new Error('Internal Server Error');
 const validationErrorMessage = 'Invalid data';
+
+type MockZodError = ZodError<{ title: string }>;
 
 describe('httpServer start/close', () => {
   test('should start and stop the server', async () => {
@@ -212,26 +214,22 @@ describe('httpServer POST', () => {
 
     test('should return 400 if notepad data is invalid', async () => {
       const invalidNotepadData = { title: null };
-      const errors: ZodIssue[] = [
-        {
-          message: 'Title is required',
-          code: 'invalid_type',
-          path: ['title'],
-          expected: 'string',
-          received: 'null',
-        },
-      ];
+      const mockZodError = {
+        message: 'Title is required',
+        code: 'invalid_type',
+        path: ['title'],
+        expected: 'string',
+        input: null,
+      };
 
       const validationError = {
         message: validationErrorMessage,
-        errors: errors,
+        errors: mockZodError,
       };
-
-      const zodError = new ZodError(errors);
 
       vi.spyOn(createNotepadSchema, 'safeParse').mockReturnValue({
         success: false,
-        error: zodError,
+        error: mockZodError as unknown as MockZodError,
       });
 
       const response = await request(server)
@@ -328,7 +326,7 @@ describe('httpServer POST', () => {
         description: 'Созданная',
       };
 
-      const errors: ZodIssue[] = [
+      const mockZodError = [
         {
           message: 'Title is required',
           code: 'invalid_type',
@@ -339,15 +337,13 @@ describe('httpServer POST', () => {
       ];
 
       const validationError = {
-        message: validationErrorMessage,
-        errors: errors,
+        message: 'Invalid data',
+        errors: mockZodError,
       };
-
-      const zodError = new ZodError(errors);
 
       vi.spyOn(createTaskSchema, 'safeParse').mockReturnValue({
         success: false,
-        error: zodError,
+        error: mockZodError as unknown as MockZodError,
       });
 
       const response = await request(server)
@@ -426,26 +422,22 @@ describe('httpServer PATH', () => {
 
     test('should return 400 if notepad data is invalid', async () => {
       const invalidNotepadData = { title: null };
-      const errors: ZodIssue[] = [
-        {
-          message: 'Title is required',
-          code: 'invalid_type',
-          path: ['title'],
-          expected: 'string',
-          received: 'null',
-        },
-      ];
+      const mockZodError = {
+        message: 'Title is required',
+        code: 'invalid_type',
+        path: ['title'],
+        expected: 'string',
+        input: 'null',
+      };
 
       const validationError = {
         message: validationErrorMessage,
-        errors: errors,
+        errors: mockZodError,
       };
-
-      const zodError = new ZodError(errors);
 
       vi.spyOn(createNotepadSchema, 'safeParse').mockReturnValue({
         success: false,
-        error: zodError,
+        error: mockZodError as unknown as MockZodError,
       });
 
       const response = await request(server)
@@ -546,26 +538,29 @@ describe('httpServer PATH', () => {
         subtasks: [{ title: 'abc3111', isCompleted: 2, _id: '1' }],
       };
 
-      const errors: ZodIssue[] = [
-        {
-          message: 'Expected boolean, received number',
-          code: 'invalid_type',
-          path: ['subtasks', 0, 'isCompleted'],
-          expected: 'boolean',
-          received: 'number',
-        },
-      ];
+      const mockZodError = {
+        issues: [
+          {
+            expected: 'boolean',
+            code: 'invalid_type',
+            path: ['subtasks', 0, 'isCompleted'],
+            message: 'Invalid input: expected boolean, received number',
+          },
+        ],
+        name: 'ZodError',
+      };
 
       const validationError = {
         message: validationErrorMessage,
-        errors: errors,
+        errors: {
+          message: JSON.stringify(mockZodError.issues, null, 2),
+          name: 'ZodError',
+        },
       };
-
-      const zodError = new ZodError(errors);
 
       vi.spyOn(createTaskSchema, 'safeParse').mockReturnValue({
         success: false,
-        error: zodError,
+        error: mockZodError as unknown as MockZodError,
       });
 
       const response = await request(server)

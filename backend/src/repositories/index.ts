@@ -1,3 +1,6 @@
+export * from './TaskRepository';
+export * from './MockTaskRepository';
+
 import { config } from '@configs';
 import MockTaskRepository from './MockTaskRepository';
 

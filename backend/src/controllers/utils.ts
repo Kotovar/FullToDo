@@ -100,7 +100,7 @@ export const handleValidationError = (res: ServerResponse, error: ZodError) => {
   res.end(
     JSON.stringify({
       message: 'Invalid data',
-      errors: error.errors,
+      errors: error,
     }),
   );
 };
