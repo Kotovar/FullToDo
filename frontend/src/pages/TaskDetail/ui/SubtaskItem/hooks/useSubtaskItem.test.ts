@@ -1,5 +1,4 @@
-import { act } from 'react';
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { Subtask } from '@sharedCommon/*';
 import { useSubtaskItem } from './useSubtaskItem';
 import { MOCK_SUBTASK } from '@shared/mocks';

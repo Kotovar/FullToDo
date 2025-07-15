@@ -17,19 +17,19 @@ const getAction = (
 };
 
 describe('handleSubtaskAction method', () => {
-  test('если в списке подзадач нет искомой, то вернуть все задачи', () => {
+  test('if the subtask list does not contain the one you are looking for, then return all tasks', () => {
     const result = handleSubtaskAction([MOCK_SUBTASK], getAction('2'));
 
     expect(result).toStrictEqual([MOCK_SUBTASK]);
   });
 
-  test('если в списке подзадач есть искомая и метод update, то вернуть все задачи с обновлённой задачей', () => {
+  test('if the list of subtasks contains the desired one and the update method, then return all tasks with the updated task', () => {
     const result = handleSubtaskAction([MOCK_SUBTASK], getAction());
 
     expect(result).toStrictEqual([{ ...MOCK_SUBTASK, title: 'test' }]);
   });
 
-  test('если в списке подзадач есть искомая и метод delete, то вернуть все задачи без искомой', () => {
+  test('if the list of subtasks contains the desired one and the delete method, then return all tasks without the desired one', () => {
     const result = handleSubtaskAction(
       [MOCK_SUBTASK],
       getAction('1', 'delete'),

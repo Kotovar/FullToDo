@@ -1,21 +1,17 @@
 import { ChangeEvent, useCallback, useRef, useState } from 'react';
 import { useParams } from 'react-router';
-import { getFormattedDate, handleSubtaskAction, createSubtask } from '..';
 import type { Task } from '@sharedCommon/*';
 import type {
   SubtaskAction,
   UpdateTask,
   ValueType,
 } from '@pages/TaskDetail/lib';
-
-const getForm = (initialTask?: Task | null) => {
-  return {
-    title: initialTask?.title || '',
-    dueDate: initialTask?.dueDate ? getFormattedDate(initialTask.dueDate) : '',
-    description: initialTask?.description || '',
-    subtasks: initialTask?.subtasks || [],
-  };
-};
+import {
+  getDateUpdate,
+  getForm,
+  createSubtask,
+  handleSubtaskAction,
+} from './utils';
 
 const hasUpdates = (obj: object) => Object.keys(obj).length > 0;
 
@@ -49,17 +45,6 @@ export const useTaskForm = (
     [setForm, taskId, updateTask],
   );
 
-  const getDateUpdate = useCallback(
-    (taskDate: Date | null | undefined, newDate: string) => {
-      if (newDate === '' && taskDate) return null;
-      if (!newDate) return undefined;
-
-      const current = taskDate ? getFormattedDate(taskDate) : null;
-      return current !== newDate ? new Date(newDate) : undefined;
-    },
-    [],
-  );
-
   const onUpdateTask = useCallback(async () => {
     const { title, description, dueDate } = formRef.current;
     const updates: Partial<Task> = {};
@@ -80,12 +65,11 @@ export const useTaskForm = (
       return false;
     }
   }, [
-    taskId,
+    onSuccess,
     task?.description,
     task?.dueDate,
     task?.title,
-    getDateUpdate,
-    onSuccess,
+    taskId,
     updateTask,
   ]);
 
