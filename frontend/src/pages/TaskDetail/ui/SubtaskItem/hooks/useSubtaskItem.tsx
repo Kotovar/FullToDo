@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import type { Subtask } from '@sharedCommon/*';
 import type { SubtaskAction } from '@pages/TaskDetail/lib';
 
@@ -11,10 +11,6 @@ export const useSubtaskItem = (
   const [isEditing, setIsEditing] = useState(false);
   const [draftTitle, setDraftTitle] = useState(title);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setDraftTitle(title);
-  }, [title]);
 
   const onDeleteSubtask = useCallback(
     () => updateSubtask({ type: 'delete', id: _id }),

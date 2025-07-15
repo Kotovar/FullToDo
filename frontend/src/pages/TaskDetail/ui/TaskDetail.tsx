@@ -20,11 +20,13 @@ const TaskDetail = (props: TaskDetailProps) => {
     entity: 'task',
   });
   const handleGoBack = useBackNavigate();
+  const taskKey = task?._id ?? 'empty';
 
   const { form, subtaskTitle, methods } = useTaskForm(
     task,
     updateTask,
     handleGoBack,
+    taskKey,
   );
 
   const {

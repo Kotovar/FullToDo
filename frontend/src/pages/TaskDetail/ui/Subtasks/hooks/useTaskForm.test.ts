@@ -7,11 +7,13 @@ import { getFormattedDate } from '..';
 const updateTaskMock = vi.fn();
 const onSuccessMock = vi.fn();
 
-const getInitialData = async (initialTask?: Task | null) => {
+const testTaskKey = 'testTaskKey';
+
+const getInitialData = async (taskKey: string, initialTask?: Task | null) => {
   const { result, rerender } = renderHook(
-    ({ task }) => useTaskForm(task, updateTaskMock, onSuccessMock),
+    ({ task, key }) => useTaskForm(task, updateTaskMock, onSuccessMock, key),
     {
-      initialProps: { task: initialTask },
+      initialProps: { task: initialTask, key: taskKey },
     },
   );
 
@@ -22,7 +24,7 @@ const getInitialData = async (initialTask?: Task | null) => {
 
 describe('useTasks hook', () => {
   test('Если в начальном значении хука указана дата выполнения - отформатировать её', async () => {
-    const { result } = await getInitialData(MOCK_TASK);
+    const { result } = await getInitialData(testTaskKey, MOCK_TASK);
 
     await waitFor(() => {
       expect(result.current.form.dueDate).toBe(
@@ -32,7 +34,7 @@ describe('useTasks hook', () => {
   });
 
   test('Если начальное значение хука поменялось - обновить form', async () => {
-    const { result, rerender } = await getInitialData();
+    const { result, rerender } = await getInitialData(testTaskKey);
 
     expect(result.current.form).toEqual({
       title: '',
@@ -41,7 +43,7 @@ describe('useTasks hook', () => {
       subtasks: [],
     });
 
-    rerender({ task: MOCK_TASK });
+    rerender({ task: MOCK_TASK, key: 'otherKey' });
 
     await waitFor(() => {
       expect(result.current.form).toEqual({

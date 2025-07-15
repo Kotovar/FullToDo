@@ -8,6 +8,7 @@ vi.mock('react-i18next', async importOriginal => {
   const actual = await importOriginal<typeof import('react-i18next')>();
   return {
     ...actual,
+    // eslint-disable-next-line react-hooks-extra/no-unnecessary-use-prefix
     useTranslation: () => ({
       t: (key: string) => key,
       i18n: {

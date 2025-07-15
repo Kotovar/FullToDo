@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { debounce } from '@shared/lib/debounce';
 import { useTaskParams } from '@entities/Task';
 import type { TaskSearch } from 'shared/schemas';
@@ -6,16 +6,12 @@ import type { TaskSearch } from 'shared/schemas';
 export const useSearch = (debounceDelay: number = 300) => {
   const { validParams, setSearchParams } = useTaskParams();
 
-  const getSearch = useCallback(() => {
+  const initialSearch = useMemo(() => {
     const { search }: TaskSearch = Object.fromEntries(validParams);
     return search ?? '';
   }, [validParams]);
 
-  const [searchValue, setSearchValue] = useState(() => getSearch());
-
-  useEffect(() => {
-    setSearchValue(getSearch());
-  }, [getSearch]);
+  const [searchValue, setSearchValue] = useState(initialSearch);
 
   const debouncedUpdate = useMemo(
     () =>

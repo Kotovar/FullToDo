@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { getFormattedDate, handleSubtaskAction, createSubtask } from '..';
 import type { Task } from '@sharedCommon/*';
@@ -23,19 +23,19 @@ export const useTaskForm = (
   task: Task | null | undefined,
   updateTask: UpdateTask,
   onSuccess: () => void,
+  taskKey: string,
 ) => {
   const { taskId = '' } = useParams();
   const [form, setForm] = useState<ValueType>(() => getForm(task));
   const [subtaskTitle, setSubtaskTitle] = useState('');
+  const taskKeyRef = useRef(taskKey);
   const formRef = useRef(form);
-  const subtaskTitleRef = useRef('');
   formRef.current = form;
 
-  useEffect(() => {
-    if (task) {
-      setForm(getForm(task));
-    }
-  }, [task]);
+  if (taskKeyRef.current !== taskKey) {
+    taskKeyRef.current = taskKey;
+    setForm(getForm(task));
+  }
 
   const updateSubtask = useCallback(
     (action: SubtaskAction) => {
@@ -90,7 +90,7 @@ export const useTaskForm = (
   ]);
 
   const onCreateSubtask = useCallback(() => {
-    const title = subtaskTitleRef.current.trim();
+    const title = subtaskTitle.trim();
     if (!title) return;
 
     const newSubtask = createSubtask(title);
@@ -102,8 +102,7 @@ export const useTaskForm = (
     });
 
     setSubtaskTitle('');
-    subtaskTitleRef.current = '';
-  }, [taskId, updateTask]);
+  }, [subtaskTitle, taskId, updateTask]);
 
   const handleKeyDown = useCallback<
     React.KeyboardEventHandler<HTMLInputElement>
@@ -124,7 +123,6 @@ export const useTaskForm = (
     (e: ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setSubtaskTitle(value);
-      subtaskTitleRef.current = value;
     },
     [],
   );
