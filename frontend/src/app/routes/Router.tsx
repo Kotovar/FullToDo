@@ -1,28 +1,12 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
-import { lazy, ReactNode, Suspense } from 'react';
 import { Tasks } from '@pages/Tasks';
 import { Error } from '@pages/Error';
 import { Home } from '@pages/Home';
+import { LayoutSkeleton } from '@app/layout';
 import { TaskDetailSkeleton } from '@pages/TaskDetail';
 import { ROUTES } from '@sharedCommon/';
-import { NavigationBarSkeleton } from '@widgets/NavigationBar';
-
-const TaskDetail = lazy(() => import('@pages/TaskDetail'));
-const Layout = lazy(() => import('@app/layout'));
-
-const LayoutSkeleton = () => (
-  <div className='bg-light h-dvh'>
-    <NavigationBarSkeleton isHidden={false} />
-  </div>
-);
-
-const WithSuspense = ({
-  children,
-  fallback = <TaskDetailSkeleton />,
-}: {
-  children: ReactNode;
-  fallback?: ReactNode;
-}) => <Suspense fallback={fallback}>{children}</Suspense>;
+import { WithSuspense } from './utils';
+import { Layout, TaskDetail } from './components';
 
 export const Router = () => {
   return (
@@ -44,7 +28,7 @@ export const Router = () => {
             <Route
               path={ROUTES.TASK_DETAIL}
               element={
-                <WithSuspense>
+                <WithSuspense fallback={<TaskDetailSkeleton />}>
                   <TaskDetail />
                 </WithSuspense>
               }
@@ -56,7 +40,7 @@ export const Router = () => {
             <Route
               path={ROUTES.COMMON_TASK_DETAIL}
               element={
-                <WithSuspense>
+                <WithSuspense fallback={<TaskDetailSkeleton />}>
                   <TaskDetail />
                 </WithSuspense>
               }
