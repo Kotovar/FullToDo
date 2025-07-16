@@ -2,15 +2,8 @@ import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getPath } from '@pages/Tasks/lib';
 import { Button, CompletionIcon, LinkCard } from '@shared/ui';
+import { ACTION_LABELS, CARD_CLASSES, processProgress } from './utils';
 import type { Task } from 'shared/schemas';
-
-const ACTION_LABELS = {
-  complete: 'tasks.actions.complete',
-  incomplete: 'tasks.actions.incomplete',
-} as const;
-
-const CARD_CLASSES =
-  'bg-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] hover:bg-current/10 has-[a:focus]:ring-2';
 
 interface TaskItemProps {
   task: Task;
@@ -59,11 +52,7 @@ export const TaskItem = memo(
       renameTask(_id);
     }, [_id, renameTask]);
 
-    const taskProgress = useMemo(
-      () =>
-        progress ? progress.replace('/', ` ${t('of')} `) : t('tasks.empty'),
-      [progress, t],
-    );
+    const taskProgress = processProgress(progress);
 
     const onSaveTitle = useCallback(
       (newTitle: string) => handleSaveTitle(_id, newTitle, title),

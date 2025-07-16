@@ -12,6 +12,12 @@ export const MOCK_SUBTASK: Subtask = {
   _id: '1',
 };
 
+export const MOCK_SUBTASK_OTHER: Subtask = {
+  isCompleted: true,
+  title: 'Выучить Nest.js',
+  _id: '2',
+};
+
 export const MOCK_TASK: Task = {
   title: 'Задача 1',
   notepadId: '1',

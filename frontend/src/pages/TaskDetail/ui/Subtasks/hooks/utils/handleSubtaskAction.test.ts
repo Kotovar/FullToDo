@@ -1,5 +1,5 @@
 import { handleSubtaskAction } from './handleSubtaskAction';
-import { MOCK_SUBTASK } from '@shared/mocks';
+import { MOCK_SUBTASK, MOCK_SUBTASK_OTHER } from '@shared/mocks';
 import type { SubtaskAction } from '@pages/TaskDetail/lib';
 
 const getAction = (
@@ -9,7 +9,7 @@ const getAction = (
   return type === 'update'
     ? {
         title: 'test',
-        isCompleted: false,
+        isCompleted: true,
         type,
         id,
       }
@@ -23,12 +23,6 @@ describe('handleSubtaskAction method', () => {
     expect(result).toStrictEqual([MOCK_SUBTASK]);
   });
 
-  test('if the list of subtasks contains the desired one and the update method, then return all tasks with the updated task', () => {
-    const result = handleSubtaskAction([MOCK_SUBTASK], getAction());
-
-    expect(result).toStrictEqual([{ ...MOCK_SUBTASK, title: 'test' }]);
-  });
-
   test('if the list of subtasks contains the desired one and the delete method, then return all tasks without the desired one', () => {
     const result = handleSubtaskAction(
       [MOCK_SUBTASK],
@@ -36,5 +30,30 @@ describe('handleSubtaskAction method', () => {
     );
 
     expect(result).toStrictEqual([]);
+  });
+
+  test('should return the same subtask if the title and status are the same', () => {
+    const result = handleSubtaskAction([MOCK_SUBTASK], {
+      ...MOCK_SUBTASK,
+      id: MOCK_SUBTASK._id,
+      type: 'update',
+    });
+
+    expect(result).toStrictEqual([MOCK_SUBTASK]);
+  });
+
+  test('should return the correct filtering of subtasks', () => {
+    const result = handleSubtaskAction(
+      [MOCK_SUBTASK, MOCK_SUBTASK_OTHER],
+      getAction('2'),
+    );
+
+    expect(result).toStrictEqual([
+      MOCK_SUBTASK,
+      {
+        ...MOCK_SUBTASK_OTHER,
+        title: 'test',
+      },
+    ]);
   });
 });
