@@ -57,8 +57,8 @@ describe('TaskDetail component', () => {
     vi.clearAllMocks();
   });
 
-  describe('Общие тесты - запуск, кнопка Назад, ошибка', () => {
-    test('корректно запускается', async () => {
+  describe('general tests - startup, back button, error', () => {
+    test('should start correctly', async () => {
       getUseTaskDetailsMock();
       renderWithRouter(<TaskDetail />);
 
@@ -67,7 +67,7 @@ describe('TaskDetail component', () => {
       );
     });
 
-    test('кнопка Назад вызывает свой метод', async () => {
+    test('should call back button method', async () => {
       getUseTaskDetailsMock();
       renderWithRouter(<TaskDetail />);
 
@@ -82,7 +82,7 @@ describe('TaskDetail component', () => {
       expect(onClickBackMock).toHaveBeenCalled();
     });
 
-    test('показывает ошибку, если задача не найдена', async () => {
+    test('should show an error if the task is not found', async () => {
       getUseTaskDetailsMock(true);
 
       renderWithRouter(<TaskDetail />, {
@@ -95,10 +95,10 @@ describe('TaskDetail component', () => {
     });
   });
 
-  describe('метод handleUpdateTask', () => {
+  describe('method handleUpdateTask', () => {
     setupMockServer();
 
-    test('кнопка Сохранить вызывает не updateTask если ничего не изменено', async () => {
+    test('save button does not call updateTask if nothing has changed', async () => {
       getUseTaskDetailsMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
@@ -113,7 +113,7 @@ describe('TaskDetail component', () => {
       expect(updateTaskMock).not.toHaveBeenCalled();
     });
 
-    test('если новый title не совпадает с введённым, то вызывается updateTask и handleGoBack', async () => {
+    test('if the new title does not match the entered one, then updateTask and handleGoBack are called', async () => {
       const updateTaskMock = vi.fn().mockResolvedValue(true);
 
       getUseTaskDetailsMock(false, updateTaskMock);
@@ -136,7 +136,7 @@ describe('TaskDetail component', () => {
       });
     });
 
-    test('если новый description не совпадает с введённым, то вызывается updateTask', async () => {
+    test('if the new description does not match the entered one, then updateTask is called', async () => {
       getUseTaskDetailsMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
@@ -153,7 +153,7 @@ describe('TaskDetail component', () => {
       expect(updateTaskMock).toHaveBeenCalled();
     });
 
-    test('при наличии dueDate в форме передает new Date(dueDate)', async () => {
+    test('if dueDate is present in the form, passes new Date(dueDate)', async () => {
       getUseTaskDetailsMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
@@ -182,10 +182,10 @@ describe('TaskDetail component', () => {
     });
   });
 
-  describe('метод handleSubtask', () => {
+  describe('method handleSubtask', () => {
     setupMockServer();
 
-    test('обновляет подзадачи при действии toggle', async () => {
+    test('should update subtasks when toggle action is performed', async () => {
       getUseTaskDetailsMock();
 
       renderWithRouter(<TaskDetail />, {
@@ -214,10 +214,10 @@ describe('TaskDetail component', () => {
     });
   });
 
-  describe('метод handleKeyDown', () => {
+  describe('method handleKeyDown', () => {
     setupMockServer();
 
-    test('Нажатие Enter добавляет подзадачу', async () => {
+    test('pressing Enter adds a subtask', async () => {
       getUseTaskDetailsMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
@@ -234,10 +234,10 @@ describe('TaskDetail component', () => {
     });
   });
 
-  describe('метод onChange для TaskTitle', () => {
+  describe('method onChange for TaskTitle', () => {
     setupMockServer();
 
-    test('Ввод текста в title вызывает onChangeTitle', async () => {
+    test('entering text into title calls onChangeTitle', async () => {
       const { onChangeTitleMock } = getUseTaskFormMock();
 
       renderWithRouter(<TaskDetail />, {
@@ -258,10 +258,10 @@ describe('TaskDetail component', () => {
     });
   });
 
-  describe('метод onChange для TaskInput', () => {
+  describe('method onChange for TaskInput', () => {
     setupMockServer();
 
-    test('Ввод текста в subtitle вызывает setSubtaskTitle', async () => {
+    test('entering text into subtitle calls setSubtaskTitle', async () => {
       const { onChangeSubtaskTitleMock } = getUseTaskFormMock();
 
       renderWithRouter(<TaskDetail />, {
@@ -281,7 +281,7 @@ describe('TaskDetail component', () => {
       });
     });
 
-    test('Изменение даты вызывает setForm', async () => {
+    test('Changing the date calls setForm', async () => {
       const { onChangeDueDateMock } = getUseTaskFormMock();
 
       renderWithRouter(<TaskDetail />, {
@@ -308,10 +308,10 @@ describe('TaskDetail component', () => {
     });
   });
 
-  describe('метод handleCreateSubtask', () => {
+  describe('method handleCreateSubtask', () => {
     setupMockServer();
 
-    test('Метод возвращает undefined если ничего не введено кроме пробелов', async () => {
+    test('should return undefined if nothing is entered except spaces', async () => {
       const { setFormMock } = getUseTaskFormMock();
       const updateTaskMock = vi.fn().mockResolvedValue(true);
       getUseTaskDetailsMock(false, updateTaskMock);

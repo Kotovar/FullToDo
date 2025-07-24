@@ -1,6 +1,14 @@
 import { renderHook, act } from '@testing-library/react';
 import { useVisibility } from './useVisibility';
 
+const getInitialData = () => {
+  const { result } = renderHook(() => useVisibility(), {});
+
+  return result;
+};
+
+const WINDOW_INNER_WIDTH_MOBILE = 767;
+
 describe('useVisibility', () => {
   const originalInnerWidth = window.innerWidth;
 
@@ -12,14 +20,15 @@ describe('useVisibility', () => {
     window.innerWidth = originalInnerWidth;
   });
 
-  describe('Начальное состояние и handleVisibility', () => {
-    test('возвращает начальное состояние isHidden как false', () => {
-      const { result } = renderHook(() => useVisibility());
+  describe('Initial state and handleVisibility', () => {
+    test('should return the initial state isHidden as false', () => {
+      const result = getInitialData();
+
       expect(result.current[0]).toBe(false);
     });
 
-    test('переключает isHidden при вызове handleVisibility', () => {
-      const { result } = renderHook(() => useVisibility());
+    test('should toggle isHidden when calling handleVisibility', () => {
+      const result = getInitialData();
 
       act(() => result.current[1]());
       expect(result.current[0]).toBe(true);
@@ -30,22 +39,21 @@ describe('useVisibility', () => {
   });
 
   describe('turnOffVisibility', () => {
-    test('устанавливает isHidden в true для мобильных устройств (width < 768)', () => {
-      window.innerWidth = 767;
+    test('should set isHidden to true for mobile devices (width < 768)', () => {
+      window.innerWidth = WINDOW_INNER_WIDTH_MOBILE;
 
-      const { result } = renderHook(() => useVisibility());
+      const result = getInitialData();
 
       act(() => result.current[2]());
       expect(result.current[0]).toBe(true);
     });
 
-    test('не изменяет isHidden для десктопов (width >= 768)', () => {
-      window.innerWidth = 768;
+    test('should not change isHidden for desktops (width >= 768)', () => {
+      window.innerWidth = WINDOW_INNER_WIDTH_MOBILE + 1;
 
-      const { result } = renderHook(() => useVisibility());
+      const result = getInitialData();
 
       act(() => result.current[2]());
-
       expect(result.current[0]).toBe(false);
     });
   });

@@ -59,7 +59,7 @@ describe('NavigationBar component', () => {
     vi.clearAllMocks();
   });
 
-  test('Создаётся блокнот, если указано название блокнота и нажат Enter или кнопка Сохранить', async () => {
+  test('a notebook should be created if the notebook name is specified and Enter or the Save button is pressed', async () => {
     getUseNotepadsMockWithRender(false, createNotepadMock);
 
     const input = screen.getByPlaceholderText('notepads.add');
@@ -80,7 +80,7 @@ describe('NavigationBar component', () => {
     expect(createNotepadMock).toHaveBeenCalledWith('Новое название 2');
   });
 
-  test('Меняется название блокнота, если новое название не совпадает со старым', async () => {
+  test('the notebook name should be changed if the new name does not match the old one', async () => {
     getUseNotepadsMockWithRender(
       false,
       createNotepadMock,
@@ -105,7 +105,7 @@ describe('NavigationBar component', () => {
     );
   });
 
-  test('Не меняется название блокнота, если новое название совпадает со старым', async () => {
+  test('the notebook name does not change if the new name matches the old one', async () => {
     getUseNotepadsMockWithRender(
       false,
       createNotepadMock,
@@ -124,7 +124,7 @@ describe('NavigationBar component', () => {
     expect(updateNotepadTitleMock).not.toHaveBeenCalled();
   });
 
-  test('вызывается deleteNotepad при удалении блокнота', async () => {
+  test('deleteNotepad should be called when deleting a notepad', async () => {
     getUseNotepadsMockWithRender(
       false,
       createNotepadMock,

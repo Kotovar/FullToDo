@@ -5,7 +5,7 @@ import { useDarkToast } from './useDarkToast';
 describe('useDarkToast', () => {
   vi.mock('@shared/lib');
 
-  test('возвращает правильный класс для toast', () => {
+  test('should returns the correct class for toast', () => {
     vi.mocked(useDarkMode).mockReturnValue({
       isDarkMode: true,
       toggle: vi.fn(),

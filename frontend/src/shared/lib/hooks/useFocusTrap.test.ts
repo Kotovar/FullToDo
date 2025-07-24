@@ -68,6 +68,18 @@ describe('useFocusTrap', () => {
     expect(mockCloseMenu).toHaveBeenCalled();
   });
 
+  test('should call closeMenu on onClick', async () => {
+    renderHook(() => useFocusTrap(mockMenuRef, mockButtonRef, mockCloseMenu), {
+      wrapper: createWrapper(),
+    });
+
+    const anotherButton = document.createElement('button');
+    document.body.appendChild(anotherButton);
+
+    await user.click(anotherButton);
+    expect(mockCloseMenu).toHaveBeenCalled();
+  });
+
   test('should not setup focus trap if no focusable elements', () => {
     const emptyMenu = document.createElement('div');
     emptyMenu.id = 'empty-menu';

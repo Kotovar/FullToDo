@@ -12,8 +12,8 @@ describe('Error component', () => {
 
     const heading = screen.getByRole('heading');
     const button = screen.getByRole('button');
-    expect(heading).toBeDefined();
-    expect(button).toBeDefined();
+    expect(heading).toBeInTheDocument();
+    expect(button).toBeInTheDocument();
 
     button.onclick = onClickMock;
 

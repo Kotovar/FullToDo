@@ -8,7 +8,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 describe('useLanguage hook', () => {
-  test('should toggle language from ru to en', async () => {
+  test('should toggle language icon from ru to en', async () => {
     const { result, rerender } = renderHook(() => useLanguage(), { wrapper });
 
     expect(result.current.iconNameLanguage).toBe('flagRu');
@@ -20,5 +20,16 @@ describe('useLanguage hook', () => {
     rerender();
 
     expect(result.current.iconNameLanguage).toBe('flagEn');
+  });
+
+  test('should toggle language from en to ru', async () => {
+    const { result } = renderHook(() => useLanguage(), { wrapper });
+
+    expect(i18nForTests.language).toBe('en');
+
+    await act(async () => {
+      await result.current.changeLanguage();
+      expect(i18nForTests.language).toBe('ru');
+    });
   });
 });

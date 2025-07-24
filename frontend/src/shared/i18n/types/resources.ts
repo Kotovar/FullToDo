@@ -1,4 +1,4 @@
-import ruTranslation from '../data/ru.json';
+import ruTranslation from '../data/ru.json' with { type: 'json' };
 
 type PathsToString<T> = T extends object
   ? {

@@ -11,15 +11,15 @@ import { useTasks } from './useTasks';
 
 const params = new URLSearchParams();
 
-const getInitialData = async () => {
+const getInitialData = (notepad: string = notepadId) => {
   const { result } = renderHook(
-    () => useTasks({ notepadId, params, entity: 'task' }),
+    () => useTasks({ notepadId: notepad, params, entity: 'task' }),
     {
       wrapper: createWrapper(),
     },
   );
 
-  await waitFor(() => expect(result.current.isLoading).toBeFalsy());
+  waitFor(() => expect(result.current.isLoading).toBeFalsy());
 
   return result;
 };
@@ -45,7 +45,7 @@ describe('useTasks hook', () => {
     );
   });
 
-  test('Показывает уведомление об ошибке, если она произошла', async () => {
+  test('should show an error notification if one occurs', async () => {
     const mockError = new Error('Ошибка сервера');
     vi.spyOn(taskService, 'updateTask').mockRejectedValue(mockError);
 
@@ -63,19 +63,13 @@ describe('useTasks hook', () => {
     });
   });
 
-  test('Если указан notepadId будет вызван метод для получения задач из конкретного блокнота', async () => {
+  test('should call the method to get tasks from a specific notebook if notepadId is specified', async () => {
     const getTasksFromNotepadMock = vi.spyOn(
       taskService,
       'getTasksFromNotepad',
     );
     const getSingleTaskMock = vi.spyOn(taskService, 'getSingleTask');
-
-    const { result } = renderHook(
-      () => useTasks({ notepadId, params, entity: 'task' }),
-      {
-        wrapper: createWrapper(),
-      },
-    );
+    const result = getInitialData();
 
     await result.current.methods.updateTask({ title: 'New' }, taskId);
 
@@ -83,16 +77,10 @@ describe('useTasks hook', () => {
     expect(getTasksFromNotepadMock).toHaveBeenCalledTimes(1);
   });
 
-  test('Если указан общий notepadId - будет вызван метод для получения всех задач', async () => {
+  test('should call the method to get all tasks if a common notepadId is specified', async () => {
     const getAllTasksMock = vi.spyOn(taskService, 'getAllTasks');
     const getSingleTaskMock = vi.spyOn(taskService, 'getSingleTask');
-
-    const { result } = renderHook(
-      () => useTasks({ notepadId: commonNotepadId, params, entity: 'task' }),
-      {
-        wrapper: createWrapper(),
-      },
-    );
+    const result = getInitialData(commonNotepadId);
 
     await result.current.methods.updateTask({ title: 'New' }, taskId);
 
@@ -100,8 +88,8 @@ describe('useTasks hook', () => {
     expect(getAllTasksMock).toHaveBeenCalledTimes(1);
   });
 
-  test('вызывает updateTask при создании задачи', async () => {
-    const result = await getInitialData();
+  test('should call updateTask when creating a task', async () => {
+    const result = getInitialData();
 
     result.current.methods.updateTask(
       {
@@ -117,8 +105,8 @@ describe('useTasks hook', () => {
     });
   });
 
-  test('вызывает deleteTask при создании задачи', async () => {
-    const result = await getInitialData();
+  test('should call deleteTask when deleting a task', async () => {
+    const result = getInitialData();
 
     result.current.methods.deleteTask(taskId);
 

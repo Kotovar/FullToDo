@@ -461,8 +461,6 @@ describe('MockTaskRepository', () => {
     });
   });
 
-  test('method updateTask and undefined notepad', async () => {});
-
   test('method updateTask and undefined dueDate', async () => {
     const responseUpdate = await repository.updateTask(realId, {
       ...updatedTask,

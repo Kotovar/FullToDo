@@ -26,7 +26,7 @@ describe('SubtaskItem component', () => {
     });
   });
 
-  test('При вводе текста в Input - вызывается метод обновления подзадачи', async () => {
+  test('when entering text in Input - the subtask update method is called', async () => {
     renderWithRouter(<SubtaskItem {...props} />);
 
     const input = screen.getByText(props.subtask.title);
@@ -39,7 +39,7 @@ describe('SubtaskItem component', () => {
     });
   });
 
-  test('Не вызывается сохранение названия подзадачи, если оно не менялось', async () => {
+  test('saving of the subtask name is not called if it has not changed', async () => {
     renderWithRouter(<SubtaskItem {...props} />);
 
     const input = screen.getByText(props.subtask.title);
@@ -58,7 +58,7 @@ describe('SubtaskItem component', () => {
     });
   });
 
-  test('При клике на кнопку удаления вызывается метод обновления подзадачи', async () => {
+  test('the update method of the subtask is called when the delete button is clicked', async () => {
     renderWithRouter(<SubtaskItem {...props} />);
 
     const button = screen.getByLabelText('tasks.deleteSubtask');

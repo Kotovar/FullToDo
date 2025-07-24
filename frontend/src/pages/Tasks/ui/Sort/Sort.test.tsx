@@ -9,7 +9,7 @@ describe('Sort component', () => {
   const mockSetParams = vi.fn();
   const user = userEvent.setup();
 
-  test('Иконка выбирается корректно в зависимости от направления', async () => {
+  test('the icon should be selected correctly depending on the direction', async () => {
     const { rerender } = renderWithRouter(
       <Sort params={sortDescending} setParams={mockSetParams} />,
     );

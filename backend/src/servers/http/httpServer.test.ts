@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
+import type { ZodError } from 'zod';
 import { ROUTES } from '@sharedCommon/routes';
 import {
   type NotepadResponse,
@@ -16,7 +17,6 @@ import {
   validTasksData,
 } from '@db/mock';
 import { createHttpServer, extractPath } from './httpServer';
-import { ZodError } from 'zod';
 
 const port = 3000;
 const server = createHttpServer();
@@ -177,8 +177,9 @@ describe('httpServer POST', () => {
   });
 
   describe('should handle POST /notepads', () => {
+    const notepadData = { title: 'New Notepad' };
+
     test('should handle POST /notepads and return 201 status', async () => {
-      const notepadData = { title: 'New Notepad' };
       const notepadResponse: NotepadResponse = {
         status: 201,
         message: `A notebook with the title ${notepadData.title} has been successfully created`,
@@ -200,8 +201,6 @@ describe('httpServer POST', () => {
     });
 
     test('should return 400 if Content-Type is not application/json', async () => {
-      const notepadData = { title: 'New Notepad' };
-
       const response = await request(server)
         .post(ROUTES.NOTEPADS)
         .send(JSON.stringify(notepadData))
@@ -243,7 +242,6 @@ describe('httpServer POST', () => {
     });
 
     test('should return 409 if notepad with the same title already exists', async () => {
-      const notepadData = { title: 'Existing Notepad' };
       const notepadResponse: NotepadResponse = {
         status: 409,
         message: `A notebook with the title ${notepadData.title} already exists`,
@@ -264,8 +262,6 @@ describe('httpServer POST', () => {
     });
 
     test('should return 500 if an internal server error occurs', async () => {
-      const notepadData = { title: 'New Notepad' };
-
       vi.spyOn(taskRepository, 'createNotepad').mockRejectedValue(
         internalError,
       );

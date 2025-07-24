@@ -25,7 +25,7 @@ describe('useNotepad hook', () => {
     vi.clearAllMocks();
   });
 
-  test('возвращает определённый блокнот по маршруту', async () => {
+  test('should return a specific notebook along the route', async () => {
     const result = await getInitialData(false);
     await waitFor(() => expect(result.current.isLoading).toBeFalsy());
     expect(result.current.notepadId).toBe(notepadId);
@@ -36,7 +36,7 @@ describe('useNotepad hook', () => {
     });
   });
 
-  test('возвращает общий блокнот по маршруту', async () => {
+  test('should return the shared notebook on the route', async () => {
     const result = await getInitialData(true);
 
     expect(result.current.location).toBe(ROUTES.TASKS);
@@ -47,7 +47,7 @@ describe('useNotepad hook', () => {
     });
   });
 
-  test('возвращает пустые данные, если блокнот не найден', async () => {
+  test('should return empty data if notebook is not found', async () => {
     const { result } = renderHook(() => useNotepad(), {
       wrapper: createWrapperWithRouter([`${ROUTES.NOTEPADS}/999`]),
     });
@@ -61,7 +61,7 @@ describe('useNotepad hook', () => {
     });
   });
 
-  test('Если получена ошибка, вызывается showError', async () => {
+  test('showError should be called if an error is received', async () => {
     getUseNotificationsMock(showError);
     const mockError = new Error('Ошибка сервера');
     vi.spyOn(notepadService, 'getNotepads').mockRejectedValue(mockError);

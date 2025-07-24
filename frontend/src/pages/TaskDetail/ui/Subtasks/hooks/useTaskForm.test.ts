@@ -33,7 +33,7 @@ describe('useTasks hook', () => {
     });
   });
 
-  test('If the initial value of the hook has changed - update the form', async () => {
+  test('if the initial value of the hook has changed - update the form', async () => {
     const { result, rerender } = await getInitialData(testTaskKey);
 
     expect(result.current.form).toEqual({

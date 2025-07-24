@@ -6,7 +6,7 @@ import { Tasks } from './Tasks';
 describe('Tasks component', () => {
   setupMockServer();
 
-  test('корректно запускается', async () => {
+  test('should start correctly', async () => {
     renderWithRouter(<Tasks />, {
       initialEntries: ['/notepads/1'],
       path: '/notepads/:notepadId',
@@ -15,7 +15,7 @@ describe('Tasks component', () => {
     await waitFor(() => expect(screen.getByRole('heading')).toBeDefined());
   });
 
-  test('Показывает сообщение об ошибке', async () => {
+  test('should show a loading error message', async () => {
     getUseNotepadMock(true);
 
     renderWithRouter(<Tasks />, {
@@ -28,7 +28,7 @@ describe('Tasks component', () => {
     );
   });
 
-  test('Показывает сообщение об ошибке, если блокнот не найден ', async () => {
+  test('should show an error message if the notebook is not found', async () => {
     getUseNotepadMock(false, false, true);
 
     renderWithRouter(<Tasks />, {

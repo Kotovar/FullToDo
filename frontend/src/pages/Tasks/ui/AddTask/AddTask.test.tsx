@@ -34,7 +34,7 @@ describe('AddTask component', () => {
     });
   });
 
-  test('Проверка ввода текста в input для заголовка новой задачи', async () => {
+  test('checking text input in input for new task title', async () => {
     renderWithRouter(<AddTask notepadId='1' />, {
       initialEntries: ['/notepads/1'],
       path: '/notepads/:notepadId',
@@ -47,7 +47,7 @@ describe('AddTask component', () => {
     expect(textInput).toHaveValue('Новая задача');
   });
 
-  test('Если название задачи пустое - не добавлять её при подтверждении и наоборот', async () => {
+  test('if the task name is empty - do not add it when confirming and vice versa', async () => {
     renderWithRouter(<AddTask notepadId='1' />, {
       initialEntries: ['/notepads/1'],
       path: '/notepads/:notepadId',
@@ -65,7 +65,7 @@ describe('AddTask component', () => {
     expect(mockCreateTask).toHaveBeenCalled();
   });
 
-  test('при наличии dueDate в форме передает new Date(dueDate)', async () => {
+  test('if dueDate is present in the form, passes new Date(dueDate)', async () => {
     renderWithRouter(<AddTask notepadId='1' />, {
       initialEntries: ['/notepads/1'],
       path: '/notepads/:notepadId',

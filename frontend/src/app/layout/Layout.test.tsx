@@ -7,6 +7,6 @@ describe('Layout', () => {
     renderWithRouter(<Layout />);
 
     const heading = screen.getByRole('banner');
-    expect(heading).toBeDefined();
+    expect(heading).toBeInTheDocument();
   });
 });

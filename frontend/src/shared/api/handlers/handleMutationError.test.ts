@@ -1,11 +1,12 @@
 import { handleMutationError } from './handleMutationError';
 
+const cause = {
+  type: 'cause_type',
+  message: 'cause_message',
+};
+
 describe('handleMutationError', () => {
-  const cause = {
-    type: 'cause_type',
-    message: 'cause_message',
-  };
-  test('Возвращает причину ошибки, если она указана', () => {
+  test('should return the error reason if specified', () => {
     const error = new Error('Error', {
       cause,
     });

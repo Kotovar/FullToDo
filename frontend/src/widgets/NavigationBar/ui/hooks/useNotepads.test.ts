@@ -41,7 +41,7 @@ describe('useNotepads hook', () => {
     );
   });
 
-  test('Показывает уведомление об ошибке, если она произошла', async () => {
+  test('should show an error notification if one occurs', async () => {
     const mockError = new Error('Ошибка сервера');
     vi.spyOn(notepadService, 'createNotepad').mockRejectedValue(mockError);
 
@@ -56,7 +56,7 @@ describe('useNotepads hook', () => {
     );
   });
 
-  test('возвращает список блокнотов', async () => {
+  test('should return a list of notebooks', async () => {
     const result = await getInitialData();
 
     await waitFor(() =>
@@ -64,7 +64,7 @@ describe('useNotepads hook', () => {
     );
   });
 
-  test('вызывает createNotepad при создании блокнота', async () => {
+  test('createNotepad should be called when creating a notebook', async () => {
     const result = await getInitialData();
     result.current.methods.createNotepad(MOCK_TITLE_NON_EXISTING);
 
@@ -75,7 +75,7 @@ describe('useNotepads hook', () => {
     });
   });
 
-  test('вызывает updateNotepad при изменении названия блокнота', async () => {
+  test('updateNotepad should be called when changing the notebook name', async () => {
     const result = await getInitialData();
     result.current.methods.updateNotepadTitle(
       notepadId,
@@ -89,7 +89,7 @@ describe('useNotepads hook', () => {
     });
   });
 
-  test('вызывает deleteNotepad при удалении блокнота', async () => {
+  test('should call deleteNotepad when deleting a notepad', async () => {
     const result = await getInitialData();
     result.current.methods.deleteNotepad(notepadId);
 
