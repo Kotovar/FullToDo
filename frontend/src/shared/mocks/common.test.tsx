@@ -4,7 +4,7 @@ import { createWrapperWithRouter } from './common';
 describe('createWrapperWithRouter', () => {
   const TestComponent = () => <div>Test Content</div>;
 
-  test('должен использовать переданные initialEntries', () => {
+  test('the initialEntries passed should be used', () => {
     const Wrapper = createWrapperWithRouter();
 
     render(<TestComponent />, { wrapper: Wrapper });

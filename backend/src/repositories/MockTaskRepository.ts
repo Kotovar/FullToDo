@@ -1,6 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
-
-import { NOTEPADS } from '../db/mock/mock-db';
+import { NOTEPADS } from '@db/mock/mock-db';
 import type {
   Task,
   Notepad,
@@ -12,9 +10,13 @@ import type {
   CreateTask,
   Subtask,
   TaskQueryParams,
-} from '@shared/schemas';
-import { commonNotepadId } from '@shared/schemas';
+} from '@sharedCommon/schemas';
+import { commonNotepadId } from '@sharedCommon/schemas';
 import type { TaskRepository } from './TaskRepository';
+
+export const DEFAULT_TASK_PARAMS: TaskQueryParams = {
+  sortBy: 'createdDate',
+};
 
 export class MockTaskRepository implements TaskRepository {
   private tasks: Task[];
@@ -30,7 +32,14 @@ export class MockTaskRepository implements TaskRepository {
       return tasks;
     }
 
-    const { isCompleted, hasDueDate, priority, sortBy, order } = params;
+    const {
+      isCompleted,
+      hasDueDate,
+      priority,
+      sortBy: sortByOriginal,
+      order,
+    } = params;
+    const sortBy = sortByOriginal ?? DEFAULT_TASK_PARAMS.sortBy;
     let result = [...tasks];
 
     if (isCompleted !== undefined) {
@@ -61,8 +70,10 @@ export class MockTaskRepository implements TaskRepository {
         const valA = a[sortBy];
         const valB = b[sortBy];
 
-        if (valA === undefined) return order === 'asc' ? 1 : -1;
-        if (valB === undefined) return order === 'asc' ? -1 : 1;
+        if (valA === null || valA === undefined)
+          return order === 'asc' ? 1 : -1;
+        if (valB === null || valB === undefined)
+          return order === 'asc' ? -1 : 1;
         if (valA === valB) return 0;
 
         return order === 'asc' ? (valA < valB ? -1 : 1) : valA < valB ? 1 : -1;
@@ -93,7 +104,7 @@ export class MockTaskRepository implements TaskRepository {
   }
 
   private generateTaskId(): string {
-    return uuidv4();
+    return globalThis.crypto.randomUUID();
   }
 
   private calculateProgress(subtasks?: Subtask[]): string {
@@ -109,9 +120,8 @@ export class MockTaskRepository implements TaskRepository {
         message: `A notebook with the title ${title} already exists`,
       };
     }
-
     this.notepads.push({
-      _id: uuidv4(),
+      _id: this.generateTaskId(),
       title: title,
       tasks: [],
     });
@@ -129,22 +139,8 @@ export class MockTaskRepository implements TaskRepository {
       notepadId,
       isCommonNotepad,
     );
+
     if (notepadError) return notepadError;
-
-    const existingTask = this.tasks.some(
-      task => task.title === title && task.notepadId === notepadId,
-    );
-
-    if (existingTask) {
-      const notepadTitle = isCommonNotepad
-        ? commonNotepadId
-        : this.notepads.find(notepad => notepad._id === notepadId)?.title;
-
-      return {
-        status: 409,
-        message: `Task with title ${title} already exists in ${notepadTitle}`,
-      };
-    }
 
     const newTask: Task = {
       _id: this.generateTaskId(),
@@ -164,8 +160,8 @@ export class MockTaskRepository implements TaskRepository {
       const targetNotepad = this.notepads.find(
         notepad => notepad._id === notepadId,
       );
+
       if (targetNotepad) {
-        targetNotepad.tasks ??= [];
         targetNotepad.tasks.push(newTask);
       }
     }
@@ -198,10 +194,15 @@ export class MockTaskRepository implements TaskRepository {
     };
   }
 
-  async getSingleTask(taskId: string): Promise<TaskResponse> {
+  async getSingleTask(
+    notepadId: string,
+    taskId: string,
+  ): Promise<TaskResponse> {
     const task = this.tasks.find(task => task._id === taskId);
+    const suitableNotepad =
+      notepadId === commonNotepadId || task?.notepadId === notepadId;
 
-    if (task) {
+    if (suitableNotepad && task) {
       return {
         status: 200,
         message: 'Success',
@@ -273,7 +274,7 @@ export class MockTaskRepository implements TaskRepository {
     return {
       status: 200,
       message: `A notepad with the id ${notepadId} has been successfully updated`,
-      data: [this.notepads[notepadIndex]],
+      data: this.notepads[notepadIndex],
     };
   }
 
@@ -296,24 +297,6 @@ export class MockTaskRepository implements TaskRepository {
 
     if (notepadError) return notepadError;
 
-    if (updatedTaskFields.title) {
-      const tasksToCheck = isCommonNotepad
-        ? this.tasks.filter(task => task.notepadId === commonNotepadId)
-        : (this.notepads.find(notepad => notepad._id === newNotepadId)?.tasks ??
-          []);
-
-      const titleExists = tasksToCheck.some(
-        task => task.title === updatedTaskFields.title,
-      );
-
-      if (titleExists) {
-        return {
-          status: 409,
-          message: `Task with title ${updatedTaskFields.title} already exists`,
-        };
-      }
-    }
-
     const subtasks = updatedTaskFields.subtasks ?? currentTask.subtasks;
     const progress = updatedTaskFields.subtasks
       ? this.calculateProgress(subtasks)
@@ -326,6 +309,12 @@ export class MockTaskRepository implements TaskRepository {
       progress,
       subtasks,
     };
+
+    if (updatedTaskFields.dueDate === null) {
+      delete updatedTask.dueDate;
+    } else if (updatedTaskFields.dueDate !== undefined) {
+      updatedTask.dueDate = updatedTaskFields.dueDate;
+    }
 
     this.tasks[taskIndex] = updatedTask;
     const shouldMoveNotepad = newNotepadId !== currentTask.notepadId;

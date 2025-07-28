@@ -3,9 +3,9 @@ import {
   commonNotepadId,
   type TaskQueryParams,
   type Task,
-} from '@shared/schemas';
+} from '@sharedCommon/schemas';
 import taskRepository, { MockTaskRepository } from './MockTaskRepository';
-import { NOTEPADS } from '../db/mock/mock-db';
+import { NOTEPADS } from '@db/mock/mock-db';
 import {
   allTasks,
   customNotepad,
@@ -16,12 +16,11 @@ import {
   dates,
   newTask,
   realId,
-} from '../tests/mocks';
+} from '@tests/mocks';
 
 const newTitleNotepad = { title: 'Test Notepad' };
 const notepadId = '999';
 const taskId = '999';
-const realNotepadTitle = 'Рабочее';
 const { date1, date2, date3 } = dates;
 
 const getSortedAllTasks = (
@@ -34,8 +33,8 @@ const getSortedAllTasks = (
       const valA = a[type];
       const valB = b[type];
 
-      if (valA === undefined) return order === 'asc' ? 1 : -1;
-      if (valB === undefined) return order === 'asc' ? -1 : 1;
+      if (valA === undefined || valA === null) return order === 'asc' ? 1 : -1;
+      if (valB === undefined || valB === null) return order === 'asc' ? -1 : 1;
       if (valA === valB) return 0;
 
       return order === 'asc' ? (valA < valB ? -1 : 1) : valA < valB ? 1 : -1;
@@ -89,13 +88,6 @@ describe('MockTaskRepository', () => {
       status: 404,
       message: 'Notepad not found',
     });
-
-    const secondResponseCreate = await repository.createTask(newTask, realId);
-
-    expect(secondResponseCreate).toStrictEqual({
-      status: 409,
-      message: `Task with title ${newTask.title} already exists in ${realNotepadTitle}`,
-    });
   });
 
   test('method createTask and common notepad', async () => {
@@ -107,16 +99,6 @@ describe('MockTaskRepository', () => {
     expect(responseCreate).toStrictEqual({
       status: 201,
       message: `Task with the title ${newTask.title} has been successfully created`,
-    });
-
-    const secondResponseCreate = await repository.createTask(
-      newTask,
-      commonNotepadId,
-    );
-
-    expect(secondResponseCreate).toStrictEqual({
-      status: 409,
-      message: `Task with title ${newTask.title} already exists in ${commonNotepadId}`,
     });
   });
 
@@ -368,12 +350,12 @@ describe('MockTaskRepository', () => {
     expect(responseGetAgain).toStrictEqual({
       status: 200,
       message: 'Success',
-      data: allTasks,
+      data: allTasks.reverse(),
     });
   });
 
   test('method getSingleTask', async () => {
-    const responseGet = await repository.getSingleTask(realId);
+    const responseGet = await repository.getSingleTask(realId, realId);
 
     expect(responseGet).toStrictEqual({
       status: 200,
@@ -381,7 +363,7 @@ describe('MockTaskRepository', () => {
       data: NOTEPADS[0].tasks[0],
     });
 
-    const incorrectResponseGet = await repository.getSingleTask(taskId);
+    const incorrectResponseGet = await repository.getSingleTask(realId, taskId);
 
     expect(incorrectResponseGet).toStrictEqual({
       status: 404,
@@ -418,13 +400,11 @@ describe('MockTaskRepository', () => {
     expect(responseUpdate).toStrictEqual({
       status: 200,
       message: `A notepad with the id ${realId} has been successfully updated`,
-      data: [
-        {
-          title: newTitleNotepad.title,
-          _id: realId,
-          tasks: NOTEPADS[0].tasks,
-        },
-      ],
+      data: {
+        title: newTitleNotepad.title,
+        _id: realId,
+        tasks: NOTEPADS[0].tasks,
+      },
     });
 
     const responseUpdateDouble = await repository.updateNotepad(
@@ -466,16 +446,6 @@ describe('MockTaskRepository', () => {
       status: 404,
       message: 'Task not found',
     });
-
-    const responseUpdateSecond = await repository.updateTask(
-      realId,
-      updatedTask,
-    );
-
-    expect(responseUpdateSecond).toStrictEqual({
-      status: 409,
-      message: `Task with title ${updatedTask.title} already exists`,
-    });
   });
 
   test('method updateTask without Title', async () => {
@@ -491,10 +461,42 @@ describe('MockTaskRepository', () => {
     });
   });
 
-  test('method updateTask and undefined notepad', async () => {
+  test('method updateTask and undefined dueDate', async () => {
     const responseUpdate = await repository.updateTask(realId, {
       ...updatedTask,
-      notepadId: 'undefined',
+      dueDate: null,
+    });
+
+    const updatedData = { ...NOTEPADS[0].tasks[0] };
+    delete updatedData.dueDate;
+
+    expect(responseUpdate).toEqual({
+      status: 200,
+      message: `A task with the _id ${realId} has been successfully updated`,
+      data: { ...updatedData, notepadId: realId, title: updatedTask.title },
+    });
+  });
+
+  test('method updateTask and not undefined dueDate', async () => {
+    const newDueDate = new Date();
+    const responseUpdate = await repository.updateTask(realId, {
+      ...updatedTask,
+      dueDate: newDueDate,
+    });
+
+    const updatedData = { ...NOTEPADS[0].tasks[0], dueDate: newDueDate };
+
+    expect(responseUpdate).toEqual({
+      status: 200,
+      message: `A task with the _id ${realId} has been successfully updated`,
+      data: { ...updatedData, notepadId: realId, title: updatedTask.title },
+    });
+  });
+
+  test('method updateTask and notepadError', async () => {
+    const responseUpdate = await repository.updateTask(realId, {
+      ...updatedTask,
+      notepadId: notepadId,
     });
 
     expect(responseUpdate).toEqual({

@@ -1,7 +1,8 @@
 import { coverageConfigDefaults, defineConfig } from 'vitest/config';
-import path from 'path';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
+  plugins: [tsconfigPaths()],
   test: {
     globals: true,
     setupFiles: ['./setupTests.ts'],
@@ -11,11 +12,6 @@ export default defineConfig({
     coverage: {
       provider: 'istanbul',
       exclude: [...coverageConfigDefaults.exclude, 'src/app.ts'],
-    },
-  },
-  resolve: {
-    alias: {
-      '@shared': path.resolve(__dirname, '../shared'),
     },
   },
 });

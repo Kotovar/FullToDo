@@ -13,9 +13,6 @@
     "mainTitle": "Home page",
     "open": "Open notebooks"
   },
-  "open": {
-    "menu": "open menu"
-  },
   "card": {
     "additionalMenu": "additional menu"
   },
@@ -26,7 +23,8 @@
   "additionalActions": "additional actions",
   "change": {
     "language": "change language",
-    "topic": "change topic"
+    "topic": "change topic",
+    "menu": "open/close menu"
   },
   "common": {
     "notFound": "Nothing found"
@@ -37,12 +35,14 @@
   },
   "tasks": {
     "create": "creating a task",
+    "title": "task title",
     "add": "Add a task",
     "addSubtask": "Add a subtask",
     "deleteSubtask": "Delete subtask",
     "date": "Completion date",
     "detail": "Task details",
     "description": "Description",
+    "empty": "No subtasks",
     "steps": {
       "first": "First step",
       "next": "Next step"
@@ -55,11 +55,12 @@
   "errors": {
     "notFound": "Page not found",
     "errorBoundary": "Something went wrong",
-    "loadingFail": "Failed to load data. Please try again later",
+    "loadingFail": "Task not found. It may have been deleted or the link is incorrect.",
     "common": {
-      "SERVER_ERROR": "Invalid data",
+      "SERVER_ERROR": "Server error",
       "NETWORK_ERROR": "Network error",
-      "JSON": "Unexpected end of JSON input"
+      "JSON": "Unexpected end of JSON input",
+      "URL": "VITE_URL is not defined in .env file"
     },
     "notepad": {
       "CONFLICT": "A notepad with this name already exists",

@@ -1,8 +1,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithRouter } from '@shared/testing';
+import { renderWithRouter, setupMockServer } from '@shared/testing';
 import { MOCK_TASK } from '@shared/mocks/';
-import { setupMockServer } from '@shared/config';
 import { notepadId } from 'shared/schemas';
 import { TasksBody } from './TasksBody';
 import * as useTaskHook from '@entities/Task';
@@ -62,7 +61,7 @@ describe('TasksBody component', () => {
     vi.clearAllMocks();
   });
 
-  test('вызов метода handleModalId открывает подменю', async () => {
+  test('calling the handleModalId method opens a submenu', async () => {
     getUseTasksMockWithRender();
 
     const menuButton = getElements('menu');
@@ -75,7 +74,7 @@ describe('TasksBody component', () => {
     expect(input).not.toHaveAttribute('readOnly');
   });
 
-  test('вызывается метод updateTaskStatus', async () => {
+  test('the updateTaskStatus method should be called', async () => {
     getUseTasksMockWithRender(false, updateTaskMock);
 
     const button = getElements('tasks.actions.complete');
@@ -88,7 +87,7 @@ describe('TasksBody component', () => {
     );
   });
 
-  test('Описание кнопки меняется в зависимости от статуса задачи - Снять отметку о выполнении', async () => {
+  test('the button description changes depending on the task status - unmark as completed', async () => {
     const tasksWithCompletedField = [{ ...MOCK_TASK, isCompleted: true }];
     getUseTasksMockWithRender(
       false,
@@ -101,7 +100,7 @@ describe('TasksBody component', () => {
     expect(button).toBeInTheDocument();
   });
 
-  test('вызывается updateTask при указании нового названия', async () => {
+  test('updateTask should be called when a new name is specified', async () => {
     getUseTasksMockWithRender(false, updateTaskMock);
 
     const menuButton = getElements('menu');
@@ -118,7 +117,7 @@ describe('TasksBody component', () => {
     );
   });
 
-  test('не вызывается updateTask при сохранении того же названия', async () => {
+  test('updateTask should not be called while keeping the same name', async () => {
     getUseTasksMockWithRender(false, updateTaskMock);
 
     const menuButton = getElements('menu');
@@ -130,7 +129,7 @@ describe('TasksBody component', () => {
     expect(updateTaskMock).not.toHaveBeenCalled();
   });
 
-  test('вызывается метод methods.deleteTask', async () => {
+  test('the methods.deleteTask method should be called', async () => {
     getUseTasksMockWithRender(false, updateTaskMock, deleteTaskMock);
 
     const menuButton = getElements('menu');
@@ -141,7 +140,7 @@ describe('TasksBody component', () => {
     expect(deleteTaskMock).toHaveBeenCalled();
   });
 
-  test('Отображается сообщение, когда список задач пустой', async () => {
+  test('a message should be displayed when the task list is empty', async () => {
     getUseTasksMockWithRender(false, updateTaskMock, deleteTaskMock, []);
 
     const message = screen.getByText('common.notFound');

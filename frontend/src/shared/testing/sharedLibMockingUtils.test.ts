@@ -9,7 +9,7 @@ describe('getUseNotificationsMock', () => {
   const showSuccess = vi.fn();
   const showInfo = vi.fn();
 
-  test('Использует showError по умолчанию, если не указывать ', () => {
+  test('should use showError by default if not specified', () => {
     vi.spyOn(useSharedLibHook, 'useNotifications').mockReturnValue({
       showError,
       showSuccess,
@@ -26,7 +26,7 @@ describe('getUseNotificationsMock', () => {
 describe('getUseBackNavigateMock', () => {
   const handleGoBack = vi.fn();
 
-  test('Использует handleGoBack по умолчанию, если не указывать ', () => {
+  test('should use handleGoBack by default if not specified', () => {
     vi.spyOn(useSharedLibHook, 'useBackNavigate').mockReturnValue(handleGoBack);
 
     getUseBackNavigateMock();

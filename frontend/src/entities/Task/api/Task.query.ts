@@ -1,45 +1,57 @@
-import { URL, TASKS_ERRORS, COMMON_ERRORS } from '@shared/api';
 import { ROUTES } from 'shared/routes';
-import { commonNotepadId } from 'shared/schemas';
-import type {
+import {
+  URL,
+  TASKS_ERRORS,
+  COMMON_ERRORS,
+  HEADERS,
+  BaseService,
+} from '@shared/api';
+import {
   CreateTask,
   Task,
   TaskResponse,
   TasksResponse,
+  commonNotepadId,
 } from 'shared/schemas';
 
 if (!URL) {
   throw new Error(COMMON_ERRORS.URL.message);
 }
 
-class TaskService {
-  private async handleResponse<T>(response: Response): Promise<T> {
+const taskRoutes = {
+  all: `${URL}${ROUTES.TASKS}`,
+  single: (notepadId: string, taskId: string) =>
+    `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
+  singleInCommonNotepad: (taskId: string) => `${URL}${ROUTES.TASKS}/${taskId}`,
+  forCreate: (notepadId: string) => `${URL}${ROUTES.getNotepadPath(notepadId)}`,
+  forCreateInCommonNotepad: `${URL}${ROUTES.TASKS}`,
+};
+
+class TaskService extends BaseService {
+  protected async handleResponse<T>(response: Response): Promise<T> {
     if (response.ok) return response.json();
 
     switch (response.status) {
       case 409:
-        throw new Error('Conflict', {
-          cause: TASKS_ERRORS.CONFLICT,
-        });
+        throw new Error('Conflict', { cause: TASKS_ERRORS.CONFLICT });
       case 404:
-        throw new Error('Not found', {
-          cause: TASKS_ERRORS.UNDEFINED,
-        });
+        throw new Error('Not found', { cause: TASKS_ERRORS.UNDEFINED });
       default:
-        throw new Error('Server error', {
-          cause: TASKS_ERRORS.SERVER_ERROR,
-        });
+        throw new Error('Server error', { cause: TASKS_ERRORS.SERVER_ERROR });
     }
   }
 
-  private async handleError(error: unknown): Promise<never> {
+  protected async handleError(error: unknown): Promise<never> {
     if (error instanceof Error && error.cause) {
       throw error;
     }
 
-    throw new Error('Network error', {
-      cause: TASKS_ERRORS.NETWORK_ERROR,
-    });
+    throw new Error('Network error', { cause: TASKS_ERRORS.NETWORK_ERROR });
+  }
+
+  protected buildQueryString(params?: URLSearchParams): string {
+    const queryString = params?.toString();
+    return queryString ? `?${queryString}` : '';
   }
 
   async getSingleTask(
@@ -49,8 +61,8 @@ class TaskService {
     try {
       const response = await fetch(
         notepadId
-          ? `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`
-          : `${URL}${ROUTES.TASKS}/${taskId}`,
+          ? taskRoutes.single(notepadId, taskId)
+          : taskRoutes.singleInCommonNotepad(taskId),
       );
 
       return this.handleResponse(response);
@@ -74,10 +86,8 @@ class TaskService {
         default:
           endpoint = ROUTES.getNotepadPath(notepadId);
       }
-      const queryString = params.toString();
-
       const response = await fetch(
-        `${URL}${endpoint}${queryString ? `?${queryString}` : ''}`,
+        `${URL}${endpoint}${this.buildQueryString(params)}`,
       );
       return this.handleResponse(response);
     } catch (error) {
@@ -87,10 +97,8 @@ class TaskService {
 
   async getAllTasks(params: URLSearchParams): Promise<TasksResponse> {
     try {
-      const queryString = params.toString();
-
       const response = await fetch(
-        `${URL}${ROUTES.TASKS}${queryString ? `?${queryString}` : ''}`,
+        `${taskRoutes.all}${this.buildQueryString(params)}`,
       );
       return this.handleResponse(response);
     } catch (error) {
@@ -104,14 +112,12 @@ class TaskService {
   ): Promise<TaskResponse> {
     try {
       const patch = notepadId
-        ? `${URL}${ROUTES.getNotepadPath(notepadId)}`
-        : `${URL}${ROUTES.TASKS}`;
+        ? taskRoutes.forCreate(notepadId)
+        : taskRoutes.forCreateInCommonNotepad;
 
       const response = await fetch(patch, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: HEADERS,
         body: JSON.stringify(task),
       });
       return this.handleResponse(response);
@@ -125,11 +131,9 @@ class TaskService {
     updatedTaskFields: Partial<Task>,
   ): Promise<TaskResponse> {
     try {
-      const response = await fetch(`${URL}${ROUTES.TASKS}/${taskId}`, {
+      const response = await fetch(taskRoutes.singleInCommonNotepad(taskId), {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: HEADERS,
         body: JSON.stringify(updatedTaskFields),
       });
       return this.handleResponse(response);
@@ -140,11 +144,9 @@ class TaskService {
 
   async deleteTask(taskId: string): Promise<TaskResponse> {
     try {
-      const response = await fetch(`${URL}${ROUTES.TASKS}/${taskId}`, {
+      const response = await fetch(taskRoutes.singleInCommonNotepad(taskId), {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: HEADERS,
       });
       return this.handleResponse(response);
     } catch (error) {

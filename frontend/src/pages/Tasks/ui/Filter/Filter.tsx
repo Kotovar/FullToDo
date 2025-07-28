@@ -1,18 +1,17 @@
-import { useRef, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
-import { Icon, Chip, ICON_SIZES } from '@shared/ui';
+import { Icon, Chip, ICON_SIZES, Button } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
-import { FiltersMenu } from './FiltersMenu';
-import { useFilters } from './useFilters';
-import { useFilterLabels } from './useFilterLabels';
+import { FiltersMenu } from './components';
+import { useFilters, useFilterLabels } from './hooks';
 
 interface FilterProps {
   params: URLSearchParams;
   setParams: SetURLSearchParams;
 }
 
-export const Filter = ({ params, setParams }: FilterProps) => {
+export const Filter = memo(({ params, setParams }: FilterProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { handleRemoveFilter, handleUpdateFilter } = useFilters(setParams);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -22,6 +21,10 @@ export const Filter = ({ params, setParams }: FilterProps) => {
 
   const toggleMenu = () => setIsMenuOpen(prev => !prev);
   const closeMenu = () => setIsMenuOpen(false);
+
+  const numberActiveChips = labels.length > 0 && (
+    <span className='hidden md:inline'>{` (${labels.length})`}</span>
+  );
 
   return (
     <div className='flex'>
@@ -36,19 +39,20 @@ export const Filter = ({ params, setParams }: FilterProps) => {
           );
         })}
       </div>
-      <div className='flex-end relative flex items-center gap-2'>
+      <div className='flex-end relative flex items-center gap-2 select-none'>
         {t('filters.title')}
-        {labels.length > 0 && (
-          <span className='hidden md:inline'>{` (${labels.length})`}</span>
-        )}
-        <button
-          ref={buttonRef}
-          aria-label={t('filters.change')}
-          className='cursor-pointer p-1 hover:rounded hover:bg-current/10'
+        {numberActiveChips}
+        <Button
           onClick={toggleMenu}
+          appearance='ghost'
+          className='relative hover:bg-current/10'
+          aria-label={t('filters.change')}
+          ref={buttonRef}
+          padding='sm'
+          border='none'
         >
-          <Icon name='filter' size={ICON_SIZES.FILTERS} stroke={fill} />
-        </button>
+          <Icon name='filter' size={ICON_SIZES.DEFAULT} stroke={fill} />
+        </Button>
         {isMenuOpen && (
           <FiltersMenu
             labels={labels}
@@ -60,4 +64,4 @@ export const Filter = ({ params, setParams }: FilterProps) => {
       </div>
     </div>
   );
-};
+});

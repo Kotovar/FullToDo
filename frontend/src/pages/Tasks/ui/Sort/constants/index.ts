@@ -1,1 +1,1 @@
-export * from './sorting';
+export * from './commonLabels';

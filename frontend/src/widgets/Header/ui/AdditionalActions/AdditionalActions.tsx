@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
-import { COLORS, Icon } from '@shared/ui';
+import { Button, COLORS, Icon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib/hooks';
-import { useLanguage } from './utils';
+import { useLanguage } from '.';
 
 export const AdditionalActions = memo(() => {
   const { isDarkMode, toggle } = useDarkMode();
@@ -13,23 +13,25 @@ export const AdditionalActions = memo(() => {
 
   return (
     <nav className='flex gap-x-2' aria-label={t('additionalActions')}>
-      <button
-        type='button'
-        className='hover:border-light flex w-24 cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
-        aria-label={t('change.language')}
+      <Button
         onClick={changeLanguage}
+        aria-label={t('change.language')}
+        className='hover:border-light flex w-24 gap-x-2 rounded-xl border-1 border-transparent'
+        appearance='ghost'
+        padding='sm'
       >
         <Icon name={iconNameLanguage} />
         <span className='text-white capitalize'>{t('language')}</span>
-      </button>
-      <button
-        type='button'
-        className='hover:border-light flex cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
-        aria-label={t('change.topic')}
+      </Button>
+      <Button
         onClick={toggle}
+        aria-label={t('change.topic')}
+        className='hover:border-light flex gap-x-2 rounded-xl border-1 border-transparent'
+        appearance='ghost'
+        padding='sm'
       >
         <Icon name={iconNameTheme} fill={COLORS.WHITE} />
-      </button>
+      </Button>
     </nav>
   );
 });

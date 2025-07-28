@@ -1,84 +1,82 @@
-import { useState, memo, useEffect } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon, Input, CompletionIcon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
+import { useSubtaskItem } from './hooks';
 import type { Subtask } from '@sharedCommon/*';
-import type { SubtaskAction } from '../Subtasks/types';
+import type { SubtaskAction } from '@pages/TaskDetail/lib';
 
 interface SubtaskItemProps {
   subtask: Subtask;
   updateSubtask: (action: SubtaskAction) => void;
 }
 
-export const SubtaskItem = memo(function SubtaskItem({
-  subtask,
-  updateSubtask,
-}: SubtaskItemProps) {
-  const { _id, title, isCompleted } = subtask;
+export const SubtaskItem = memo(
+  ({ subtask, updateSubtask }: SubtaskItemProps) => {
+    const { isCompleted } = subtask;
+    const { fill } = useDarkMode();
+    const { t } = useTranslation();
 
-  const [draftTitle, setDraftTitle] = useState(title);
-  const { fill } = useDarkMode();
+    const { methods, inputRef, isEditing, draftTitle } = useSubtaskItem(
+      subtask,
+      updateSubtask,
+    );
 
-  useEffect(() => {
-    setDraftTitle(title);
-  }, [title]);
+    const {
+      onDeleteSubtask,
+      onEnableEditing,
+      onSaveTitle,
+      onChangeTitle,
+      onKeyDown,
+      onToggleStatus,
+    } = methods;
 
-  const { t } = useTranslation();
+    const completionIcon = useMemo(
+      () => <CompletionIcon completed={isCompleted} />,
+      [isCompleted],
+    );
 
-  const handleToggleCompleted = () => {
-    updateSubtask({
-      type: 'update',
-      id: _id,
-      title,
-      isCompleted: !isCompleted,
-    });
-  };
+    const deleteIcon = useMemo(() => <Icon name='cross' fill={fill} />, [fill]);
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDraftTitle(e.target.value);
-  };
+    const completionLabel = useMemo(
+      () => t(`tasks.actions.${isCompleted ? 'incomplete' : 'complete'}`),
+      [isCompleted, t],
+    );
 
-  const saveTitle = () => {
-    if (draftTitle !== title) {
-      updateSubtask({
-        type: 'update',
-        id: _id,
-        title: draftTitle,
-        isCompleted,
-      });
-    }
-  };
+    return (
+      <li className='odd:bg-bg-second even:bg-grey-light grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-md p-2'>
+        <Button
+          appearance='ghost'
+          onClick={onToggleStatus}
+          aria-label={completionLabel}
+        >
+          {completionIcon}
+        </Button>
 
-  return (
-    <li className='odd:bg-bg-second even:bg-grey-light grid grid-cols-[auto_1fr_auto] items-center gap-4 rounded-md p-2'>
-      <Button
-        appearance='ghost'
-        onClick={handleToggleCompleted}
-        padding='none'
-        aria-label={
-          isCompleted
-            ? t('tasks.actions.incomplete')
-            : t('tasks.actions.complete')
-        }
-      >
-        <CompletionIcon completed={isCompleted} />
-      </Button>
-      <Input
-        type='text'
-        value={draftTitle}
-        onChange={handleTitleChange}
-        onBlur={saveTitle}
-        className='w-full outline-0'
-        name={_id}
-      />
-      <Button
-        appearance='ghost'
-        onClick={() => updateSubtask({ type: 'delete', id: _id })}
-        padding='none'
-        aria-label={t('tasks.deleteSubtask')}
-      >
-        <Icon name='cross' fill={fill} />
-      </Button>
-    </li>
-  );
-});
+        {isEditing ? (
+          <Input
+            ref={inputRef}
+            type='text'
+            value={draftTitle}
+            onChange={onChangeTitle}
+            onBlur={onSaveTitle}
+            onKeyDown={onKeyDown}
+            className='w-full outline-0'
+          />
+        ) : (
+          <span onClick={onEnableEditing} className='w-full'>
+            {draftTitle}
+          </span>
+        )}
+
+        <Button
+          appearance='ghost'
+          onClick={onDeleteSubtask}
+          aria-label={t('tasks.deleteSubtask')}
+        >
+          {deleteIcon}
+        </Button>
+      </li>
+    );
+  },
+);

@@ -3,12 +3,9 @@ import { createWrapper, createWrapperWithRouter } from '@shared/mocks';
 import { notepadId, taskId } from 'shared/schemas';
 import { useCreateTask, useTaskParams, useTaskDetail } from '..';
 
-const onSuccess = vi.fn();
-const onError = vi.fn();
-
 const getInitialDataCreateTask = async () => {
   const { result } = renderHook(
-    () => useCreateTask({ notepadId, onSuccess, onError }),
+    () => useCreateTask({ notepadId, entity: 'task' }),
     {
       wrapper: createWrapper(),
     },
@@ -18,12 +15,9 @@ const getInitialDataCreateTask = async () => {
 };
 
 const getInitialDataTaskDetail = async () => {
-  const { result } = renderHook(
-    () => useTaskDetail({ notepadId, taskId, onSuccess, onError }),
-    {
-      wrapper: createWrapper(),
-    },
-  );
+  const { result } = renderHook(() => useTaskDetail({ entity: 'task' }), {
+    wrapper: createWrapper(),
+  });
 
   return result;
 };

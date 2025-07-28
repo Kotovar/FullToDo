@@ -1,21 +1,22 @@
+import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getTaskQueryKey,
   handleMutation,
   isCommonNotepad,
   taskService,
-  type MutationUpdateProps,
-  type UseTasksProps,
+  MutationUpdateProps,
+  UseTasksProps,
 } from '@entities/Task';
+import { useApiNotifications } from '@shared/lib';
 import type { MutationMethods } from '@shared/api';
 import type { Task } from '@sharedCommon/*';
 
-export const useTasks = (props: UseTasksProps) => {
-  const { notepadId, params, onSuccess, onError } = props;
+export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
   const isCommon = isCommonNotepad(notepadId);
-  const queryKey = getTaskQueryKey(notepadId);
-  const paramsString = params.toString();
+  const queryKey = useMemo(() => getTaskQueryKey(notepadId), [notepadId]);
+  const paramsString = useMemo(() => params.toString(), [params]);
 
   const {
     data: tasks,
@@ -39,50 +40,55 @@ export const useTasks = (props: UseTasksProps) => {
     enabled: isCommon,
   });
 
-  const mutationUpdate = useMutation({
+  const { mutateAsync: mutationUpdate } = useMutation({
     mutationFn: ({ updatedTask, id }: MutationUpdateProps) =>
       taskService.updateTask(id, updatedTask),
   });
 
-  const mutationDelete = useMutation({
+  const { mutateAsync: mutationDelete } = useMutation({
     mutationFn: (id: string) => taskService.deleteTask(id),
   });
 
-  const updateTask = async (
-    updatedTask: Partial<Task>,
-    id: string,
-    subtaskActionType?: MutationMethods,
-  ) =>
-    handleMutation(
-      mutationUpdate,
-      subtaskActionType ?? 'update',
-      {
-        updatedTask,
-        id,
-      },
-      {
+  const { onSuccess, onError } = useApiNotifications(entity);
+
+  const updateTask = useCallback(
+    async (
+      updatedTask: Partial<Task>,
+      id: string,
+      subtaskActionType?: MutationMethods,
+    ) =>
+      await handleMutation(
+        mutationUpdate,
+        subtaskActionType ?? 'update',
+        { updatedTask, id },
+        { queryClient, queryKey, onSuccess, onError },
+      ),
+    [mutationUpdate, onError, onSuccess, queryClient, queryKey],
+  );
+
+  const deleteTask = useCallback(
+    async (id: string) =>
+      await handleMutation(mutationDelete, 'delete', id, {
         queryClient,
         queryKey,
         onSuccess,
         onError,
-      },
-    );
+      }),
+    [mutationDelete, queryClient, queryKey, onSuccess, onError],
+  );
 
-  const deleteTask = (id: string) =>
-    handleMutation(mutationDelete, 'delete', id, {
-      queryClient,
-      queryKey,
-      onSuccess,
-      onError,
-    });
+  const methods = useMemo(
+    () => ({
+      updateTask,
+      deleteTask,
+    }),
+    [deleteTask, updateTask],
+  );
 
   return {
     tasks: tasks || tasksAll,
     isError: isErrorTasks || isErrorTasksAll,
     isLoading: isLoadingTasks || isLoadingTasksAll,
-    methods: {
-      updateTask,
-      deleteTask,
-    },
+    methods,
   };
 };

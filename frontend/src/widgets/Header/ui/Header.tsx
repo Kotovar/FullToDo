@@ -3,13 +3,11 @@ import { SearchSection } from './SearchSection';
 import { AdditionalActions } from './AdditionalActions';
 import { MenuButton } from './MenuButton';
 
-interface Props extends ComponentPropsWithoutRef<'header'> {
+interface HeaderProps extends ComponentPropsWithoutRef<'header'> {
   changeVisibility: () => void;
 }
 
-export const Header = memo((props: Props) => {
-  const { changeVisibility, ...rest } = props;
-
+export const Header = memo(({ changeVisibility, ...rest }: HeaderProps) => {
   return (
     <header {...rest}>
       <nav>

@@ -1,13 +1,9 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getPath } from '@pages/Tasks/lib';
 import { Button, CompletionIcon, LinkCard } from '@shared/ui';
+import { ACTION_LABELS, CARD_CLASSES, processProgress } from './utils';
 import type { Task } from 'shared/schemas';
-
-const ACTION_LABELS = {
-  complete: 'tasks.actions.complete',
-  incomplete: 'tasks.actions.incomplete',
-} as const;
 
 interface TaskItemProps {
   task: Task;
@@ -56,21 +52,31 @@ export const TaskItem = memo(
       renameTask(_id);
     }, [_id, renameTask]);
 
+    const taskProgress = processProgress(progress);
+
+    const onSaveTitle = useCallback(
+      (newTitle: string) => handleSaveTitle(_id, newTitle, title),
+      [_id, handleSaveTitle, title],
+    );
+
+    const header = useMemo(() => {
+      return (
+        <Button
+          appearance='ghost'
+          onClick={handleStatusChange}
+          aria-label={t(
+            isCompleted ? ACTION_LABELS.incomplete : ACTION_LABELS.complete,
+          )}
+          className='focus-visible:ring-dark h-8 w-8 place-items-center focus:outline-none focus-visible:ring-2'
+        >
+          <CompletionIcon completed={isCompleted} />
+        </Button>
+      );
+    }, [handleStatusChange, isCompleted, t]);
+
     return (
       <LinkCard
-        header={
-          <Button
-            appearance='ghost'
-            onClick={handleStatusChange}
-            padding='none'
-            aria-label={t(
-              isCompleted ? ACTION_LABELS.incomplete : ACTION_LABELS.complete,
-            )}
-            className='h-8 w-8 place-items-center'
-          >
-            <CompletionIcon completed={isCompleted} />
-          </Button>
-        }
+        header={header}
         cardTitle={title}
         currentModalId={currentModalId}
         handleModalId={handleModalId}
@@ -78,11 +84,9 @@ export const TaskItem = memo(
         handleClickDelete={handleDelete}
         handleClickRename={handleRename}
         isEditing={editingTaskId === _id}
-        onSaveTitle={newTitle => handleSaveTitle(_id, newTitle, title)}
-        body={
-          <p className='text-sm'>{progress.replace('/', ` ${t('of')} `)}</p>
-        }
-        className='bg-light grid grid-cols-[2rem_1fr_2rem] items-center gap-2 rounded-sm p-4 text-2xl shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] last:mb-10 hover:bg-current/10'
+        onSaveTitle={onSaveTitle}
+        body={<p className='text-sm'>{taskProgress}</p>}
+        className={CARD_CLASSES}
       />
     );
   },

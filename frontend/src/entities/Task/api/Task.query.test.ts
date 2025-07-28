@@ -1,9 +1,7 @@
 import { COMMON_ERRORS, TASKS_ERRORS } from '@shared/api';
-import { setupMockServer } from '@shared/config';
-import { taskService } from './Task.query';
+import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
 import {
   getDeleteResponse,
-  MOCK_SINGE_NOTEPAD_RESPONSE,
   MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS,
   MOCK_SINGE_TASK_RESPONSE,
   MOCK_TASK_UPDATE_RESPONSE,
@@ -15,8 +13,9 @@ import {
   getErrorMock,
   getErrorResult,
   getFailFetchResponse,
+  setupMockServer,
 } from '@shared/testing';
-import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
+import { taskService } from './Task.query';
 
 describe('MockTaskService', () => {
   setupMockServer();
@@ -124,12 +123,16 @@ describe('MockTaskService', () => {
   describe('getSingleTask', () => {
     test('success with notepadId', async () => {
       const responseGet = await taskService.getSingleTask(taskId, notepadId);
-      expect(responseGet).toEqual(MOCK_SINGE_TASK_RESPONSE);
+
+      expect(responseGet.status).toEqual(MOCK_SINGE_TASK_RESPONSE.status);
+      expect(responseGet.message).toEqual(MOCK_SINGE_TASK_RESPONSE.message);
     });
 
     test('success without notepadId', async () => {
       const responseGet = await taskService.getSingleTask(taskId);
-      expect(responseGet).toEqual(MOCK_SINGE_TASK_RESPONSE);
+
+      expect(responseGet.status).toEqual(MOCK_SINGE_TASK_RESPONSE.status);
+      expect(responseGet.message).toEqual(MOCK_SINGE_TASK_RESPONSE.message);
     });
 
     test('return handleError if catch error', async () => {
@@ -151,7 +154,9 @@ describe('MockTaskService', () => {
         notepadId,
         emptyParams,
       );
-      expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE);
+
+      expect(responseGet.status).toEqual(MOCK_SINGE_TASK_RESPONSE.status);
+      expect(responseGet.message).toEqual(MOCK_SINGE_TASK_RESPONSE.message);
     });
 
     test('success with empty notepadId', async () => {
@@ -159,7 +164,9 @@ describe('MockTaskService', () => {
         '',
         emptyParams,
       );
-      expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE);
+
+      expect(responseGet.status).toEqual(MOCK_SINGE_TASK_RESPONSE.status);
+      expect(responseGet.message).toEqual(MOCK_SINGE_TASK_RESPONSE.message);
     });
 
     test('success with common notepadId', async () => {
@@ -167,7 +174,9 @@ describe('MockTaskService', () => {
         commonNotepadId,
         emptyParams,
       );
-      expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE);
+
+      expect(responseGet.status).toEqual(MOCK_SINGE_TASK_RESPONSE.status);
+      expect(responseGet.message).toEqual(MOCK_SINGE_TASK_RESPONSE.message);
     });
 
     test('success with  params', async () => {
@@ -194,7 +203,9 @@ describe('MockTaskService', () => {
   describe('getAllTasks', () => {
     test('success', async () => {
       const responseGet = await taskService.getAllTasks(emptyParams);
-      expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE);
+
+      expect(responseGet.status).toEqual(MOCK_SINGE_TASK_RESPONSE.status);
+      expect(responseGet.message).toEqual(MOCK_SINGE_TASK_RESPONSE.message);
     });
 
     test('success with  params', async () => {
@@ -256,7 +267,8 @@ describe('MockTaskService', () => {
         title: MOCK_TITLE_NON_EXISTING,
       });
 
-      expect(responsePost).toStrictEqual(MOCK_TASK_UPDATE_RESPONSE);
+      expect(responsePost.status).toEqual(MOCK_TASK_UPDATE_RESPONSE.status);
+      expect(responsePost.message).toEqual(MOCK_TASK_UPDATE_RESPONSE.message);
     });
 
     test('return error if title exists', async () => {

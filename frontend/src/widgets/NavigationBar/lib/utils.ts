@@ -1,12 +1,6 @@
-import type { MutationMethods, QueryError } from '@shared/api';
-import type { Notepad } from '@sharedCommon/*';
-import type { QueryObserverResult } from '@tanstack/react-query';
 import type { NavigateFunction } from 'react-router';
-
-export interface UseNotepadsProps {
-  onSuccess?: (method: MutationMethods) => void;
-  onError?: (error: QueryError) => void;
-}
+import type { QueryObserverResult } from '@tanstack/react-query';
+import type { Notepad } from '@sharedCommon/*';
 
 export interface MutationUpdateProps {
   notepadId: string;

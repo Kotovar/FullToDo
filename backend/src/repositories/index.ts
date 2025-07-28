@@ -1,14 +1,15 @@
-import { config } from 'dotenv';
+export * from './TaskRepository';
+export * from './MockTaskRepository';
+
+import { config } from '@configs';
 import MockTaskRepository from './MockTaskRepository';
 
-config();
-
-export const getDbType = () => process.env.DB_TYPE || 'mock';
-
-const DB_TYPE = getDbType();
+const {
+  db: { type },
+} = config;
 
 export const taskRepository = (() => {
-  switch (DB_TYPE) {
+  switch (type) {
     case 'mongo':
       return MockTaskRepository;
     case 'postgres':

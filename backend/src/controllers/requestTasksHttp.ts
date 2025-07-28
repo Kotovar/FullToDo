@@ -1,4 +1,4 @@
-import { createTaskSchema, updateTaskSchema } from '@shared/schemas';
+import { createTaskSchema, updateTaskSchema } from '@sharedCommon/schemas';
 import {
   checkContentType,
   errorHandler,
@@ -13,7 +13,7 @@ export const createTask: RequestHandler = async ({ req, res }, repository) => {
   try {
     if (!checkContentType(req, res)) return;
 
-    const notepadId = getId(req, 'notepad');
+    const { notepadId } = getId(req, 'notepad');
     const rawTask = await parseJsonBody<unknown>(req);
     const validationResult = createTaskSchema.safeParse(rawTask);
 
@@ -38,8 +38,8 @@ export const getSingleTask: RequestHandler = async (
   repository,
 ) => {
   try {
-    const taskId = getId(req, 'task');
-    const result = await repository.getSingleTask(taskId);
+    const { notepadId, taskId } = getId(req, 'task');
+    const result = await repository.getSingleTask(notepadId, taskId);
 
     res
       .writeHead(result.status, { 'Content-Type': 'application/json' })
@@ -69,7 +69,7 @@ export const getSingleNotepadTasks: RequestHandler = async (
   const params = getValidatedTaskParams(req);
 
   try {
-    const notepadId = getId(req, 'notepad');
+    const { notepadId } = getId(req, 'notepad');
     const result = await repository.getSingleNotepadTasks(notepadId, params);
 
     res
@@ -84,7 +84,7 @@ export const updateTask: RequestHandler = async ({ req, res }, repository) => {
   try {
     if (!checkContentType(req, res)) return;
 
-    const taskId = getId(req, 'task');
+    const { taskId } = getId(req, 'task');
     const rawTask = await parseJsonBody<unknown>(req);
 
     const validationResult = updateTaskSchema.safeParse(rawTask);
@@ -104,7 +104,7 @@ export const updateTask: RequestHandler = async ({ req, res }, repository) => {
 
 export const deleteTask: RequestHandler = async ({ req, res }, repository) => {
   try {
-    const taskId = getId(req, 'task');
+    const { taskId } = getId(req, 'task');
     const result = await repository.deleteTask(taskId);
 
     res

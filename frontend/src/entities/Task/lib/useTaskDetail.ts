@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getTaskQueryKey,
@@ -8,11 +9,13 @@ import {
 } from '@entities/Task';
 import type { MutationMethods } from '@shared/api';
 import type { Task } from '@sharedCommon/*';
+import { useApiNotifications } from '@shared/lib';
+import { useParams } from 'react-router';
 
-export const useTaskDetail = (props: UseTaskDetailProps) => {
-  const { notepadId, taskId, onSuccess, onError } = props;
+export const useTaskDetail = ({ entity }: UseTaskDetailProps) => {
+  const { notepadId, taskId = '' } = useParams();
   const queryClient = useQueryClient();
-  const queryKey = getTaskQueryKey(notepadId);
+  const queryKey = useMemo(() => getTaskQueryKey(notepadId), [notepadId]);
 
   const {
     data: task,
@@ -25,7 +28,7 @@ export const useTaskDetail = (props: UseTaskDetailProps) => {
     select: data => data.data,
   });
 
-  const mutationUpdate = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: ({ updatedTask, id }: MutationUpdateProps) =>
       taskService.updateTask(id, updatedTask),
     onSuccess: async () => {
@@ -33,25 +36,27 @@ export const useTaskDetail = (props: UseTaskDetailProps) => {
     },
   });
 
-  const updateTask = async (
-    updatedTask: Partial<Task>,
-    id: string,
-    subtaskActionType: MutationMethods,
-  ) =>
-    handleMutation(
-      mutationUpdate,
-      subtaskActionType,
-      {
-        updatedTask,
-        id,
-      },
-      {
-        queryClient,
-        queryKey,
-        onSuccess,
-        onError,
-      },
-    );
+  const { onSuccess, onError } = useApiNotifications(entity);
+
+  const updateTask = useCallback(
+    async (
+      updatedTask: Partial<Task>,
+      id: string,
+      subtaskActionType: MutationMethods,
+    ) =>
+      handleMutation(
+        mutateAsync,
+        subtaskActionType,
+        { updatedTask, id },
+        {
+          queryClient,
+          queryKey,
+          onSuccess,
+          onError,
+        },
+      ),
+    [mutateAsync, onError, onSuccess, queryClient, queryKey],
+  );
 
   return {
     task,

@@ -8,8 +8,8 @@ import {
   getId,
   getValidatedTaskParams,
 } from './utils';
-import { commonNotepadId, TaskQueryParams } from '@shared/schemas';
-import { extractInvalidKeys } from '@shared/utils';
+import { commonNotepadId, TaskQueryParams } from '@sharedCommon/schemas';
+import { extractInvalidKeys } from '@sharedCommon/utils';
 
 describe('parseJsonBody tests', () => {
   test('should reject JSON Error if catch Error', async () => {
@@ -45,8 +45,8 @@ describe('getId tests', () => {
     const req = {} as IncomingMessage;
     const emptyResponse = '';
 
-    const notepadId = getId(req, 'notepad');
-    const taskId = getId(req, 'task');
+    const { notepadId } = getId(req, 'notepad');
+    const { taskId } = getId(req, 'task');
 
     expect(taskId).toBe(emptyResponse);
     expect(notepadId).toBe(emptyResponse);
@@ -55,9 +55,18 @@ describe('getId tests', () => {
   test('get all if idType === notepad and url has task ', async () => {
     const url = `/tasks/1`;
     const req = { url } as IncomingMessage;
-    const notepadId = getId(req, 'notepad');
+    const { notepadId } = getId(req, 'notepad');
 
     expect(notepadId).toBe(commonNotepadId);
+  });
+
+  test('get empty taskId if url[1] isn`t exists', async () => {
+    const url = `/tasks`;
+    const req = { url } as IncomingMessage;
+    const { notepadId, taskId } = getId(req, 'task');
+
+    expect(notepadId).toBe(commonNotepadId);
+    expect(taskId).toBe('');
   });
 });
 

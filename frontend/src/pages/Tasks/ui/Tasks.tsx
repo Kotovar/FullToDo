@@ -1,26 +1,23 @@
-import { useTranslation } from 'react-i18next';
 import { ErrorFetching } from '@shared/ui';
-import { useNotepad } from '@pages/Tasks/lib';
 import { useTaskParams } from '@entities/Task';
-import { TasksHeader } from './TasksHeader';
-import { TasksBody } from './TasksBody';
-import { TasksSkeleton } from './TasksSkeleton';
+import { TasksSkeleton, TasksBody, TasksHeader } from '@pages/Tasks/ui';
+import { useNotepad } from '@pages/Tasks/lib';
 
 export const Tasks = () => {
   const { title, notepadId, location, isError, isLoading, notFound } =
     useNotepad();
   const { validParams, setSearchParams } = useTaskParams();
-  const { t } = useTranslation();
 
   if (isLoading) return <TasksSkeleton />;
-  if (notFound) return <ErrorFetching message={t('notepads.notFound')} />;
-  if (isError && !notFound) return <ErrorFetching />;
+  if (isError) return <ErrorFetching />;
+  if (notFound) return <ErrorFetching message='notepads.notFound' />;
 
   return (
     <>
       <TasksHeader
         title={title}
         params={validParams}
+        notepadId={notepadId}
         setParams={setSearchParams}
       />
       <TasksBody

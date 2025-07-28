@@ -1,6 +1,6 @@
-import type { ComponentPropsWithRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Icon } from '..';
+import { memo, type ComponentPropsWithRef } from 'react';
+import { Button, Icon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib/hooks';
 
 export interface ChipProps extends ComponentPropsWithRef<'div'> {
@@ -8,24 +8,21 @@ export interface ChipProps extends ComponentPropsWithRef<'div'> {
   onDelete: () => void;
 }
 
-export const Chip = ({ label, onDelete, ...rest }: ChipProps) => {
+export const Chip = memo(({ label, onDelete }: ChipProps) => {
   const { t } = useTranslation();
   const { fill } = useDarkMode();
 
   return (
-    <div
-      {...rest}
-      className='bg-light inline-flex items-center self-center rounded-full pl-4 text-sm'
-    >
+    <div className='bg-light inline-flex items-center self-center rounded-full pl-4 text-sm'>
       {label}
       <Button
         appearance='ghost'
         onClick={onDelete}
-        padding='s'
+        padding='md'
         aria-label={`${t('delete')} ${label}`}
       >
         <Icon name='cross' fill={fill} />
       </Button>
     </div>
   );
-};
+});

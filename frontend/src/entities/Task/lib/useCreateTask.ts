@@ -1,23 +1,25 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useApiNotifications } from '@shared/lib';
 import {
   getTaskQueryKey,
   handleMutation,
   taskService,
-  type UseCreateTaskProps,
+  UseCreateTaskProps,
 } from '@entities/Task';
 import type { CreateTask } from '@sharedCommon/*';
 
-export const useCreateTask = (props: UseCreateTaskProps) => {
-  const { notepadId, onSuccess, onError } = props;
+export const useCreateTask = ({ notepadId, entity }: UseCreateTaskProps) => {
   const queryClient = useQueryClient();
   const queryKey = getTaskQueryKey(notepadId);
 
-  const mutationCreate = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: (task: CreateTask) => taskService.createTask(task, notepadId),
   });
 
+  const { onSuccess, onError } = useApiNotifications(entity);
+
   const createTask = async (task: CreateTask) =>
-    handleMutation(mutationCreate, 'create', task, {
+    handleMutation(mutateAsync, 'create', task, {
       queryClient,
       queryKey,
       onSuccess,

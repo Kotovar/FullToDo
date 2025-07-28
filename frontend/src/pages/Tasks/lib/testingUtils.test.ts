@@ -2,7 +2,7 @@ import * as useNotepadHook from '@pages/Tasks/lib';
 import { getUseNotepadMock } from '@pages/Tasks/lib';
 
 describe('getUseNotepadMock', () => {
-  test('должен возвращать дефолтные значения при вызове без параметров', () => {
+  test('should return default values when called without parameters', () => {
     vi.spyOn(useNotepadHook, 'useNotepad').mockReturnValue({
       title: 'test',
       notepadId: '/notepads/:notepadId',

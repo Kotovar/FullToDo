@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { TaskRepository } from '../repositories/TaskRepository';
+import type { TaskRepository } from '@repositories/TaskRepository';
 
 export interface HttpContext {
   req: IncomingMessage;

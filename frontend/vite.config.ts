@@ -20,7 +20,7 @@ export default defineConfig({
         'src/main.tsx',
         'src/shared/i18n/config.ts',
         'src/shared/i18n/types/resources.ts',
-        'src/shared/config/msw/handlers',
+        'src/shared/testing/msw/handlers/*',
         ...coverageConfigDefaults.exclude,
       ],
     },

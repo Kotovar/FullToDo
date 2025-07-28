@@ -26,7 +26,7 @@ export const createSubtaskSchema = z.object({
 export const createTaskSchema = z.object({
   title: z.coerce.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  dueDate: z.coerce.date().optional(),
+  dueDate: z.coerce.date().nullable().optional(),
   priority: PriorityEnum.optional(),
 });
 
@@ -62,7 +62,7 @@ export const updateTaskSchema = createTaskSchema
 
 const ResponseWithoutData = z.object({
   status: StatusResponseEnum,
-  message: z.string().optional(),
+  message: z.string(),
 });
 
 export const TasksResponse = ResponseWithoutData.extend({
@@ -74,7 +74,7 @@ export const TaskResponse = ResponseWithoutData.extend({
 });
 
 export const NotepadResponse = ResponseWithoutData.extend({
-  data: z.array(dbNotepadSchema).optional(),
+  data: dbNotepadSchema.optional(),
 });
 
 export const NotepadWithoutTasksResponse = ResponseWithoutData.extend({

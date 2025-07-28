@@ -5,37 +5,26 @@ import { COLORS } from '@shared/ui';
 const LOCAL_STORAGE_KEY = 'dark-mode';
 const COLOR_SCHEME_QUERY = '(prefers-color-scheme: dark)';
 
-type DarkModeOptions = {
-  localStorageKey?: string;
-};
-
 type DarkModeReturn = {
   isDarkMode: boolean;
   fill: string;
   toggle: () => void;
 };
 
-export function useDarkMode({
-  localStorageKey = LOCAL_STORAGE_KEY,
-}: DarkModeOptions = {}): DarkModeReturn {
+export const useDarkMode = (): DarkModeReturn => {
   const isDarkOS = useMediaQuery(COLOR_SCHEME_QUERY);
 
   const [isDarkMode, setDarkMode] = useLocalStorage<boolean>(
-    localStorageKey,
+    LOCAL_STORAGE_KEY,
     isDarkOS,
   );
 
   useLayoutEffect(() => {
-    const html = document.documentElement;
-
-    if (isDarkMode) {
-      html.classList.add('dark');
-    } else {
-      html.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
 
   const toggle = useCallback(() => setDarkMode(prev => !prev), [setDarkMode]);
+
   const fill = useMemo(
     () => (isDarkMode ? COLORS.ACCENT_DARK : COLORS.ACCENT),
     [isDarkMode],
@@ -46,4 +35,4 @@ export function useDarkMode({
     fill,
     toggle,
   };
-}
+};

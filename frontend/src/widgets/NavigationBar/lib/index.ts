@@ -1,1 +1,1 @@
-export * from './useNotepads';
+export * from './utils';

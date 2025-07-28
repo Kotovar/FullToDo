@@ -26,10 +26,10 @@ describe('SubtaskItem component', () => {
     });
   });
 
-  test('При вводе текста в Input - вызывается метод обновления подзадачи', async () => {
+  test('when entering text in Input - the subtask update method is called', async () => {
     renderWithRouter(<SubtaskItem {...props} />);
 
-    const input = screen.getByDisplayValue(props.subtask.title);
+    const input = screen.getByText(props.subtask.title);
 
     await user.type(input, 'Подзадача Новая');
     await user.tab();
@@ -39,21 +39,26 @@ describe('SubtaskItem component', () => {
     });
   });
 
-  test('Не вызывается сохранение названия подзадачи, если оно не менялось', async () => {
+  test('saving of the subtask name is not called if it has not changed', async () => {
     renderWithRouter(<SubtaskItem {...props} />);
 
-    const input = screen.getByDisplayValue(props.subtask.title);
+    const input = screen.getByText(props.subtask.title);
 
-    await user.clear(input);
-    await user.type(input, MOCK_SUBTASK.title);
-    await user.tab();
+    await user.click(input);
+
+    await waitFor(async () => {
+      const input = screen.getByDisplayValue(props.subtask.title);
+      await user.clear(input);
+      await user.type(input, MOCK_SUBTASK.title);
+      await user.tab();
+    });
 
     await waitFor(() => {
       expect(props.updateSubtask).not.toHaveBeenCalled();
     });
   });
 
-  test('При клике на кнопку удаления вызывается метод обновления подзадачи', async () => {
+  test('the update method of the subtask is called when the delete button is clicked', async () => {
     renderWithRouter(<SubtaskItem {...props} />);
 
     const button = screen.getByLabelText('tasks.deleteSubtask');

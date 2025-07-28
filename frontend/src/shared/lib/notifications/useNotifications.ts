@@ -1,23 +1,37 @@
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import type { Translation } from '@shared/i18n';
 
 export const useNotifications = () => {
-  const showError = (message: string) => {
-    toast.error(message, {
-      toastId: 'error',
-    });
-  };
+  const { t } = useTranslation();
 
-  const showSuccess = (message: string) => {
-    toast.success(message, {
-      toastId: 'success',
-    });
-  };
+  const showError = useCallback(
+    (message: Translation) => {
+      toast.error(t(message), {
+        toastId: 'error',
+      });
+    },
+    [t],
+  );
 
-  const showInfo = (message: string) => {
-    toast.info(message, {
-      toastId: 'info',
-    });
-  };
+  const showSuccess = useCallback(
+    (message: Translation) => {
+      toast.success(t(message), {
+        toastId: 'success',
+      });
+    },
+    [t],
+  );
+
+  const showInfo = useCallback(
+    (message: Translation) => {
+      toast.info(t(message), {
+        toastId: 'info',
+      });
+    },
+    [t],
+  );
 
   return { showError, showSuccess, showInfo };
 };

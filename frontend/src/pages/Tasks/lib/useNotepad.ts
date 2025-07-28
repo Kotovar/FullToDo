@@ -26,47 +26,15 @@ export const useNotepad = () => {
   return useMemo(() => {
     const isCommon = pathname === ROUTES.TASKS;
     const currentNotepad = data?.find(notepad => notepad._id === notepadId);
-
-    if (isCommon) {
-      return {
-        title: 'Все задачи',
-        notepadId: commonNotepadId,
-        location: pathname,
-        isError: false,
-        isLoading: false,
-        notFound: false,
-      };
-    }
-
-    if (isLoading || !data) {
-      return {
-        title: '',
-        notepadId: '',
-        location: pathname,
-        isError: false,
-        notFound: false,
-        isLoading,
-      };
-    }
-
-    if (!currentNotepad) {
-      return {
-        title: '',
-        notepadId: '',
-        location: pathname,
-        isError: false,
-        isLoading: false,
-        notFound: true,
-      };
-    }
+    const hasDataLoaded = !isLoading && !isError;
 
     return {
-      title: currentNotepad.title,
-      notepadId: currentNotepad._id,
+      title: isCommon ? 'Все задачи' : (currentNotepad?.title ?? ''),
+      notepadId: isCommon ? commonNotepadId : (currentNotepad?._id ?? ''),
       location: pathname,
-      isError: false,
-      isLoading: false,
-      notFound: false,
+      notFound: hasDataLoaded && !currentNotepad && !isCommon,
+      isError,
+      isLoading,
     };
-  }, [pathname, isLoading, data, notepadId]);
+  }, [data, isError, isLoading, notepadId, pathname]);
 };

@@ -1,18 +1,23 @@
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { COLORS, Icon } from '@shared/ui';
+import { Button, COLORS, Icon } from '@shared/ui';
 
-export const MenuButton = memo(({ onClick }: { onClick: () => void }) => {
+interface MenuButtonProps {
+  onClick: () => void;
+}
+
+export const MenuButton = memo(({ onClick }: MenuButtonProps) => {
   const { t } = useTranslation();
 
   return (
-    <button
-      type='button'
-      className='hover:border-light flex cursor-pointer items-center gap-x-2 rounded-xl border-1 border-transparent p-1'
+    <Button
       onClick={onClick}
-      aria-label={t('open.menu')}
+      aria-label={t('change.menu')}
+      className='hover:border-light rounded-xl'
+      padding='sm'
+      appearance='ghost'
     >
       <Icon name='burger' fill={COLORS.WHITE} size={32} />
-    </button>
+    </Button>
   );
 });

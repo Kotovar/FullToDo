@@ -1,1 +1,1 @@
-export * from './api/Notepad.query';
+export * from './api';

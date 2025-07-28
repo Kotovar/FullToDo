@@ -6,14 +6,14 @@ import {
   getDeleteResponse,
 } from '@shared/mocks';
 import { COMMON_ERRORS, NOTEPAD_ERRORS } from '@shared/api';
-import { setupMockServer } from '@shared/config';
-import { notepadService } from './Notepad.query';
 import {
   getErrorMock,
   getErrorResult,
   getFailFetchResponse,
+  setupMockServer,
 } from '@shared/testing';
 import { notepadId } from 'shared/schemas';
+import { notepadService } from './Notepad.query';
 
 describe('MockNotepadService', () => {
   setupMockServer();

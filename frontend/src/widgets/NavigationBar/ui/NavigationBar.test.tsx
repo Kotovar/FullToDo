@@ -1,19 +1,18 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithRouter } from '@shared/testing';
+import { renderWithRouter, setupMockServer } from '@shared/testing';
 import { MOCK_NOTEPADS_RESPONSE } from '@shared/mocks/';
-import { setupMockServer } from '@shared/config';
 import { NavigationBar } from './NavigationBar';
-import * as useNotepadsHook from '@widgets/NavigationBar/lib';
+import * as useNotepadsHook from './hooks/useNotepads';
 
-const NOTEPAD_INDEX = 1;
+const FIRST_SPECIFIC_NOTEPAD_INDEX = 1;
 
 const getUseNotepadsMockWithRender = (
   isError = false,
   createNotepad = vi.fn(),
   updateNotepadTitle = vi.fn(),
   deleteNotepad = vi.fn(),
-  notepads = MOCK_NOTEPADS_RESPONSE.data,
+  notepads = MOCK_NOTEPADS_RESPONSE.data ?? [],
 ) => {
   vi.spyOn(useNotepadsHook, 'useNotepads').mockReturnValue({
     notepads,
@@ -37,13 +36,13 @@ const getElements = (
 ) => {
   switch (element) {
     case 'menu':
-      return screen.getAllByLabelText('card.additionalMenu')[NOTEPAD_INDEX];
+      return screen.findByLabelText('card.additionalMenu');
     case 'delete':
       return screen.getByText('delete');
     case 'rename':
       return screen.getByText('rename');
     case 'input':
-      return screen.getAllByRole('textbox')[NOTEPAD_INDEX];
+      return screen.getAllByRole('textbox')[FIRST_SPECIFIC_NOTEPAD_INDEX];
     default:
       return screen.getByPlaceholderText(element);
   }
@@ -60,7 +59,7 @@ describe('NavigationBar component', () => {
     vi.clearAllMocks();
   });
 
-  test('Создаётся блокнот, если указано название блокнота и нажат Enter или кнопка Сохранить', async () => {
+  test('a notebook should be created if the notebook name is specified and Enter or the Save button is pressed', async () => {
     getUseNotepadsMockWithRender(false, createNotepadMock);
 
     const input = screen.getByPlaceholderText('notepads.add');
@@ -81,18 +80,19 @@ describe('NavigationBar component', () => {
     expect(createNotepadMock).toHaveBeenCalledWith('Новое название 2');
   });
 
-  test('Меняется название блокнота, если новое название не совпадает со старым', async () => {
+  test('the notebook name should be changed if the new name does not match the old one', async () => {
     getUseNotepadsMockWithRender(
       false,
       createNotepadMock,
       updateNotepadTitleMock,
     );
 
-    const menuButton = getElements('menu');
+    const menuButton = await getElements('menu');
     await user.click(menuButton);
-    await user.click(getElements('rename'));
+    const renameButton = await getElements('rename');
+    await user.click(renameButton);
 
-    const input = getElements('input');
+    const input = await getElements('input');
     await user.clear(input);
     await user.type(input, 'Новое');
 
@@ -100,30 +100,31 @@ describe('NavigationBar component', () => {
     await user.click(addButton);
 
     expect(updateNotepadTitleMock).toHaveBeenCalledWith(
-      MOCK_NOTEPADS_RESPONSE.data[NOTEPAD_INDEX]._id,
+      MOCK_NOTEPADS_RESPONSE.data?.[FIRST_SPECIFIC_NOTEPAD_INDEX]._id,
       'Новое',
     );
   });
 
-  test('Не меняется название блокнота, если новое название совпадает со старым', async () => {
+  test('the notebook name does not change if the new name matches the old one', async () => {
     getUseNotepadsMockWithRender(
       false,
       createNotepadMock,
       updateNotepadTitleMock,
     );
 
-    const menuButton = getElements('menu');
+    const menuButton = await getElements('menu');
     await user.click(menuButton);
-    await user.click(getElements('rename'));
+    const renameButton = await getElements('rename');
+    await user.click(renameButton);
 
-    const input = getElements('input');
+    const input = await getElements('input');
     await user.clear(input);
     await user.type(input, 'Рабочее{enter}');
 
     expect(updateNotepadTitleMock).not.toHaveBeenCalled();
   });
 
-  test('вызывается deleteNotepad при удалении блокнота', async () => {
+  test('deleteNotepad should be called when deleting a notepad', async () => {
     getUseNotepadsMockWithRender(
       false,
       createNotepadMock,
@@ -131,10 +132,10 @@ describe('NavigationBar component', () => {
       deleteNotepadTitleMock,
     );
 
-    const menuButton = getElements('menu');
+    const menuButton = await getElements('menu');
     await user.click(menuButton);
 
-    const deleteButton = getElements('delete');
+    const deleteButton = await getElements('delete');
     await user.click(deleteButton);
     expect(deleteNotepadTitleMock).toHaveBeenCalled();
   });

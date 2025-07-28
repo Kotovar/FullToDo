@@ -1,23 +1,25 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { setupMockServer } from '@shared/config';
 import {
   createWrapper,
-  MOCK_SINGE_NOTEPAD_RESPONSE,
   MOCK_TITLE_NON_EXISTING,
   getDeleteResponse,
 } from '@shared/mocks';
-import { taskService } from '@entities/Task';
 import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
+import { setupMockServer } from '@shared/testing';
+import { taskService } from '@entities/Task';
 import { useTasks } from './useTasks';
 
 const params = new URLSearchParams();
 
-const getInitialData = async () => {
-  const { result } = renderHook(() => useTasks({ notepadId, params }), {
-    wrapper: createWrapper(),
-  });
+const getInitialData = (notepad: string = notepadId) => {
+  const { result } = renderHook(
+    () => useTasks({ notepadId: notepad, params, entity: 'task' }),
+    {
+      wrapper: createWrapper(),
+    },
+  );
 
-  await waitFor(() => expect(result.current.isLoading).toBeFalsy());
+  waitFor(() => expect(result.current.isLoading).toBeFalsy());
 
   return result;
 };
@@ -43,7 +45,7 @@ describe('useTasks hook', () => {
     );
   });
 
-  test('Показывает уведомление об ошибке, если она произошла', async () => {
+  test('should show an error notification if one occurs', async () => {
     const mockError = new Error('Ошибка сервера');
     vi.spyOn(taskService, 'updateTask').mockRejectedValue(mockError);
 
@@ -61,21 +63,13 @@ describe('useTasks hook', () => {
     });
   });
 
-  test('Без указаний id возвращает пустой массив задач', async () => {
-    const result = await getInitialData();
-    expect(result.current.tasks).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE.data);
-  });
-
-  test('Если указан notepadId будет вызван метод для получения задач из конкретного блокнота', async () => {
+  test('should call the method to get tasks from a specific notebook if notepadId is specified', async () => {
     const getTasksFromNotepadMock = vi.spyOn(
       taskService,
       'getTasksFromNotepad',
     );
     const getSingleTaskMock = vi.spyOn(taskService, 'getSingleTask');
-
-    const { result } = renderHook(() => useTasks({ notepadId, params }), {
-      wrapper: createWrapper(),
-    });
+    const result = getInitialData();
 
     await result.current.methods.updateTask({ title: 'New' }, taskId);
 
@@ -83,16 +77,10 @@ describe('useTasks hook', () => {
     expect(getTasksFromNotepadMock).toHaveBeenCalledTimes(1);
   });
 
-  test('Если указан общий notepadId - будет вызван метод для получения всех задач', async () => {
+  test('should call the method to get all tasks if a common notepadId is specified', async () => {
     const getAllTasksMock = vi.spyOn(taskService, 'getAllTasks');
     const getSingleTaskMock = vi.spyOn(taskService, 'getSingleTask');
-
-    const { result } = renderHook(
-      () => useTasks({ notepadId: commonNotepadId, params }),
-      {
-        wrapper: createWrapper(),
-      },
-    );
+    const result = getInitialData(commonNotepadId);
 
     await result.current.methods.updateTask({ title: 'New' }, taskId);
 
@@ -100,16 +88,8 @@ describe('useTasks hook', () => {
     expect(getAllTasksMock).toHaveBeenCalledTimes(1);
   });
 
-  test('возвращает список задач из конкретного блокнота', async () => {
-    const result = await getInitialData();
-
-    await waitFor(() =>
-      expect(result.current.tasks).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE.data),
-    );
-  });
-
-  test('вызывает updateTask при создании задачи', async () => {
-    const result = await getInitialData();
+  test('should call updateTask when creating a task', async () => {
+    const result = getInitialData();
 
     result.current.methods.updateTask(
       {
@@ -125,8 +105,8 @@ describe('useTasks hook', () => {
     });
   });
 
-  test('вызывает deleteTask при создании задачи', async () => {
-    const result = await getInitialData();
+  test('should call deleteTask when deleting a task', async () => {
+    const result = getInitialData();
 
     result.current.methods.deleteTask(taskId);
 

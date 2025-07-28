@@ -1,4 +1,4 @@
-import type { ComponentPropsWithRef, JSX } from 'react';
+import { memo, ComponentPropsWithRef, JSX } from 'react';
 
 export interface InputProps extends ComponentPropsWithRef<'input'> {
   type: 'text' | 'date';
@@ -6,7 +6,7 @@ export interface InputProps extends ComponentPropsWithRef<'input'> {
   rightContent?: JSX.Element | null;
 }
 
-export const Input = (props: InputProps) => {
+export const Input = memo((props: InputProps) => {
   const { leftContent, rightContent, type, ...rest } = props;
 
   return (
@@ -16,4 +16,4 @@ export const Input = (props: InputProps) => {
       {rightContent}
     </>
   );
-};
+});

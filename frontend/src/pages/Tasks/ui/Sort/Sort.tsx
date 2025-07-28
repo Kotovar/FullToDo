@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { SetURLSearchParams } from 'react-router';
-import { Icon, ICON_SIZES } from '@shared/ui';
+import { Button, Icon, ICON_SIZES } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
 import { SortMenu, useSort } from '.';
 
@@ -17,19 +17,21 @@ export const Sort = ({ params, setParams }: SortProps) => {
   const { t } = useTranslation();
   const { fill } = useDarkMode();
 
-  const closeMenu = () => setIsMenuOpen(false);
-  const toggleMenu = () => setIsMenuOpen(prev => !prev);
+  const closeMenu = useCallback(() => setIsMenuOpen(false), []);
+  const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
 
   return (
     <div className='relative flex w-60 items-center justify-end-safe gap-2'>
-      <button
-        aria-label={t('sort.change')}
-        className='relative cursor-pointer p-1 hover:rounded hover:bg-current/10'
-        ref={buttonRef}
+      <Button
         onClick={toggleMenu}
+        appearance='ghost'
+        className='relative p-1 hover:bg-current/10'
+        aria-label={t('sort.change')}
+        ref={buttonRef}
+        border='none'
       >
         {sort.label}
-      </button>
+      </Button>
       {isMenuOpen && (
         <SortMenu
           buttonRef={buttonRef}
@@ -37,18 +39,21 @@ export const Sort = ({ params, setParams }: SortProps) => {
           closeMenu={closeMenu}
         />
       )}
-      <button
-        aria-label={t('sort.order')}
-        className='relative cursor-pointer p-1 hover:rounded hover:bg-current/10'
+      <Button
         onClick={toggleOrder}
+        appearance='ghost'
+        className='relative hover:bg-current/10'
+        aria-label={t('sort.order')}
+        padding='sm'
+        border='none'
       >
         <Icon
           name={order === 'desc' ? 'arrowDown' : 'arrowUp'}
           ariaLabel={order === 'desc' ? 'sort descending' : 'sort ascending'}
-          size={ICON_SIZES.FILTERS}
+          size={ICON_SIZES.DEFAULT}
           fill={fill}
         />
-      </button>
+      </Button>
     </div>
   );
 };
