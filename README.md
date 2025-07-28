@@ -35,23 +35,38 @@ Pet проект для управления задачами (todo-прилож
 - Express (в разработке)
 - Nest.js (в разработке)
 - Mock-база (JSON)
+- `MongoDB` (в разработке)
+- `postgres` (в разработке)
 - Vitest (тесты с покрытием 99-100%)
 
 ## Запуск
-1. Установить зависимости:
+
+Скопировать файл окружения:
+```bash
+cp .env.example .env
+```
+
+Установить зависимости:
 ```bash
 npm install
 ```
 
-2. Запустить проект (из корня проекта):
+Запустить проект (из корня проекта):
 ```bash
 npm run dev
 ```
 Будет запущен frontend и backend одновременно.
 
+Файл .env содержит:
+
+- `PORT` - порт для backend-сервера (по умолчанию `5000`)
+- `DB_TYPE` - тип базы данных (`mock`/`mongo`/`postgres`)
+- `SERVER_TYPE` - тип сервера (`http`/`express`/`nextJs`)
+- `VITE_URL` - базовый URL для фронтенда
+
 ## Планы развития
-- Добавление поддержки 3 серверов (HTTP, Express, Nest.js)
-- Добавление поддержки 2 БД (MongoDB, PostgreSQL)
+- Добавление поддержки 3 серверов (`http`/`express`/`nextJs`)
+- Добавление поддержки 2 БД (`mongo`/`postgres`)
 - Возможность переключения между разными серверами и БД
 - Реализация функционала приоритетов задач
 
@@ -61,27 +76,16 @@ A pet project for task management (todo app) with the ability to choose differen
 
 ## Features
 - Create/delete/edit notebooks and tasks
-
 - Task details:
-
   - Title, description, due date
-
   - Subtasks
-
   - Priority (in development)
-
 - Filtering and sorting:
-
   - By status (all/completed/active)
-
   - By creation/due date
-
   - By priority
-
 - Task search
-
 - Localization (Russian/English)
-
 - Dark/light theme
 
 ## Technologies
@@ -89,31 +93,27 @@ A pet project for task management (todo app) with the ability to choose differen
 ### Frontend
 
 - React + TypeScript
-
 - Vite
-
 - TailwindCSS
-
 - React Query
-
 - i18next
-
 - Vitest (99-100% test coverage)
 
 ### Backend
 - Node.js + TypeScript
-
 - HTTP module (current version)
-
 - Express (in development)
-
 - Nest.js (in development)
-
 - Mock database (JSON)
-
+- `MongoDB` (in development)
+- `postgres` (in development)
 - Vitest (99-100% test coverage)
 
 ## Running
+Copy environment file:
+```bash
+cp .env.example .env
+```
 Install dependencies:
 
 ```bash
@@ -126,11 +126,15 @@ npm run dev
 ```
 This command starts both frontend and backend simultaneously.
 
+The .env file contains:
+
+- `PORT` - port for backend server (default `5000`)
+- `DB_TYPE` - database type (`mock`/`mongo`/`postgres`)
+- `SERVER_TYPE` - server type (`http`/`express`/`nextJs`)
+- `VITE_URL` - base URL for frontend
+
 ## Roadmap
-- Adding support for 3 servers (HTTP, Express, Nest.js)
-
-- Adding support for 2 databases (MongoDB, PostgreSQL)
-
+- Adding support for 3 servers (`http`/`express`/`nextJs`)
+- Adding support for 2 databases (`mongo`/`postgres`)
 - Ability to switch between different servers and databases
-
 - Implementation of task priorities functionality
