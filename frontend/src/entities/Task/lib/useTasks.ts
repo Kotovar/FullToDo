@@ -11,6 +11,7 @@ import {
 import { useApiNotifications } from '@shared/lib';
 import type { MutationMethods } from '@shared/api';
 import type { Task } from '@sharedCommon/*';
+import { defaultQueryOptions } from '@shared/config';
 
 export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
@@ -27,6 +28,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     queryFn: () => taskService.getTasksFromNotepad(notepadId, params),
     select: data => data.data,
     enabled: !isCommon,
+    ...defaultQueryOptions,
   });
 
   const {
@@ -38,6 +40,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     queryFn: () => taskService.getAllTasks(params),
     select: data => data.data,
     enabled: isCommon,
+    ...defaultQueryOptions,
   });
 
   const { mutateAsync: mutationUpdate } = useMutation({

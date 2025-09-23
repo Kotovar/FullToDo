@@ -9,6 +9,7 @@ import {
   handleMutationSuccess,
   MutationUpdateProps,
 } from '@widgets/NavigationBar/lib';
+import { defaultQueryOptions } from '@shared/config';
 
 export const useNotepads = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export const useNotepads = () => {
     queryKey: ['notepads'],
     queryFn: notepadService.getNotepads,
     select: data => data.data,
+    ...defaultQueryOptions,
   });
 
   const { onSuccess, onError } = useApiNotifications('notepad');
