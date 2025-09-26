@@ -1,5 +1,10 @@
 import { NOTEPADS } from '@db/mock';
-import { commonNotepadId, type Notepad } from '@sharedCommon/schemas';
+import {
+  commonNotepadId,
+  PAGINATION,
+  Task,
+  type Notepad,
+} from '@sharedCommon/schemas';
 
 const sameDate = new Date();
 
@@ -21,6 +26,16 @@ export const newTask = {
 };
 
 export const allTasks = NOTEPADS.flatMap(notepad => notepad.tasks);
+export const paginatedTasks = allTasks.slice(0, PAGINATION.DEFAULT_LIMIT);
+
+export const getMetaMock = (tasks: Task[]) => {
+  return {
+    limit: PAGINATION.DEFAULT_LIMIT,
+    page: 1,
+    total: tasks.length,
+    totalPages: Math.ceil(tasks.length / PAGINATION.DEFAULT_LIMIT),
+  };
+};
 
 export const customNotepad: Notepad[] = [
   {

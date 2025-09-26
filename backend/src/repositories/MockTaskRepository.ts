@@ -11,7 +11,7 @@ import type {
   Subtask,
   TaskQueryParams,
 } from '@sharedCommon/schemas';
-import { commonNotepadId } from '@sharedCommon/schemas';
+import { commonNotepadId, PAGINATION } from '@sharedCommon/schemas';
 import type { TaskRepository } from './TaskRepository';
 
 export const DEFAULT_TASK_PARAMS: TaskQueryParams = {
@@ -39,6 +39,7 @@ export class MockTaskRepository implements TaskRepository {
       sortBy: sortByOriginal,
       order,
     } = params;
+
     const sortBy = sortByOriginal ?? DEFAULT_TASK_PARAMS.sortBy;
     let result = [...tasks];
 
@@ -91,6 +92,21 @@ export class MockTaskRepository implements TaskRepository {
     }
 
     return result;
+  }
+
+  private paginate(items: Task[], params?: TaskQueryParams) {
+    const page = params?.page ?? PAGINATION.DEFAULT_PAGE;
+    const limit = params?.limit ?? PAGINATION.DEFAULT_LIMIT;
+    const total = items.length;
+    const totalPages = Math.ceil(total / limit);
+
+    const start = (page - 1) * limit;
+    const paginatedTasks = items.slice(start, start + limit);
+
+    return {
+      paginatedTasks,
+      meta: { page, limit, total, totalPages },
+    };
   }
 
   private validateNotepadExistence(
@@ -186,11 +202,13 @@ export class MockTaskRepository implements TaskRepository {
 
   async getAllTasks(params?: TaskQueryParams): Promise<TasksResponse> {
     const filteredTasks = this.applyTaskFilters(this.tasks, params);
+    const { paginatedTasks, meta } = this.paginate(filteredTasks, params);
 
     return {
       status: 200,
       message: 'Success',
-      data: filteredTasks,
+      data: paginatedTasks,
+      meta,
     };
   }
 
@@ -222,10 +240,13 @@ export class MockTaskRepository implements TaskRepository {
     params?: TaskQueryParams,
   ): Promise<TasksResponse> {
     if (!this.notepads.some(notepad => notepad._id === notepadId)) {
+      const { meta } = this.paginate([], params);
+
       return {
         status: 404,
         message: `Notepad ${notepadId} not found`,
         data: [],
+        meta,
       };
     }
 
@@ -234,11 +255,13 @@ export class MockTaskRepository implements TaskRepository {
     );
 
     const filteredTasks = this.applyTaskFilters(filteredByNotebook, params);
+    const { paginatedTasks, meta } = this.paginate(filteredTasks, params);
 
     return {
       status: 200,
       message: 'Success',
-      data: filteredTasks,
+      data: paginatedTasks,
+      meta,
     };
   }
 

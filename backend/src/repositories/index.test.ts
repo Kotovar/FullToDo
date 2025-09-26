@@ -2,7 +2,7 @@ import { describe, test, expect, expectTypeOf, beforeEach, vi } from 'vitest';
 import { loadEnvFile } from 'node:process';
 import path from 'path';
 
-loadEnvFile(path.resolve(__dirname, '../../.env'));
+loadEnvFile(path.resolve(__dirname, '../../../.env'));
 
 describe('DB_TYPE tests', () => {
   const originalEnv = process.env;
