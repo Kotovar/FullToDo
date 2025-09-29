@@ -10,6 +10,7 @@ import {
   CreateTask,
   Task,
   TaskResponse,
+  TaskResponseSingle,
   TasksResponse,
   commonNotepadId,
 } from 'shared/schemas';
@@ -109,7 +110,7 @@ class TaskService extends BaseService {
   async createTask(
     task: CreateTask,
     notepadId?: string,
-  ): Promise<TaskResponse> {
+  ): Promise<TaskResponseSingle> {
     try {
       const patch = notepadId
         ? taskRoutes.forCreate(notepadId)
@@ -129,7 +130,7 @@ class TaskService extends BaseService {
   async updateTask(
     taskId: string,
     updatedTaskFields: Partial<Task>,
-  ): Promise<TaskResponse> {
+  ): Promise<TaskResponseSingle> {
     try {
       const response = await fetch(taskRoutes.singleInCommonNotepad(taskId), {
         method: 'PATCH',
@@ -142,7 +143,7 @@ class TaskService extends BaseService {
     }
   }
 
-  async deleteTask(taskId: string): Promise<TaskResponse> {
+  async deleteTask(taskId: string): Promise<TaskResponseSingle> {
     try {
       const response = await fetch(taskRoutes.singleInCommonNotepad(taskId), {
         method: 'DELETE',

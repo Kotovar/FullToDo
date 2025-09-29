@@ -18,8 +18,8 @@ import {
   newTask,
   realId,
   paginatedTasks,
-  getMetaMock,
 } from '@tests/mocks';
+import { getMetaMock } from '@tests/utils';
 
 const newTitleNotepad = { title: 'Test Notepad' };
 const notepadId = '999';
@@ -408,7 +408,7 @@ describe('MockTaskRepository', () => {
     expect(incorrectResponseGet).toStrictEqual({
       status: 404,
       message: `Task ${taskId} not found`,
-      data: null,
+      data: undefined,
     });
   });
 

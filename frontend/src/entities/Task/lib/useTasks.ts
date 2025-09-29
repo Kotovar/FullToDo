@@ -1,5 +1,9 @@
 import { useCallback, useMemo } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {
   getTaskQueryKey,
   handleMutation,
@@ -10,35 +14,66 @@ import {
 } from '@entities/Task';
 import { useApiNotifications } from '@shared/lib';
 import type { MutationMethods } from '@shared/api';
-import type { Task } from '@sharedCommon/*';
+import { PAGINATION, type Task } from '@sharedCommon/';
 import { defaultQueryOptions } from '@shared/config';
 
 export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
   const isCommon = isCommonNotepad(notepadId);
   const queryKey = useMemo(() => getTaskQueryKey(notepadId), [notepadId]);
-  const paramsString = useMemo(() => params.toString(), [params]);
+  const paramsObj = useMemo(() => Object.fromEntries(params), [params]);
+  const initialPage = Number(params.get('page') ?? PAGINATION.DEFAULT_PAGE);
 
   const {
-    data: tasks,
-    isError: isErrorTasks,
-    isLoading: isLoadingTasks,
-  } = useQuery({
-    queryKey: ['tasks', notepadId, params, paramsString],
-    queryFn: () => taskService.getTasksFromNotepad(notepadId, params),
-    select: data => data.data,
+    data: tasksPrivate,
+    isError: isErrorPrivate,
+    isLoading: isLoadingPrivate,
+    fetchNextPage: fetchNextPagePrivate,
+    hasNextPage: hasNextPagePrivate,
+  } = useInfiniteQuery({
+    queryKey: ['tasks', notepadId, params, initialPage, paramsObj.limit],
+    queryFn: ({ pageParam = initialPage }) => {
+      const queryParams = new URLSearchParams(paramsObj);
+      queryParams.set('page', pageParam.toString());
+      queryParams.set(
+        'limit',
+        (paramsObj.limit ?? PAGINATION.DEFAULT_LIMIT).toString(),
+      );
+      return taskService.getTasksFromNotepad(notepadId, queryParams);
+    },
+    initialPageParam: initialPage,
+    getNextPageParam: lastPage =>
+      lastPage?.meta?.page && lastPage.meta.totalPages
+        ? lastPage.meta.page < lastPage.meta.totalPages
+          ? lastPage.meta.page + 1
+          : undefined
+        : undefined,
     enabled: !isCommon,
     ...defaultQueryOptions,
   });
 
   const {
-    data: tasksAll,
-    isError: isErrorTasksAll,
-    isLoading: isLoadingTasksAll,
-  } = useQuery({
-    queryKey: ['tasks', params, paramsString],
-    queryFn: () => taskService.getAllTasks(params),
-    select: data => data.data,
+    data: tasksCommon,
+    isError: isErrorCommon,
+    isLoading: isLoadingCommon,
+    fetchNextPage: fetchNextPageCommon,
+    hasNextPage: hasNextPageCommon,
+  } = useInfiniteQuery({
+    queryKey: ['tasks', params, initialPage, paramsObj.limit],
+    queryFn: ({ pageParam = initialPage }) => {
+      const queryParams = new URLSearchParams(paramsObj);
+      queryParams.set('page', pageParam.toString());
+      queryParams.set(
+        'limit',
+        (paramsObj.limit ?? PAGINATION.DEFAULT_LIMIT).toString(),
+      );
+      return taskService.getAllTasks(queryParams);
+    },
+    initialPageParam: initialPage,
+    getNextPageParam: lastPage =>
+      lastPage.meta.page < lastPage.meta.totalPages
+        ? lastPage.meta.page + 1
+        : undefined,
     enabled: isCommon,
     ...defaultQueryOptions,
   });
@@ -80,18 +115,27 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     [mutationDelete, queryClient, queryKey, onSuccess, onError],
   );
 
-  const methods = useMemo(
-    () => ({
-      updateTask,
-      deleteTask,
-    }),
-    [deleteTask, updateTask],
+  const tasksPrivateResult = useMemo(
+    () => tasksPrivate?.pages.flatMap(page => page.data ?? []) ?? [],
+    [tasksPrivate],
   );
 
+  const tasksCommonResult = useMemo(
+    () => tasksCommon?.pages.flatMap(page => page.data ?? []) ?? [],
+    [tasksCommon],
+  );
+
+  const tasksFinal = isCommon ? tasksCommonResult : tasksPrivateResult;
+
   return {
-    tasks: tasks || tasksAll,
-    isError: isErrorTasks || isErrorTasksAll,
-    isLoading: isLoadingTasks || isLoadingTasksAll,
-    methods,
+    tasks: tasksFinal,
+    isError: isErrorPrivate || isErrorCommon,
+    isLoading: isLoadingPrivate || isLoadingCommon,
+    hasNextPage: isCommon ? hasNextPageCommon : hasNextPagePrivate,
+    methods: {
+      updateTask,
+      deleteTask,
+      fetchNextPage: isCommon ? fetchNextPageCommon : fetchNextPagePrivate,
+    },
   };
 };

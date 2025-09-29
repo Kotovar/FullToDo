@@ -11,7 +11,8 @@ export const useTaskBody = ({ notepadId, params }: useTaskBodyProps) => {
   const [currentModalId, setCurrentModalId] = useState('');
   const {
     tasks,
-    methods: { updateTask, deleteTask },
+    hasNextPage,
+    methods: { updateTask, deleteTask, fetchNextPage },
   } = useTasks({
     notepadId,
     params,
@@ -52,14 +53,23 @@ export const useTaskBody = ({ notepadId, params }: useTaskBodyProps) => {
       renameTask,
       updateTaskStatus,
       deleteTask,
+      fetchNextPage,
     }),
-    [handleSaveTitle, handleModalId, renameTask, updateTaskStatus, deleteTask],
+    [
+      handleSaveTitle,
+      handleModalId,
+      renameTask,
+      updateTaskStatus,
+      deleteTask,
+      fetchNextPage,
+    ],
   );
 
   return {
-    tasks: tasks,
+    tasks,
     currentModalId,
     editingTaskId,
+    hasNextPage,
     methods,
   };
 };

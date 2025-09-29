@@ -1,9 +1,9 @@
 import type {
   Subtask,
   Task,
-  TaskResponse,
   NotepadResponse,
   NotepadWithoutTasksResponse,
+  TaskResponseSingle,
 } from '@sharedCommon/*';
 
 export const MOCK_SUBTASK: Subtask = {
@@ -30,7 +30,7 @@ export const MOCK_TASK: Task = {
   subtasks: [MOCK_SUBTASK],
 };
 
-export const MOCK_SINGE_TASK_RESPONSE: TaskResponse = {
+export const MOCK_SINGE_TASK_RESPONSE: TaskResponseSingle = {
   status: 200,
   message: 'Success',
   data: {
@@ -140,7 +140,7 @@ export const MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS: NotepadWithoutTasksRespons
     data: [],
   };
 
-export const MOCK_TASK_UPDATE_RESPONSE: TaskResponse = {
+export const MOCK_TASK_UPDATE_RESPONSE: TaskResponseSingle = {
   status: 200,
   message: 'A task with the _id 1 has been successfully updated',
   data: {

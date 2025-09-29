@@ -59,6 +59,11 @@ export const TaskItem = memo(
       [_id, handleSaveTitle, title],
     );
 
+    const body = useMemo(
+      () => <p className='text-sm'>{taskProgress}</p>,
+      [taskProgress],
+    );
+
     const header = useMemo(() => {
       return (
         <Button
@@ -85,7 +90,7 @@ export const TaskItem = memo(
         handleClickRename={handleRename}
         isEditing={editingTaskId === _id}
         onSaveTitle={onSaveTitle}
-        body={<p className='text-sm'>{taskProgress}</p>}
+        body={body}
         className={CARD_CLASSES}
       />
     );

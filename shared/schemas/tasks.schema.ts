@@ -88,29 +88,38 @@ export const paginationQuerySchema = z.object({
   limit: zLimit(),
 });
 
-const ResponseWithoutData = z.object({
+const ResponseBase = z.object({
   status: StatusResponseEnum,
   message: z.string(),
-  meta: paginationMetaSchema.optional(),
+});
+
+const ResponseWithMeta = ResponseBase.extend({
+  meta: paginationMetaSchema,
+});
+
+const TaskResponseSingle = ResponseBase.extend({
+  data: dbTaskSchema.optional(),
 });
 
 export type PaginationMeta = z.infer<typeof paginationMetaSchema>;
 
 export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
 
-export const TasksResponse = ResponseWithoutData.extend({
+export const TasksResponse = ResponseWithMeta.extend({
   data: z.array(dbTaskSchema).optional(),
 });
 
-export const TaskResponse = ResponseWithoutData.extend({
+export const TaskResponse = ResponseBase.extend({
   data: z.union([dbTaskSchema, z.null()]).optional(),
 });
 
-export const NotepadResponse = ResponseWithoutData.extend({
+export type TaskResponseSingle = z.infer<typeof TaskResponseSingle>;
+
+export const NotepadResponse = ResponseBase.extend({
   data: dbNotepadSchema.optional(),
 });
 
-export const NotepadWithoutTasksResponse = ResponseWithoutData.extend({
+export const NotepadWithoutTasksResponse = ResponseBase.extend({
   data: z.array(notepadWithoutTasksSchema).optional(),
 });
 
@@ -127,11 +136,13 @@ export const taskSearchSchema = z
   })
   .strict();
 
+const zBooleanString = z.enum(['true', 'false']);
+
 export const taskFilterSchema = z
   .object({
-    isCompleted: z.union([z.literal('true'), z.literal('false')]).optional(),
+    isCompleted: zBooleanString.optional(),
     priority: PriorityEnum.optional(),
-    hasDueDate: z.union([z.literal('true'), z.literal('false')]).optional(),
+    hasDueDate: zBooleanString.optional(),
   })
   .strict();
 
