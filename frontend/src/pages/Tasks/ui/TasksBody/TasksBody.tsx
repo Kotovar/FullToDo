@@ -15,7 +15,6 @@ export const TasksBody = memo(
 
     const {
       tasks = [],
-      currentModalId,
       editingTaskId,
       methods,
       hasNextPage,
@@ -26,7 +25,6 @@ export const TasksBody = memo(
 
     const {
       handleSaveTitle,
-      handleModalId,
       renameTask,
       updateTaskStatus,
       deleteTask,
@@ -55,12 +53,10 @@ export const TasksBody = memo(
             key={task._id}
             task={task}
             notepadPathName={notepadPathName}
-            currentModalId={currentModalId}
             editingTaskId={editingTaskId}
             notepadId={notepadId}
             deleteTask={deleteTask}
             updateTaskStatus={updateTaskStatus}
-            handleModalId={handleModalId}
             renameTask={renameTask}
             handleSaveTitle={handleSaveTitle}
           />

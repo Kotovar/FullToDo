@@ -9,11 +9,9 @@ interface TaskItemProps {
   task: Task;
   notepadPathName: string;
   notepadId: string;
-  currentModalId: string;
   editingTaskId: string | null;
   deleteTask: (id: string) => Promise<boolean>;
   updateTaskStatus: (id: string, status: boolean) => void;
-  handleModalId: (id: string) => void;
   renameTask: (id: string) => void;
   handleSaveTitle: (
     id: string,
@@ -27,11 +25,9 @@ export const TaskItem = memo(
     task,
     notepadPathName,
     notepadId,
-    currentModalId,
     editingTaskId,
     deleteTask,
     updateTaskStatus,
-    handleModalId,
     renameTask,
     handleSaveTitle,
   }: TaskItemProps) => {
@@ -83,8 +79,6 @@ export const TaskItem = memo(
       <LinkCard
         header={header}
         cardTitle={title}
-        currentModalId={currentModalId}
-        handleModalId={handleModalId}
         path={path}
         handleClickDelete={handleDelete}
         handleClickRename={handleRename}

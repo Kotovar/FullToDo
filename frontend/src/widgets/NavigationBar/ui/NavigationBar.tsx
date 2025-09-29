@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router';
-import { useMemo, useState, type ComponentPropsWithoutRef } from 'react';
+import { useMemo, type ComponentPropsWithoutRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { commonNotepadId, ROUTES } from '@sharedCommon/';
@@ -18,8 +18,6 @@ export const NavigationBar = ({
   turnOffVisibility,
   ...rest
 }: NavigationBarProps) => {
-  const [currentModalId, setCurrentModalId] = useState('');
-
   const { t } = useTranslation();
   const basePath = useLocation().pathname;
   const { fill } = useDarkMode();
@@ -45,8 +43,6 @@ export const NavigationBar = ({
 
         return (
           <LinkCard
-            currentModalId={currentModalId}
-            handleModalId={setCurrentModalId}
             className={clsx(
               'text-dark grid grid-cols-[1fr_2rem] items-center rounded-lg hover:bg-current/10 has-[a:focus]:ring-2',
               {
@@ -71,7 +67,6 @@ export const NavigationBar = ({
       actions.delete,
       actions.edit,
       basePath,
-      currentModalId,
       editingNotepadId,
       notepads,
       turnOffVisibility,

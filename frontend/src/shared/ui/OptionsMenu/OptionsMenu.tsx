@@ -26,16 +26,6 @@ export const OptionsMenu = (props: OptionsMenuProps) => {
   const { t } = useTranslation();
   const [position, setPosition] = useState<'top' | 'bottom'>('bottom');
 
-  const updateMenuPosition = useCallback(() => {
-    if (!menuRef.current || !buttonRef.current) return;
-
-    const dialogRect = menuRef.current.getBoundingClientRect();
-    const viewportHeight = window.innerHeight;
-    const isOverflowBottom = dialogRect.bottom > viewportHeight;
-
-    setPosition(isOverflowBottom ? 'top' : 'bottom');
-  }, [buttonRef]);
-
   useLayoutEffect(() => {
     const menu = menuRef.current;
     if (!menu) return;
@@ -44,9 +34,15 @@ export const OptionsMenu = (props: OptionsMenuProps) => {
 
     requestAnimationFrame(() => {
       menu.removeAttribute('inert');
+
+      if (!menuRef.current || !buttonRef.current) return;
+
+      const rect = menuRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      setPosition(rect.bottom > viewportHeight ? 'top' : 'bottom');
     });
-    updateMenuPosition();
-  }, [updateMenuPosition]);
+  }, [buttonRef]);
 
   const handleRename = useCallback(() => {
     renameHandler();

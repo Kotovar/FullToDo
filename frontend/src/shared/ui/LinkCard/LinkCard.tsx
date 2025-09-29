@@ -13,11 +13,9 @@ export const LinkCard = memo((props: LinkCardProps) => {
     cardTitle,
     path,
     body,
-    currentModalId,
     linkClassName,
     isEditing = false,
     handleLinkClick,
-    handleModalId,
     handleClickRename,
     handleClickDelete,
     onSaveTitle,
@@ -35,8 +33,6 @@ export const LinkCard = memo((props: LinkCardProps) => {
 
   const { isCurrentMenuOpen, isNotMainNotepad, menuMethods } = useMenuToggle({
     path,
-    currentModalId,
-    handleModalId,
   });
 
   const inputTitle = (
