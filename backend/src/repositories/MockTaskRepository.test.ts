@@ -3,6 +3,7 @@ import {
   commonNotepadId,
   type TaskQueryParams,
   type Task,
+  PAGINATION,
 } from '@sharedCommon/schemas';
 import taskRepository, { MockTaskRepository } from './MockTaskRepository';
 import { NOTEPADS } from '@db/mock/mock-db';
@@ -16,7 +17,9 @@ import {
   dates,
   newTask,
   realId,
+  paginatedTasks,
 } from '@tests/mocks';
+import { getMetaMock } from '@tests/utils';
 
 const newTitleNotepad = { title: 'Test Notepad' };
 const notepadId = '999';
@@ -29,24 +32,30 @@ const getSortedAllTasks = (
   task: Task[],
 ) => {
   if (type === 'dueDate' || type === 'createdDate') {
-    return task.toSorted((a, b) => {
-      const valA = a[type];
-      const valB = b[type];
+    return task
+      .toSorted((a, b) => {
+        const valA = a[type];
+        const valB = b[type];
 
-      if (valA === undefined || valA === null) return order === 'asc' ? 1 : -1;
-      if (valB === undefined || valB === null) return order === 'asc' ? -1 : 1;
-      if (valA === valB) return 0;
+        if (valA === undefined || valA === null)
+          return order === 'asc' ? 1 : -1;
+        if (valB === undefined || valB === null)
+          return order === 'asc' ? -1 : 1;
+        if (valA === valB) return 0;
 
-      return order === 'asc' ? (valA < valB ? -1 : 1) : valA < valB ? 1 : -1;
-    });
+        return order === 'asc' ? (valA < valB ? -1 : 1) : valA < valB ? 1 : -1;
+      })
+      .splice(0, PAGINATION.DEFAULT_LIMIT);
   }
 
-  return task.toSorted((a, b) => {
-    const priorityOrder = { low: 0, medium: 1, high: 2 };
-    const aVal = a.priority ? priorityOrder[a.priority] : -1;
-    const bVal = b.priority ? priorityOrder[b.priority] : -1;
-    return order === 'asc' ? aVal - bVal : bVal - aVal;
-  });
+  return task
+    .toSorted((a, b) => {
+      const priorityOrder = { low: 0, medium: 1, high: 2 };
+      const aVal = a.priority ? priorityOrder[a.priority] : -1;
+      const bVal = b.priority ? priorityOrder[b.priority] : -1;
+      return order === 'asc' ? aVal - bVal : bVal - aVal;
+    })
+    .splice(0, PAGINATION.DEFAULT_LIMIT);
 };
 
 describe('MockTaskRepository', () => {
@@ -119,10 +128,13 @@ describe('MockTaskRepository', () => {
   test('method getAllTasks', async () => {
     const responseGet = await repository.getAllTasks();
 
+    const meta = getMetaMock(allTasks);
+
     expect(responseGet).toStrictEqual({
       status: 200,
       message: 'Success',
-      data: allTasks,
+      meta,
+      data: paginatedTasks,
     });
   });
 
@@ -138,9 +150,12 @@ describe('MockTaskRepository', () => {
       task => task.isCompleted && !task.dueDate && task.priority === 'low',
     );
 
+    const metaAllTasksFiltered = getMetaMock(allTasksFiltered);
+
     expect(responseGet).toStrictEqual({
       status: 200,
       message: 'Success',
+      meta: metaAllTasksFiltered,
       data: allTasksFiltered,
     });
 
@@ -149,9 +164,12 @@ describe('MockTaskRepository', () => {
     });
     const allTasksWithDueDate = allTasks.filter(task => !!task.dueDate);
 
+    const metaAllTasksWithDueDate = getMetaMock(allTasksWithDueDate);
+
     expect(responseGetWithDueDate).toStrictEqual({
       status: 200,
       message: 'Success',
+      meta: metaAllTasksWithDueDate,
       data: allTasksWithDueDate,
     });
 
@@ -163,9 +181,14 @@ describe('MockTaskRepository', () => {
       task => !task.isCompleted && !task.dueDate && task.priority === 'low',
     );
 
+    const metaAllTasksFilteredWithIsCompletedFalse = getMetaMock(
+      allTasksFilteredWithIsCompletedFalse,
+    );
+
     expect(responseGetWithIsCompletedFalse).toStrictEqual({
       status: 200,
       message: 'Success',
+      meta: metaAllTasksFilteredWithIsCompletedFalse,
       data: allTasksFilteredWithIsCompletedFalse,
     });
   });
@@ -178,10 +201,12 @@ describe('MockTaskRepository', () => {
 
     const responseGetAsc = await repository.getAllTasks(params);
     const dataAsc = getSortedAllTasks(params.order, 'createdDate', allTasks);
+    const meta = getMetaMock(allTasks);
 
     expect(responseGetAsc).toStrictEqual({
       status: 200,
       message: 'Success',
+      meta,
       data: dataAsc,
     });
 
@@ -194,6 +219,7 @@ describe('MockTaskRepository', () => {
     expect(responseGetDesc).toStrictEqual({
       status: 200,
       message: 'Success',
+      meta,
       data: dataDesc,
     });
   });
@@ -206,10 +232,12 @@ describe('MockTaskRepository', () => {
 
     const responseGetAsc = await repository.getAllTasks(params);
     const dataAsc = getSortedAllTasks(params.order, 'dueDate', allTasks);
+    const meta = getMetaMock(allTasks);
 
     expect(responseGetAsc).toStrictEqual({
       status: 200,
       message: 'Success',
+      meta,
       data: dataAsc,
     });
 
@@ -221,6 +249,7 @@ describe('MockTaskRepository', () => {
     expect(responseGetDesc).toStrictEqual({
       status: 200,
       message: 'Success',
+      meta,
       data: dataDesc,
     });
   });
@@ -232,10 +261,12 @@ describe('MockTaskRepository', () => {
     };
     const responseGet = await repository.getAllTasks(params);
     const dataDesc = getSortedAllTasks(params.order, 'priority', allTasks);
+    const meta = getMetaMock(allTasks);
 
     expect(responseGet).toStrictEqual({
       status: 200,
       message: 'Success',
+      meta,
       data: dataDesc,
     });
 
@@ -248,6 +279,7 @@ describe('MockTaskRepository', () => {
     expect(responseGetWithAsc).toStrictEqual({
       status: 200,
       message: 'Success',
+      meta,
       data: dataAsc,
     });
   });
@@ -339,18 +371,26 @@ describe('MockTaskRepository', () => {
         task.description?.toLowerCase().includes('task'),
     );
 
+    const meta = getMetaMock(allTasksSearched);
+
     expect(responseGet).toStrictEqual({
       status: 200,
       message: 'Success',
+      meta,
       data: allTasksSearched,
     });
 
     const responseGetAgain = await repository.getAllTasks({ search: '' });
+    const metaAllTask = getMetaMock(allTasks);
+    const paginatedTasks = allTasks
+      .toReversed()
+      .slice(0, PAGINATION.DEFAULT_LIMIT);
 
     expect(responseGetAgain).toStrictEqual({
       status: 200,
       message: 'Success',
-      data: allTasks.reverse(),
+      meta: metaAllTask,
+      data: paginatedTasks,
     });
   });
 
@@ -368,25 +408,32 @@ describe('MockTaskRepository', () => {
     expect(incorrectResponseGet).toStrictEqual({
       status: 404,
       message: `Task ${taskId} not found`,
-      data: null,
+      data: undefined,
     });
   });
 
   test('method getSingleNotepadTasks', async () => {
     const responseGet = await repository.getSingleNotepadTasks(realId);
 
+    const singleNotepadTasks = NOTEPADS[0].tasks;
+    const meta = getMetaMock(singleNotepadTasks);
+
     expect(responseGet).toStrictEqual({
       status: 200,
       message: 'Success',
-      data: NOTEPADS[0].tasks,
+      meta,
+      data: singleNotepadTasks.slice(0, PAGINATION.DEFAULT_LIMIT),
     });
 
     const incorrectResponseGet =
       await repository.getSingleNotepadTasks(notepadId);
 
+    const metaEmpty = getMetaMock([]);
+
     expect(incorrectResponseGet).toStrictEqual({
       status: 404,
       message: `Notepad ${notepadId} not found`,
+      meta: metaEmpty,
       data: [],
     });
   });

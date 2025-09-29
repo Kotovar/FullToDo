@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PAGINATION } from './consts';
 
 const PriorityEnum = z.enum(['low', 'medium', 'high']);
 const StatusResponseEnum = z.union([
@@ -11,6 +12,21 @@ const StatusResponseEnum = z.union([
 ]);
 
 type StatusResponseEnum = z.infer<typeof StatusResponseEnum>;
+
+const zPage = () =>
+  z
+    .string()
+    .optional()
+    .transform(val => parseInt(val ?? PAGINATION.DEFAULT_PAGE.toString()))
+    .refine(val => val > 0, { message: 'Page must be positive' });
+
+const zLimit = () =>
+  z
+    .string()
+    .optional()
+    .transform(val => parseInt(val ?? PAGINATION.DEFAULT_LIMIT.toString()))
+    .refine(val => val > 0, { message: 'Limit must be positive' });
+
 export type PriorityEnum = z.infer<typeof PriorityEnum>;
 
 export const createNotepadSchema = z.object({
@@ -60,24 +76,50 @@ export const updateTaskSchema = createTaskSchema
     message: 'At least one field must be provided for update',
   });
 
-const ResponseWithoutData = z.object({
+export const paginationMetaSchema = z.object({
+  page: zPage(),
+  limit: zLimit(),
+  total: z.number(),
+  totalPages: z.number(),
+});
+
+export const paginationQuerySchema = z.object({
+  page: zPage(),
+  limit: zLimit(),
+});
+
+const ResponseBase = z.object({
   status: StatusResponseEnum,
   message: z.string(),
 });
 
-export const TasksResponse = ResponseWithoutData.extend({
+const ResponseWithMeta = ResponseBase.extend({
+  meta: paginationMetaSchema,
+});
+
+const TaskResponseSingle = ResponseBase.extend({
+  data: dbTaskSchema.optional(),
+});
+
+export type PaginationMeta = z.infer<typeof paginationMetaSchema>;
+
+export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
+
+export const TasksResponse = ResponseWithMeta.extend({
   data: z.array(dbTaskSchema).optional(),
 });
 
-export const TaskResponse = ResponseWithoutData.extend({
+export const TaskResponse = ResponseBase.extend({
   data: z.union([dbTaskSchema, z.null()]).optional(),
 });
 
-export const NotepadResponse = ResponseWithoutData.extend({
+export type TaskResponseSingle = z.infer<typeof TaskResponseSingle>;
+
+export const NotepadResponse = ResponseBase.extend({
   data: dbNotepadSchema.optional(),
 });
 
-export const NotepadWithoutTasksResponse = ResponseWithoutData.extend({
+export const NotepadWithoutTasksResponse = ResponseBase.extend({
   data: z.array(notepadWithoutTasksSchema).optional(),
 });
 
@@ -94,17 +136,22 @@ export const taskSearchSchema = z
   })
   .strict();
 
+const zBooleanString = z.enum(['true', 'false']);
+
 export const taskFilterSchema = z
   .object({
-    isCompleted: z.union([z.literal('true'), z.literal('false')]).optional(),
+    isCompleted: zBooleanString.optional(),
     priority: PriorityEnum.optional(),
-    hasDueDate: z.union([z.literal('true'), z.literal('false')]).optional(),
+    hasDueDate: zBooleanString.optional(),
   })
   .strict();
 
 export const taskQueryParamsSchema = taskFilterSchema
-  .merge(taskSortSchema)
-  .merge(taskSearchSchema)
+  .extend({
+    ...taskSortSchema.shape,
+    ...taskSearchSchema.shape,
+    ...paginationQuerySchema.shape,
+  })
   .partial();
 
 export type Notepad = z.infer<typeof dbNotepadSchema>;

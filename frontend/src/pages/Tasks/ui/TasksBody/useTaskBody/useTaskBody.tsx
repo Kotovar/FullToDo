@@ -8,10 +8,10 @@ type useTaskBodyProps = {
 
 export const useTaskBody = ({ notepadId, params }: useTaskBodyProps) => {
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
-  const [currentModalId, setCurrentModalId] = useState('');
   const {
     tasks,
-    methods: { updateTask, deleteTask },
+    hasNextPage,
+    methods: { updateTask, deleteTask, fetchNextPage },
   } = useTasks({
     notepadId,
     params,
@@ -30,10 +30,6 @@ export const useTaskBody = ({ notepadId, params }: useTaskBodyProps) => {
     [updateTask],
   );
 
-  const handleModalId = useCallback((id: string) => {
-    setCurrentModalId(id);
-  }, []);
-
   const renameTask = useCallback((id: string) => {
     setEditingTaskId(id);
   }, []);
@@ -48,18 +44,18 @@ export const useTaskBody = ({ notepadId, params }: useTaskBodyProps) => {
   const methods = useMemo(
     () => ({
       handleSaveTitle,
-      handleModalId,
       renameTask,
       updateTaskStatus,
       deleteTask,
+      fetchNextPage,
     }),
-    [handleSaveTitle, handleModalId, renameTask, updateTaskStatus, deleteTask],
+    [handleSaveTitle, renameTask, updateTaskStatus, deleteTask, fetchNextPage],
   );
 
   return {
-    tasks: tasks,
-    currentModalId,
+    tasks,
     editingTaskId,
+    hasNextPage,
     methods,
   };
 };

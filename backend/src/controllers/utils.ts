@@ -60,7 +60,7 @@ export const getValidatedTaskParams = (
   req: IncomingMessage,
 ): TaskQueryParams => {
   const queryString = req.url?.split('?')[1] ?? '';
-  if (!queryString) return {};
+  if (!queryString) return { page: 1, limit: 10 };
 
   const params = new URLSearchParams(queryString);
   const rawParams = Object.fromEntries(params.entries());

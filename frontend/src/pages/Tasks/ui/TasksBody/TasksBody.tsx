@@ -1,6 +1,7 @@
-import { useTranslation } from 'react-i18next';
-import { TaskItem, useTaskBody } from '.';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Virtuoso } from 'react-virtuoso';
+import { TaskItem, useTaskBody } from '.';
 
 interface TasksBodyProps {
   notepadPathName: string;
@@ -14,9 +15,9 @@ export const TasksBody = memo(
 
     const {
       tasks = [],
-      currentModalId,
       editingTaskId,
       methods,
+      hasNextPage,
     } = useTaskBody({
       notepadId,
       params,
@@ -24,10 +25,10 @@ export const TasksBody = memo(
 
     const {
       handleSaveTitle,
-      handleModalId,
       renameTask,
       updateTaskStatus,
       deleteTask,
+      fetchNextPage,
     } = methods;
 
     if (tasks?.length === 0) {
@@ -35,23 +36,32 @@ export const TasksBody = memo(
     }
 
     return (
-      <ul className='bg-grey-light scrollbar-tasks flex h-full flex-col gap-2 overflow-y-scroll p-1'>
-        {tasks.map(task => (
+      <Virtuoso
+        className='bg-grey-light scrollbar-tasks h-full'
+        data={tasks}
+        endReached={() => hasNextPage && fetchNextPage()}
+        components={{
+          Item: ({ children, ...props }) => (
+            <div {...props} className='mb-2 px-1 last:mb-0'>
+              {children}
+            </div>
+          ),
+          Footer: () => <div className='h-4' />,
+        }}
+        itemContent={(_, task) => (
           <TaskItem
             key={task._id}
             task={task}
             notepadPathName={notepadPathName}
-            currentModalId={currentModalId}
             editingTaskId={editingTaskId}
             notepadId={notepadId}
             deleteTask={deleteTask}
             updateTaskStatus={updateTaskStatus}
-            handleModalId={handleModalId}
             renameTask={renameTask}
             handleSaveTitle={handleSaveTitle}
           />
-        ))}
-      </ul>
+        )}
+      />
     );
   },
 );
