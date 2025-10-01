@@ -60,6 +60,7 @@ export const NavigationBar = ({
               actions.edit.saveTitle(_id, newTitle, title)
             }
             isEditing={editingNotepadId === _id}
+            mode='droppable'
           />
         );
       }),

@@ -3,10 +3,10 @@ import { useApiNotifications } from '@shared/lib';
 import {
   getTaskQueryKey,
   handleMutation,
-  taskService,
   UseCreateTaskProps,
-} from '@entities/Task';
+} from '@shared/lib';
 import type { CreateTask } from '@sharedCommon/*';
+import { taskService } from '@shared/api';
 
 export const useCreateTask = ({ notepadId, entity }: UseCreateTaskProps) => {
   const queryClient = useQueryClient();

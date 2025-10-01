@@ -8,12 +8,11 @@ import {
   getTaskQueryKey,
   handleMutation,
   isCommonNotepad,
-  taskService,
   MutationUpdateProps,
+  useApiNotifications,
   UseTasksProps,
-} from '@entities/Task';
-import { useApiNotifications } from '@shared/lib';
-import type { MutationMethods } from '@shared/api';
+} from '@shared/lib';
+import { taskService, type MutationMethods } from '@shared/api';
 import { PAGINATION, type Task } from '@sharedCommon/';
 import { defaultQueryOptions } from '@shared/config';
 
@@ -92,13 +91,21 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       updatedTask: Partial<Task>,
       id: string,
       subtaskActionType?: MutationMethods,
-    ) =>
-      await handleMutation(
+    ) => {
+      const result = await handleMutation(
         mutationUpdate,
         subtaskActionType ?? 'update',
         { updatedTask, id },
         { queryClient, queryKey, onSuccess, onError },
-      ),
+      );
+      if (updatedTask.notepadId) {
+        queryClient.invalidateQueries({
+          queryKey: getTaskQueryKey(updatedTask.notepadId),
+        });
+      }
+
+      return result;
+    },
     [mutationUpdate, onError, onSuccess, queryClient, queryKey],
   );
 

@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { createWrapperWithRouter } from '@shared/mocks';
 import { useSearch } from './useSearch';
-import * as useTaskParamsHook from '@entities/Task';
+import * as useTaskParamsHook from '@shared/lib';
 
 const mockParams = new URLSearchParams('search=123');
 const mockParamsEmpty = new URLSearchParams('search=');

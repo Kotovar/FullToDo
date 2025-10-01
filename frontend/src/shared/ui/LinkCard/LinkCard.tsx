@@ -1,10 +1,12 @@
-import { memo, useRef } from 'react';
-import { Link } from 'react-router';
+import { memo, useCallback, useRef } from 'react';
+import { Link, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { Button, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
-import { useDarkMode } from '@shared/lib';
+import { useDarkMode, useTaskParams, useTasks } from '@shared/lib';
 import { useMenuToggle, useEditableTitle } from './hooks';
+import { commonNotepadId } from 'shared/schemas';
+import { Wrappers } from './wrappers';
 import type { LinkCardProps } from './LinkCard.interface';
 
 export const LinkCard = memo((props: LinkCardProps) => {
@@ -15,6 +17,8 @@ export const LinkCard = memo((props: LinkCardProps) => {
     body,
     linkClassName,
     isEditing = false,
+    mode = 'normal',
+    taskId,
     handleLinkClick,
     handleClickRename,
     handleClickDelete,
@@ -23,8 +27,29 @@ export const LinkCard = memo((props: LinkCardProps) => {
   } = props;
 
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { notepadId } = useParams();
   const { t } = useTranslation();
   const { fill } = useDarkMode();
+
+  const { validParams } = useTaskParams();
+
+  const {
+    methods: { updateTask },
+  } = useTasks({
+    notepadId: notepadId ?? 'all',
+    params: validParams,
+    entity: 'tasks',
+  });
+
+  const moveTaskToNotepad = useCallback(
+    (newNotepadId: string, taskId: string) => {
+      if (!taskId) {
+        return null;
+      }
+      updateTask({ notepadId: newNotepadId }, taskId);
+    },
+    [updateTask],
+  );
 
   const { editedTitle, titleMethods } = useEditableTitle({
     initialTitle: cardTitle,
@@ -67,6 +92,7 @@ export const LinkCard = memo((props: LinkCardProps) => {
     <Link
       to={path}
       onClick={handleLinkClick}
+      draggable={false}
       className={clsx(
         'focus-visible:ring-dark block h-full w-full rounded focus:outline-none',
         linkClassName,
@@ -83,8 +109,16 @@ export const LinkCard = memo((props: LinkCardProps) => {
     </Link>
   );
 
+  const Wrapper = Wrappers[mode];
+
   return (
-    <li {...rest}>
+    <Wrapper
+      {...rest}
+      notepadId={notepadId ?? commonNotepadId}
+      taskId={taskId ?? ''}
+      path={path}
+      handleMove={moveTaskToNotepad}
+    >
       {header}
       {title}
       {isNotMainNotepad && (
@@ -107,6 +141,6 @@ export const LinkCard = memo((props: LinkCardProps) => {
           )}
         </div>
       )}
-    </li>
+    </Wrapper>
   );
 });

@@ -1,4 +1,5 @@
 import { memo } from 'react';
+
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 import { TaskItem, useTaskBody } from '.';
@@ -8,6 +9,8 @@ interface TasksBodyProps {
   params: URLSearchParams;
   notepadId: string;
 }
+
+const VirtuosoComponent = () => <div className='h-1' />;
 
 export const TasksBody = memo(
   ({ notepadPathName, notepadId, params }: TasksBodyProps) => {
@@ -42,11 +45,12 @@ export const TasksBody = memo(
         endReached={() => hasNextPage && fetchNextPage()}
         components={{
           Item: ({ children, ...props }) => (
-            <div {...props} className='mb-2 px-1 last:mb-0'>
+            <div {...props} className='mb-2 cursor-pointer px-1 last:mb-0'>
               {children}
             </div>
           ),
-          Footer: () => <div className='h-4' />,
+          Header: VirtuosoComponent,
+          Footer: VirtuosoComponent,
         }}
         itemContent={(_, task) => (
           <TaskItem

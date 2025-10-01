@@ -4,7 +4,7 @@ import { renderWithRouter, setupMockServer } from '@shared/testing';
 import { MOCK_TASK } from '@shared/mocks/';
 import { notepadId } from 'shared/schemas';
 import { TasksBody } from './TasksBody';
-import * as useTaskHook from '@entities/Task';
+import * as useTaskHook from '@shared/lib';
 
 const props = {
   notepadId: notepadId,

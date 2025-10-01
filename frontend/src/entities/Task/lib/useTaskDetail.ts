@@ -3,11 +3,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getTaskQueryKey,
   handleMutation,
-  taskService,
   type MutationUpdateProps,
   type UseTaskDetailProps,
-} from '@entities/Task';
-import type { MutationMethods } from '@shared/api';
+} from '@shared/lib';
+import { taskService, type MutationMethods } from '@shared/api';
 import type { Task } from '@sharedCommon/*';
 import { useApiNotifications } from '@shared/lib';
 import { useParams } from 'react-router';

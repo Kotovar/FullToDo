@@ -1,5 +1,5 @@
+import { useTasks } from '@shared/lib';
 import { useCallback, useMemo, useState } from 'react';
-import { useTasks } from '@entities/Task';
 
 type useTaskBodyProps = {
   notepadId: string;
