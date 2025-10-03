@@ -10,7 +10,6 @@ import { taskService, type MutationMethods } from '@shared/api';
 import type { Task } from '@sharedCommon/*';
 import { useApiNotifications } from '@shared/lib';
 import { useParams } from 'react-router';
-import { defaultQueryOptions } from '@shared/config';
 
 export const useTaskDetail = ({ entity }: UseTaskDetailProps) => {
   const { notepadId, taskId = '' } = useParams();
@@ -26,7 +25,6 @@ export const useTaskDetail = ({ entity }: UseTaskDetailProps) => {
     queryKey: ['task', notepadId, taskId],
     queryFn: () => taskService.getSingleTask(taskId, notepadId),
     select: data => data.data,
-    ...defaultQueryOptions,
   });
 
   const { mutateAsync } = useMutation({

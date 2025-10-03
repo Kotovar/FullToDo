@@ -14,7 +14,6 @@ import {
 } from '@shared/lib';
 import { taskService, type MutationMethods } from '@shared/api';
 import { PAGINATION, type Task } from '@sharedCommon/';
-import { defaultQueryOptions } from '@shared/config';
 
 export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
@@ -46,7 +45,6 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
         ? lastPage.meta.page + 1
         : undefined,
     enabled: !isCommon,
-    ...defaultQueryOptions,
   });
 
   const {
@@ -72,7 +70,6 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
         ? lastPage.meta.page + 1
         : undefined,
     enabled: isCommon,
-    ...defaultQueryOptions,
   });
 
   const { mutateAsync: mutationUpdate } = useMutation({
