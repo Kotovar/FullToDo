@@ -3,33 +3,26 @@ import { ROUTES } from 'shared/routes';
 
 type UseMenuToggleProps = {
   path: string;
-  currentModalId: string;
-  handleModalId: (id: string) => void;
 };
 
-export const useMenuToggle = ({
-  path,
-  currentModalId,
-  handleModalId,
-}: UseMenuToggleProps) => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const closeMenu = useCallback(() => setIsMenuOpen(false), []);
+export const useMenuToggle = ({ path }: UseMenuToggleProps) => {
+  const [openMenuPath, setOpenMenuPath] = useState<string | null>(null);
 
   const toggleMenu = useCallback(() => {
-    handleModalId(path);
-    setIsMenuOpen(prev => !prev);
-  }, [handleModalId, path]);
+    setOpenMenuPath(prev => (prev === path ? null : path));
+  }, [path]);
 
-  const isCurrentMenuOpen = isMenuOpen && currentModalId === path;
+  const closeMenu = useCallback(() => setOpenMenuPath(null), []);
+
+  const isCurrentMenuOpen = openMenuPath === path;
   const isNotMainNotepad = path !== ROUTES.TASKS;
 
   return {
     isCurrentMenuOpen,
     isNotMainNotepad,
     menuMethods: {
-      closeMenu,
       toggleMenu,
+      closeMenu,
     },
   };
 };

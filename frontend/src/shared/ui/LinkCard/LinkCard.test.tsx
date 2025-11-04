@@ -5,8 +5,6 @@ import { LinkCard } from './LinkCard';
 const props = {
   path: '/notepads/1/tasks/1',
   cardTitle: 'Title',
-  currentModalId: '1',
-  handleModalId: vi.fn(),
   handleClickRename: vi.fn(),
   handleClickDelete: vi.fn(),
 };

@@ -1,7 +1,7 @@
 import { ErrorFetching } from '@shared/ui';
-import { useTaskParams } from '@entities/Task';
 import { TasksSkeleton, TasksBody, TasksHeader } from '@pages/Tasks/ui';
 import { useNotepad } from '@pages/Tasks/lib';
+import { useTaskParams } from '@shared/lib';
 
 export const Tasks = () => {
   const { title, notepadId, location, isError, isLoading, notFound } =

@@ -5,6 +5,7 @@ import { ROUTES } from '@sharedCommon/routes';
 import {
   type NotepadResponse,
   type TaskResponse,
+  TaskResponseSingle,
   createNotepadSchema,
   createTaskSchema,
   notepadId,
@@ -284,7 +285,7 @@ describe('httpServer POST', () => {
     };
 
     test(`should handle POST /notepads/${notepadId}/tasks and return 201 status`, async () => {
-      const taskResponse: TaskResponse = {
+      const taskResponse: TaskResponseSingle = {
         status: 201,
         message: `A task with the title ${taskData.title} has been successfully created`,
       };
@@ -494,7 +495,7 @@ describe('httpServer PATH', () => {
       isCompleted: true,
     };
 
-    const taskResponse: TaskResponse = {
+    const taskResponse: TaskResponseSingle = {
       status: 200,
       message: `A task with the _id ${taskId} has been successfully updated`,
     };
@@ -570,7 +571,7 @@ describe('httpServer PATH', () => {
     });
 
     test('should return 404 if task not found', async () => {
-      const updateResponse: TaskResponse = {
+      const updateResponse: TaskResponseSingle = {
         status: 404,
         message: 'Task not found',
       };
@@ -677,7 +678,7 @@ describe('httpServer DELETE', () => {
 
   describe(`should handle DELETE /notepads/${notepadId}/tasks/${taskId}`, () => {
     test(`should handle DELETE /notepads/${notepadId}/task/${taskId} and return 200 status`, async () => {
-      const deleteResponse: TaskResponse = {
+      const deleteResponse: TaskResponseSingle = {
         status: 200,
         message: 'Task deleted successfully',
       };
@@ -696,7 +697,7 @@ describe('httpServer DELETE', () => {
     });
 
     test('should return 404 if task not found', async () => {
-      const deleteResponse: TaskResponse = {
+      const deleteResponse: TaskResponseSingle = {
         status: 404,
         message: 'Task not found',
       };

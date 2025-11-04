@@ -1,7 +1,7 @@
 import { ErrorDetail, ErrorType } from '@shared/api';
 
 export const getFailFetchResponse = (status: number) => {
-  return vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+  return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
     ok: false,
     status: status,
   } as Response);
@@ -12,7 +12,7 @@ export const getErrorMock = (withCause = false) => {
     ? new Error('Failed to fetch', { cause: 'Error' })
     : new Error('Failed to fetch');
 
-  return vi.spyOn(global, 'fetch').mockRejectedValue(error);
+  return vi.spyOn(globalThis, 'fetch').mockRejectedValue(error);
 };
 
 export const getErrorResult = (errorList: Record<ErrorType, ErrorDetail>) => {

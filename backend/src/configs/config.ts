@@ -1,8 +1,8 @@
 import path from 'path';
-import { config as dotenvConfig } from 'dotenv';
+import { loadEnvFile } from 'node:process';
 import { ConfigSchema } from './schemas';
 
-dotenvConfig({ path: path.resolve(__dirname, '../../../.env') });
+loadEnvFile(path.resolve(__dirname, '../../../.env'));
 
 export const config = ConfigSchema.parse({
   server: {

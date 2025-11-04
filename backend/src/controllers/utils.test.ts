@@ -8,7 +8,11 @@ import {
   getId,
   getValidatedTaskParams,
 } from './utils';
-import { commonNotepadId, TaskQueryParams } from '@sharedCommon/schemas';
+import {
+  commonNotepadId,
+  PAGINATION,
+  TaskQueryParams,
+} from '@sharedCommon/schemas';
 import { extractInvalidKeys } from '@sharedCommon/utils';
 
 describe('parseJsonBody tests', () => {
@@ -77,6 +81,8 @@ describe('getValidatedTaskParams tests', () => {
   const correctParams: TaskQueryParams = {
     isCompleted: 'true',
     search: '5',
+    limit: PAGINATION.DEFAULT_LIMIT,
+    page: PAGINATION.DEFAULT_PAGE,
   };
 
   test('return correct data if validation is success', () => {
@@ -97,7 +103,10 @@ describe('getValidatedTaskParams tests', () => {
     const req = { url: incorrectUrlWithBadParamsValue } as IncomingMessage;
     const result = getValidatedTaskParams(req);
 
-    expect(result).toEqual({});
+    expect(result).toEqual({
+      page: PAGINATION.DEFAULT_PAGE,
+      limit: PAGINATION.DEFAULT_LIMIT,
+    });
   });
 });
 

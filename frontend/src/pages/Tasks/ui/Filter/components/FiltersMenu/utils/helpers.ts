@@ -3,7 +3,6 @@ import type { FilterLabel, FiltersState } from '@pages/Tasks/lib';
 export const getEmptyFilters = () => ({
   isCompleted: '',
   hasDueDate: '',
-  priority: '',
 });
 
 export const getInitialFilters = (labels: FilterLabel[]) => {

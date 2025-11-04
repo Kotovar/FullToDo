@@ -1,7 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
 import { createWrapper, createWrapperWithRouter } from '@shared/mocks';
 import { notepadId, taskId } from 'shared/schemas';
-import { useCreateTask, useTaskParams, useTaskDetail } from '..';
+import { useCreateTask, useTaskDetail } from '..';
+import { useTaskParams } from '@shared/lib';
 
 const getInitialDataCreateTask = async () => {
   const { result } = renderHook(

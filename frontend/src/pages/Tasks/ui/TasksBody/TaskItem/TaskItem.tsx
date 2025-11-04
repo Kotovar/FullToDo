@@ -9,11 +9,9 @@ interface TaskItemProps {
   task: Task;
   notepadPathName: string;
   notepadId: string;
-  currentModalId: string;
   editingTaskId: string | null;
   deleteTask: (id: string) => Promise<boolean>;
   updateTaskStatus: (id: string, status: boolean) => void;
-  handleModalId: (id: string) => void;
   renameTask: (id: string) => void;
   handleSaveTitle: (
     id: string,
@@ -27,11 +25,9 @@ export const TaskItem = memo(
     task,
     notepadPathName,
     notepadId,
-    currentModalId,
     editingTaskId,
     deleteTask,
     updateTaskStatus,
-    handleModalId,
     renameTask,
     handleSaveTitle,
   }: TaskItemProps) => {
@@ -59,6 +55,11 @@ export const TaskItem = memo(
       [_id, handleSaveTitle, title],
     );
 
+    const body = useMemo(
+      () => <p className='text-sm'>{taskProgress}</p>,
+      [taskProgress],
+    );
+
     const header = useMemo(() => {
       return (
         <Button
@@ -78,15 +79,15 @@ export const TaskItem = memo(
       <LinkCard
         header={header}
         cardTitle={title}
-        currentModalId={currentModalId}
-        handleModalId={handleModalId}
         path={path}
         handleClickDelete={handleDelete}
         handleClickRename={handleRename}
         isEditing={editingTaskId === _id}
         onSaveTitle={onSaveTitle}
-        body={<p className='text-sm'>{taskProgress}</p>}
+        body={body}
         className={CARD_CLASSES}
+        mode='draggable'
+        taskId={_id}
       />
     );
   },

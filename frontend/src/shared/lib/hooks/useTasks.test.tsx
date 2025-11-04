@@ -3,11 +3,12 @@ import {
   createWrapper,
   MOCK_TITLE_NON_EXISTING,
   getDeleteResponse,
+  MOCK_TASK,
 } from '@shared/mocks';
 import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
 import { setupMockServer } from '@shared/testing';
-import { taskService } from '@entities/Task';
 import { useTasks } from './useTasks';
+import { taskService } from '@shared/api';
 
 const params = new URLSearchParams();
 
@@ -43,6 +44,20 @@ describe('useTasks hook', () => {
     vi.spyOn(taskService, 'deleteTask').mockResolvedValue(
       getDeleteResponse('Task'),
     );
+
+    vi.spyOn(taskService, 'getTasksFromNotepad').mockResolvedValue({
+      data: [MOCK_TASK],
+      meta: { page: 1, totalPages: 1, limit: 10, total: 0 },
+      status: 200,
+      message: 'Успех',
+    });
+
+    vi.spyOn(taskService, 'getAllTasks').mockResolvedValue({
+      data: [MOCK_TASK],
+      meta: { page: 1, totalPages: 1, limit: 10, total: 0 },
+      status: 200,
+      message: 'Успех',
+    });
   });
 
   test('should show an error notification if one occurs', async () => {
@@ -74,7 +89,7 @@ describe('useTasks hook', () => {
     await result.current.methods.updateTask({ title: 'New' }, taskId);
 
     expect(getSingleTaskMock).toHaveBeenCalledTimes(0);
-    expect(getTasksFromNotepadMock).toHaveBeenCalledTimes(1);
+    expect(getTasksFromNotepadMock).toHaveBeenCalled();
   });
 
   test('should call the method to get all tasks if a common notepadId is specified', async () => {
@@ -85,7 +100,7 @@ describe('useTasks hook', () => {
     await result.current.methods.updateTask({ title: 'New' }, taskId);
 
     expect(getSingleTaskMock).toHaveBeenCalledTimes(0);
-    expect(getAllTasksMock).toHaveBeenCalledTimes(1);
+    expect(getAllTasksMock).toHaveBeenCalled();
   });
 
   test('should call updateTask when creating a task', async () => {

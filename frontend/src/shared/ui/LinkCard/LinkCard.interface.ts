@@ -1,14 +1,16 @@
 import type { ComponentPropsWithoutRef, JSX } from 'react';
 
+type LinkCardMode = 'normal' | 'draggable' | 'droppable';
+
 export interface LinkCardProps extends ComponentPropsWithoutRef<'li'> {
   path: string;
   cardTitle: string;
-  currentModalId: string;
   header?: JSX.Element;
   body?: JSX.Element;
   isEditing?: boolean;
   linkClassName?: string;
-  handleModalId: (id: string) => void;
+  mode?: LinkCardMode;
+  taskId?: string;
   handleClickRename: () => void;
   handleClickDelete: () => void;
   handleLinkClick?: () => void;
