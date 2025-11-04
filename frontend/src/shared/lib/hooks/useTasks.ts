@@ -66,7 +66,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     },
     initialPageParam: initialPage,
     getNextPageParam: lastPage =>
-      lastPage.meta.page < lastPage.meta.totalPages
+      lastPage.meta?.page < lastPage.meta?.totalPages
         ? lastPage.meta.page + 1
         : undefined,
     enabled: isCommon,

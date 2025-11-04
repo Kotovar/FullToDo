@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 import { useParams } from 'react-router';
 import type { Task } from '@sharedCommon/*';
 import type {
@@ -24,12 +24,10 @@ export const useTaskForm = (
   const { taskId = '' } = useParams();
   const [form, setForm] = useState<ValueType>(() => getForm(task));
   const [subtaskTitle, setSubtaskTitle] = useState('');
-  const taskKeyRef = useRef(taskKey);
-  const formRef = useRef(form);
-  formRef.current = form;
+  const [currentTaskKey, setCurrentTaskKey] = useState(taskKey);
 
-  if (taskKeyRef.current !== taskKey) {
-    taskKeyRef.current = taskKey;
+  if (currentTaskKey !== taskKey) {
+    setCurrentTaskKey(taskKey);
     setForm(getForm(task));
   }
 
@@ -38,17 +36,16 @@ export const useTaskForm = (
       setForm(prev => {
         const updatedSubtasks = handleSubtaskAction(prev.subtasks, action);
         updateTask({ subtasks: updatedSubtasks }, taskId, action.type);
-
         return { ...prev, subtasks: updatedSubtasks };
       });
     },
-    [setForm, taskId, updateTask],
+    [taskId, updateTask],
   );
 
   const onUpdateTask = useCallback(async () => {
-    const { title, description, dueDate } = formRef.current;
-    const updates: Partial<Task> = {};
+    const { title, description, dueDate } = form;
 
+    const updates: Partial<Task> = {};
     if (task?.title !== title) updates.title = title;
     if (task?.description !== description) updates.description = description;
 
@@ -64,14 +61,7 @@ export const useTaskForm = (
     } catch {
       return false;
     }
-  }, [
-    onSuccess,
-    task?.description,
-    task?.dueDate,
-    task?.title,
-    taskId,
-    updateTask,
-  ]);
+  }, [form, task, taskId, updateTask, onSuccess]);
 
   const onCreateSubtask = useCallback(() => {
     const title = subtaskTitle.trim();
@@ -104,10 +94,7 @@ export const useTaskForm = (
   );
 
   const onChangeSubtaskTitle = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setSubtaskTitle(value);
-    },
+    (e: ChangeEvent<HTMLInputElement>) => setSubtaskTitle(e.target.value),
     [],
   );
 

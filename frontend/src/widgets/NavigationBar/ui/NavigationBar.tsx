@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router';
-import { useMemo, type ComponentPropsWithoutRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
+import type { ComponentPropsWithoutRef } from 'react';
 import { commonNotepadId, ROUTES } from '@sharedCommon/';
 import { LinkCard, Input, Icon, Button } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
@@ -35,44 +35,31 @@ export const NavigationBar = ({
     </Button>
   );
 
-  const notepadList = useMemo(
-    () =>
-      notepads.map(({ title, _id }) => {
-        const path =
-          _id === commonNotepadId ? ROUTES.TASKS : ROUTES.getNotepadPath(_id);
+  const notepadList = notepads.map(({ title, _id }) => {
+    const path =
+      _id === commonNotepadId ? ROUTES.TASKS : ROUTES.getNotepadPath(_id);
 
-        return (
-          <LinkCard
-            className={clsx(
-              'text-dark grid grid-cols-[1fr_2rem] items-center rounded-lg hover:bg-current/10 has-[a:focus]:ring-2',
-              {
-                ['bg-grey/40']: basePath.startsWith(path),
-              },
-            )}
-            linkClassName='px-2 py-4'
-            handleLinkClick={turnOffVisibility}
-            key={_id}
-            path={path}
-            cardTitle={title}
-            handleClickDelete={() => actions.delete.onClick(_id)}
-            handleClickRename={() => actions.edit.setId(_id)}
-            onSaveTitle={newTitle =>
-              actions.edit.saveTitle(_id, newTitle, title)
-            }
-            isEditing={editingNotepadId === _id}
-            mode='droppable'
-          />
-        );
-      }),
-    [
-      actions.delete,
-      actions.edit,
-      basePath,
-      editingNotepadId,
-      notepads,
-      turnOffVisibility,
-    ],
-  );
+    return (
+      <LinkCard
+        className={clsx(
+          'text-dark grid grid-cols-[1fr_2rem] items-center rounded-lg hover:bg-current/10 has-[a:focus]:ring-2',
+          {
+            ['bg-grey/40']: basePath.startsWith(path),
+          },
+        )}
+        linkClassName='px-2 py-4'
+        handleLinkClick={turnOffVisibility}
+        key={_id}
+        path={path}
+        cardTitle={title}
+        handleClickDelete={() => actions.delete.onClick(_id)}
+        handleClickRename={() => actions.edit.setId(_id)}
+        onSaveTitle={newTitle => actions.edit.saveTitle(_id, newTitle, title)}
+        isEditing={editingNotepadId === _id}
+        mode='droppable'
+      />
+    );
+  });
 
   if (isLoading) {
     return <NavigationBarSkeleton isHidden={isHidden} />;

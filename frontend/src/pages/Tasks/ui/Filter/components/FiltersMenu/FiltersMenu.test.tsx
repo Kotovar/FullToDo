@@ -49,7 +49,6 @@ describe('FiltersMenu component', () => {
     await user.click(
       screen.getByText('filters.groups.isCompleted.options.active'),
     );
-    // await user.click(screen.getByText('filters.groups.priority.options.high'));
     await user.click(screen.getByText('apply'));
 
     expect(mockOnApply).toHaveBeenCalledWith({
