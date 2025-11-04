@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { PAGINATION } from './consts';
 
-const PriorityEnum = z.enum(['low', 'medium', 'high']);
 const StatusResponseEnum = z.union([
   z.literal(200),
   z.literal(201),
@@ -27,8 +26,6 @@ const zLimit = () =>
     .transform(val => parseInt(val ?? PAGINATION.DEFAULT_LIMIT.toString()))
     .refine(val => val > 0, { message: 'Limit must be positive' });
 
-export type PriorityEnum = z.infer<typeof PriorityEnum>;
-
 export const createNotepadSchema = z.object({
   title: z.coerce.string().min(1, 'Title is required'),
 });
@@ -43,7 +40,6 @@ export const createTaskSchema = z.object({
   title: z.coerce.string().min(1, 'Title is required'),
   description: z.string().optional(),
   dueDate: z.coerce.date().nullable().optional(),
-  priority: PriorityEnum.optional(),
 });
 
 export const dbTaskSchema = createTaskSchema.extend({
@@ -125,7 +121,7 @@ export const NotepadWithoutTasksResponse = ResponseBase.extend({
 
 export const taskSortSchema = z
   .object({
-    sortBy: z.enum(['createdDate', 'dueDate', 'priority']).optional(),
+    sortBy: z.enum(['createdDate', 'dueDate']).optional(),
     order: z.enum(['asc', 'desc']).optional(),
   })
   .strict();
@@ -141,7 +137,6 @@ const zBooleanString = z.enum(['true', 'false']);
 export const taskFilterSchema = z
   .object({
     isCompleted: zBooleanString.optional(),
-    priority: PriorityEnum.optional(),
     hasDueDate: zBooleanString.optional(),
   })
   .strict();

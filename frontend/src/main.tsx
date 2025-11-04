@@ -3,9 +3,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from '@app/App';
 import '@shared/i18n';
 import '@app/styles';
+import { defaultQueryOptions } from '@shared/config';
 
 const rootElement = document.getElementById('root');
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: defaultQueryOptions,
+  },
+});
 
 if (rootElement) {
   const root = createRoot(rootElement);

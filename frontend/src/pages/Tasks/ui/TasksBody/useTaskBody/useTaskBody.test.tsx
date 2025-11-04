@@ -3,9 +3,7 @@ import { createWrapper } from '@shared/mocks';
 import { useTaskBody } from './useTaskBody';
 import { setupMockServer } from '@shared/testing';
 
-const mockParams = new URLSearchParams(
-  'isCompleted=true&unknown=123&priority=low',
-);
+const mockParams = new URLSearchParams('isCompleted=true&unknown=123');
 
 const mockProps = {
   notepadId: '1',
@@ -35,18 +33,4 @@ describe('useTaskBody', () => {
       expect(title).toBe('oldTitle');
     });
   });
-
-  // test('successful result for handleSaveTitle', async () => {
-  //   const result = await getInitialData();
-
-  //   await act(async () => {
-  //     const title = await result.current.methods.handleSaveTitle(
-  //       '1',
-  //       'newTitle',
-  //       'oldTitle',
-  //     );
-
-  //     expect(title).toBe('newTitle');
-  //   });
-  // });
 });

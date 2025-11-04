@@ -8,14 +8,12 @@ import {
   getTaskQueryKey,
   handleMutation,
   isCommonNotepad,
-  taskService,
   MutationUpdateProps,
+  useApiNotifications,
   UseTasksProps,
-} from '@entities/Task';
-import { useApiNotifications } from '@shared/lib';
-import type { MutationMethods } from '@shared/api';
+} from '@shared/lib';
+import { taskService, type MutationMethods } from '@shared/api';
 import { PAGINATION, type Task } from '@sharedCommon/';
-import { defaultQueryOptions } from '@shared/config';
 
 export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
@@ -31,7 +29,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     fetchNextPage: fetchNextPagePrivate,
     hasNextPage: hasNextPagePrivate,
   } = useInfiniteQuery({
-    queryKey: ['tasks', notepadId, params, initialPage, paramsObj.limit],
+    queryKey: ['tasks', notepadId, initialPage, paramsObj],
     queryFn: ({ pageParam = initialPage }) => {
       const queryParams = new URLSearchParams(paramsObj);
       queryParams.set('page', pageParam.toString());
@@ -47,7 +45,6 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
         ? lastPage.meta.page + 1
         : undefined,
     enabled: !isCommon,
-    ...defaultQueryOptions,
   });
 
   const {
@@ -57,7 +54,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     fetchNextPage: fetchNextPageCommon,
     hasNextPage: hasNextPageCommon,
   } = useInfiniteQuery({
-    queryKey: ['tasks', params, initialPage, paramsObj.limit],
+    queryKey: ['tasks', initialPage, paramsObj],
     queryFn: ({ pageParam = initialPage }) => {
       const queryParams = new URLSearchParams(paramsObj);
       queryParams.set('page', pageParam.toString());
@@ -69,11 +66,10 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     },
     initialPageParam: initialPage,
     getNextPageParam: lastPage =>
-      lastPage.meta.page < lastPage.meta.totalPages
+      lastPage.meta?.page < lastPage.meta?.totalPages
         ? lastPage.meta.page + 1
         : undefined,
     enabled: isCommon,
-    ...defaultQueryOptions,
   });
 
   const { mutateAsync: mutationUpdate } = useMutation({
@@ -92,13 +88,21 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       updatedTask: Partial<Task>,
       id: string,
       subtaskActionType?: MutationMethods,
-    ) =>
-      await handleMutation(
+    ) => {
+      const result = await handleMutation(
         mutationUpdate,
         subtaskActionType ?? 'update',
         { updatedTask, id },
         { queryClient, queryKey, onSuccess, onError },
-      ),
+      );
+      if (updatedTask.notepadId) {
+        queryClient.invalidateQueries({
+          queryKey: getTaskQueryKey(updatedTask.notepadId),
+        });
+      }
+
+      return result;
+    },
     [mutationUpdate, onError, onSuccess, queryClient, queryKey],
   );
 

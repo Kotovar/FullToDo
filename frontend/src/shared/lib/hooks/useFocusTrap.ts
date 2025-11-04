@@ -1,20 +1,20 @@
 import { RefObject, useEffect } from 'react';
 import { useOnClickOutside } from 'usehooks-ts';
-import { getRefs } from '..';
 
 export const useFocusTrap = (
   menuRef: RefObject<HTMLElement | null>,
   buttonRef: RefObject<HTMLElement | null>,
   closeMenu: () => void,
 ) => {
-  const refs = getRefs(menuRef, buttonRef);
-
-  useOnClickOutside(refs, e => {
-    const { target } = e;
-    if (target instanceof Node && !menuRef.current?.contains(target)) {
-      closeMenu();
-    }
-  });
+  useOnClickOutside(
+    [menuRef as RefObject<HTMLElement>, buttonRef as RefObject<HTMLElement>],
+    e => {
+      const { target } = e;
+      if (target instanceof Node && !menuRef.current?.contains(target)) {
+        closeMenu();
+      }
+    },
+  );
 
   useEffect(() => {
     const menu = menuRef.current;

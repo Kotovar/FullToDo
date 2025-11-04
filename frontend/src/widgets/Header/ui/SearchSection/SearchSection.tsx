@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon, Input } from '@shared/ui';
 import { useSearch } from '@widgets/Header/lib';
@@ -9,27 +9,19 @@ export const SearchSection = memo(() => {
   const { t } = useTranslation();
   const { fill } = useDarkMode();
 
-  const shouldShowButton = useMemo(() => {
-    return value.length > 0;
-  }, [value]);
-
-  const rightContent = useMemo(() => {
-    if (shouldShowButton)
-      return (
-        <Button
-          appearance='ghost'
-          aria-label={t('search.clear')}
-          onClick={onClear}
-          type='button'
-          className='hover:bg-grey'
-          padding='sm'
-        >
-          <Icon name='cross' fill={fill} />
-        </Button>
-      );
-
-    return null;
-  }, [fill, onClear, shouldShowButton, t]);
+  const shouldShowButton = value.length > 0;
+  const rightContent = shouldShowButton ? (
+    <Button
+      appearance='ghost'
+      aria-label={t('search.clear')}
+      onClick={onClear}
+      type='button'
+      className='hover:bg-grey'
+      padding='sm'
+    >
+      <Icon name='cross' fill={fill} />
+    </Button>
+  ) : null;
 
   return (
     <section

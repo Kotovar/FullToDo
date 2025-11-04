@@ -7,8 +7,8 @@ import {
 } from '@shared/mocks';
 import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
 import { setupMockServer } from '@shared/testing';
-import { taskService } from '@entities/Task';
 import { useTasks } from './useTasks';
+import { taskService } from '@shared/api';
 
 const params = new URLSearchParams();
 
@@ -46,7 +46,6 @@ describe('useTasks hook', () => {
     );
 
     vi.spyOn(taskService, 'getTasksFromNotepad').mockResolvedValue({
-      // data: [{ id: '1', title: 'Test task' }],
       data: [MOCK_TASK],
       meta: { page: 1, totalPages: 1, limit: 10, total: 0 },
       status: 200,

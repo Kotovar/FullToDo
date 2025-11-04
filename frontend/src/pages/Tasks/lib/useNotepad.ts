@@ -6,7 +6,6 @@ import { useNotifications } from '@shared/lib';
 import { handleMutationError } from '@shared/api';
 import { commonNotepadId } from 'shared/schemas';
 import { ROUTES } from 'shared/routes';
-import { defaultQueryOptions } from '@shared/config';
 
 export const useNotepad = () => {
   const { notepadId } = useParams();
@@ -16,7 +15,6 @@ export const useNotepad = () => {
     queryKey: ['notepads'],
     queryFn: notepadService.getNotepads,
     select: data => data.data,
-    ...defaultQueryOptions,
   });
 
   useEffect(() => {

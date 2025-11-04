@@ -25,7 +25,6 @@ export const TASKS1: Task[] = [
     description: 'Описание для задачи 2',
     isCompleted: false,
     createdDate: new Date(),
-    priority: 'low',
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python1', _id: '1' },
@@ -38,7 +37,6 @@ export const TASKS1: Task[] = [
     notepadId: '1',
     title: 'Задача 3',
     isCompleted: true,
-    priority: 'high',
     createdDate: new Date(),
     progress: '3 из 3',
     subtasks: [
@@ -53,7 +51,6 @@ export const TASKS1: Task[] = [
     title: 'Задача 4',
     description: 'Описание для задачи 4',
     isCompleted: false,
-    priority: 'medium',
     createdDate: new Date(),
     progress: '2 из 3',
     subtasks: [

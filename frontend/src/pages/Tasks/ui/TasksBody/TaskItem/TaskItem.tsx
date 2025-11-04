@@ -86,6 +86,8 @@ export const TaskItem = memo(
         onSaveTitle={onSaveTitle}
         body={body}
         className={CARD_CLASSES}
+        mode='draggable'
+        taskId={_id}
       />
     );
   },

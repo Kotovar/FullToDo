@@ -30,7 +30,7 @@ describe('Sort component', () => {
 
     await user.click(sortButton);
 
-    const sortSpan = screen.getByText('sort.labels.priority');
+    const sortSpan = screen.getByText('sort.labels.dueDate');
     expect(sortSpan).toBeInTheDocument();
 
     await user.click(sortSpan);
