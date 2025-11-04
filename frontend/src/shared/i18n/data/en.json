@@ -90,15 +90,6 @@
           "withDate": "With date",
           "withoutDate": "Without date"
         }
-      },
-      "priority": {
-        "title": "Priority",
-        "options": {
-          "all": "All",
-          "low": "Low",
-          "medium": "Medium",
-          "high": "High"
-        }
       }
     },
     "labels": {
@@ -109,11 +100,6 @@
       "hasDueDate": {
         "true": "With date",
         "false": "Without date"
-      },
-      "priority": {
-        "low": "Low priority",
-        "medium": "Medium priority",
-        "high": "High priority"
       }
     }
   },
@@ -124,8 +110,7 @@
     "error": "No sorting selected",
     "labels": {
       "dueDate": "By due date",
-      "createdDate": "By created date",
-      "priority": "By priority"
+      "createdDate": "By created date"
     }
   },
   "notifications": {

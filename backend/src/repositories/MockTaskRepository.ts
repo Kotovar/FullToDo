@@ -39,13 +39,7 @@ export class MockTaskRepository implements TaskRepository {
       return tasks;
     }
 
-    const {
-      isCompleted,
-      hasDueDate,
-      priority,
-      sortBy: sortByOriginal,
-      order,
-    } = params;
+    const { isCompleted, hasDueDate, sortBy: sortByOriginal, order } = params;
 
     const sortBy = sortByOriginal ?? DEFAULT_TASK_PARAMS.sortBy;
     let result = [...tasks];
@@ -62,19 +56,8 @@ export class MockTaskRepository implements TaskRepository {
       );
     }
 
-    if (priority) {
-      result = result.filter(task => task.priority === priority);
-    }
-
     if (sortBy) {
       result = result.toSorted((a, b) => {
-        if (sortBy === 'priority') {
-          const priorityOrder = { low: 0, medium: 1, high: 2 };
-          const aVal = a.priority ? priorityOrder[a.priority] : -1;
-          const bVal = b.priority ? priorityOrder[b.priority] : -1;
-          return order === 'asc' ? aVal - bVal : bVal - aVal;
-        }
-
         const valA = a[sortBy];
         const valB = b[sortBy];
 

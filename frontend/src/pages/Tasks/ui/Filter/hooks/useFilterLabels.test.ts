@@ -6,9 +6,7 @@ import {
   FilterValue,
 } from './useFilterLabels';
 
-const mockParams = new URLSearchParams(
-  'isCompleted=true&unknown=123&priority=low',
-);
+const mockParams = new URLSearchParams('isCompleted=true&unknown=123');
 
 const getInitialData = async () => {
   const { result } = renderHook(() => useFilterLabels(mockParams), {
@@ -28,8 +26,7 @@ describe('useFilterLabels', () => {
 
   test('emptyResponse', async () => {
     const { result } = renderHook(
-      () =>
-        useFilterLabels(new URLSearchParams('priority=undefined&unknown=123')),
+      () => useFilterLabels(new URLSearchParams('unknown=123')),
       {
         wrapper: createWrapper(),
       },
@@ -62,17 +59,5 @@ describe('getTranslationKey', () => {
     expect(() =>
       getTranslationKey('hasDueDate', 'low' as FilterValue<'hasDueDate'>),
     ).toThrowError(`Invalid filter combination: hasDueDate.low`);
-  });
-
-  test('getTranslationKey - priority', () => {
-    expect(getTranslationKey('priority', 'low')).toBe(
-      'filters.labels.priority.low',
-    );
-  });
-
-  test('getTranslationKey - priority - error', () => {
-    expect(() =>
-      getTranslationKey('priority', 'true' as FilterValue<'priority'>),
-    ).toThrowError(`Invalid filter combination: priority.true`);
   });
 });

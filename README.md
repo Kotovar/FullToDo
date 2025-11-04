@@ -10,12 +10,11 @@ Pet проект для управления задачами (todo-прилож
 - Детали задач:
   - Название, описание, срок выполнения
   - Подзадачи
-  - Приоритет (в разработке)
 - Фильтрация и сортировка:
   - По статусу (все/выполненные/невыполненные)
   - По дате создания/выполнения
-  - По приоритету
 - Поиск по задачам
+- Перенос задач из одного блокнота в другой
 - Локализация (русский/английский)
 - Темная/светлая тема
 
@@ -27,7 +26,7 @@ Pet проект для управления задачами (todo-прилож
 - TailwindCSS
 - React Query
 - i18next
-- Vitest (тесты с покрытием 99-100%)
+- Vitest
 
 ### Backend
 - Node.js + TypeScript
@@ -37,7 +36,7 @@ Pet проект для управления задачами (todo-прилож
 - Mock-база (JSON)
 - `MongoDB` (в разработке)
 - `postgres` (в разработке)
-- Vitest (тесты с покрытием 99-100%)
+- Vitest
 
 ## Запуск
 
@@ -79,12 +78,11 @@ A pet project for task management (todo app) with the ability to choose differen
 - Task details:
   - Title, description, due date
   - Subtasks
-  - Priority (in development)
 - Filtering and sorting:
   - By status (all/completed/active)
   - By creation/due date
-  - By priority
 - Task search
+- Transferring tasks from one notebook to another
 - Localization (Russian/English)
 - Dark/light theme
 
@@ -97,7 +95,7 @@ A pet project for task management (todo app) with the ability to choose differen
 - TailwindCSS
 - React Query
 - i18next
-- Vitest (99-100% test coverage)
+- Vitest
 
 ### Backend
 - Node.js + TypeScript
@@ -107,7 +105,7 @@ A pet project for task management (todo app) with the ability to choose differen
 - Mock database (JSON)
 - `MongoDB` (in development)
 - `postgres` (in development)
-- Vitest (99-100% test coverage)
+- Vitest
 
 ## Running
 Copy environment file:

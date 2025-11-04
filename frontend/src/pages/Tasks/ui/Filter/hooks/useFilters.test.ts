@@ -35,7 +35,6 @@ describe('useFilters', () => {
     act(() => {
       result.current.handleUpdateFilter({
         isCompleted: 'true',
-        priority: 'low',
         hasDueDate: '',
       });
     });
@@ -46,7 +45,6 @@ describe('useFilters', () => {
     const newParams = updateFn(initialParams);
 
     expect(newParams.get('isCompleted')).toBe('true');
-    expect(newParams.get('priority')).toBe('low');
     expect(newParams.get('hasDueDate')).toBeNull();
   });
 });

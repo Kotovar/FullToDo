@@ -1,34 +1,24 @@
 import { useTranslation } from 'react-i18next';
 import type { FilterLabel } from '@pages/Tasks/lib';
-import type { PriorityEnum, TaskFilter } from 'shared/schemas';
+import type { TaskFilter } from 'shared/schemas';
 
 export type FilterValue<K extends FilterKey> = NonNullable<TaskFilter[K]>;
 type FilterKey = keyof TaskFilter;
 type BooleanKey = 'true' | 'false';
 type FilterTranslationKeys =
   | `filters.labels.isCompleted.${BooleanKey}`
-  | `filters.labels.hasDueDate.${BooleanKey}`
-  | `filters.labels.priority.${PriorityEnum}`;
-type CorrectValue = BooleanKey | PriorityEnum;
+  | `filters.labels.hasDueDate.${BooleanKey}`;
+type CorrectValue = BooleanKey;
 
 const isFilterKey = (key: unknown): key is FilterKey => {
-  return (
-    typeof key === 'string' &&
-    ['isCompleted', 'hasDueDate', 'priority'].includes(key)
-  );
-};
-
-const isPriorityValue = (key: string): key is PriorityEnum => {
-  return ['low', 'medium', 'high'].includes(key);
+  return typeof key === 'string' && ['isCompleted', 'hasDueDate'].includes(key);
 };
 
 const isBooleanValue = (value: string): value is BooleanKey =>
   value === 'true' || value === 'false';
 
 const isCorrectValue = (value: string | undefined): value is CorrectValue => {
-  return (
-    value !== undefined && (isPriorityValue(value) || isBooleanValue(value))
-  );
+  return value !== undefined && isBooleanValue(value);
 };
 
 export const getTranslationKey = <K extends FilterKey>(
@@ -44,11 +34,6 @@ export const getTranslationKey = <K extends FilterKey>(
     case 'hasDueDate':
       if (isBooleanValue(value)) {
         return `filters.labels.hasDueDate.${value}`;
-      }
-      break;
-    case 'priority':
-      if (isPriorityValue(value)) {
-        return `filters.labels.priority.${value}`;
       }
       break;
   }

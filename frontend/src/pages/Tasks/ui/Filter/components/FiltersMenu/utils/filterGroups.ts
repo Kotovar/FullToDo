@@ -32,14 +32,4 @@ export const getFilterGroups = (t: TFunction<'ruTranslation'>) =>
         },
       ],
     },
-    {
-      name: 'priority',
-      title: t('filters.groups.priority.title'),
-      options: [
-        { value: '', label: t('filters.groups.priority.options.all') },
-        { value: 'low', label: t('filters.groups.priority.options.low') },
-        { value: 'medium', label: t('filters.groups.priority.options.medium') },
-        { value: 'high', label: t('filters.groups.priority.options.high') },
-      ],
-    },
   ] as const;

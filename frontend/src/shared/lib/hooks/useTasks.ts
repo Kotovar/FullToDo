@@ -29,7 +29,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     fetchNextPage: fetchNextPagePrivate,
     hasNextPage: hasNextPagePrivate,
   } = useInfiniteQuery({
-    queryKey: ['tasks', notepadId, params, initialPage, paramsObj.limit],
+    queryKey: ['tasks', notepadId, initialPage, paramsObj],
     queryFn: ({ pageParam = initialPage }) => {
       const queryParams = new URLSearchParams(paramsObj);
       queryParams.set('page', pageParam.toString());
@@ -54,7 +54,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     fetchNextPage: fetchNextPageCommon,
     hasNextPage: hasNextPageCommon,
   } = useInfiniteQuery({
-    queryKey: ['tasks', params, initialPage, paramsObj.limit],
+    queryKey: ['tasks', initialPage, paramsObj],
     queryFn: ({ pageParam = initialPage }) => {
       const queryParams = new URLSearchParams(paramsObj);
       queryParams.set('page', pageParam.toString());

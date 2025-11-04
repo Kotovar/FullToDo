@@ -20,6 +20,7 @@ export const Chip = memo(({ label, onDelete }: ChipProps) => {
         onClick={onDelete}
         padding='md'
         aria-label={`${t('delete')} ${label}`}
+        border='none'
       >
         <Icon name='cross' fill={fill} />
       </Button>
