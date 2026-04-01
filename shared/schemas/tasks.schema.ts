@@ -5,12 +5,13 @@ const StatusResponseEnum = z.union([
   z.literal(200),
   z.literal(201),
   z.literal(204),
+  z.literal(403),
   z.literal(404),
   z.literal(409),
   z.literal(500),
 ]);
 
-type StatusResponseEnum = z.infer<typeof StatusResponseEnum>;
+export type StatusResponseEnum = z.infer<typeof StatusResponseEnum>;
 
 const zPage = () =>
   z
@@ -161,8 +162,12 @@ export type NotepadResponse = z.infer<typeof NotepadResponse>;
 export type NotepadWithoutTasksResponse = z.infer<
   typeof NotepadWithoutTasksResponse
 >;
-
+export type NotepadWithoutTasks = z.infer<typeof notepadWithoutTasksSchema>;
 export type TaskFilter = z.infer<typeof taskFilterSchema>;
 export type TaskSort = z.infer<typeof taskSortSchema>;
 export type TaskSearch = z.infer<typeof taskSearchSchema>;
 export type TaskQueryParams = z.infer<typeof taskQueryParamsSchema>;
+export type PaginatedTasks = {
+  tasks: Task[];
+  meta: PaginationMeta;
+};

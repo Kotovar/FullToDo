@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "lint-staged": "lint-staged",
     "test": "vitest run",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "debug": "node --inspect-brk -r ts-node/register -r tsconfig-paths/register src/app.ts"
   },
   "keywords": [],
   "author": "Kotovar",
@@ -20,6 +21,7 @@
   "dependencies": {
     "express": "^5.1.0",
     "morgan": "^1.10.1",
+    "pg": "^8.16.3",
     "shared": "file:../shared"
   },
   "devDependencies": {
@@ -27,6 +29,7 @@
     "@rollup/rollup-linux-x64-gnu": "^4.52.5",
     "@types/express": "^5.0.5",
     "@types/morgan": "^1.9.10",
+    "@types/pg": "^8.15.6",
     "@types/supertest": "^6.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.3",
     "@typescript-eslint/parser": "^8.46.3",

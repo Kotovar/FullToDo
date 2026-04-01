@@ -7,9 +7,13 @@ import {
   handleValidationError,
   parseJsonBody,
 } from './utils';
-import type { RequestHandler } from './types';
+import { TaskService } from '@services/TaskService';
+import type { ServiceHandler } from './types';
 
-export const createTask: RequestHandler = async ({ req, res }, repository) => {
+export const createTask: ServiceHandler<TaskService> = async (
+  { req, res },
+  service: TaskService,
+) => {
   try {
     if (!checkContentType(req, res)) return;
 
@@ -21,66 +25,74 @@ export const createTask: RequestHandler = async ({ req, res }, repository) => {
       return handleValidationError(res, validationResult.error);
     }
 
-    const result = await repository.createTask(
-      validationResult.data,
-      notepadId,
-    );
+    const task = await service.createTask(validationResult.data, notepadId);
+
     res
-      .writeHead(result.status, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify(result));
+      .writeHead(201, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify({ message: `Task "${task.title}" created`, task }));
   } catch (error) {
     errorHandler(res, error);
   }
 };
 
-export const getSingleTask: RequestHandler = async (
+export const getSingleTask: ServiceHandler<TaskService> = async (
   { req, res },
-  repository,
+  service: TaskService,
 ) => {
   try {
     const { notepadId, taskId } = getId(req, 'task');
-    const result = await repository.getSingleTask(notepadId, taskId);
+    const task = await service.getSingleTask(notepadId, taskId);
 
     res
-      .writeHead(result.status, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify(result));
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify({ message: 'Success', data: task }));
   } catch (error) {
     errorHandler(res, error);
   }
 };
 
-export const getAllTasks: RequestHandler = async ({ req, res }, repository) => {
+export const getAllTasks: ServiceHandler<TaskService> = async (
+  { req, res },
+  service: TaskService,
+) => {
   const params = getValidatedTaskParams(req);
 
   try {
-    const result = await repository.getAllTasks(params);
+    const { tasks, meta } = await service.getAllTasks(params);
+
     res
-      .writeHead(result.status, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify(result));
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify({ message: 'Success', data: tasks, meta }));
   } catch (error) {
     errorHandler(res, error);
   }
 };
 
-export const getSingleNotepadTasks: RequestHandler = async (
+export const getSingleNotepadTasks: ServiceHandler<TaskService> = async (
   { req, res },
-  repository,
+  service: TaskService,
 ) => {
   const params = getValidatedTaskParams(req);
 
   try {
     const { notepadId } = getId(req, 'notepad');
-    const result = await repository.getSingleNotepadTasks(notepadId, params);
+    const { tasks, meta } = await service.getSingleNotepadTasks(
+      notepadId,
+      params,
+    );
 
     res
-      .writeHead(result.status, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify(result));
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify({ message: 'Success', data: tasks, meta }));
   } catch (error) {
     errorHandler(res, error);
   }
 };
 
-export const updateTask: RequestHandler = async ({ req, res }, repository) => {
+export const updateTask: ServiceHandler<TaskService> = async (
+  { req, res },
+  service: TaskService,
+) => {
   try {
     if (!checkContentType(req, res)) return;
 
@@ -93,23 +105,29 @@ export const updateTask: RequestHandler = async ({ req, res }, repository) => {
       return handleValidationError(res, validationResult.error);
     }
 
-    const result = await repository.updateTask(taskId, validationResult.data);
-    res
-      .writeHead(result.status, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify(result));
+    const updatedTask = await service.updateTask(taskId, validationResult.data);
+    res.writeHead(200, { 'Content-Type': 'application/json' }).end(
+      JSON.stringify({
+        message: `A task with the _id ${taskId} has been successfully updated`,
+        data: updatedTask,
+      }),
+    );
   } catch (error) {
     errorHandler(res, error);
   }
 };
 
-export const deleteTask: RequestHandler = async ({ req, res }, repository) => {
+export const deleteTask: ServiceHandler<TaskService> = async (
+  { req, res },
+  service: TaskService,
+) => {
   try {
     const { taskId } = getId(req, 'task');
-    const result = await repository.deleteTask(taskId);
+    await service.deleteTask(taskId);
 
     res
-      .writeHead(result.status, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify(result));
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify({ message: 'Task deleted successfully' }));
   } catch (error) {
     errorHandler(res, error);
   }

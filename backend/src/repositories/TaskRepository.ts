@@ -1,30 +1,29 @@
 import type {
-  TaskResponse,
-  TasksResponse,
   CreateTask,
   UpdateTask,
   CreateNotepad,
-  NotepadResponse,
-  NotepadWithoutTasksResponse,
+  NotepadWithoutTasks,
   TaskQueryParams,
-  TaskResponseSingle,
+  Task,
+  Notepad,
+  PaginatedTasks,
 } from '@sharedCommon/schemas';
 
 export interface TaskRepository {
-  createNotepad(notepad: CreateNotepad): Promise<NotepadResponse>;
-  createTask(task: CreateTask, notepadId: string): Promise<TaskResponseSingle>;
-  getAllNotepads(): Promise<NotepadWithoutTasksResponse>;
-  getAllTasks(params?: TaskQueryParams): Promise<TasksResponse>;
-  getSingleTask(taskId: string, notepadId?: string): Promise<TaskResponse>;
+  createNotepad(notepad: CreateNotepad): Promise<Notepad>;
+  createTask(task: CreateTask, notepadId: string): Promise<Task>;
+  getAllNotepads(): Promise<NotepadWithoutTasks[]>;
+  getAllTasks(params?: TaskQueryParams): Promise<PaginatedTasks>;
+  getSingleTask(taskId: string, notepadId?: string): Promise<Task>;
   getSingleNotepadTasks(
-    notepadId: string,
+    taskId: string,
     params?: TaskQueryParams,
-  ): Promise<TasksResponse>;
+  ): Promise<PaginatedTasks>;
   updateNotepad(
     notepadId: string,
-    notepad: CreateNotepad,
-  ): Promise<NotepadResponse>;
-  updateTask(taskId: string, task: UpdateTask): Promise<TaskResponseSingle>;
-  deleteNotepad(notepadId: string): Promise<NotepadResponse>;
-  deleteTask(taskId: string): Promise<TaskResponseSingle>;
+    notepad: Partial<CreateNotepad>,
+  ): Promise<Notepad>;
+  updateTask(taskId: string, task: UpdateTask): Promise<Task>;
+  deleteNotepad(notepadId: string): Promise<void>;
+  deleteTask(taskId: string): Promise<void>;
 }

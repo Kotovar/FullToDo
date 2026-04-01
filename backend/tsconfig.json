@@ -27,7 +27,9 @@
       "@controllers": ["backend/src/controllers/index.ts"],
       "@controllers/*": ["backend/src/controllers/*"],
       "@repositories": ["backend/src/repositories/index.ts"],
-      "@repositories/*": ["backend/src/repositories/*"]
+      "@repositories/*": ["backend/src/repositories/*"],
+      "@services/*": ["backend/src/services/*"],
+      "@errors/*": ["backend/src/errors/*"]
     }
   }
 }

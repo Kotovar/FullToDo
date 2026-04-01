@@ -6,11 +6,12 @@ import {
   parseJsonBody,
 } from './utils';
 import { createNotepadSchema } from '@sharedCommon/schemas';
-import type { RequestHandler } from './types';
+import { NotepadService } from '@services/NotepadService';
+import type { ServiceHandler } from './types';
 
-export const createNotepad: RequestHandler = async (
+export const createNotepad: ServiceHandler<NotepadService> = async (
   { req, res },
-  repository,
+  service: NotepadService,
 ) => {
   try {
     if (!checkContentType(req, res)) return;
@@ -22,31 +23,37 @@ export const createNotepad: RequestHandler = async (
       return handleValidationError(res, validationResult.error);
     }
 
-    const result = await repository.createNotepad(validationResult.data);
+    const notepad = await service.createNotepad(validationResult.data);
 
-    res
-      .writeHead(result.status, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify(result));
+    res.writeHead(201, { 'Content-Type': 'application/json' }).end(
+      JSON.stringify({
+        message: `Notepad "${notepad.title}" created`,
+        notepad,
+      }),
+    );
   } catch (error) {
     errorHandler(res, error);
   }
 };
 
-export const getAllNotepads: RequestHandler = async ({ res }, repository) => {
+export const getAllNotepads: ServiceHandler<NotepadService> = async (
+  { res },
+  service: NotepadService,
+) => {
   try {
-    const rawData = await repository.getAllNotepads();
+    const rawData = await service.getAllNotepads();
 
     res
-      .writeHead(rawData.status, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify(rawData));
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify({ message: 'Success', data: rawData }));
   } catch (error) {
     errorHandler(res, error);
   }
 };
 
-export const updateNotepad: RequestHandler = async (
+export const updateNotepad: ServiceHandler<NotepadService> = async (
   { req, res },
-  repository,
+  service: NotepadService,
 ) => {
   try {
     if (!checkContentType(req, res)) return;
@@ -59,30 +66,33 @@ export const updateNotepad: RequestHandler = async (
       return handleValidationError(res, validationResult.error);
     }
 
-    const result = await repository.updateNotepad(
+    const updatedNotepad = await service.updateNotepad(
       notepadId,
       validationResult.data,
     );
 
-    res
-      .writeHead(result.status, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify(result));
+    res.writeHead(200, { 'Content-Type': 'application/json' }).end(
+      JSON.stringify({
+        message: `A notepad with the id ${notepadId} has been successfully updated`,
+        data: updatedNotepad,
+      }),
+    );
   } catch (error) {
     errorHandler(res, error);
   }
 };
 
-export const deleteNotepad: RequestHandler = async (
+export const deleteNotepad: ServiceHandler<NotepadService> = async (
   { req, res },
-  repository,
+  service: NotepadService,
 ) => {
   try {
     const { notepadId } = getId(req, 'notepad');
-    const result = await repository.deleteNotepad(notepadId);
+    await service.deleteNotepad(notepadId);
 
     res
-      .writeHead(result.status, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify(result));
+      .writeHead(200, { 'Content-Type': 'application/json' })
+      .end(JSON.stringify({ message: 'Notepad deleted successfully' }));
   } catch (error) {
     errorHandler(res, error);
   }

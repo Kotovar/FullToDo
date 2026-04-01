@@ -1,20 +1,22 @@
 export * from './TaskRepository';
-export * from './MockTaskRepository';
 
 import { config } from '@configs';
-import MockTaskRepository from './MockTaskRepository';
+import { MockTaskRepository } from './MockTaskRepository';
+import { PostgresTaskRepository } from './PostgresTaskRepository';
+import { NOTEPADS } from '@db/mock/mock-db';
+import type { TaskRepository } from './TaskRepository';
 
 const {
   db: { type },
 } = config;
 
-export const taskRepository = (() => {
+export const taskRepository: TaskRepository = (() => {
   switch (type) {
     case 'mongo':
-      return MockTaskRepository;
+      return new MockTaskRepository(NOTEPADS);
     case 'postgres':
-      return MockTaskRepository;
+      return new PostgresTaskRepository();
     default:
-      return MockTaskRepository;
+      return new MockTaskRepository(NOTEPADS);
   }
 })();

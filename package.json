@@ -11,8 +11,10 @@
     "install:all": "npm install",
     "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
     "dev": "npm-run-all --parallel dev:backend dev:frontend",
+    "dev:docker": "docker compose -f docker-compose.yml up -d && npm run dev",
     "dev:backend": "npm run dev --workspace=backend",
-    "dev:frontend": "npm run dev --workspace=frontend"
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "stop:docker": "docker compose stop"
   },
   "dependencies": {
     "zod": "^4.1.12"
