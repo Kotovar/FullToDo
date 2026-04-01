@@ -31,9 +31,7 @@ export class PostgresTaskRepository implements TaskRepository {
       return { ...result.rows[0], tasks: [] };
     } catch (err) {
       if (isDbError(err) && err.code === DB_ERRORS.DUPLICATE) {
-        if (err.code === DB_ERRORS.DUPLICATE) {
-          throw new ConflictError(`Task with title ${title} already exists`);
-        }
+        throw new ConflictError(`Task with title ${title} already exists`);
       }
 
       throw err;
@@ -107,9 +105,25 @@ export class PostgresTaskRepository implements TaskRepository {
       meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
     };
   }
-  getSingleTask(notepadId: string, taskId: string): Promise<Task> {
-    throw new Error('Method not implemented.' + notepadId + ' ' + taskId);
+
+  async getSingleTask(notepadId: string, taskId: string): Promise<Task> {
+    const isCommon = notepadId === commonNotepadId;
+
+    const result = await query<Task>(
+      `SELECT ${TASK_COLUMNS} FROM tasks
+       WHERE _id = $1 ${isCommon ? '' : 'AND notepad_id = $2'}`,
+      isCommon ? [taskId] : [taskId, notepadId],
+    );
+
+    if (!result.rows[0]) {
+      throw new NotFoundError(
+        `Task ${taskId} not found in notepad ${notepadId}`,
+      );
+    }
+
+    return result.rows[0];
   }
+
   getSingleNotepadTasks(
     notepadId: string,
     params?: TaskQueryParams,
