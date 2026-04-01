@@ -1,25 +1,34 @@
 import {
   commonNotepadId,
-  Notepad,
-  NotepadWithoutTasks,
-  PaginatedTasks,
+  PAGINATION,
+  type Notepad,
+  type NotepadWithoutTasks,
+  type PaginatedTasks,
   type CreateNotepad,
   type CreateTask,
   type Task,
   type TaskQueryParams,
 } from '@sharedCommon/schemas';
 import type { TaskRepository } from './TaskRepository';
-import { DB_ERRORS, isDbError, query } from '@db/postgres';
+import {
+  DB_ERRORS,
+  isDbError,
+  query,
+  TASK_COLUMNS,
+  buildTaskFilterSQL,
+  buildOrderSQL,
+  buildPaginationSQL,
+} from '@db/postgres';
 import { ConflictError, NotFoundError } from '../errors';
 
 export class PostgresTaskRepository implements TaskRepository {
   async createNotepad({ title }: CreateNotepad): Promise<Notepad> {
     try {
-      const result = await query<Notepad>(
-        'INSERT INTO notepads (title) VALUES ($1)',
+      const result = await query<{ _id: string; title: string }>(
+        'INSERT INTO notepads (title) VALUES ($1) RETURNING _id::text, title',
         [title],
       );
-      return result.rows[0];
+      return { ...result.rows[0], tasks: [] };
     } catch (err) {
       if (isDbError(err) && err.code === DB_ERRORS.DUPLICATE) {
         if (err.code === DB_ERRORS.DUPLICATE) {
@@ -38,10 +47,13 @@ export class PostgresTaskRepository implements TaskRepository {
 
     try {
       const result = await query<Task>(
-        'INSERT INTO tasks (notepad_id, title, due_date) VALUES ($1, $2, $3)',
-        [dbNotepadId, title, dueDate],
+        `INSERT INTO tasks (notepad_id, title, due_date) VALUES ($1, $2, $3)
+         RETURNING _id::text, title, description, due_date AS "dueDate",
+                   created_date AS "createdDate", is_completed AS "isCompleted",
+                   COALESCE(notepad_id::text, $4) AS "notepadId"`,
+        [dbNotepadId, title, dueDate, notepadId],
       );
-      return result.rows[0];
+      return { ...result.rows[0], subtasks: [], progress: '' };
     } catch (err) {
       if (isDbError(err)) {
         if (err.code === DB_ERRORS.FOREIGN_KEY) {
@@ -56,16 +68,44 @@ export class PostgresTaskRepository implements TaskRepository {
   }
 
   async getAllNotepads(): Promise<NotepadWithoutTasks[]> {
-    //TODO: поменять, берём только title и id
-    const notepads = await query<{ title: string; _id: string }>(
-      'SELECT * FROM notepads',
+    const notepads = await query<NotepadWithoutTasks>(
+      'SELECT title, _id FROM notepads',
     );
 
     return [{ title: 'Задачи', _id: commonNotepadId }, ...notepads.rows];
   }
 
-  getAllTasks(params?: TaskQueryParams): Promise<PaginatedTasks> {
-    throw new Error('Method not implemented.' + params);
+  async getAllTasks(params: TaskQueryParams = {}): Promise<PaginatedTasks> {
+    const {
+      sortBy,
+      order,
+      page = PAGINATION.DEFAULT_PAGE,
+      limit = PAGINATION.DEFAULT_LIMIT,
+    } = params;
+
+    const { whereSQL, values } = buildTaskFilterSQL(params);
+    const orderSQL = buildOrderSQL(sortBy, order);
+    const paginationSQL = buildPaginationSQL(page, limit);
+
+    const tasks = await query<Task>(
+      `SELECT ${TASK_COLUMNS} FROM tasks ${whereSQL} ${orderSQL} ${paginationSQL}`,
+      values,
+    );
+
+    /**
+     * Отдельный запрос для подсчёта общего числа записей без LIMIT.
+     * Нужен для корректного totalPages в мета-данных пагинации.
+     */
+    const countResult = await query<{ count: string }>(
+      `SELECT COUNT(*) FROM tasks ${whereSQL}`,
+      values,
+    );
+    const total = Number(countResult.rows[0].count);
+
+    return {
+      tasks: tasks.rows,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
   getSingleTask(notepadId: string, taskId: string): Promise<Task> {
     throw new Error('Method not implemented.' + notepadId + ' ' + taskId);
