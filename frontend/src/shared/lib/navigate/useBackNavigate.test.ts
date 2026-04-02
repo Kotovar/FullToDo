@@ -19,6 +19,7 @@ describe('useBackNavigate', () => {
     key: '',
     search: '',
     hash: '',
+    unstable_mask: undefined,
   };
 
   beforeEach(() => {
@@ -31,6 +32,7 @@ describe('useBackNavigate', () => {
       key: '',
       search: '',
       hash: '',
+      unstable_mask: undefined,
     });
   });
 

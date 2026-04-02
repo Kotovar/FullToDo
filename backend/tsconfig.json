@@ -16,20 +16,19 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    "baseUrl": "..",
     "skipLibCheck": true,
     "paths": {
-      "@sharedCommon/*": ["shared/*"],
-      "@db/*": ["backend/src/db/*"],
-      "@configs": ["backend/src/configs/index.ts"],
-      "@configs/*": ["backend/src/configs/*"],
-      "@tests/*": ["backend/src/tests/*"],
-      "@controllers": ["backend/src/controllers/index.ts"],
-      "@controllers/*": ["backend/src/controllers/*"],
-      "@repositories": ["backend/src/repositories/index.ts"],
-      "@repositories/*": ["backend/src/repositories/*"],
-      "@services/*": ["backend/src/services/*"],
-      "@errors/*": ["backend/src/errors/*"]
+      "@sharedCommon/*": ["../shared/*"],
+      "@db/*": ["./src/db/*"],
+      "@configs": ["./src/configs/index.ts"],
+      "@configs/*": ["./src/configs/*"],
+      "@tests/*": ["./src/tests/*"],
+      "@controllers": ["./src/controllers/index.ts"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@repositories": ["./src/repositories/index.ts"],
+      "@repositories/*": ["./src/repositories/*"],
+      "@services/*": ["./src/services/*"],
+      "@errors/*": ["./src/errors/*"]
     }
   }
 }

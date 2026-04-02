@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-export const SUCCESSFUL_MESSAGES = {
+const SUCCESSFUL_MESSAGES = {
   tasks: {
     create: 'notifications.tasks.create',
     update: 'notifications.tasks.update',
@@ -21,9 +21,8 @@ export const SUCCESSFUL_MESSAGES = {
 type Entity = keyof typeof SUCCESSFUL_MESSAGES;
 type Method = keyof typeof SUCCESSFUL_MESSAGES.tasks;
 
-export const useSuccessMessage = () => {
-  return useCallback(
+export const useSuccessMessage = () =>
+  useCallback(
     (entity: Entity, method: Method) => SUCCESSFUL_MESSAGES[entity][method],
     [],
   );
-};
