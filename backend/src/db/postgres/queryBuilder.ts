@@ -44,9 +44,15 @@ type FilterResult = {
 export function buildTaskFilterSQL(
   params: TaskQueryParams,
   initialValues: unknown[] = [],
+  notepadId?: string,
 ): FilterResult {
   const where: string[] = [];
   const values: unknown[] = [...initialValues];
+
+  if (notepadId) {
+    values.push(notepadId);
+    where.push(`notepad_id = $${values.length}`);
+  }
 
   if (params.isCompleted !== undefined) {
     values.push(params.isCompleted === 'true');

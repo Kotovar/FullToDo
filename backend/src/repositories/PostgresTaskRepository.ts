@@ -22,6 +22,33 @@ import {
 import { ConflictError, NotFoundError } from '../errors';
 
 export class PostgresTaskRepository implements TaskRepository {
+  private async queryPaginatedTasks(
+    whereSQL: string,
+    values: unknown[],
+    page: number,
+    limit: number,
+    orderSQL: string,
+  ): Promise<PaginatedTasks> {
+    const paginationSQL = buildPaginationSQL(page, limit);
+
+    const [tasks, countResult] = await Promise.all([
+      query<Task>(
+        `SELECT ${TASK_COLUMNS} FROM tasks ${whereSQL} ${orderSQL} ${paginationSQL}`,
+        values,
+      ),
+      query<{ count: string }>(
+        `SELECT COUNT(*) FROM tasks ${whereSQL}`,
+        values,
+      ),
+    ]);
+
+    const total = Number(countResult.rows[0].count);
+    return {
+      tasks: tasks.rows,
+      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
   async createNotepad({ title }: CreateNotepad): Promise<Notepad> {
     try {
       const result = await query<{ _id: string; title: string }>(
@@ -80,30 +107,10 @@ export class PostgresTaskRepository implements TaskRepository {
       page = PAGINATION.DEFAULT_PAGE,
       limit = PAGINATION.DEFAULT_LIMIT,
     } = params;
-
     const { whereSQL, values } = buildTaskFilterSQL(params);
     const orderSQL = buildOrderSQL(sortBy, order);
-    const paginationSQL = buildPaginationSQL(page, limit);
 
-    const tasks = await query<Task>(
-      `SELECT ${TASK_COLUMNS} FROM tasks ${whereSQL} ${orderSQL} ${paginationSQL}`,
-      values,
-    );
-
-    /**
-     * Отдельный запрос для подсчёта общего числа записей без LIMIT.
-     * Нужен для корректного totalPages в мета-данных пагинации.
-     */
-    const countResult = await query<{ count: string }>(
-      `SELECT COUNT(*) FROM tasks ${whereSQL}`,
-      values,
-    );
-    const total = Number(countResult.rows[0].count);
-
-    return {
-      tasks: tasks.rows,
-      meta: { page, limit, total, totalPages: Math.ceil(total / limit) },
-    };
+    return this.queryPaginatedTasks(whereSQL, values, page, limit, orderSQL);
   }
 
   async getSingleTask(notepadId: string, taskId: string): Promise<Task> {
@@ -124,22 +131,58 @@ export class PostgresTaskRepository implements TaskRepository {
     return result.rows[0];
   }
 
-  getSingleNotepadTasks(
+  async getSingleNotepadTasks(
     notepadId: string,
-    params?: TaskQueryParams,
+    params: TaskQueryParams = {},
   ): Promise<PaginatedTasks> {
-    throw new Error('Method not implemented.' + notepadId + ' ' + params);
+    const isCommon = notepadId === commonNotepadId;
+
+    const {
+      sortBy,
+      order,
+      page = PAGINATION.DEFAULT_PAGE,
+      limit = PAGINATION.DEFAULT_LIMIT,
+    } = params;
+
+    const { whereSQL, values } = buildTaskFilterSQL(
+      params,
+      [],
+      isCommon ? undefined : notepadId,
+    );
+    const orderSQL = buildOrderSQL(sortBy, order);
+
+    return this.queryPaginatedTasks(whereSQL, values, page, limit, orderSQL);
   }
 
-  updateNotepad(
+  async updateNotepad(
     notepadId: string,
     updatedNotepadFields: Partial<CreateNotepad>,
   ): Promise<Notepad> {
-    throw new Error(
-      'Method not implemented.' + ' ' + notepadId + ' ' + updatedNotepadFields,
+    const result = await query<Notepad>(
+      `UPDATE notepads
+        SET title = $1
+        WHERE _id = $2
+        RETURNING _id::text, title`,
+      [updatedNotepadFields.title, notepadId],
     );
+
+    if (!result.rows[0]) {
+      throw new NotFoundError(`Notepad ${notepadId} not found`);
+    }
+
+    const tasks = await query<Task>(
+      `SELECT ${TASK_COLUMNS} FROM tasks
+        WHERE notepad_id = $1`,
+      [notepadId],
+    );
+
+    return { ...result.rows[0], tasks: tasks.rows };
   }
-  updateTask(taskId: string, updatedTaskFields: Partial<Task>): Promise<Task> {
+
+    updateTask(taskId: string, updatedTaskFields: Partial<Task>): Promise<Task> {
+      
+        
+        
     throw new Error(
       'Method not implemented.' + ' ' + taskId + ' ' + updatedTaskFields,
     );
