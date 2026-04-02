@@ -101,20 +101,31 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
         });
       }
 
+      if (result && !isCommon) {
+        await queryClient.invalidateQueries({ queryKey: getTaskQueryKey() });
+      }
+
       return result;
     },
-    [mutationUpdate, onError, onSuccess, queryClient, queryKey],
+    [mutationUpdate, onError, onSuccess, queryClient, queryKey, isCommon],
   );
 
   const deleteTask = useCallback(
-    async (id: string) =>
-      await handleMutation(mutationDelete, 'delete', id, {
+    async (id: string) => {
+      const result = await handleMutation(mutationDelete, 'delete', id, {
         queryClient,
         queryKey,
         onSuccess,
         onError,
-      }),
-    [mutationDelete, queryClient, queryKey, onSuccess, onError],
+      });
+
+      if (result && !isCommon) {
+        await queryClient.invalidateQueries({ queryKey: getTaskQueryKey() });
+      }
+
+      return result;
+    },
+    [mutationDelete, queryClient, queryKey, isCommon, onSuccess, onError],
   );
 
   const tasksPrivateResult = useMemo(

@@ -11,5 +11,10 @@ export const config = ConfigSchema.parse({
   },
   db: {
     type: process.env.DB_TYPE,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    name: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: Number(process.env.DB_PORT),
   },
 });

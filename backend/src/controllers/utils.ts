@@ -6,6 +6,7 @@ import {
   taskQueryParamsSchema,
 } from '@sharedCommon/schemas';
 import { extractInvalidKeys } from '@sharedCommon/utils';
+import { AppError } from '@errors/AppError';
 
 export const parseJsonBody = <T>(req: IncomingMessage): Promise<T> => {
   return new Promise((resolve, reject) => {
@@ -28,7 +29,8 @@ export const parseJsonBody = <T>(req: IncomingMessage): Promise<T> => {
 };
 
 export const errorHandler = (res: ServerResponse, error: unknown) => {
-  res.writeHead(500, { 'Content-Type': 'application/json' });
+  const statusCode = error instanceof AppError ? error.statusCode : 500;
+  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: error ?? 'Internal Server Error' }));
 };
 

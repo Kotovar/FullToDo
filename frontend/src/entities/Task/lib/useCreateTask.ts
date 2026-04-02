@@ -3,6 +3,7 @@ import { useApiNotifications } from '@shared/lib';
 import {
   getTaskQueryKey,
   handleMutation,
+  isCommonNotepad,
   UseCreateTaskProps,
 } from '@shared/lib';
 import type { CreateTask } from '@sharedCommon/*';
@@ -18,13 +19,20 @@ export const useCreateTask = ({ notepadId, entity }: UseCreateTaskProps) => {
 
   const { onSuccess, onError } = useApiNotifications(entity);
 
-  const createTask = async (task: CreateTask) =>
-    handleMutation(mutateAsync, 'create', task, {
+  const createTask = async (task: CreateTask) => {
+    const result = await handleMutation(mutateAsync, 'create', task, {
       queryClient,
       queryKey,
       onSuccess,
       onError,
     });
+
+    if (result && !isCommonNotepad(notepadId)) {
+      await queryClient.invalidateQueries({ queryKey: getTaskQueryKey() });
+    }
+
+    return result;
+  };
 
   return {
     createTask,

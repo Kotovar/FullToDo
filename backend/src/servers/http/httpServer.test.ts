@@ -2,22 +2,24 @@ import request from 'supertest';
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { ZodError } from 'zod';
 import { ROUTES } from '@sharedCommon/routes';
+import { taskRepository } from '@repositories';
 import {
+  validNotepadWithoutTasksData,
+  validTaskDataMock,
+  validTasksData,
+} from '@db/mock';
+import { createHttpServer, extractPath } from './httpServer';
+import { ConflictError, NotFoundError } from '@errors/AppError';
+import {
+  type Notepad,
   type NotepadResponse,
-  type TaskResponse,
-  TaskResponseSingle,
+  type Task,
+  type TaskResponseSingle,
   createNotepadSchema,
   createTaskSchema,
   notepadId,
   taskId,
 } from '@sharedCommon/schemas';
-import { taskRepository } from '@repositories';
-import {
-  validNotepadWithoutTasksData,
-  validTaskData,
-  validTasksData,
-} from '@db/mock';
-import { createHttpServer, extractPath } from './httpServer';
 
 const port = 3000;
 const server = createHttpServer();
@@ -56,8 +58,8 @@ describe('httpServer GET', () => {
     vi.spyOn(taskRepository, 'getAllTasks').mockResolvedValue(validTasksData);
 
     const response = await request(server).get(ROUTES.TASKS);
-    expect(JSON.stringify(response.body)).toEqual(
-      JSON.stringify(validTasksData),
+    expect(JSON.stringify(response.body.data)).toEqual(
+      JSON.stringify(validTasksData.tasks),
     );
   });
 
@@ -79,7 +81,7 @@ describe('httpServer GET', () => {
     );
 
     const response = await request(server).get(ROUTES.NOTEPADS);
-    expect(response.body).toEqual(validNotepadWithoutTasksData);
+    expect(response.body.data).toEqual(validNotepadWithoutTasksData);
   });
 
   test('should return 500 if an internal server error occurs - /notepads', async () => {
@@ -102,9 +104,9 @@ describe('httpServer GET', () => {
     const response = await request(server).get(
       ROUTES.getNotepadPath(notepadId),
     );
-    expect(response.status).toBe(validTasksData.status);
-    expect(JSON.stringify(response.body)).toEqual(
-      JSON.stringify(validTasksData),
+    expect(response.status).toBe(200);
+    expect(JSON.stringify(response.body.data)).toEqual(
+      JSON.stringify(validTasksData.tasks),
     );
   });
 
@@ -123,31 +125,29 @@ describe('httpServer GET', () => {
   });
 
   test(`should handle GET /notepads/${notepadId}/task/${taskId}`, async () => {
-    vi.spyOn(taskRepository, 'getSingleTask').mockResolvedValue(validTaskData);
+    vi.spyOn(taskRepository, 'getSingleTask').mockResolvedValue(
+      validTaskDataMock,
+    );
 
     const response = await request(server).get(
       ROUTES.getTaskDetailPath(notepadId, taskId),
     );
-    expect(JSON.stringify(response.body)).toEqual(
-      JSON.stringify(validTaskData),
+    expect(JSON.stringify(response.body.data)).toEqual(
+      JSON.stringify(validTaskDataMock),
     );
   });
 
   test(`should return 404 if task not found - /notepads/${notepadId}/tasks/${taskId}`, async () => {
-    const updateResponse: TaskResponse = {
-      status: 404,
-      message: 'Task not found',
-    };
+    const notFoundError = new NotFoundError('Task not found');
 
-    vi.spyOn(taskRepository, 'getSingleTask').mockResolvedValue(updateResponse);
+    vi.spyOn(taskRepository, 'getSingleTask').mockRejectedValue(notFoundError);
 
     const response = await request(server)
       .get(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
       .set('Accept', 'application/json')
       .set('Content-Type', 'application/json');
 
-    expect(response.status).toBe(updateResponse.status);
-    expect(response.body).toEqual(updateResponse);
+    expect(response.status).toBe(404);
     expect(taskRepository.getSingleTask).toHaveBeenCalledWith(
       notepadId,
       taskId,
@@ -181,13 +181,14 @@ describe('httpServer POST', () => {
     const notepadData = { title: 'New Notepad' };
 
     test('should handle POST /notepads and return 201 status', async () => {
-      const notepadResponse: NotepadResponse = {
-        status: 201,
-        message: `A notebook with the title ${notepadData.title} has been successfully created`,
+      const createdNotepad: Notepad = {
+        _id: 'some-id',
+        title: notepadData.title,
+        tasks: [],
       };
 
       vi.spyOn(taskRepository, 'createNotepad').mockResolvedValue(
-        notepadResponse,
+        createdNotepad,
       );
 
       const response = await request(server)
@@ -197,7 +198,12 @@ describe('httpServer POST', () => {
         .set('Content-Type', 'application/json');
 
       expect(response.status).toBe(201);
-      expect(response.body).toEqual(notepadResponse);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          message: `Notepad "${notepadData.title}" created`,
+          notepad: expect.objectContaining({ title: notepadData.title }),
+        }),
+      );
       expect(taskRepository.createNotepad).toHaveBeenCalledWith(notepadData);
     });
 
@@ -243,13 +249,12 @@ describe('httpServer POST', () => {
     });
 
     test('should return 409 if notepad with the same title already exists', async () => {
-      const notepadResponse: NotepadResponse = {
-        status: 409,
-        message: `A notebook with the title ${notepadData.title} already exists`,
-      };
+      const conflictError = new ConflictError(
+        `A notebook with the title ${notepadData.title} already exists`,
+      );
 
-      vi.spyOn(taskRepository, 'createNotepad').mockResolvedValue(
-        notepadResponse,
+      vi.spyOn(taskRepository, 'createNotepad').mockRejectedValue(
+        conflictError,
       );
 
       const response = await request(server)
@@ -259,7 +264,6 @@ describe('httpServer POST', () => {
         .set('Content-Type', 'application/json');
 
       expect(response.status).toBe(409);
-      expect(response.body).toEqual(notepadResponse);
     });
 
     test('should return 500 if an internal server error occurs', async () => {
@@ -285,12 +289,16 @@ describe('httpServer POST', () => {
     };
 
     test(`should handle POST /notepads/${notepadId}/tasks and return 201 status`, async () => {
-      const taskResponse: TaskResponseSingle = {
-        status: 201,
-        message: `A task with the title ${taskData.title} has been successfully created`,
+      const createdTask: Task = {
+        _id: 'some-id',
+        title: taskData.title,
+        createdDate: new Date(),
+        notepadId,
+        progress: '',
+        isCompleted: false,
       };
 
-      vi.spyOn(taskRepository, 'createTask').mockResolvedValue(taskResponse);
+      vi.spyOn(taskRepository, 'createTask').mockResolvedValue(createdTask);
 
       const response = await request(server)
         .post(ROUTES.getNotepadPath(notepadId))
@@ -298,8 +306,16 @@ describe('httpServer POST', () => {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      expect(response.status).toBe(taskResponse.status);
-      expect(response.body).toEqual(taskResponse);
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          message: `Task "${taskData.title}" created`,
+          task: expect.objectContaining({
+            ...createdTask,
+            createdDate: createdTask.createdDate.toISOString(),
+          }),
+        }),
+      );
       expect(taskRepository.createTask).toHaveBeenCalledWith(
         taskData,
         notepadId,
@@ -388,8 +404,14 @@ describe('httpServer PATH', () => {
     };
 
     test(`should handle PATCH /notepads/${notepadId} and return 200 status`, async () => {
+      const updatedNotepad: Notepad = {
+        _id: 'some-id',
+        title: '',
+        tasks: [],
+      };
+
       vi.spyOn(taskRepository, 'updateNotepad').mockResolvedValue(
-        notepadResponse,
+        updatedNotepad,
       );
 
       const response = await request(server)
@@ -399,7 +421,7 @@ describe('httpServer PATH', () => {
         .set('Content-Type', 'application/json');
 
       expect(response.status).toBe(notepadResponse.status);
-      expect(response.body).toEqual(notepadResponse);
+      expect(response.body.data).toEqual(updatedNotepad);
       expect(taskRepository.updateNotepad).toHaveBeenCalledWith(
         notepadId,
         updatedNotepadData,
@@ -448,13 +470,10 @@ describe('httpServer PATH', () => {
     });
 
     test('should return 404 if notepad not found', async () => {
-      const updateResponse: NotepadResponse = {
-        status: 404,
-        message: 'Notepad not found',
-      };
+      const notFoundError = new NotFoundError('Notepad not found');
 
-      vi.spyOn(taskRepository, 'updateNotepad').mockResolvedValue(
-        updateResponse,
+      vi.spyOn(taskRepository, 'updateNotepad').mockRejectedValue(
+        notFoundError,
       );
 
       const response = await request(server)
@@ -463,8 +482,7 @@ describe('httpServer PATH', () => {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      expect(response.status).toBe(updateResponse.status);
-      expect(response.body).toEqual(updateResponse);
+      expect(response.status).toBe(404);
       expect(taskRepository.updateNotepad).toHaveBeenCalledWith(
         notepadId,
         updatedNotepadData,
@@ -501,7 +519,16 @@ describe('httpServer PATH', () => {
     };
 
     test(`should handle PATCH /notepads/${notepadId}/task/${taskId} and return 200 status`, async () => {
-      vi.spyOn(taskRepository, 'updateTask').mockResolvedValue(taskResponse);
+      const updatedTask: Task = {
+        _id: 'some-id',
+        title: '',
+        createdDate: new Date(),
+        notepadId,
+        progress: '',
+        isCompleted: false,
+      };
+
+      vi.spyOn(taskRepository, 'updateTask').mockResolvedValue(updatedTask);
 
       const response = await request(server)
         .patch(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
@@ -510,7 +537,12 @@ describe('httpServer PATH', () => {
         .set('Content-Type', 'application/json');
 
       expect(response.status).toBe(taskResponse.status);
-      expect(response.body).toEqual(taskResponse);
+      expect(response.body.data).toEqual(
+        expect.objectContaining({
+          ...updatedTask,
+          createdDate: updatedTask.createdDate.toISOString(),
+        }),
+      );
       expect(taskRepository.updateTask).toHaveBeenCalledWith(
         taskId,
         updatedTaskData,
@@ -571,12 +603,9 @@ describe('httpServer PATH', () => {
     });
 
     test('should return 404 if task not found', async () => {
-      const updateResponse: TaskResponseSingle = {
-        status: 404,
-        message: 'Task not found',
-      };
+      const notFoundError = new NotFoundError('Task not found');
 
-      vi.spyOn(taskRepository, 'updateTask').mockResolvedValue(updateResponse);
+      vi.spyOn(taskRepository, 'updateTask').mockRejectedValue(notFoundError);
 
       const response = await request(server)
         .patch(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
@@ -584,8 +613,7 @@ describe('httpServer PATH', () => {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      expect(response.status).toBe(updateResponse.status);
-      expect(response.body).toEqual(updateResponse);
+      expect(response.status).toBe(404);
       expect(taskRepository.updateTask).toHaveBeenCalledWith(
         taskId,
         updatedTaskData,
@@ -619,14 +647,7 @@ describe('httpServer DELETE', () => {
 
   describe(`should handle DELETE /notepads/${notepadId}`, () => {
     test(`should handle DELETE /notepads/${notepadId} and return 200 status`, async () => {
-      const deleteResponse: NotepadResponse = {
-        status: 200,
-        message: 'Notepad deleted successfully',
-      };
-
-      vi.spyOn(taskRepository, 'deleteNotepad').mockResolvedValue(
-        deleteResponse,
-      );
+      vi.spyOn(taskRepository, 'deleteNotepad').mockResolvedValue();
 
       const response = await request(server)
         .delete(`${ROUTES.NOTEPADS}/${notepadId}`)
@@ -634,19 +655,15 @@ describe('httpServer DELETE', () => {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      expect(response.status).toBe(deleteResponse.status);
-      expect(response.body).toEqual(deleteResponse);
+      expect(response.status).toBe(200);
       expect(taskRepository.deleteNotepad).toHaveBeenCalledWith(notepadId);
     });
 
     test('should return 404 if notepad not found', async () => {
-      const deleteResponse: NotepadResponse = {
-        status: 404,
-        message: 'Notepad not found',
-      };
+      const notFoundError = new NotFoundError('Notepad not found');
 
-      vi.spyOn(taskRepository, 'deleteNotepad').mockResolvedValue(
-        deleteResponse,
+      vi.spyOn(taskRepository, 'deleteNotepad').mockRejectedValue(
+        notFoundError,
       );
 
       const response = await request(server)
@@ -655,8 +672,7 @@ describe('httpServer DELETE', () => {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      expect(response.status).toBe(deleteResponse.status);
-      expect(response.body).toEqual(deleteResponse);
+      expect(response.status).toBe(404);
       expect(taskRepository.deleteNotepad).toHaveBeenCalledWith(notepadId);
     });
 
@@ -678,12 +694,7 @@ describe('httpServer DELETE', () => {
 
   describe(`should handle DELETE /notepads/${notepadId}/tasks/${taskId}`, () => {
     test(`should handle DELETE /notepads/${notepadId}/task/${taskId} and return 200 status`, async () => {
-      const deleteResponse: TaskResponseSingle = {
-        status: 200,
-        message: 'Task deleted successfully',
-      };
-
-      vi.spyOn(taskRepository, 'deleteTask').mockResolvedValue(deleteResponse);
+      vi.spyOn(taskRepository, 'deleteTask').mockResolvedValue();
 
       const response = await request(server)
         .delete(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
@@ -691,18 +702,13 @@ describe('httpServer DELETE', () => {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      expect(response.status).toBe(deleteResponse.status);
-      expect(response.body).toEqual(deleteResponse);
+      expect(response.status).toBe(200);
       expect(taskRepository.deleteTask).toHaveBeenCalledWith(taskId);
     });
 
     test('should return 404 if task not found', async () => {
-      const deleteResponse: TaskResponseSingle = {
-        status: 404,
-        message: 'Task not found',
-      };
-
-      vi.spyOn(taskRepository, 'deleteTask').mockResolvedValue(deleteResponse);
+      const notFoundError = new NotFoundError('Task not found');
+      vi.spyOn(taskRepository, 'deleteTask').mockRejectedValue(notFoundError);
 
       const response = await request(server)
         .delete(`${ROUTES.getTaskDetailPath(notepadId, taskId)}`)
@@ -710,8 +716,7 @@ describe('httpServer DELETE', () => {
         .set('Accept', 'application/json')
         .set('Content-Type', 'application/json');
 
-      expect(response.status).toBe(deleteResponse.status);
-      expect(response.body).toEqual(deleteResponse);
+      expect(response.status).toBe(404);
       expect(taskRepository.deleteTask).toHaveBeenCalledWith(taskId);
     });
 

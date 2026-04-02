@@ -1,20 +1,17 @@
-import { NOTEPADS } from '@db/mock/mock-db';
 import type {
   Task,
   Notepad,
-  TasksResponse,
-  NotepadWithoutTasksResponse,
-  NotepadResponse,
   CreateNotepad,
   CreateTask,
   Subtask,
   TaskQueryParams,
   PaginationMeta,
-  TaskResponseSingle,
-  TaskResponse,
+  NotepadWithoutTasks,
+  PaginatedTasks,
 } from '@sharedCommon/schemas';
 import { commonNotepadId, PAGINATION } from '@sharedCommon/schemas';
-import type { TaskRepository } from './TaskRepository';
+import { ConflictError, ForbiddenError, NotFoundError } from '@errors/AppError';
+import type { TaskRepository } from '@repositories/TaskRepository';
 
 export const DEFAULT_TASK_PARAMS: TaskQueryParams = {
   sortBy: 'createdDate',
@@ -65,9 +62,9 @@ export class MockTaskRepository implements TaskRepository {
           return order === 'asc' ? 1 : -1;
         if (valB === null || valB === undefined)
           return order === 'asc' ? -1 : 1;
-        if (valA === valB) return 0;
 
-        return order === 'asc' ? (valA < valB ? -1 : 1) : valA < valB ? 1 : -1;
+        const cmp = valA < valB ? -1 : valA > valB ? 1 : 0;
+        return order === 'asc' ? cmp : -cmp;
       });
     }
 
@@ -99,16 +96,6 @@ export class MockTaskRepository implements TaskRepository {
     };
   }
 
-  private validateNotepadExistence(
-    id: string,
-    isCommonNotepad: boolean,
-  ): { status: 404; message: string } | null {
-    const isRealNotepad = this.notepads.some(notepad => notepad._id === id);
-    return !isRealNotepad && !isCommonNotepad
-      ? { status: 404, message: 'Notepad not found' }
-      : null;
-  }
-
   private generateTaskId(): string {
     return globalThis.crypto.randomUUID();
   }
@@ -119,37 +106,31 @@ export class MockTaskRepository implements TaskRepository {
     return `${completed}/${subtasks.length}`;
   }
 
-  async createNotepad({ title }: CreateNotepad): Promise<NotepadResponse> {
+  async createNotepad({ title }: CreateNotepad): Promise<Notepad> {
     if (this.notepads.some(notepad => notepad.title === title)) {
-      return {
-        status: 409,
-        message: `A notebook with the title ${title} already exists`,
-      };
+      throw new ConflictError(`Notebook with title ${title} already exists`);
     }
-    this.notepads.push({
+
+    const newNotepad = {
       _id: this.generateTaskId(),
       title: title,
       tasks: [],
-    });
-
-    return {
-      status: 201,
-      message: `A notebook with the title ${title} has been successfully created`,
     };
+    this.notepads.push(newNotepad);
+
+    return newNotepad;
   }
 
-  async createTask(
-    task: CreateTask,
-    notepadId: string,
-  ): Promise<TaskResponseSingle> {
+  async createTask(task: CreateTask, notepadId: string): Promise<Task> {
     const { title, dueDate, description } = task;
     const isCommonNotepad = notepadId === commonNotepadId;
-    const notepadError = this.validateNotepadExistence(
-      notepadId,
-      isCommonNotepad,
+    const targetNotepad = this.notepads.find(
+      notepad => notepad._id === notepadId,
     );
 
-    if (notepadError) return notepadError;
+    if (!isCommonNotepad && !targetNotepad) {
+      throw new NotFoundError(`Notebook ${notepadId} not found`);
+    }
 
     const newTask: Task = {
       _id: this.generateTaskId(),
@@ -166,81 +147,47 @@ export class MockTaskRepository implements TaskRepository {
     this.tasks.push(newTask);
 
     if (!isCommonNotepad) {
-      const targetNotepad = this.notepads.find(
-        notepad => notepad._id === notepadId,
-      );
-
-      if (targetNotepad) {
-        targetNotepad.tasks.push(newTask);
-      }
+      targetNotepad?.tasks.push(newTask);
     }
 
-    return {
-      status: 201,
-      message: `Task with the title ${title} has been successfully created`,
-    };
+    return newTask;
   }
 
-  async getAllNotepads(): Promise<NotepadWithoutTasksResponse> {
-    const notepadsWithoutTasks = [
+  async getAllNotepads(): Promise<NotepadWithoutTasks[]> {
+    return [
       { title: 'Задачи', _id: commonNotepadId },
-    ].concat(this.notepads.map(({ tasks: _, ...rest }) => rest));
-
-    return {
-      status: 200,
-      message: 'Success',
-      data: notepadsWithoutTasks,
-    };
+      ...this.notepads.map(({ tasks: _, ...rest }) => rest),
+    ];
   }
 
-  async getAllTasks(params?: TaskQueryParams): Promise<TasksResponse> {
+  async getAllTasks(params?: TaskQueryParams): Promise<PaginatedTasks> {
     const filteredTasks = this.applyTaskFilters(this.tasks, params);
-    const { paginatedTasks, meta } = this.paginate(filteredTasks, params);
+    const { paginatedTasks: tasks, meta } = this.paginate(
+      filteredTasks,
+      params,
+    );
 
-    return {
-      status: 200,
-      message: 'Success',
-      data: paginatedTasks,
-      meta,
-    };
+    return { tasks, meta };
   }
 
-  async getSingleTask(
-    notepadId: string,
-    taskId: string,
-  ): Promise<TaskResponse> {
+  async getSingleTask(notepadId: string, taskId: string): Promise<Task> {
     const task = this.tasks.find(task => task._id === taskId);
     const suitableNotepad =
       notepadId === commonNotepadId || task?.notepadId === notepadId;
 
     if (suitableNotepad && task) {
-      return {
-        status: 200,
-        message: 'Success',
-        data: task,
-      };
+      return task;
     }
 
-    return {
-      status: 404,
-      message: `Task ${taskId} not found`,
-      data: undefined,
-    };
+    throw new NotFoundError(`Task ${taskId} not found in notepad ${notepadId}`);
   }
 
   async getSingleNotepadTasks(
     notepadId: string,
     params?: TaskQueryParams,
-  ): Promise<TasksResponse> {
+  ): Promise<PaginatedTasks> {
     if (!this.notepads.some(notepad => notepad._id === notepadId)) {
-      const { meta } = this.paginate([], params);
-
-      return {
-        status: 404,
-        message: `Notepad ${notepadId} not found`,
-        data: [],
-        meta,
-      };
+      throw new NotFoundError(`Notepad ${notepadId} not found`);
     }
 
     const filteredByNotebook = this.tasks.filter(
@@ -248,26 +195,24 @@ export class MockTaskRepository implements TaskRepository {
     );
 
     const filteredTasks = this.applyTaskFilters(filteredByNotebook, params);
-    const { paginatedTasks, meta } = this.paginate(filteredTasks, params);
+    const { paginatedTasks: tasks, meta } = this.paginate(
+      filteredTasks,
+      params,
+    );
 
-    return {
-      status: 200,
-      message: 'Success',
-      data: paginatedTasks,
-      meta,
-    };
+    return { tasks, meta };
   }
 
   async updateNotepad(
     notepadId: string,
     updatedNotepadFields: Partial<CreateNotepad>,
-  ): Promise<NotepadResponse> {
+  ): Promise<Notepad> {
     const notepadIndex = this.notepads.findIndex(
       notepad => notepad._id === notepadId,
     );
 
     if (notepadIndex === -1) {
-      return { status: 404, message: 'Notepad not found' };
+      throw new NotFoundError(`Notepad ${notepadId} not found`);
     }
 
     if (
@@ -276,10 +221,9 @@ export class MockTaskRepository implements TaskRepository {
         notepad => notepad.title === updatedNotepadFields.title,
       )
     ) {
-      return {
-        status: 409,
-        message: `The title ${updatedNotepadFields.title} is already in use`,
-      };
+      throw new ConflictError(
+        `The title ${updatedNotepadFields.title} is already in use`,
+      );
     }
 
     this.notepads[notepadIndex] = {
@@ -287,31 +231,27 @@ export class MockTaskRepository implements TaskRepository {
       ...updatedNotepadFields,
     };
 
-    return {
-      status: 200,
-      message: `A notepad with the id ${notepadId} has been successfully updated`,
-      data: this.notepads[notepadIndex],
-    };
+    return this.notepads[notepadIndex];
   }
 
   async updateTask(
     taskId: string,
     updatedTaskFields: Partial<Task>,
-  ): Promise<TaskResponseSingle> {
+  ): Promise<Task> {
     const taskIndex = this.tasks.findIndex(task => task._id === taskId);
     if (taskIndex === -1) {
-      return { status: 404, message: 'Task not found' };
+      throw new NotFoundError('Task not found');
     }
 
     const currentTask = { ...this.tasks[taskIndex] };
     const newNotepadId = updatedTaskFields.notepadId ?? currentTask.notepadId;
-    const isCommonNotepad = newNotepadId === commonNotepadId;
-    const notepadError = this.validateNotepadExistence(
-      newNotepadId,
-      isCommonNotepad,
+    const targetNotepad = this.notepads.find(
+      notepad => notepad._id === newNotepadId,
     );
 
-    if (notepadError) return notepadError;
+    if (!targetNotepad && newNotepadId !== commonNotepadId) {
+      throw new NotFoundError(`Notebook ${newNotepadId} not found`);
+    }
 
     const subtasks = updatedTaskFields.subtasks ?? currentTask.subtasks;
     const progress = updatedTaskFields.subtasks
@@ -340,11 +280,6 @@ export class MockTaskRepository implements TaskRepository {
         ? this.notepads.find(notepad => notepad._id === currentTask.notepadId)
         : null;
 
-    const targetNotepad =
-      newNotepadId !== commonNotepadId
-        ? this.notepads.find(notepad => notepad._id === newNotepadId)
-        : null;
-
     if (shouldMoveNotepad) {
       if (currentNotepad) {
         currentNotepad.tasks = currentNotepad.tasks.filter(
@@ -362,36 +297,31 @@ export class MockTaskRepository implements TaskRepository {
       }
     }
 
-    return {
-      status: 200,
-      message: `A task with the _id ${taskId} has been successfully updated`,
-      data: this.tasks[taskIndex],
-    };
+    return this.tasks[taskIndex];
   }
 
-  async deleteNotepad(notepadId: string): Promise<NotepadResponse> {
+  async deleteNotepad(notepadId: string): Promise<void> {
     const notepadIndex = this.notepads.findIndex(
       notepad => notepad._id === notepadId,
     );
 
-    if (notepadIndex === -1 || notepadId === commonNotepadId) {
-      return { status: 404, message: 'Notepad not found' };
+    if (notepadIndex === -1) {
+      throw new NotFoundError(`Notepad ${notepadId} not found`);
+    }
+
+    if (notepadId === commonNotepadId) {
+      throw new ForbiddenError(`Cannot delete the common notepad`);
     }
 
     this.notepads.splice(notepadIndex, 1);
     this.tasks = this.tasks.filter(task => task.notepadId !== notepadId);
-
-    return {
-      status: 200,
-      message: 'Notepad deleted successfully',
-    };
   }
 
-  async deleteTask(taskId: string): Promise<TaskResponseSingle> {
+  async deleteTask(taskId: string): Promise<void> {
     const taskIndex = this.tasks.findIndex(task => task._id === taskId);
 
     if (taskIndex === -1) {
-      return { status: 404, message: 'Task not found' };
+      throw new NotFoundError(`Task with id ${taskId} not found`);
     }
 
     const taskToDelete = this.tasks[taskIndex];
@@ -407,12 +337,5 @@ export class MockTaskRepository implements TaskRepository {
         notepad.tasks = notepad.tasks?.filter(task => task._id !== taskId);
       }
     }
-
-    return {
-      status: 200,
-      message: 'Task deleted successfully',
-    };
   }
 }
-
-export default new MockTaskRepository(NOTEPADS);

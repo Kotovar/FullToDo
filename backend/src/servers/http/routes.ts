@@ -1,8 +1,5 @@
-import http from 'http';
 import { ROUTE_REGEX } from './routeRegex';
 import { ROUTES } from '@sharedCommon/routes';
-import { taskRepository } from '@repositories';
-import type { RequestHandler } from '@controllers/types';
 import {
   createNotepad,
   createTask,
@@ -16,76 +13,98 @@ import {
   updateNotepad,
   updateTask,
 } from '@controllers';
+import { taskRepository } from '@repositories';
+import { TaskService } from '@services/TaskService';
+import { NotepadService } from '@services/NotepadService';
+import type { HttpContext } from '@controllers/types';
 
-export const BASE_ROUTES: Record<string, RequestHandler> = {
-  [`POST ${ROUTES.NOTEPADS}`]: createNotepad,
-  [`POST ${ROUTES.TASKS}`]: createTask,
-  [`GET ${ROUTES.NOTEPADS}`]: getAllNotepads,
-  [`GET ${ROUTES.TASKS}`]: getAllTasks,
+const taskService = new TaskService(taskRepository);
+const notepadService = new NotepadService(taskRepository);
+
+type RouteHandler = (ctx: HttpContext) => Promise<void>;
+
+export const BASE_ROUTES: Record<string, RouteHandler> = {
+  [`POST ${ROUTES.NOTEPADS}`]: ctx => createNotepad(ctx, notepadService),
+  [`POST ${ROUTES.TASKS}`]: ctx => createTask(ctx, taskService),
+  [`GET ${ROUTES.NOTEPADS}`]: ctx => getAllNotepads(ctx, notepadService),
+  [`GET ${ROUTES.TASKS}`]: ctx => getAllTasks(ctx, taskService),
 };
 
-export const processRoute = (
-  req: http.IncomingMessage,
-  res: http.ServerResponse<http.IncomingMessage>,
-  url?: string,
-) => {
-  if (!url) return null;
+export const handleRoute = (ctx: HttpContext, url?: string): boolean => {
+  if (!url) return false;
 
-  const notepadTasksMatch = url.match(ROUTE_REGEX.NOTEPAD_TASKS);
+  const { req, res } = ctx;
+  const routeKey = `${ctx.req.method} ${url}`;
 
-  if (notepadTasksMatch) {
+  if (BASE_ROUTES[routeKey]) {
+    BASE_ROUTES[routeKey](ctx);
+    return true;
+  }
+
+  if (url.match(ROUTE_REGEX.NOTEPAD_TASKS)) {
     switch (req.method) {
       case 'POST':
-        return createTask({ req, res }, taskRepository);
+        createTask(ctx, taskService);
+        break;
       case 'GET':
-        return getSingleNotepadTasks({ req, res }, taskRepository);
+        getSingleNotepadTasks(ctx, taskService);
+        break;
       default:
-        return handleNotFound(res);
+        handleNotFound(res);
     }
+
+    return true;
   }
 
-  const commonTaskDetailMatch = url.match(ROUTE_REGEX.COMMON_TASK_DETAIL);
-
-  if (commonTaskDetailMatch) {
+  if (url.match(ROUTE_REGEX.COMMON_TASK_DETAIL)) {
     switch (req.method) {
       case 'GET':
-        return getSingleTask({ req, res }, taskRepository);
+        getSingleTask(ctx, taskService);
+        break;
       case 'PATCH':
-        return updateTask({ req, res }, taskRepository);
+        updateTask(ctx, taskService);
+        break;
       case 'DELETE':
-        return deleteTask({ req, res }, taskRepository);
+        deleteTask(ctx, taskService);
+        break;
       default:
-        return handleNotFound(res);
+        handleNotFound(res);
     }
+
+    return true;
   }
 
-  const taskDetailMatch = url.match(ROUTE_REGEX.TASK_DETAIL);
-
-  if (taskDetailMatch) {
+  if (url.match(ROUTE_REGEX.TASK_DETAIL)) {
     switch (req.method) {
       case 'GET':
-        return getSingleTask({ req, res }, taskRepository);
+        getSingleTask(ctx, taskService);
+        break;
       case 'PATCH':
-        return updateTask({ req, res }, taskRepository);
+        updateTask(ctx, taskService);
+        break;
       case 'DELETE':
-        return deleteTask({ req, res }, taskRepository);
+        deleteTask(ctx, taskService);
+        break;
       default:
-        return handleNotFound(res);
+        handleNotFound(res);
     }
+
+    return true;
   }
 
-  const notepadMatch = url.match(ROUTE_REGEX.NOTEPAD_ID);
-
-  if (notepadMatch) {
+  if (url.match(ROUTE_REGEX.NOTEPAD_ID)) {
     switch (req.method) {
       case 'PATCH':
-        return updateNotepad({ req, res }, taskRepository);
+        updateNotepad(ctx, notepadService);
+        break;
       case 'DELETE':
-        return deleteNotepad({ req, res }, taskRepository);
+        deleteNotepad(ctx, notepadService);
+        break;
       default:
-        return handleNotFound(res);
+        handleNotFound(res);
     }
+    return true;
   }
 
-  return null;
+  return false;
 };
