@@ -1,13 +1,15 @@
 import type { Task, Notepad } from '@sharedCommon/schemas';
 
+const MOCK_DATE = new Date('2024-01-01T00:00:00.000Z');
+
 export const TASKS1: Task[] = [
   {
     _id: '1',
     notepadId: '1',
     title: 'Задача 1',
     description: 'Описание для задачи 1',
-    dueDate: new Date(),
-    createdDate: new Date(),
+    dueDate: MOCK_DATE,
+    createdDate: MOCK_DATE,
     isCompleted: false,
     progress: '1 из 5',
     subtasks: [
@@ -24,7 +26,7 @@ export const TASKS1: Task[] = [
     title: 'Задача 2',
     description: 'Описание для задачи 2',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python1', _id: '1' },
@@ -37,7 +39,7 @@ export const TASKS1: Task[] = [
     notepadId: '1',
     title: 'Задача 3',
     isCompleted: true,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '3 из 3',
     subtasks: [
       { isCompleted: true, title: 'Выучить Python1', _id: '1' },
@@ -51,7 +53,7 @@ export const TASKS1: Task[] = [
     title: 'Задача 4',
     description: 'Описание для задачи 4',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python1', _id: '1' },
@@ -65,7 +67,7 @@ export const TASKS1: Task[] = [
     title: 'Задача 5',
     description: 'Описание для задачи 4',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python1', _id: '1' },
@@ -79,7 +81,7 @@ export const TASKS1: Task[] = [
     title: 'Задача 6',
     description: 'Описание для задачи 4',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python1', _id: '1' },
@@ -93,7 +95,7 @@ export const TASKS1: Task[] = [
     title: 'Задача 7',
     description: 'Описание для задачи 4',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python1', _id: '1' },
@@ -107,7 +109,7 @@ export const TASKS1: Task[] = [
     title: 'Задача 8',
     description: 'Описание для задачи 4',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python1', _id: '1' },
@@ -121,7 +123,7 @@ export const TASKS1: Task[] = [
     title: 'Задача 9',
     description: 'Описание для задачи 4',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python1', _id: '1' },
@@ -135,7 +137,7 @@ export const TASKS1: Task[] = [
     title: 'Задача 10',
     description: 'Описание для задачи 4',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python1', _id: '1' },
@@ -149,7 +151,7 @@ export const TASKS1: Task[] = [
     title: 'Задача 11',
     description: 'Описание для задачи 4',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python1', _id: '1' },
@@ -166,7 +168,7 @@ const TASKS2: Task[] = [
     title: 'Задача 12',
     description: 'Описание для задачи 3',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python2', _id: '1' },
@@ -179,7 +181,7 @@ const TASKS2: Task[] = [
     notepadId: '2',
     title: 'Задача 13',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python2', _id: '1' },
@@ -195,7 +197,7 @@ const TASKS3: Task[] = [
     title: 'Задача 14',
     description: 'Описание для задачи 5',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python3', _id: '1' },
@@ -208,7 +210,7 @@ const TASKS3: Task[] = [
     notepadId: '3',
     title: 'Задача 15',
     isCompleted: false,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '2 из 3',
     subtasks: [
       { isCompleted: false, title: 'Выучить Python3', _id: '1' },
@@ -222,7 +224,7 @@ const TASKS3: Task[] = [
     title: 'Задача 16',
     description: 'Описание для задачи 5',
     isCompleted: true,
-    createdDate: new Date(),
+    createdDate: MOCK_DATE,
     progress: '3 из 3',
     subtasks: [
       { isCompleted: true, title: 'Выучить Python3', _id: '1' },
