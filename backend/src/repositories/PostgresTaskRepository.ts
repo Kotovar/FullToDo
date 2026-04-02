@@ -7,7 +7,9 @@ import {
   type CreateNotepad,
   type CreateTask,
   type Task,
+  type Subtask,
   type TaskQueryParams,
+  type UpdateTask,
 } from '@sharedCommon/schemas';
 import type { TaskRepository } from './TaskRepository';
 import {
@@ -18,8 +20,10 @@ import {
   buildTaskFilterSQL,
   buildOrderSQL,
   buildPaginationSQL,
+  buildTaskUpdateSQL,
+  buildSubtaskInsertSQL,
 } from '@db/postgres';
-import { ConflictError, NotFoundError } from '../errors';
+import { ConflictError, ForbiddenError, NotFoundError } from '@errors/AppError';
 
 export class PostgresTaskRepository implements TaskRepository {
   private async queryPaginatedTasks(
@@ -117,8 +121,28 @@ export class PostgresTaskRepository implements TaskRepository {
     const isCommon = notepadId === commonNotepadId;
 
     const result = await query<Task>(
-      `SELECT ${TASK_COLUMNS} FROM tasks
-       WHERE _id = $1 ${isCommon ? '' : 'AND notepad_id = $2'}`,
+      `SELECT
+        t._id::text,
+        t.title,
+        t.description,
+        t.is_completed AS "isCompleted",
+        t.created_date AS "createdDate",
+        t.notepad_id::text AS "notepadId",
+        t.due_date AS "dueDate",
+        COALESCE(
+          json_agg(
+            json_build_object(
+              '_id', s._id::text,
+              'title', s.title,
+              'isCompleted', s.is_completed
+            )
+          ) FILTER (WHERE s._id IS NOT NULL),
+          '[]'
+        ) AS subtasks
+      FROM tasks t
+      LEFT JOIN subtasks s ON s.task_id = t._id
+      WHERE t._id = $1 ${isCommon ? '' : 'AND t.notepad_id = $2'}
+      GROUP BY t._id`,
       isCommon ? [taskId] : [taskId, notepadId],
     );
 
@@ -179,18 +203,62 @@ export class PostgresTaskRepository implements TaskRepository {
     return { ...result.rows[0], tasks: tasks.rows };
   }
 
-    updateTask(taskId: string, updatedTaskFields: Partial<Task>): Promise<Task> {
-      
-        
-        
-    throw new Error(
-      'Method not implemented.' + ' ' + taskId + ' ' + updatedTaskFields,
-    );
+  async updateTask(taskId: string, fields: Partial<UpdateTask>): Promise<Task> {
+    const { subtasks, ...taskFields } = fields;
+
+    let task: Task;
+
+    if (Object.keys(taskFields).length > 0) {
+      const { setSQL, values } = buildTaskUpdateSQL(taskFields);
+      values.push(taskId);
+      const result = await query<Task>(
+        `UPDATE tasks SET ${setSQL} WHERE _id = $${values.length} RETURNING ${TASK_COLUMNS}`,
+        values,
+      );
+      if (!result.rows[0]) throw new NotFoundError(`Task ${taskId} not found`);
+      task = result.rows[0];
+    } else {
+      const result = await query<Task>(
+        `SELECT ${TASK_COLUMNS} FROM tasks WHERE _id = $1`,
+        [taskId],
+      );
+      if (!result.rows[0]) throw new NotFoundError(`Task ${taskId} not found`);
+      task = result.rows[0];
+    }
+
+    if (subtasks !== undefined) {
+      await query(`DELETE FROM subtasks WHERE task_id = $1`, [taskId]);
+      if (subtasks.length > 0) {
+        const { insertSQL, values: subtaskValues } = buildSubtaskInsertSQL(
+          subtasks,
+          taskId,
+        );
+        const subtaskResult = await query<Subtask>(insertSQL, subtaskValues);
+        return { ...task, subtasks: subtaskResult.rows };
+      }
+      return { ...task, subtasks: [] };
+    }
+
+    return { ...task, subtasks: subtasks ?? [] };
   }
-  deleteNotepad(notepadId: string): Promise<void> {
-    throw new Error('Method not implemented.' + ' ' + notepadId);
+
+  async deleteNotepad(notepadId: string): Promise<void> {
+    if (notepadId === commonNotepadId) {
+      throw new ForbiddenError(`Cannot delete the common notepad`);
+    }
+
+    const result = await query(`DELETE FROM notepads WHERE _id = $1`, [
+      notepadId,
+    ]);
+
+    if (result.rowCount === 0)
+      throw new NotFoundError(`Notepad ${notepadId} not found`);
   }
-  deleteTask(taskId: string): Promise<void> {
-    throw new Error('Method not implemented.' + ' ' + taskId);
+
+  async deleteTask(taskId: string): Promise<void> {
+    const result = await query(`DELETE FROM tasks WHERE _id = $1`, [taskId]);
+
+    if (result.rowCount === 0)
+      throw new NotFoundError(`Task with id ${taskId} not found`);
   }
 }

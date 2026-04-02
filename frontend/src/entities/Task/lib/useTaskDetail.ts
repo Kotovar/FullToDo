@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   getTaskQueryKey,
   handleMutation,
+  isCommonNotepad,
   type MutationUpdateProps,
   type UseTaskDetailProps,
 } from '@shared/lib';
@@ -42,19 +43,21 @@ export const useTaskDetail = ({ entity }: UseTaskDetailProps) => {
       updatedTask: Partial<Task>,
       id: string,
       subtaskActionType: MutationMethods,
-    ) =>
-      handleMutation(
+    ) => {
+      const result = await handleMutation(
         mutateAsync,
         subtaskActionType,
         { updatedTask, id },
-        {
-          queryClient,
-          queryKey,
-          onSuccess,
-          onError,
-        },
-      ),
-    [mutateAsync, onError, onSuccess, queryClient, queryKey],
+        { queryClient, queryKey, onSuccess, onError },
+      );
+
+      if (result && !isCommonNotepad(notepadId)) {
+        await queryClient.invalidateQueries({ queryKey: getTaskQueryKey() });
+      }
+
+      return result;
+    },
+    [mutateAsync, onError, onSuccess, queryClient, queryKey, notepadId],
   );
 
   return {
