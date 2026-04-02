@@ -1,13 +1,17 @@
 import { ComponentPropsWithoutRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
-import { Button, ErrorFetching, TaskInput } from '@shared/ui';
+import {
+  Button,
+  ErrorFetching,
+  TaskDetailSkeleton,
+  TaskInput,
+} from '@shared/ui';
 import { useBackNavigate } from '@shared/lib';
 import { useTaskDetail } from '@entities/Task';
 import {
   TaskTextarea,
   TaskTitle,
-  TaskDetailSkeleton,
   SubtaskItem,
   useTaskForm,
 } from '@pages/TaskDetail/ui';
