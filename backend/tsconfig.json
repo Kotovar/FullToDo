@@ -29,7 +29,8 @@
       "@repositories/*": ["./src/repositories/*"],
       "@services/*": ["./src/services/*"],
       "@errors/*": ["./src/errors/*"],
-      "@logger/*": ["./src/logger/*"]
+      "@logger/*": ["./src/logger/*"],
+      "@swagger/*": ["./src/swagger/*"]
     }
   }
 }

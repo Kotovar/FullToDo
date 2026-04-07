@@ -1,3 +1,4 @@
+import '@swagger/extend';
 import { Server as HttpServer } from 'http';
 import type { Application } from 'express';
 import { createHttpServer, createExpressServer } from './servers';

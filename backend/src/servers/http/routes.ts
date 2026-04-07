@@ -17,6 +17,7 @@ import { taskRepository } from '@repositories';
 import { TaskService } from '@services/TaskService';
 import { NotepadService } from '@services/NotepadService';
 import type { HttpContext } from '@controllers/types';
+import { handleSwaggerSpec, handleSwaggerUI } from '@swagger/handler';
 
 const taskService = new TaskService(taskRepository);
 const notepadService = new NotepadService(taskRepository);
@@ -34,6 +35,17 @@ export const handleRoute = (ctx: HttpContext, url?: string): boolean => {
   if (!url) return false;
 
   const { req, res } = ctx;
+
+  if (url === '/api-docs' && req.method === 'GET') {
+    handleSwaggerUI(req, res);
+    return true;
+  }
+
+  if (url === '/api-docs/spec.json' && req.method === 'GET') {
+    handleSwaggerSpec(req, res);
+    return true;
+  }
+
   const routeKey = `${ctx.req.method} ${url}`;
 
   if (BASE_ROUTES[routeKey]) {
