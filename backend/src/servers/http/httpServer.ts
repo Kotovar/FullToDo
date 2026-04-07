@@ -1,9 +1,7 @@
 import http from 'http';
-import morgan from 'morgan';
 import { handleNotFound } from '@controllers';
 import { handleRoute } from './routes';
-
-const logger = morgan('tiny');
+import { httpLogger } from '@logger/http';
 
 const setHeaders = (res: http.ServerResponse) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,9 +19,8 @@ export const extractPath = (reqUrl?: string): string | undefined => {
 
 export const createHttpServer = () => {
   const server = http.createServer((req, res) => {
-    logger(req, res, () => {});
     setHeaders(res);
-
+    httpLogger?.info({ method: req.method, url: req.url }, 'Incoming request');
     if (req.method === 'OPTIONS') {
       res.writeHead(204);
       res.end();

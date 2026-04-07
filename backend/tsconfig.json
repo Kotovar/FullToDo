@@ -28,7 +28,8 @@
       "@repositories": ["./src/repositories/index.ts"],
       "@repositories/*": ["./src/repositories/*"],
       "@services/*": ["./src/services/*"],
-      "@errors/*": ["./src/errors/*"]
+      "@errors/*": ["./src/errors/*"],
+      "@logger/*": ["./src/logger/*"]
     }
   }
 }
