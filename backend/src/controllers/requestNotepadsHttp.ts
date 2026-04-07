@@ -6,7 +6,7 @@ import {
   parseJsonBody,
 } from './utils';
 import { createNotepadSchema } from '@sharedCommon/schemas';
-import { NotepadService } from '@services/NotepadService';
+import type { NotepadService } from '@services/NotepadService';
 import type { ServiceHandler } from './types';
 
 export const createNotepad: ServiceHandler<NotepadService> = async (

@@ -1,4 +1,8 @@
-import type { Subtask, TaskQueryParams, UpdateTask } from '@sharedCommon/schemas';
+import type {
+  Subtask,
+  TaskQueryParams,
+  UpdateTask,
+} from '@sharedCommon/schemas';
 
 /**
  * Колонки задачи для SELECT-запросов.

@@ -1,4 +1,4 @@
-import { createTaskSchema, updateTaskSchema } from '@sharedCommon/schemas';
+import { updateTaskSchema, createTaskSchema } from '@sharedCommon/schemas';
 import {
   checkContentType,
   errorHandler,
@@ -7,7 +7,7 @@ import {
   handleValidationError,
   parseJsonBody,
 } from './utils';
-import { TaskService } from '@services/TaskService';
+import type { TaskService } from '@services/TaskService';
 import type { ServiceHandler } from './types';
 
 export const createTask: ServiceHandler<TaskService> = async (

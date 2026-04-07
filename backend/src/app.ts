@@ -1,8 +1,10 @@
-import type { Server as HttpServer } from 'http';
+import '@swagger/extend';
+import { Server as HttpServer } from 'http';
 import type { Application } from 'express';
 import { createHttpServer, createExpressServer } from './servers';
 import { config, ServerType } from './configs';
 import { initDb } from '@db/postgres';
+import { serverLogger } from './logger';
 
 const {
   server: { type, port },
@@ -16,10 +18,19 @@ const servers: Record<ServerType, () => HttpServer | Application> = {
   nextJs: createExpressServer,
 };
 
-const server = servers[type]();
+const app = servers[type]();
 
-server.listen(port);
+if (app instanceof HttpServer) {
+  app.on('error', (err: Error) => {
+    serverLogger.error({ err }, 'Server failed to start');
+    process.exit(1);
+  });
+}
+
+export const httpServer = app.listen(port, () => {
+  serverLogger.info({ port }, 'Server started');
+});
 
 if (dbType === 'postgres') {
-  initDb();
+  initDb().catch(() => process.exit(1));
 }

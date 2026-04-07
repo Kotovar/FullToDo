@@ -21,6 +21,7 @@ Pet проект для управления задачами (todo-прилож
 ## Технологии
 
 ### Frontend
+
 - React + TypeScript
 - Vite
 - TailwindCSS
@@ -29,21 +30,26 @@ Pet проект для управления задачами (todo-прилож
 - Vitest
 
 ### Backend
+
 - Node.js + TypeScript
 - HTTP-модуль
 - Express (в разработке)
 - Mock-база (JSON-в памяти)
 - PostgreSQL
+- Pino (логирование)
+- Swagger UI
 - Vitest
 
 ## Запуск
 
 Скопировать файл окружения:
+
 ```bash
 cp .env.example .env
 ```
 
 Установить зависимости:
+
 ```bash
 npm install
 ```
@@ -51,12 +57,14 @@ npm install
 ### С mock-базой (без Docker)
 
 В `.env` указать:
+
 ```
 DB_TYPE=mock
 SERVER_TYPE=http
 ```
 
 Запустить (из корня проекта):
+
 ```bash
 npm run dev
 ```
@@ -64,12 +72,14 @@ npm run dev
 ### С PostgreSQL (через Docker)
 
 В `.env` указать:
+
 ```
 DB_TYPE=postgres
 SERVER_TYPE=http
 ```
 
 Запустить (из корня проекта):
+
 ```bash
 npm run dev:docker
 ```
@@ -77,36 +87,47 @@ npm run dev:docker
 Команда поднимет контейнер с PostgreSQL и запустит frontend и backend одновременно.
 
 Остановить контейнер:
+
 ```bash
 npm run stop:docker
 ```
 
+### Swagger UI
+
+После запуска сервера документация API доступна по адресу:
+
+```
+http://localhost:5000/api-docs
+```
+
 ### Переменные окружения (.env)
 
-| Переменная    | Описание                                      | Значения                        |
-|---------------|-----------------------------------------------|---------------------------------|
-| `PORT`        | Порт backend-сервера                          | `5000` (по умолчанию)           |
-| `SERVER_TYPE` | Тип сервера                                   | `http` / `express `              |
-| `DB_TYPE`     | Тип базы данных                               | `mock` / `postgres`             |
-| `VITE_URL`    | Базовый URL для фронтенда                     | `http://localhost:5000`         |
-| `DB_USER`     | Пользователь PostgreSQL                       | `postgres`                      |
-| `DB_PASSWORD` | Пароль PostgreSQL                             | —                               |
-| `DB_HOST`     | Хост PostgreSQL                               | `localhost`                     |
-| `DB_PORT`     | Порт PostgreSQL                               | `5432`                          |
-| `DB_NAME`     | Имя базы данных                               | `fulltodo`                      |
+| Переменная    | Описание                  | Значения                |
+| ------------- | ------------------------- | ----------------------- |
+| `PORT`        | Порт backend-сервера      | `5000` (по умолчанию)   |
+| `SERVER_TYPE` | Тип сервера               | `http` / `express `     |
+| `DB_TYPE`     | Тип базы данных           | `mock` / `postgres`     |
+| `VITE_URL`    | Базовый URL для фронтенда | `http://localhost:5000` |
+| `DB_USER`     | Пользователь PostgreSQL   | `postgres`              |
+| `DB_PASSWORD` | Пароль PostgreSQL         | —                       |
+| `DB_HOST`     | Хост PostgreSQL           | `localhost`             |
+| `DB_PORT`     | Порт PostgreSQL           | `5432`                  |
+| `DB_NAME`     | Имя базы данных           | `fulltodo`              |
 
 ## Планы развития
-- Система логирования (pino)
+
 - Авторизация и регистрация
 - Добавление поддержки ещё одной БД (`mongo`)
 - Добавление поддержки ещё двух серверов (`express`/`nextJs`)
+
 ---
 
-#  FullToDo (English version)
+# FullToDo (English version)
 
 A pet project for task management (todo app) with the ability to choose different backend technologies.
 
 ## Features
+
 - Create/delete/edit notebooks and tasks
 - Task details:
   - Title, description, due date
@@ -122,6 +143,7 @@ A pet project for task management (todo app) with the ability to choose differen
 ## Technologies
 
 ### Frontend
+
 - React + TypeScript
 - Vite
 - TailwindCSS
@@ -130,21 +152,26 @@ A pet project for task management (todo app) with the ability to choose differen
 - Vitest
 
 ### Backend
+
 - Node.js + TypeScript
 - HTTP module
 - Express (in development)
 - Mock database (in-memory JSON)
 - PostgreSQL
+- Pino (logging)
+- Swagger UI
 - Vitest
 
 ## Running
 
 Copy environment file:
+
 ```bash
 cp .env.example .env
 ```
 
 Install dependencies:
+
 ```bash
 npm install
 ```
@@ -152,12 +179,14 @@ npm install
 ### With mock database (no Docker)
 
 Set in `.env`:
+
 ```
 DB_TYPE=mock
 SERVER_TYPE=http
 ```
 
 Run (from project root):
+
 ```bash
 npm run dev
 ```
@@ -165,12 +194,14 @@ npm run dev
 ### With PostgreSQL (via Docker)
 
 Set in `.env`:
+
 ```
 DB_TYPE=postgres
 SERVER_TYPE=http
 ```
 
 Run (from project root):
+
 ```bash
 npm run dev:docker
 ```
@@ -178,26 +209,35 @@ npm run dev:docker
 This command starts a PostgreSQL container and runs both frontend and backend simultaneously.
 
 Stop the container:
+
 ```bash
 npm run stop:docker
 ```
 
+### Swagger UI
+
+After starting the server, the API documentation is available at:
+
+```
+http://localhost:5000/api-docs
+```
+
 ### Environment variables (.env)
 
-| Variable      | Description                          | Values                          |
-|---------------|--------------------------------------|---------------------------------|
-| `PORT`        | Backend server port                  | `5000` (default)                |
-| `SERVER_TYPE` | Server type                          | `http` / `express`              |
-| `DB_TYPE`     | Database type                        | `mock` / `postgres`             |
-| `VITE_URL`    | Base URL for frontend                | `http://localhost:5000`         |
-| `DB_USER`     | PostgreSQL user                      | `postgres`                      |
-| `DB_PASSWORD` | PostgreSQL password                  | —                               |
-| `DB_HOST`     | PostgreSQL host                      | `localhost`                     |
-| `DB_PORT`     | PostgreSQL port                      | `5432`                          |
-| `DB_NAME`     | Database name                        | `fulltodo`                      |
+| Variable      | Description           | Values                  |
+| ------------- | --------------------- | ----------------------- |
+| `PORT`        | Backend server port   | `5000` (default)        |
+| `SERVER_TYPE` | Server type           | `http` / `express`      |
+| `DB_TYPE`     | Database type         | `mock` / `postgres`     |
+| `VITE_URL`    | Base URL for frontend | `http://localhost:5000` |
+| `DB_USER`     | PostgreSQL user       | `postgres`              |
+| `DB_PASSWORD` | PostgreSQL password   | —                       |
+| `DB_HOST`     | PostgreSQL host       | `localhost`             |
+| `DB_PORT`     | PostgreSQL port       | `5432`                  |
+| `DB_NAME`     | Database name         | `fulltodo`              |
 
 ## Roadmap
-- Logging system (pino)
+
 - Authentication and registration
 - Added support for one more database (`mongo`)
 - Added support for two more servers (`express`/`nextJs`)
