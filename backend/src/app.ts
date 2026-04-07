@@ -17,16 +17,16 @@ const servers: Record<ServerType, () => HttpServer | Application> = {
   nextJs: createExpressServer,
 };
 
-const server = servers[type]();
+const app = servers[type]();
 
-if (server instanceof HttpServer) {
-  server.on('error', (err: Error) => {
+if (app instanceof HttpServer) {
+  app.on('error', (err: Error) => {
     serverLogger.error({ err }, 'Server failed to start');
     process.exit(1);
   });
 }
 
-server.listen(port, () => {
+export const httpServer = app.listen(port, () => {
   serverLogger.info({ port }, 'Server started');
 });
 

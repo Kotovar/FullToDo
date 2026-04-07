@@ -14,7 +14,6 @@ export const baseLogger = pino({
     targets: [
       {
         target: 'pino-roll',
-        level: 'info',
         options: {
           file: path.join(logDir, 'common.log'),
           frequency: 'daily',
