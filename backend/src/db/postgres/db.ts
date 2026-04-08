@@ -1,5 +1,6 @@
 import { DatabaseError, Pool } from 'pg';
 import { config } from '@configs';
+import { repositoryLogger } from '@logger/repositories';
 
 export const pool = new Pool({
   user: config.db.user,
@@ -12,7 +13,17 @@ export const pool = new Pool({
 export const query = async <T extends object = Record<string, unknown>>(
   text: string,
   params?: unknown[],
-) => pool.query<T>(text, params);
+) => {
+  const start = Date.now();
+  const res = await pool.query<T>(text, params);
+  const duration = Date.now() - start;
+
+  repositoryLogger.info(
+    { text, duration, rows: res.rowCount },
+    'executed query',
+  );
+  return res;
+};
 
 export const isDbError = (err: unknown): err is DatabaseError =>
   err instanceof DatabaseError;
