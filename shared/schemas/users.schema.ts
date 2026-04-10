@@ -34,7 +34,8 @@ export const changePasswordSchema = z.object({
 export const dbUserSchema = z
   .object({
     userId: z.number(),
-    email: z.string(),
+    email: zEmail,
+    isVerified: z.boolean().default(false),
     passwordHash: z.string().optional(),
     googleId: z.string().optional(),
   })
@@ -62,3 +63,13 @@ export type CreateUser = { email: string } & (
   | { passwordHash: string; googleId?: never }
   | { googleId: string; passwordHash?: never }
 );
+
+export type GoogleProfile = {
+  googleId: string;
+  email: string;
+};
+
+export type AuthTokens = {
+  accessToken: string;
+  refreshToken: string;
+};

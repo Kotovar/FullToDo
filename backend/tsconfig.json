@@ -29,6 +29,7 @@
       "@repositories/*": ["./src/repositories/*"],
       "@services/*": ["./src/services/*"],
       "@errors/*": ["./src/errors/*"],
+      "@logger": ["./src/logger/index.ts"],
       "@logger/*": ["./src/logger/*"],
       "@swagger/*": ["./src/swagger/*"]
     }

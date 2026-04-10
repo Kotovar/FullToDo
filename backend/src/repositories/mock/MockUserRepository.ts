@@ -26,6 +26,7 @@ export class MockUserRepository implements UserRepository {
 
     const newUser = {
       userId: this.generateUserId(),
+      isVerified: false,
       email,
       passwordHash,
       googleId,
@@ -34,6 +35,13 @@ export class MockUserRepository implements UserRepository {
     this.users.push(newUser);
 
     return newUser;
+  }
+
+  async markVerified(userId: number): Promise<void> {
+    const user = await this.findById(userId);
+    if (user) {
+      user.isVerified = true;
+    }
   }
 
   async findById(userId: number): Promise<DbUser | null> {
