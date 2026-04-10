@@ -42,9 +42,18 @@ export const dbUserSchema = z
     message: 'User must have at least one auth method',
   });
 
+export const refreshTokenSchema = z.object({
+  id: z.number(),
+  userId: z.number(),
+  tokenHash: z.string(),
+  expiresAt: z.date(),
+  createdAt: z.date(),
+});
+
 export type RegisterWithGoogle = z.infer<typeof registerWithGoogleSchema>;
 export type RegisterWithEmail = z.infer<typeof registerWithEmailSchema>;
 export type LoginWithGoogle = z.infer<typeof loginWithGoogleSchema>;
 export type LoginWithEmail = z.infer<typeof loginWithEmailSchema>;
 export type ChangePassword = z.infer<typeof changePasswordSchema>;
 export type DbUser = z.infer<typeof dbUserSchema>;
+export type RefreshToken = z.infer<typeof refreshTokenSchema>;

@@ -1,4 +1,9 @@
-import { type Task, type Notepad, USER_ID } from '@sharedCommon/schemas';
+import {
+  type Task,
+  type Notepad,
+  type RefreshToken,
+  USER_ID,
+} from '@sharedCommon/schemas';
 
 const MOCK_DATE = new Date('2024-01-01T00:00:00.000Z');
 
@@ -171,7 +176,6 @@ export const TASKS1: Task[] = [
     ],
   },
 ];
-
 const TASKS2: Task[] = [
   {
     _id: '12',
@@ -249,7 +253,6 @@ const TASKS3: Task[] = [
     ],
   },
 ];
-
 const TASKS4: Task[] = [];
 
 export const NOTEPADS: Notepad[] = [
@@ -258,3 +261,5 @@ export const NOTEPADS: Notepad[] = [
   { title: 'Быт', _id: '3', tasks: TASKS3, userId: USER_ID },
   { title: 'Временный', _id: '4', tasks: TASKS4, userId: USER_ID },
 ];
+
+export const REFRESH_TOKENS: RefreshToken[] = [];

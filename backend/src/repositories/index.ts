@@ -1,10 +1,10 @@
-export * from './TaskRepository';
+export * from './interfaces/TaskRepository';
 
 import { config } from '@configs';
-import { MockTaskRepository } from './MockTaskRepository';
-import { PostgresTaskRepository } from './PostgresTaskRepository';
+import { MockTaskRepository } from './mock/MockTaskRepository';
+import { PostgresTaskRepository } from './postgres/PostgresTaskRepository';
 import { NOTEPADS } from '@db/mock/mock-db';
-import type { TaskRepository } from './TaskRepository';
+import type { TaskRepository } from './interfaces/TaskRepository';
 
 const {
   db: { type },

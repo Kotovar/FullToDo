@@ -58,7 +58,6 @@ export async function runMigrations() {
   }
 }
 
-// Позволяет запускать напрямую: npm run migrate
 if (require.main === module) {
   runMigrations()
     .catch(err => {

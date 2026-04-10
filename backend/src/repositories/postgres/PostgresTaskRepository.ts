@@ -12,7 +12,7 @@ import {
   type TaskQueryParams,
   type UpdateTask,
 } from '@sharedCommon/schemas';
-import type { TaskRepository } from './TaskRepository';
+import type { TaskRepository } from '@repositories/interfaces/TaskRepository';
 import {
   DB_ERRORS,
   isDbError,
