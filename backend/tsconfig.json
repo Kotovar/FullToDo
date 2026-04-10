@@ -29,9 +29,11 @@
       "@repositories/*": ["./src/repositories/*"],
       "@services/*": ["./src/services/*"],
       "@errors/*": ["./src/errors/*"],
+      "@errors": ["./src/errors/index.ts"],
       "@logger": ["./src/logger/index.ts"],
       "@logger/*": ["./src/logger/*"],
-      "@swagger/*": ["./src/swagger/*"]
+      "@swagger/*": ["./src/swagger/*"],
+      "@utils": ["./src/utils/index.ts"]
     }
   }
 }

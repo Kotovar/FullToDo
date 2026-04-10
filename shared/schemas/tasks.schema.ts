@@ -5,6 +5,7 @@ const StatusResponseEnum = z.union([
   z.literal(200),
   z.literal(201),
   z.literal(204),
+  z.literal(401),
   z.literal(403),
   z.literal(404),
   z.literal(409),

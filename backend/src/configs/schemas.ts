@@ -17,6 +17,10 @@ export const DBSchema = z.object({
 export const ConfigSchema = z.object({
   server: ServerSchema,
   db: DBSchema,
+  emailTokenSecret: z.string().min(1),
+  accessTokenSecret: z.string().min(1),
+  refreshTokenSecret: z.string().min(1),
+  googleClientId: z.string().min(1),
 });
 
 export type ServerType = z.infer<typeof ServerSchema>['type'];
