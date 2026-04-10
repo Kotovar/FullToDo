@@ -1,12 +1,12 @@
 import { act, renderHook } from '@testing-library/react';
 import { createWrapper, createWrapperWithRouter } from '@shared/mocks';
-import { notepadId, taskId } from 'shared/schemas';
+import { NOTEPAD_ID, TASK_ID } from 'shared/schemas';
 import { useCreateTask, useTaskDetail } from '..';
 import { useTaskParams } from '@shared/lib';
 
 const getInitialDataCreateTask = async () => {
   const { result } = renderHook(
-    () => useCreateTask({ notepadId, entity: 'task' }),
+    () => useCreateTask({ notepadId: NOTEPAD_ID, entity: 'task' }),
     {
       wrapper: createWrapper(),
     },
@@ -41,7 +41,7 @@ describe('useCreateTask hook', () => {
 describe('useTaskDetail hook', () => {
   test('successful', async () => {
     const result = await getInitialDataTaskDetail();
-    result.current.updateTask({ title: 'test' }, taskId, 'create');
+    result.current.updateTask({ title: 'test' }, TASK_ID, 'create');
   });
 });
 

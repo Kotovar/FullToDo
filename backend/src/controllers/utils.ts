@@ -1,7 +1,7 @@
 import type { ZodError } from 'zod';
 import type { IncomingMessage, ServerResponse } from 'http';
 import {
-  commonNotepadId,
+  COMMON_NOTEPAD_ID,
   TaskQueryParams,
   taskQueryParamsSchema,
 } from '@sharedCommon/schemas';
@@ -52,7 +52,7 @@ export function getId(req: IncomingMessage, idType: 'notepad' | 'task') {
   const url = req.url?.split('/').filter(Boolean) ?? [];
   const isCommonPath = url[0] === 'tasks';
 
-  const notepadId = isCommonPath ? commonNotepadId : (url[1] ?? '');
+  const notepadId = isCommonPath ? COMMON_NOTEPAD_ID : (url[1] ?? '');
   const taskId = isCommonPath ? (url[1] ?? '') : (url[3] ?? '');
 
   return idType === 'notepad' ? { notepadId } : { notepadId, taskId };

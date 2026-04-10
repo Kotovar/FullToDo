@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { I18nextProvider } from 'react-i18next';
 import type { ReactNode } from 'react';
 import { ROUTES } from 'shared/routes';
-import { notepadId } from 'shared/schemas';
+import { NOTEPAD_ID } from 'shared/schemas';
 import i18nForTests from '../testing/i18nForTests';
 
 interface WrapperProps {
@@ -31,7 +31,7 @@ export const createWrapper = () => {
 };
 
 export const createWrapperWithRouter = (
-  initialEntries = [`${ROUTES.NOTEPADS}/${notepadId}`],
+  initialEntries = [`${ROUTES.NOTEPADS}/${NOTEPAD_ID}`],
 ) => {
   const queryClient = new QueryClient({
     defaultOptions: {

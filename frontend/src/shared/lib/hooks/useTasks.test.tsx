@@ -5,14 +5,14 @@ import {
   getDeleteResponse,
   MOCK_TASK,
 } from '@shared/mocks';
-import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
+import { COMMON_NOTEPAD_ID, NOTEPAD_ID, TASK_ID } from 'shared/schemas';
 import { setupMockServer } from '@shared/testing';
 import { useTasks } from './useTasks';
 import { taskService } from '@shared/api';
 
 const params = new URLSearchParams();
 
-const getInitialData = (notepad: string = notepadId) => {
+const getInitialData = (notepad: string = NOTEPAD_ID) => {
   const { result } = renderHook(
     () => useTasks({ notepadId: notepad, params, entity: 'task' }),
     {
@@ -64,16 +64,16 @@ describe('useTasks hook', () => {
     const mockError = new Error('Ошибка сервера');
     vi.spyOn(taskService, 'updateTask').mockRejectedValue(mockError);
 
-    const result = await getInitialData();
+    const result = getInitialData();
     const success = await result.current.methods.updateTask(
       {
         title: MOCK_TITLE_NON_EXISTING,
       },
-      taskId,
+      TASK_ID,
     );
 
     expect(success).toBe(false);
-    expect(taskService.updateTask).toHaveBeenCalledWith(taskId, {
+    expect(taskService.updateTask).toHaveBeenCalledWith(TASK_ID, {
       title: MOCK_TITLE_NON_EXISTING,
     });
   });
@@ -86,7 +86,7 @@ describe('useTasks hook', () => {
     const getSingleTaskMock = vi.spyOn(taskService, 'getSingleTask');
     const result = getInitialData();
 
-    await result.current.methods.updateTask({ title: 'New' }, taskId);
+    await result.current.methods.updateTask({ title: 'New' }, TASK_ID);
 
     expect(getSingleTaskMock).toHaveBeenCalledTimes(0);
     expect(getTasksFromNotepadMock).toHaveBeenCalled();
@@ -95,9 +95,9 @@ describe('useTasks hook', () => {
   test('should call the method to get all tasks if a common notepadId is specified', async () => {
     const getAllTasksMock = vi.spyOn(taskService, 'getAllTasks');
     const getSingleTaskMock = vi.spyOn(taskService, 'getSingleTask');
-    const result = getInitialData(commonNotepadId);
+    const result = getInitialData(COMMON_NOTEPAD_ID);
 
-    await result.current.methods.updateTask({ title: 'New' }, taskId);
+    await result.current.methods.updateTask({ title: 'New' }, TASK_ID);
 
     expect(getSingleTaskMock).toHaveBeenCalledTimes(0);
     expect(getAllTasksMock).toHaveBeenCalled();
@@ -110,11 +110,11 @@ describe('useTasks hook', () => {
       {
         title: MOCK_TITLE_NON_EXISTING,
       },
-      taskId,
+      TASK_ID,
     );
 
     await waitFor(() => {
-      expect(taskService.updateTask).toHaveBeenCalledWith(taskId, {
+      expect(taskService.updateTask).toHaveBeenCalledWith(TASK_ID, {
         title: MOCK_TITLE_NON_EXISTING,
       });
     });
@@ -123,10 +123,10 @@ describe('useTasks hook', () => {
   test('should call deleteTask when deleting a task', async () => {
     const result = getInitialData();
 
-    result.current.methods.deleteTask(taskId);
+    result.current.methods.deleteTask(TASK_ID);
 
     await waitFor(() => {
-      expect(taskService.deleteTask).toHaveBeenCalledWith(taskId);
+      expect(taskService.deleteTask).toHaveBeenCalledWith(TASK_ID);
     });
   });
 });

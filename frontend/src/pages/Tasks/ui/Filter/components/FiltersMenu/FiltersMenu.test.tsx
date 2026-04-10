@@ -25,11 +25,11 @@ describe('FiltersMenu component', () => {
 
     const buttonApply = screen.getByText('apply');
     await user.click(buttonApply);
-    expect(mockOnApply).toBeCalled();
+    expect(mockOnApply).toHaveBeenCalled();
 
     const buttonCancel = screen.getByText('reset');
     await user.click(buttonCancel);
-    expect(mockCloseMenu).toBeCalled();
+    expect(mockCloseMenu).toHaveBeenCalled();
   });
 
   test('should update filters when radio buttons are clicked', async () => {

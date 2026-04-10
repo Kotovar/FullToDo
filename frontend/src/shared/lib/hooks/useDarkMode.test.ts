@@ -25,7 +25,7 @@ describe('useDarkMode', () => {
 
     act(() => result.current.toggle());
 
-    expect(setDarkModeMock).toBeCalled();
+    expect(setDarkModeMock).toHaveBeenCalled();
   });
 
   test('dark theme off', () => {
@@ -36,6 +36,6 @@ describe('useDarkMode', () => {
 
     act(() => result.current.toggle());
 
-    expect(setDarkModeMock).toBeCalled();
+    expect(setDarkModeMock).toHaveBeenCalled();
   });
 });

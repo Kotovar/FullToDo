@@ -9,7 +9,7 @@ import {
   getValidatedTaskParams,
 } from './utils';
 import {
-  commonNotepadId,
+  COMMON_NOTEPAD_ID,
   PAGINATION,
   TaskQueryParams,
 } from '@sharedCommon/schemas';
@@ -61,7 +61,7 @@ describe('getId tests', () => {
     const req = { url } as IncomingMessage;
     const { notepadId } = getId(req, 'notepad');
 
-    expect(notepadId).toBe(commonNotepadId);
+    expect(notepadId).toBe(COMMON_NOTEPAD_ID);
   });
 
   test('get empty taskId if url[1] isn`t exists', async () => {
@@ -69,7 +69,7 @@ describe('getId tests', () => {
     const req = { url } as IncomingMessage;
     const { notepadId, taskId } = getId(req, 'task');
 
-    expect(notepadId).toBe(commonNotepadId);
+    expect(notepadId).toBe(COMMON_NOTEPAD_ID);
     expect(taskId).toBe('');
   });
 });

@@ -12,7 +12,7 @@ import {
   TaskResponse,
   TaskResponseSingle,
   TasksResponse,
-  commonNotepadId,
+  COMMON_NOTEPAD_ID,
 } from 'shared/schemas';
 
 if (!URL) {
@@ -80,7 +80,7 @@ class TaskService extends BaseService {
       let endpoint: string;
 
       switch (notepadId) {
-        case commonNotepadId:
+        case COMMON_NOTEPAD_ID:
         case '':
           endpoint = ROUTES.TASKS;
           break;

@@ -12,7 +12,8 @@
     "lint-staged": "lint-staged",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "debug": "node --inspect-brk -r ts-node/register -r tsconfig-paths/register src/app.ts"
+    "debug": "node --inspect-brk -r ts-node/register -r tsconfig-paths/register src/app.ts",
+    "migrate": "ts-node -r tsconfig-paths/register src/db/postgres/migrate.ts"
   },
   "keywords": [],
   "author": "Kotovar",

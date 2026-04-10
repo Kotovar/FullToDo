@@ -4,13 +4,15 @@ import {
   type QueryError,
   type MutationMethods,
 } from '@shared/api';
-import { commonNotepadId } from 'shared/schemas';
+import { COMMON_NOTEPAD_ID } from 'shared/schemas';
 
 export const isCommonNotepad = (notepadId?: string) =>
-  notepadId === commonNotepadId || notepadId === '';
+  notepadId === COMMON_NOTEPAD_ID || notepadId === '';
 
 export const getTaskQueryKey = (notepadId?: string) =>
-  notepadId && notepadId !== commonNotepadId ? ['tasks', notepadId] : ['tasks'];
+  notepadId && notepadId !== COMMON_NOTEPAD_ID
+    ? ['tasks', notepadId]
+    : ['tasks'];
 
 export const handleMutation = async <T, V>(
   mutateAsync: (payload: V) => Promise<T>,

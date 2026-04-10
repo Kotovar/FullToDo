@@ -1,9 +1,10 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import {
-  commonNotepadId,
-  type TaskQueryParams,
-  type Task,
+  COMMON_NOTEPAD_ID,
   PAGINATION,
+  USER_ID,
+  type Task,
+  type TaskQueryParams,
 } from '@sharedCommon/schemas';
 import { MockTaskRepository } from './MockTaskRepository';
 import { NOTEPADS } from '@db/mock/mock-db';
@@ -64,9 +65,7 @@ describe('MockTaskRepository', () => {
       }),
     );
 
-    await expect(
-      repository.createNotepad(newTitleNotepad),
-    ).rejects.toThrowError(
+    await expect(repository.createNotepad(newTitleNotepad)).rejects.toThrow(
       `Notebook with title ${newTitleNotepad.title} already exists`,
     );
   });
@@ -84,18 +83,18 @@ describe('MockTaskRepository', () => {
       }),
     );
 
-    await expect(
-      repository.createTask(newTask, notepadId),
-    ).rejects.toThrowError(`Notebook ${notepadId} not found`);
+    await expect(repository.createTask(newTask, notepadId)).rejects.toThrow(
+      `Notebook ${notepadId} not found`,
+    );
   });
 
   test('method createTask and common notepad', async () => {
-    const newTaskData = await repository.createTask(newTask, commonNotepadId);
+    const newTaskData = await repository.createTask(newTask, COMMON_NOTEPAD_ID);
 
     expect(newTaskData).toEqual(
       expect.objectContaining({
         title: newTask.title,
-        notepadId: commonNotepadId,
+        notepadId: COMMON_NOTEPAD_ID,
         progress: '',
         isCompleted: false,
         createdDate: expect.any(Date),
@@ -104,10 +103,10 @@ describe('MockTaskRepository', () => {
   });
 
   test('method getAllNotepads', async () => {
-    const allNotepads = await repository.getAllNotepads();
+    const allNotepads = await repository.getAllNotepads(USER_ID);
 
     const notepadsWithoutTasks = [
-      { title: 'Задачи', _id: commonNotepadId },
+      { title: 'Задачи', _id: COMMON_NOTEPAD_ID, userId: USER_ID },
     ].concat(NOTEPADS.map(({ tasks: _, ...rest }) => rest));
 
     expect(notepadsWithoutTasks).toEqual(allNotepads);
@@ -230,6 +229,7 @@ describe('MockTaskRepository', () => {
       {
         title: 'Test Notepad',
         _id: realId,
+        userId: USER_ID,
         tasks: tasksWithUndefined,
       },
     ]);
@@ -258,6 +258,7 @@ describe('MockTaskRepository', () => {
       {
         title: 'Test Notepad',
         _id: realId,
+        userId: USER_ID,
         tasks: tasksWithEqualDates,
       },
     ]);
@@ -276,6 +277,7 @@ describe('MockTaskRepository', () => {
       {
         title: 'Test Notepad',
         _id: realId,
+        userId: USER_ID,
         tasks: tasksWithDifferentDates,
       },
     ]);
@@ -334,7 +336,7 @@ describe('MockTaskRepository', () => {
 
     expect(responseGet).toEqual(NOTEPADS[0].tasks[0]);
 
-    await expect(repository.getSingleTask(realId, taskId)).rejects.toThrowError(
+    await expect(repository.getSingleTask(realId, taskId)).rejects.toThrow(
       `Task ${taskId} not found`,
     );
   });
@@ -353,9 +355,9 @@ describe('MockTaskRepository', () => {
       tasks: singleNotepadTasks,
     });
 
-    await expect(
-      repository.getSingleNotepadTasks(notepadId),
-    ).rejects.toThrowError(`Notepad ${notepadId} not found`);
+    await expect(repository.getSingleNotepadTasks(notepadId)).rejects.toThrow(
+      `Notepad ${notepadId} not found`,
+    );
   });
 
   test('method updateNotepad', async () => {
@@ -368,17 +370,16 @@ describe('MockTaskRepository', () => {
       _id: realId,
       title: newTitleNotepad.title,
       tasks: NOTEPADS[0].tasks,
+      userId: USER_ID,
     });
 
     await expect(
       repository.updateNotepad(realId, newTitleNotepad),
-    ).rejects.toThrowError(
-      `The title ${newTitleNotepad.title} is already in use`,
-    );
+    ).rejects.toThrow(`The title ${newTitleNotepad.title} is already in use`);
 
     await expect(
       repository.updateNotepad(notepadId, newTitleNotepad),
-    ).rejects.toThrowError(`Notepad ${notepadId} not found`);
+    ).rejects.toThrow(`Notepad ${notepadId} not found`);
   });
 
   test('method updateTask', async () => {
@@ -391,7 +392,7 @@ describe('MockTaskRepository', () => {
 
     await expect(
       repository.updateTask(taskId, newTitleNotepad),
-    ).rejects.toThrowError('Task not found');
+    ).rejects.toThrow('Task not found');
   });
 
   test('method updateTask without Title', async () => {
@@ -444,19 +445,19 @@ describe('MockTaskRepository', () => {
         ...updatedTask,
         notepadId: notepadId,
       }),
-    ).rejects.toThrowError(`Notebook ${notepadId} not found`);
+    ).rejects.toThrow(`Notebook ${notepadId} not found`);
   });
 
   test('method updateTask and common notepad', async () => {
     const responseUpdate = await repository.updateTask(realId, {
       ...updatedTask,
-      notepadId: commonNotepadId,
+      notepadId: COMMON_NOTEPAD_ID,
     });
 
     expect(responseUpdate).toStrictEqual({
       ...NOTEPADS[0].tasks[0],
       title: updatedTask.title,
-      notepadId: commonNotepadId,
+      notepadId: COMMON_NOTEPAD_ID,
     });
   });
 
@@ -518,7 +519,8 @@ describe('MockTaskRepository', () => {
     const repository = new MockTaskRepository([
       {
         title: 'Test Notepad',
-        _id: commonNotepadId,
+        _id: COMMON_NOTEPAD_ID,
+        userId: USER_ID,
         tasks: tasksWithCommonAndUnrealNotepadIds,
       },
     ]);

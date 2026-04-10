@@ -9,7 +9,7 @@ import type {
   NotepadWithoutTasks,
   PaginatedTasks,
 } from '@sharedCommon/schemas';
-import { commonNotepadId, PAGINATION } from '@sharedCommon/schemas';
+import { COMMON_NOTEPAD_ID, PAGINATION, USER_ID } from '@sharedCommon/schemas';
 import { ConflictError, ForbiddenError, NotFoundError } from '@errors/AppError';
 import type { TaskRepository } from '@repositories/TaskRepository';
 
@@ -115,6 +115,7 @@ export class MockTaskRepository implements TaskRepository {
       _id: this.generateTaskId(),
       title: title,
       tasks: [],
+      userId: USER_ID,
     };
     this.notepads.push(newNotepad);
 
@@ -123,7 +124,7 @@ export class MockTaskRepository implements TaskRepository {
 
   async createTask(task: CreateTask, notepadId: string): Promise<Task> {
     const { title, dueDate, description } = task;
-    const isCommonNotepad = notepadId === commonNotepadId;
+    const isCommonNotepad = notepadId === COMMON_NOTEPAD_ID;
     const targetNotepad = this.notepads.find(
       notepad => notepad._id === notepadId,
     );
@@ -142,6 +143,7 @@ export class MockTaskRepository implements TaskRepository {
       dueDate,
       notepadId,
       title,
+      userId: USER_ID,
     };
 
     this.tasks.push(newTask);
@@ -153,9 +155,9 @@ export class MockTaskRepository implements TaskRepository {
     return newTask;
   }
 
-  async getAllNotepads(): Promise<NotepadWithoutTasks[]> {
+  async getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]> {
     return [
-      { title: 'Задачи', _id: commonNotepadId },
+      { title: 'Задачи', _id: COMMON_NOTEPAD_ID, userId },
       ...this.notepads.map(({ tasks: _, ...rest }) => rest),
     ];
   }
@@ -173,7 +175,7 @@ export class MockTaskRepository implements TaskRepository {
   async getSingleTask(notepadId: string, taskId: string): Promise<Task> {
     const task = this.tasks.find(task => task._id === taskId);
     const suitableNotepad =
-      notepadId === commonNotepadId || task?.notepadId === notepadId;
+      notepadId === COMMON_NOTEPAD_ID || task?.notepadId === notepadId;
 
     if (suitableNotepad && task) {
       return task;
@@ -249,7 +251,7 @@ export class MockTaskRepository implements TaskRepository {
       notepad => notepad._id === newNotepadId,
     );
 
-    if (!targetNotepad && newNotepadId !== commonNotepadId) {
+    if (!targetNotepad && newNotepadId !== COMMON_NOTEPAD_ID) {
       throw new NotFoundError(`Notebook ${newNotepadId} not found`);
     }
 
@@ -276,7 +278,7 @@ export class MockTaskRepository implements TaskRepository {
     const shouldMoveNotepad = newNotepadId !== currentTask.notepadId;
 
     const currentNotepad =
-      currentTask.notepadId !== commonNotepadId
+      currentTask.notepadId !== COMMON_NOTEPAD_ID
         ? this.notepads.find(notepad => notepad._id === currentTask.notepadId)
         : null;
 
@@ -309,7 +311,7 @@ export class MockTaskRepository implements TaskRepository {
       throw new NotFoundError(`Notepad ${notepadId} not found`);
     }
 
-    if (notepadId === commonNotepadId) {
+    if (notepadId === COMMON_NOTEPAD_ID) {
       throw new ForbiddenError(`Cannot delete the common notepad`);
     }
 
@@ -325,7 +327,7 @@ export class MockTaskRepository implements TaskRepository {
     }
 
     const taskToDelete = this.tasks[taskIndex];
-    const isCommonNotepad = taskToDelete.notepadId === commonNotepadId;
+    const isCommonNotepad = taskToDelete.notepadId === COMMON_NOTEPAD_ID;
     this.tasks.splice(taskIndex, 1);
 
     if (!isCommonNotepad) {

@@ -4,12 +4,12 @@ import { createWrapperWithRouter } from '@shared/mocks';
 import { ROUTES } from 'shared/routes';
 import { notepadService } from '@entities/Notepad';
 import { getUseNotificationsMock, setupMockServer } from '@shared/testing';
-import { commonNotepadId, notepadId } from 'shared/schemas';
+import { COMMON_NOTEPAD_ID, NOTEPAD_ID } from 'shared/schemas';
 
 const getInitialData = async (isCommon: boolean = false) => {
   const { result } = renderHook(() => useNotepad(), {
     wrapper: createWrapperWithRouter(
-      isCommon ? [ROUTES.TASKS] : [`${ROUTES.NOTEPADS}/${notepadId}`],
+      isCommon ? [ROUTES.TASKS] : [`${ROUTES.NOTEPADS}/${NOTEPAD_ID}`],
     ),
   });
   await waitFor(() => expect(result.current).toBeDefined());
@@ -28,8 +28,8 @@ describe('useNotepad hook', () => {
   test('should return a specific notebook along the route', async () => {
     const result = await getInitialData(false);
     await waitFor(() => expect(result.current.isLoading).toBeFalsy());
-    expect(result.current.notepadId).toBe(notepadId);
-    expect(result.current.location).toBe(`${ROUTES.NOTEPADS}/${notepadId}`);
+    expect(result.current.notepadId).toBe(NOTEPAD_ID);
+    expect(result.current.location).toBe(`${ROUTES.NOTEPADS}/${NOTEPAD_ID}`);
 
     await waitFor(() => {
       expect(result.current.title).toBe('Рабочее');
@@ -40,7 +40,7 @@ describe('useNotepad hook', () => {
     const result = await getInitialData(true);
 
     expect(result.current.location).toBe(ROUTES.TASKS);
-    expect(result.current.notepadId).toBe(commonNotepadId);
+    expect(result.current.notepadId).toBe(COMMON_NOTEPAD_ID);
 
     await waitFor(() => {
       expect(result.current.title).toBe('Все задачи');
@@ -69,7 +69,7 @@ describe('useNotepad hook', () => {
     await getInitialData();
 
     await waitFor(() => {
-      expect(showError).toBeCalled();
+      expect(showError).toHaveBeenCalled();
     });
   });
 });

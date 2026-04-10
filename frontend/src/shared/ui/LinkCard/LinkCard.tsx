@@ -5,7 +5,7 @@ import { clsx } from 'clsx';
 import { Button, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
 import { useDarkMode, useTaskParams, useTasks } from '@shared/lib';
 import { useMenuToggle, useEditableTitle } from './hooks';
-import { commonNotepadId } from 'shared/schemas';
+import { COMMON_NOTEPAD_ID } from 'shared/schemas';
 import { Wrappers } from './wrappers';
 import type { LinkCardProps } from './LinkCard.interface';
 
@@ -114,7 +114,7 @@ export const LinkCard = memo((props: LinkCardProps) => {
   return (
     <Wrapper
       {...rest}
-      notepadId={notepadId ?? commonNotepadId}
+      notepadId={notepadId ?? COMMON_NOTEPAD_ID}
       taskId={taskId ?? ''}
       path={path}
       handleMove={moveTaskToNotepad}

@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { notepadId, ROUTES } from '@sharedCommon/';
+import { NOTEPAD_ID, ROUTES } from '@sharedCommon/';
 import {
   getDeleteResponse,
   MOCK_NOTEPADS_RESPONSE,
@@ -50,7 +50,7 @@ export const notepadHandlers = [
     AddNotepadRequestBody,
     AddNotepadResponseBody
   >(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${NOTEPAD_ID}`,
     async ({ request }) => {
       const { title } = await request.json();
 
@@ -69,7 +69,7 @@ export const notepadHandlers = [
     AddNotepadRequestParams,
     AddNotepadRequestBody,
     AddNotepadResponseBody
-  >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${notepadId}`, async () => {
+  >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${NOTEPAD_ID}`, async () => {
     return HttpResponse.json(getDeleteResponse('Notepad'));
   }),
 ];

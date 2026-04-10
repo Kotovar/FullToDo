@@ -50,16 +50,19 @@ export const dbTaskSchema = createTaskSchema.extend({
   progress: z.string(),
   isCompleted: z.boolean().default(false),
   subtasks: z.array(createSubtaskSchema).optional(),
+  userId: z.number(),
 });
 
 export const dbNotepadSchema = createNotepadSchema.extend({
   tasks: z.array(dbTaskSchema),
   _id: z.string(),
+  userId: z.number(),
 });
 
 const notepadWithoutTasksSchema = dbNotepadSchema.pick({
   _id: true,
   title: true,
+  userId: true,
 });
 
 export const updateTaskSchema = createTaskSchema

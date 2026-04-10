@@ -12,8 +12,8 @@ export class NotepadService {
     return await this.repository.createNotepad(task);
   }
 
-  async getAllNotepads(): Promise<NotepadWithoutTasks[]> {
-    return await this.repository.getAllNotepads();
+  async getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]> {
+    return await this.repository.getAllNotepads(userId);
   }
 
   async updateNotepad(

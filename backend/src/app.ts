@@ -3,7 +3,7 @@ import { Server as HttpServer } from 'http';
 import type { Application } from 'express';
 import { createHttpServer, createExpressServer } from './servers';
 import { config, ServerType } from './configs';
-import { initDb } from '@db/postgres';
+import { runMigrations } from '@db/postgres';
 import { serverLogger } from './logger';
 
 const {
@@ -32,5 +32,5 @@ export const httpServer = app.listen(port, () => {
 });
 
 if (dbType === 'postgres') {
-  initDb().catch(() => process.exit(1));
+  runMigrations().catch(() => process.exit(1));
 }

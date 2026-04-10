@@ -9,7 +9,7 @@ const FILES_LIMIT_ERROR = 30;
 const logDir = path.resolve(__dirname, '../../../logs');
 
 export const baseLogger = pino({
-  level: 'info',
+  level: process.env.NODE_ENV === 'test' ? 'silent' : 'info',
   transport: {
     targets: [
       {

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { notepadService } from '@entities/Notepad';
 import { useNotifications } from '@shared/lib';
 import { handleMutationError } from '@shared/api';
-import { commonNotepadId } from 'shared/schemas';
+import { COMMON_NOTEPAD_ID } from 'shared/schemas';
 import { ROUTES } from 'shared/routes';
 
 export const useNotepad = () => {
@@ -30,7 +30,7 @@ export const useNotepad = () => {
 
     return {
       title: isCommon ? 'Все задачи' : (currentNotepad?.title ?? ''),
-      notepadId: isCommon ? commonNotepadId : (currentNotepad?._id ?? ''),
+      notepadId: isCommon ? COMMON_NOTEPAD_ID : (currentNotepad?._id ?? ''),
       location: pathname,
       notFound: hasDataLoaded && !currentNotepad && !isCommon,
       isError,

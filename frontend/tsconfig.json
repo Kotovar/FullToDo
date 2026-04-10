@@ -32,6 +32,7 @@
       "@shared/*": ["./src/shared/*"],
       "@pages/*": ["./src/pages/*"],
       "@widgets/*": ["./src/widgets/*"],
+      "@sharedCommon": ["../shared"],
       "@sharedCommon/*": ["../shared"]
     },
     "types": ["vitest/globals", "@testing-library/jest-dom/vitest"]

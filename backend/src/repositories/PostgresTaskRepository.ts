@@ -1,5 +1,6 @@
 import {
-  commonNotepadId,
+  COMMON_NOTEPAD_ID,
+  USER_ID,
   PAGINATION,
   type Notepad,
   type NotepadWithoutTasks,
@@ -59,7 +60,9 @@ export class PostgresTaskRepository implements TaskRepository {
         'INSERT INTO notepads (title) VALUES ($1) RETURNING _id::text, title',
         [title],
       );
-      return { ...result.rows[0], tasks: [] };
+
+      // TODO: заменить на реальные данные
+      return { ...result.rows[0], tasks: [], userId: USER_ID };
     } catch (err) {
       if (isDbError(err) && err.code === DB_ERRORS.DUPLICATE) {
         throw new ConflictError(`Task with title ${title} already exists`);
@@ -72,7 +75,7 @@ export class PostgresTaskRepository implements TaskRepository {
   async createTask(task: CreateTask, notepadId: string): Promise<Task> {
     const { title, dueDate } = task;
 
-    const dbNotepadId = notepadId === commonNotepadId ? null : notepadId;
+    const dbNotepadId = notepadId === COMMON_NOTEPAD_ID ? null : notepadId;
 
     try {
       const result = await query<Task>(
@@ -96,12 +99,16 @@ export class PostgresTaskRepository implements TaskRepository {
     }
   }
 
-  async getAllNotepads(): Promise<NotepadWithoutTasks[]> {
+  async getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]> {
     const notepads = await query<NotepadWithoutTasks>(
-      'SELECT title, _id FROM notepads',
+      'SELECT title, _id::text, user_id::text AS "userId" FROM notepads WHERE user_id = $1',
+      [userId],
     );
 
-    return [{ title: 'Задачи', _id: commonNotepadId }, ...notepads.rows];
+    return [
+      { title: 'Задачи', _id: COMMON_NOTEPAD_ID, userId },
+      ...notepads.rows,
+    ];
   }
 
   async getAllTasks(params: TaskQueryParams = {}): Promise<PaginatedTasks> {
@@ -118,7 +125,7 @@ export class PostgresTaskRepository implements TaskRepository {
   }
 
   async getSingleTask(notepadId: string, taskId: string): Promise<Task> {
-    const isCommon = notepadId === commonNotepadId;
+    const isCommon = notepadId === COMMON_NOTEPAD_ID;
 
     const result = await query<Task>(
       `SELECT
@@ -159,7 +166,7 @@ export class PostgresTaskRepository implements TaskRepository {
     notepadId: string,
     params: TaskQueryParams = {},
   ): Promise<PaginatedTasks> {
-    const isCommon = notepadId === commonNotepadId;
+    const isCommon = notepadId === COMMON_NOTEPAD_ID;
 
     const {
       sortBy,
@@ -243,7 +250,7 @@ export class PostgresTaskRepository implements TaskRepository {
   }
 
   async deleteNotepad(notepadId: string): Promise<void> {
-    if (notepadId === commonNotepadId) {
+    if (notepadId === COMMON_NOTEPAD_ID) {
       throw new ForbiddenError(`Cannot delete the common notepad`);
     }
 

@@ -12,7 +12,7 @@ import {
   getFailFetchResponse,
   setupMockServer,
 } from '@shared/testing';
-import { notepadId } from 'shared/schemas';
+import { NOTEPAD_ID } from 'shared/schemas';
 import { notepadService } from './Notepad.query';
 
 describe('MockNotepadService', () => {
@@ -41,7 +41,7 @@ describe('MockNotepadService', () => {
 
       await expect(
         notepadService.createNotepad(MOCK_TITLE_EXISTING),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         expect.objectContaining({
           message: 'Conflict',
           cause: NOTEPAD_ERRORS.CONFLICT,
@@ -56,7 +56,7 @@ describe('MockNotepadService', () => {
 
       await expect(
         notepadService.createNotepad(MOCK_TITLE_EXISTING),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         expect.objectContaining({
           message: 'Not found',
           cause: NOTEPAD_ERRORS.UNDEFINED,
@@ -71,7 +71,7 @@ describe('MockNotepadService', () => {
 
       await expect(
         notepadService.createNotepad(MOCK_TITLE_EXISTING),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         expect.objectContaining({
           message: 'Server error',
           cause: NOTEPAD_ERRORS.SERVER_ERROR,
@@ -88,7 +88,7 @@ describe('MockNotepadService', () => {
 
       await expect(
         notepadService.createNotepad(MOCK_TITLE_EXISTING),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         expect.objectContaining({
           message: 'Failed to fetch',
           cause: 'Error',
@@ -103,7 +103,7 @@ describe('MockNotepadService', () => {
 
       await expect(
         notepadService.createNotepad(MOCK_TITLE_EXISTING),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         expect.objectContaining(getErrorResult(NOTEPAD_ERRORS)),
       );
 
@@ -120,7 +120,7 @@ describe('MockNotepadService', () => {
     test('return error if network problem', async () => {
       const fetchSpy = getErrorMock();
 
-      await expect(notepadService.getNotepads()).rejects.toThrowError(
+      await expect(notepadService.getNotepads()).rejects.toThrow(
         expect.objectContaining(getErrorResult(NOTEPAD_ERRORS)),
       );
 
@@ -153,7 +153,7 @@ describe('MockNotepadService', () => {
 
   describe('updateNotepad', () => {
     test('success', async () => {
-      const responsePatch = await notepadService.updateNotepad(notepadId, {
+      const responsePatch = await notepadService.updateNotepad(NOTEPAD_ID, {
         title: MOCK_TITLE_NON_EXISTING,
       });
 
@@ -161,7 +161,7 @@ describe('MockNotepadService', () => {
     });
 
     test('return error if title exists', async () => {
-      const responsePost = await notepadService.updateNotepad(notepadId, {
+      const responsePost = await notepadService.updateNotepad(NOTEPAD_ID, {
         title: MOCK_TITLE_EXISTING,
       });
 
@@ -175,10 +175,10 @@ describe('MockNotepadService', () => {
       const fetchSpy = getErrorMock();
 
       await expect(
-        notepadService.updateNotepad(notepadId, {
+        notepadService.updateNotepad(NOTEPAD_ID, {
           title: MOCK_TITLE_EXISTING,
         }),
-      ).rejects.toThrowError(
+      ).rejects.toThrow(
         expect.objectContaining(getErrorResult(NOTEPAD_ERRORS)),
       );
 
@@ -188,16 +188,14 @@ describe('MockNotepadService', () => {
 
   describe('deleteNotepad', () => {
     test('success', async () => {
-      const responseDelete = await notepadService.deleteNotepad(notepadId);
+      const responseDelete = await notepadService.deleteNotepad(NOTEPAD_ID);
       expect(responseDelete).toStrictEqual(getDeleteResponse('Notepad'));
     });
 
     test('return handleError if catch error', async () => {
       const fetchSpy = getErrorMock();
 
-      await expect(
-        notepadService.deleteNotepad(notepadId),
-      ).rejects.toThrowError(
+      await expect(notepadService.deleteNotepad(NOTEPAD_ID)).rejects.toThrow(
         expect.objectContaining(getErrorResult(NOTEPAD_ERRORS)),
       );
 

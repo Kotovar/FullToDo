@@ -1,2 +1,3 @@
-export const notepadId = '1';
-export const taskId = '1';
+export const NOTEPAD_ID = '1';
+export const TASK_ID = '1';
+export const USER_ID = 1;

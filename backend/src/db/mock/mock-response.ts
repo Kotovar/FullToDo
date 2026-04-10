@@ -1,8 +1,9 @@
 import {
-  commonNotepadId,
+  COMMON_NOTEPAD_ID,
   NotepadWithoutTasks,
   PaginatedTasks,
   Task,
+  USER_ID,
 } from '@sharedCommon/schemas';
 import { TASKS1 } from './mock-db';
 import { getMetaMock } from '@tests/utils';
@@ -23,6 +24,7 @@ export const validTaskDataMock: Task = {
   createdDate: new Date(),
   isCompleted: false,
   progress: '1 из 5',
+  userId: USER_ID,
   subtasks: [
     { isCompleted: false, title: 'Выучить Node.js', _id: '1' },
     { isCompleted: true, title: 'Выучить js', _id: '2' },
@@ -35,6 +37,7 @@ export const validTaskDataMock: Task = {
 export const validNotepadWithoutTasksData: NotepadWithoutTasks[] = [
   {
     title: 'Задачи',
-    _id: commonNotepadId,
+    _id: COMMON_NOTEPAD_ID,
+    userId: USER_ID,
   },
 ];

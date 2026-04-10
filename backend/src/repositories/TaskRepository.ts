@@ -12,7 +12,7 @@ import type {
 export interface TaskRepository {
   createNotepad(notepad: CreateNotepad): Promise<Notepad>;
   createTask(task: CreateTask, notepadId: string): Promise<Task>;
-  getAllNotepads(): Promise<NotepadWithoutTasks[]>;
+  getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]>;
   getAllTasks(params?: TaskQueryParams): Promise<PaginatedTasks>;
   getSingleTask(taskId: string, notepadId?: string): Promise<Task>;
   getSingleNotepadTasks(
