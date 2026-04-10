@@ -1,0 +1,10 @@
+import type { CreateUser, DbUser } from '@sharedCommon/schemas';
+
+export interface UserRepository {
+  createUser(data: CreateUser): Promise<DbUser>;
+  findById(userId: number): Promise<DbUser | null>;
+  findByEmail(email: string): Promise<DbUser | null>;
+  findByGoogleId(googleId: string): Promise<DbUser | null>;
+  updatePassword(userId: number, passwordHash: string): Promise<void>;
+  deleteUser(userId: number): Promise<void>;
+}
