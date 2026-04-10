@@ -58,6 +58,7 @@ export type ChangePassword = z.infer<typeof changePasswordSchema>;
 export type DbUser = z.infer<typeof dbUserSchema>;
 export type RefreshToken = z.infer<typeof refreshTokenSchema>;
 
-export type CreateUser =
-  | { email: string; passwordHash: string; googleId?: never }
-  | { googleId: string; email?: string; passwordHash?: never };
+export type CreateUser = { email: string } & (
+  | { passwordHash: string; googleId?: never }
+  | { googleId: string; passwordHash?: never }
+);

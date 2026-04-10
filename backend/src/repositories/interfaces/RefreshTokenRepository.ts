@@ -6,7 +6,7 @@ export interface RefreshTokenRepository {
     tokenHash: string,
     expiresAt: Date,
   ): Promise<void>;
-  getRefreshToken(userId: number): Promise<RefreshToken | null>;
+  findByTokenHash(tokenHash: string): Promise<RefreshToken | null>;
   deleteByTokenHash(tokenHash: string): Promise<void>;
   deleteAllByUserId(userId: number): Promise<void>;
 }

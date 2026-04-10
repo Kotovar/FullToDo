@@ -11,7 +11,7 @@ import type {
 } from '@sharedCommon/schemas';
 import { COMMON_NOTEPAD_ID, PAGINATION, USER_ID } from '@sharedCommon/schemas';
 import { ConflictError, ForbiddenError, NotFoundError } from '@errors/AppError';
-import type { TaskRepository } from '@repositories/interfaces/TaskRepository';
+import type { TaskRepository } from '@repositories/interfaces';
 
 export const DEFAULT_TASK_PARAMS: TaskQueryParams = {
   sortBy: 'createdDate',
