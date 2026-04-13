@@ -1,20 +1,25 @@
+const NOTEPADS_BASE = '/notepads';
+const AUTH_BASE = '/auth';
+
 export const ROUTES = {
-  NOTEPADS: '/notepads',
+  NOTEPADS: NOTEPADS_BASE,
   TASKS: '/tasks',
-  NOTEPAD_ID: '/notepads/:notepadId',
-  TASK_DETAIL: '/notepads/:notepadId/tasks/:taskId',
+  NOTEPAD_ID: `${NOTEPADS_BASE}/:notepadId`,
+  TASK_DETAIL: `${NOTEPADS_BASE}/:notepadId/tasks/:taskId`,
   COMMON_TASK_DETAIL: '/tasks/:taskId',
-  NOTEPAD_TASKS: '/notepads/:notepadId/tasks',
+  NOTEPAD_TASKS: `${NOTEPADS_BASE}/:notepadId/tasks`,
 
-  getNotepadPath: (id: string) => `${ROUTES.NOTEPADS}/${id}/tasks`,
+  getNotepadPath: (id: string) => `${NOTEPADS_BASE}/${id}/tasks`,
   getTaskDetailPath: (notepadId: string, taskId: string) =>
-    `${ROUTES.NOTEPADS}/${notepadId}/tasks/${taskId}`,
+    `${NOTEPADS_BASE}/${notepadId}/tasks/${taskId}`,
 
+  AUTH: AUTH_BASE,
   REGISTER: '/register',
   LOGIN: '/login',
-  LOGOUT: '/logout',
-  AUTH_GOOGLE: '/auth/google',
-  AUTH_GOOGLE_CALLBACK: '/auth/google/callback',
+  LOGOUT: `${AUTH_BASE}/logout`,
+  REFRESH: `${AUTH_BASE}/refresh`,
+  AUTH_GOOGLE: `${AUTH_BASE}/google`,
+  AUTH_GOOGLE_CALLBACK: `${AUTH_BASE}/google/callback`,
   CHANGE_PASSWORD: '/change-password',
   DELETE_ACCOUNT: '/delete-account',
   VERIFY_EMAIL: '/verify-email',

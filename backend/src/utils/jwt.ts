@@ -6,7 +6,8 @@ const EMAIL_TOKEN_EXPIRES_IN = '24h';
 const ACCESS_TOKEN_EXPIRES_IN = '15m';
 const REFRESH_TOKEN_EXPIRES_IN = '7d';
 
-export const REFRESH_TOKEN_EXPIRES_MS = 7 * 24 * 60 * 60 * 1000;
+export const REFRESH_TOKEN_EXPIRES_S = 7 * 24 * 60 * 60;
+export const REFRESH_TOKEN_EXPIRES_MS = REFRESH_TOKEN_EXPIRES_S * 1000;
 
 type JWT = 'access' | 'refresh' | 'email';
 type TokenPayload = { userId: number; type: JWT };
