@@ -13,13 +13,4 @@ export class UserService {
   async markVerified(userId: number): Promise<void> {
     return await this.repository.markVerified(userId);
   }
-
-  async updatePassword(userId: number, passwordHash: string): Promise<void> {
-    return await this.repository.updatePassword(userId, passwordHash);
-  }
-
-  async deleteUser(userId: number): Promise<void> {
-    userLogger.info({ userId }, 'User deleted');
-    return await this.repository.deleteUser(userId);
-  }
 }

@@ -2,12 +2,15 @@ import type { ZodError } from 'zod';
 import type { IncomingMessage, ServerResponse } from 'http';
 import {
   COMMON_NOTEPAD_ID,
-  TaskQueryParams,
+  emailTokenSchema,
   taskQueryParamsSchema,
+  type TaskQueryParams,
 } from '@sharedCommon/schemas';
 import { extractInvalidKeys } from '@sharedCommon/utils';
 import { AppError } from '@errors/AppError';
 import { repositoryLogger } from '@logger';
+import { ROUTES } from '@sharedCommon/routes';
+import { REFRESH_TOKEN_EXPIRES_S } from '@utils';
 
 /**
  * Читает тело входящего запроса и парсит его как JSON.
@@ -161,4 +164,65 @@ export const handleValidationError = (res: ServerResponse, error: ZodError) => {
       errors: error,
     }),
   );
+};
+
+/**
+ * Формирует заголовки ответа с httpOnly-куки для refresh-токена.
+ *
+ * Флаг `Secure` добавляется только в production (требует HTTPS).
+ * Путь ограничен `/auth`, чтобы куки не отправлялась на остальные маршруты.
+ *
+ * @param token - значение refresh-токена
+ * @returns объект заголовков с `Content-Type` и `Set-Cookie`
+ */
+export const setRefreshCookie = (
+  token: string,
+  maxAge: number = REFRESH_TOKEN_EXPIRES_S,
+) => {
+  const secure = process.env.NODE_ENV === 'production' ? ' Secure;' : '';
+
+  return {
+    'Content-Type': 'application/json',
+    'Set-Cookie': `refreshToken=${token}; HttpOnly;${secure} SameSite=Strict; Path=${ROUTES.auth.base}; Max-Age=${maxAge}`,
+  };
+};
+
+/**
+ * Парсит заголовок `Cookie` в объект ключ-значение.
+ *
+ * @param cookieHeader - значение заголовка `Cookie` из запроса (`req.headers.cookie`)
+ * @returns объект вида `{ [name]: value }` или `{}`, если заголовок отсутствует
+ *
+ * @example
+ * parseCookies('refreshToken=abc.def.ghi; theme=dark')
+ * // { refreshToken: 'abc.def.ghi', theme: 'dark' }
+ */
+export const parseCookies = (cookieHeader?: string) => {
+  if (!cookieHeader) return {};
+
+  return Object.fromEntries(
+    cookieHeader.split(';').map(cookie => {
+      const [key, ...value] = cookie.trim().split('=');
+      return [key, value.join('=')];
+    }),
+  );
+};
+
+/**
+ * Извлекает и валидирует email-токен из query-параметров запроса.
+ *
+ * Ожидает URL вида `/verify-email?token=<jwt>`.
+ *
+ * @param req - входящий HTTP-запрос
+ * @returns строку токена если он присутствует и валиден, иначе `null`
+ */
+export const getEmailToken = (req: IncomingMessage): string | null => {
+  const queryString = req.url?.split('?')[1] ?? '';
+  if (!queryString) return null;
+
+  const params = new URLSearchParams(queryString);
+  const rawParams = Object.fromEntries(params.entries());
+  const validation = emailTokenSchema.safeParse(rawParams);
+
+  return validation.success ? validation.data.token : null;
 };

@@ -7,6 +7,7 @@ import {
   errorHandler,
   getId,
   getValidatedTaskParams,
+  setRefreshCookie,
 } from './utils';
 import {
   COMMON_NOTEPAD_ID,
@@ -107,6 +108,29 @@ describe('getValidatedTaskParams tests', () => {
       page: PAGINATION.DEFAULT_PAGE,
       limit: PAGINATION.DEFAULT_LIMIT,
     });
+  });
+});
+
+describe('setRefreshCookie tests', () => {
+  const token = 'test-token';
+
+  test('should not include Secure flag outside of production', () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    const headers = setRefreshCookie(token);
+
+    expect(headers['Set-Cookie']).not.toContain('Secure');
+    expect(headers['Set-Cookie']).toContain(`refreshToken=${token}`);
+
+    vi.unstubAllEnvs();
+  });
+
+  test('should include Secure flag in production', () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    const headers = setRefreshCookie(token);
+
+    expect(headers['Set-Cookie']).toContain('Secure');
+
+    vi.unstubAllEnvs();
   });
 });
 

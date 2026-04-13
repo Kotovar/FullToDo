@@ -68,6 +68,16 @@ export const refreshTokenSchema = z.object({
   createdAt: z.date(),
 });
 
+export const emailTokenSchema = z.strictObject({
+  token: z.string(),
+});
+
+export const resendVerificationSchema = z.object({ email: z.email() });
+
+export const deleteUserSchema = z.object({
+  currentPassword: z.string().min(1).optional(),
+});
+
 export type RegisterWithGoogle = z.infer<typeof registerWithGoogleSchema>;
 export type RegisterWithEmail = z.infer<typeof registerWithEmailSchema>;
 export type LoginWithGoogle = z.infer<typeof loginWithGoogleSchema>;

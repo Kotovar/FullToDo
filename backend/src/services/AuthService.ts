@@ -5,9 +5,11 @@ import {
   generateRefreshToken,
   hashPassword,
   hashToken,
-  REFRESH_TOKEN_EXPIRES_MS,
+  verifyEmailToken,
   verifyRefreshToken,
+  REFRESH_TOKEN_EXPIRES_MS,
 } from '@utils';
+import { userLogger } from '@logger';
 import { EmailService } from './EmailService';
 import { OAuthService } from './OAuthService';
 import { ConflictError, NotFoundError, UnauthorizedError } from '@errors';
@@ -135,7 +137,7 @@ export class AuthService {
 
     const user = await this.userRepository.findById(payload.userId);
     if (!user) {
-      throw new NotFoundError('User not found');
+      throw new NotFoundError('Invalid credentials');
     }
 
     await this.tokenRepository.deleteByTokenHash(tokenHash);
@@ -146,5 +148,66 @@ export class AuthService {
   async logout(refreshToken: string): Promise<void> {
     const tokenHash = hashToken(refreshToken);
     await this.tokenRepository.deleteByTokenHash(tokenHash);
+  }
+
+  async verifyEmail(token: string): Promise<void> {
+    const payload = verifyEmailToken(token);
+
+    if (!payload) throw new UnauthorizedError('Invalid or expired token');
+
+    await this.userRepository.markVerified(payload.userId);
+  }
+
+  async resendVerification(email: string): Promise<void> {
+    const user = await this.userRepository.findByEmail(email);
+
+    if (!user || user.isVerified) return;
+
+    const verificationToken = generateEmailToken(user.userId);
+    await this.emailService.sendVerification(user.email, verificationToken);
+  }
+
+  async changePassword(
+    userId: number,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) throw new UnauthorizedError('Invalid credentials');
+
+    if (!user.passwordHash)
+      throw new UnauthorizedError('This account uses Google login');
+
+    const isValid = await comparePassword(currentPassword, user.passwordHash);
+    if (!isValid) throw new UnauthorizedError('Invalid credentials');
+
+    const newHash = await hashPassword(newPassword);
+
+    // TODO: нужны транзакции - делать оба действия или ни одного
+    await this.userRepository.updatePassword(userId, newHash);
+    await this.tokenRepository.deleteAllByUserId(userId);
+  }
+
+  async deleteUser(userId: number, currentPassword?: string): Promise<void> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) throw new UnauthorizedError('Invalid credentials');
+
+    if (user.passwordHash) {
+      if (!currentPassword) {
+        throw new UnauthorizedError('Password required');
+      }
+
+      const isValid = await comparePassword(currentPassword, user.passwordHash);
+      if (!isValid) throw new UnauthorizedError('Invalid credentials');
+    } else {
+      // TODO: OAuth re-auth (email/Google re-login)
+      throw new UnauthorizedError('Re-auth required');
+    }
+
+    // TODO: нужны транзакции - делать оба действия или ни одного
+    await this.userRepository.deleteUser(userId);
+    await this.tokenRepository.deleteAllByUserId(userId);
+
+    userLogger.info({ userId }, 'User deleted');
   }
 }
