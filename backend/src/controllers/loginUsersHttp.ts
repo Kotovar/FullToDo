@@ -18,7 +18,7 @@ const setHeader = (token: string) => {
 
   return {
     'Content-Type': 'application/json',
-    'Set-Cookie': `refreshToken=${token}; HttpOnly;${secure} SameSite=Strict; Path=${ROUTES.AUTH}; Max-Age=${REFRESH_TOKEN_EXPIRES_S}`,
+    'Set-Cookie': `refreshToken=${token}; HttpOnly;${secure} SameSite=Strict; Path=${ROUTES.auth.base}; Max-Age=${REFRESH_TOKEN_EXPIRES_S}`,
   };
 };
 

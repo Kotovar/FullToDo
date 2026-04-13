@@ -17,8 +17,8 @@ if (!URL) {
 }
 
 const notepadRoutes = {
-  all: `${URL}${ROUTES.NOTEPADS}`,
-  single: (notepadId: string) => `${URL}${ROUTES.NOTEPADS}/${notepadId}`,
+  all: `${URL}${ROUTES.notepads.base}`,
+  single: (notepadId: string) => `${URL}${ROUTES.notepads.base}/${notepadId}`,
 };
 
 export class NotepadService extends BaseService {

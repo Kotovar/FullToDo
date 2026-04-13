@@ -12,7 +12,7 @@ export const Home = () => {
       <h1>{t('homePage.mainTitle')}</h1>
       <Link
         className='bg-accent hover:bg-accent/80 dark:border-dark rounded border-1 p-2 text-white'
-        to={ROUTES.TASKS}
+        to={ROUTES.tasks.base}
       >
         {t('homePage.open')}
       </Link>

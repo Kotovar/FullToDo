@@ -31,7 +31,7 @@ export const createWrapper = () => {
 };
 
 export const createWrapperWithRouter = (
-  initialEntries = [`${ROUTES.NOTEPADS}/${NOTEPAD_ID}`],
+  initialEntries = [`${ROUTES.notepads.base}/${NOTEPAD_ID}`],
 ) => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -46,8 +46,8 @@ export const createWrapperWithRouter = (
       <I18nextProvider i18n={i18nForTests}>
         <MemoryRouter initialEntries={initialEntries}>
           <Routes>
-            <Route path={ROUTES.NOTEPAD_ID} element={children} />
-            <Route path={ROUTES.TASKS} element={children} />
+            <Route path={ROUTES.notepads.byId} element={children} />
+            <Route path={ROUTES.tasks.base} element={children} />
           </Routes>
         </MemoryRouter>
       </I18nextProvider>

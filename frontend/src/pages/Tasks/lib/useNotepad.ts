@@ -24,7 +24,7 @@ export const useNotepad = () => {
   }, [isError, error, showError]);
 
   return useMemo(() => {
-    const isCommon = pathname === ROUTES.TASKS;
+    const isCommon = pathname === ROUTES.tasks.base;
     const currentNotepad = data?.find(notepad => notepad._id === notepadId);
     const hasDataLoaded = !isLoading && !isError;
 

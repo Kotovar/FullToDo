@@ -21,12 +21,12 @@ export const Router = () => {
             </WithSuspense>
           }
         >
-          <Route path={ROUTES.NOTEPADS}>
+          <Route path={ROUTES.notepads.base}>
             <Route index element={<Tasks />} />
-            <Route path={ROUTES.NOTEPAD_ID} element={<Tasks />} />
-            <Route path={ROUTES.NOTEPAD_TASKS} element={<Tasks />} />
+            <Route path={ROUTES.notepads.byId} element={<Tasks />} />
+            <Route path={ROUTES.notepads.tasks} element={<Tasks />} />
             <Route
-              path={ROUTES.TASK_DETAIL}
+              path={ROUTES.notepads.taskDetail}
               element={
                 <WithSuspense fallback={<TaskDetailSkeleton />}>
                   <TaskDetail />
@@ -35,10 +35,10 @@ export const Router = () => {
             />
           </Route>
 
-          <Route path={ROUTES.TASKS}>
+          <Route path={ROUTES.tasks.base}>
             <Route index element={<Tasks />} />
             <Route
-              path={ROUTES.COMMON_TASK_DETAIL}
+              path={ROUTES.tasks.byId}
               element={
                 <WithSuspense fallback={<TaskDetailSkeleton />}>
                   <TaskDetail />

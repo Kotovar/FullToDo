@@ -50,7 +50,7 @@ describe('useBackNavigate', () => {
       result.current();
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith(ROUTES.TASKS);
+    expect(mockNavigate).toHaveBeenCalledWith(ROUTES.tasks.base);
   });
 
   test('should navigate to tasks when path is notepads/[id]/tasks/[id]', () => {
@@ -67,6 +67,8 @@ describe('useBackNavigate', () => {
       result.current();
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith(ROUTES.getNotepadPath(notepadId));
+    expect(mockNavigate).toHaveBeenCalledWith(
+      ROUTES.notepads.getPath(notepadId),
+    );
   });
 });

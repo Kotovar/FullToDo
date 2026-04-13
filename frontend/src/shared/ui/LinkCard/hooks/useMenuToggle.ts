@@ -15,7 +15,7 @@ export const useMenuToggle = ({ path }: UseMenuToggleProps) => {
   const closeMenu = useCallback(() => setOpenMenuPath(null), []);
 
   const isCurrentMenuOpen = openMenuPath === path;
-  const isNotMainNotepad = path !== ROUTES.TASKS;
+  const isNotMainNotepad = path !== ROUTES.tasks.base;
 
   return {
     isCurrentMenuOpen,

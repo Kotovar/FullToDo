@@ -21,7 +21,7 @@ type AddNotepadResponseBody = {
 };
 
 export const notepadHandlers = [
-  http.get(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}`, () => {
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.notepads.base}`, () => {
     return HttpResponse.json(MOCK_NOTEPADS_RESPONSE);
   }),
 
@@ -29,28 +29,31 @@ export const notepadHandlers = [
     AddNotepadRequestParams,
     AddNotepadRequestBody,
     AddNotepadResponseBody
-  >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}`, async ({ request }) => {
-    const { title } = await request.json();
+  >(
+    `${import.meta.env.VITE_URL}${ROUTES.notepads.base}`,
+    async ({ request }) => {
+      const { title } = await request.json();
 
-    if (title !== MOCK_TITLE_EXISTING) {
+      if (title !== MOCK_TITLE_EXISTING) {
+        return HttpResponse.json({
+          status: 201,
+          message: `A notebook with the title ${title} has been successfully created`,
+        });
+      }
+
       return HttpResponse.json({
-        status: 201,
-        message: `A notebook with the title ${title} has been successfully created`,
+        status: 409,
+        message: `A notebook with the title ${title} already exists`,
       });
-    }
-
-    return HttpResponse.json({
-      status: 409,
-      message: `A notebook with the title ${title} already exists`,
-    });
-  }),
+    },
+  ),
 
   http.patch<
     AddNotepadRequestParams,
     AddNotepadRequestBody,
     AddNotepadResponseBody
   >(
-    `${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${NOTEPAD_ID}`,
+    `${import.meta.env.VITE_URL}${ROUTES.notepads.base}/${NOTEPAD_ID}`,
     async ({ request }) => {
       const { title } = await request.json();
 
@@ -69,7 +72,10 @@ export const notepadHandlers = [
     AddNotepadRequestParams,
     AddNotepadRequestBody,
     AddNotepadResponseBody
-  >(`${import.meta.env.VITE_URL}${ROUTES.NOTEPADS}/${NOTEPAD_ID}`, async () => {
-    return HttpResponse.json(getDeleteResponse('Notepad'));
-  }),
+  >(
+    `${import.meta.env.VITE_URL}${ROUTES.notepads.base}/${NOTEPAD_ID}`,
+    async () => {
+      return HttpResponse.json(getDeleteResponse('Notepad'));
+    },
+  ),
 ];

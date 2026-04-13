@@ -2,15 +2,15 @@ import { ROUTES } from '@sharedCommon/routes';
 
 export const ROUTE_REGEX = {
   NOTEPAD_TASKS: new RegExp(
-    `^${ROUTES.NOTEPAD_TASKS.replace(':notepadId', '([^/]+)')}$`,
+    `^${ROUTES.notepads.tasks.replace(':notepadId', '([^/]+)')}$`,
   ),
   NOTEPAD_ID: new RegExp(
-    `^${ROUTES.NOTEPAD_ID.replace(':notepadId', '([^/]+)')}$`,
+    `^${ROUTES.notepads.byId.replace(':notepadId', '([^/]+)')}$`,
   ),
   TASK_DETAIL: new RegExp(
-    `^${ROUTES.TASK_DETAIL.replace(':notepadId', '([^/]+)').replace(':taskId', '([^/]+)')}$`,
+    `^${ROUTES.notepads.taskDetail.replace(':notepadId', '([^/]+)').replace(':taskId', '([^/]+)')}$`,
   ),
   COMMON_TASK_DETAIL: new RegExp(
-    `^${ROUTES.COMMON_TASK_DETAIL.replace(':taskId', '([^/]+)')}$`,
+    `^${ROUTES.tasks.byId.replace(':taskId', '([^/]+)')}$`,
   ),
 };

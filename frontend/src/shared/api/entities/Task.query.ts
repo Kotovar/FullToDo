@@ -20,12 +20,14 @@ if (!URL) {
 }
 
 const taskRoutes = {
-  all: `${URL}${ROUTES.TASKS}`,
+  all: `${URL}${ROUTES.tasks.base}`,
   single: (notepadId: string, taskId: string) =>
-    `${URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
-  singleInCommonNotepad: (taskId: string) => `${URL}${ROUTES.TASKS}/${taskId}`,
-  forCreate: (notepadId: string) => `${URL}${ROUTES.getNotepadPath(notepadId)}`,
-  forCreateInCommonNotepad: `${URL}${ROUTES.TASKS}`,
+    `${URL}${ROUTES.notepads.getTaskPath(notepadId, taskId)}`,
+  singleInCommonNotepad: (taskId: string) =>
+    `${URL}${ROUTES.tasks.base}/${taskId}`,
+  forCreate: (notepadId: string) =>
+    `${URL}${ROUTES.notepads.getPath(notepadId)}`,
+  forCreateInCommonNotepad: `${URL}${ROUTES.tasks.base}`,
 };
 
 class TaskService extends BaseService {
@@ -82,10 +84,10 @@ class TaskService extends BaseService {
       switch (notepadId) {
         case COMMON_NOTEPAD_ID:
         case '':
-          endpoint = ROUTES.TASKS;
+          endpoint = ROUTES.tasks.base;
           break;
         default:
-          endpoint = ROUTES.getNotepadPath(notepadId);
+          endpoint = ROUTES.notepads.getPath(notepadId);
       }
       const response = await fetch(
         `${URL}${endpoint}${this.buildQueryString(params)}`,

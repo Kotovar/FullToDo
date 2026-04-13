@@ -25,10 +25,10 @@ const notepadService = new NotepadService(taskRepository);
 type RouteHandler = (ctx: HttpContext) => Promise<void>;
 
 export const BASE_ROUTES: Record<string, RouteHandler> = {
-  [`POST ${ROUTES.NOTEPADS}`]: ctx => createNotepad(ctx, notepadService),
-  [`POST ${ROUTES.TASKS}`]: ctx => createTask(ctx, taskService),
-  [`GET ${ROUTES.NOTEPADS}`]: ctx => getAllNotepads(ctx, notepadService),
-  [`GET ${ROUTES.TASKS}`]: ctx => getAllTasks(ctx, taskService),
+  [`POST ${ROUTES.notepads.base}`]: ctx => createNotepad(ctx, notepadService),
+  [`POST ${ROUTES.tasks.base}`]: ctx => createTask(ctx, taskService),
+  [`GET ${ROUTES.notepads.base}`]: ctx => getAllNotepads(ctx, notepadService),
+  [`GET ${ROUTES.tasks.base}`]: ctx => getAllTasks(ctx, taskService),
 };
 
 export const handleRoute = (ctx: HttpContext, url?: string): boolean => {

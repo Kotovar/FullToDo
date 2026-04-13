@@ -1,27 +1,28 @@
-const NOTEPADS_BASE = '/notepads';
-const AUTH_BASE = '/auth';
-
 export const ROUTES = {
-  NOTEPADS: NOTEPADS_BASE,
-  TASKS: '/tasks',
-  NOTEPAD_ID: `${NOTEPADS_BASE}/:notepadId`,
-  TASK_DETAIL: `${NOTEPADS_BASE}/:notepadId/tasks/:taskId`,
-  COMMON_TASK_DETAIL: '/tasks/:taskId',
-  NOTEPAD_TASKS: `${NOTEPADS_BASE}/:notepadId/tasks`,
-
-  getNotepadPath: (id: string) => `${NOTEPADS_BASE}/${id}/tasks`,
-  getTaskDetailPath: (notepadId: string, taskId: string) =>
-    `${NOTEPADS_BASE}/${notepadId}/tasks/${taskId}`,
-
-  AUTH: AUTH_BASE,
-  REGISTER: '/register',
-  LOGIN: '/login',
-  LOGOUT: `${AUTH_BASE}/logout`,
-  REFRESH: `${AUTH_BASE}/refresh`,
-  AUTH_GOOGLE: `${AUTH_BASE}/google`,
-  AUTH_GOOGLE_CALLBACK: `${AUTH_BASE}/google/callback`,
-  CHANGE_PASSWORD: '/change-password',
-  DELETE_ACCOUNT: '/delete-account',
-  VERIFY_EMAIL: '/verify-email',
-  RESEND_VERIFICATION: '/resend-verification',
+  notepads: {
+    base: '/notepads',
+    byId: '/notepads/:notepadId',
+    tasks: '/notepads/:notepadId/tasks',
+    taskDetail: '/notepads/:notepadId/tasks/:taskId',
+    getPath: (id: string) => `/notepads/${id}/tasks`,
+    getTaskPath: (notepadId: string, taskId: string) =>
+      `/notepads/${notepadId}/tasks/${taskId}`,
+  },
+  tasks: {
+    base: '/tasks',
+    byId: '/tasks/:taskId',
+  },
+  auth: {
+    base: '/auth',
+    register: '/register',
+    login: '/login',
+    logout: '/auth/logout',
+    refresh: '/auth/refresh',
+    google: '/auth/google',
+    googleCallback: '/auth/google/callback',
+    changePassword: '/change-password',
+    deleteAccount: '/delete-account',
+    verifyEmail: '/verify-email',
+    resendVerification: '/resend-verification',
+  },
 } as const;

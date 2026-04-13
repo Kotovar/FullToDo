@@ -37,7 +37,9 @@ export const NavigationBar = ({
 
   const notepadList = notepads.map(({ title, _id }) => {
     const path =
-      _id === COMMON_NOTEPAD_ID ? ROUTES.TASKS : ROUTES.getNotepadPath(_id);
+      _id === COMMON_NOTEPAD_ID
+        ? ROUTES.tasks.base
+        : ROUTES.notepads.getPath(_id);
 
     return (
       <LinkCard

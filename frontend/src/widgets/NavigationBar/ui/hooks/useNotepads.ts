@@ -51,7 +51,8 @@ export const useNotepads = () => {
 
   const { mutateAsync: mutationDelete } = useMutation({
     mutationFn: (notepadId: string) => notepadService.deleteNotepad(notepadId),
-    onSuccess: () => handleMutationSuccess(refetch, navigate, ROUTES.TASKS),
+    onSuccess: () =>
+      handleMutationSuccess(refetch, navigate, ROUTES.tasks.base),
   });
 
   const createNotepad = useCallback(
