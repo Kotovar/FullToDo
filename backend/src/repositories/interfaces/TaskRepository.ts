@@ -14,9 +14,9 @@ export interface TaskRepository {
   createTask(task: CreateTask, notepadId: string): Promise<Task>;
   getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]>;
   getAllTasks(params?: TaskQueryParams): Promise<PaginatedTasks>;
-  getSingleTask(taskId: string, notepadId?: string): Promise<Task>;
+  getSingleTask(notepadId: string, taskId: string): Promise<Task>;
   getSingleNotepadTasks(
-    taskId: string,
+    notepadId: string,
     params?: TaskQueryParams,
   ): Promise<PaginatedTasks>;
   updateNotepad(

@@ -7,6 +7,7 @@ import {
 } from '@sharedCommon/schemas';
 import { extractInvalidKeys } from '@sharedCommon/utils';
 import { AppError } from '@errors/AppError';
+import { repositoryLogger } from '@logger';
 
 export const parseJsonBody = <T>(req: IncomingMessage): Promise<T> => {
   return new Promise((resolve, reject) => {
@@ -30,6 +31,11 @@ export const parseJsonBody = <T>(req: IncomingMessage): Promise<T> => {
 
 export const errorHandler = (res: ServerResponse, error: unknown) => {
   const statusCode = error instanceof AppError ? error.statusCode : 500;
+
+  if (statusCode >= 500) {
+    repositoryLogger.error({ err: error }, 'Unhandled error');
+  }
+
   res.writeHead(statusCode, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify({ error: error ?? 'Internal Server Error' }));
 };

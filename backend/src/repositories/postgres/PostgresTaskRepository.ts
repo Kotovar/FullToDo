@@ -56,13 +56,17 @@ export class PostgresTaskRepository implements TaskRepository {
 
   async createNotepad({ title }: CreateNotepad): Promise<Notepad> {
     try {
-      const result = await query<{ _id: string; title: string }>(
-        'INSERT INTO notepads (title) VALUES ($1) RETURNING _id::text, title',
-        [title],
+      // TODO: заменить USER_ID на реального пользователя из сессии
+      const result = await query<{
+        _id: string;
+        title: string;
+        userId: number;
+      }>(
+        'INSERT INTO notepads (title, user_id) VALUES ($1, $2) RETURNING _id::text, title, user_id as userId',
+        [title, USER_ID],
       );
 
-      // TODO: заменить на реальные данные
-      return { ...result.rows[0], tasks: [], userId: USER_ID };
+      return { ...result.rows[0], tasks: [] };
     } catch (err) {
       if (isDbError(err) && err.code === DB_ERRORS.DUPLICATE) {
         throw new ConflictError(`Task with title ${title} already exists`);
@@ -78,12 +82,13 @@ export class PostgresTaskRepository implements TaskRepository {
     const dbNotepadId = notepadId === COMMON_NOTEPAD_ID ? null : notepadId;
 
     try {
+      // TODO: заменить USER_ID на реального пользователя из сессии
       const result = await query<Task>(
-        `INSERT INTO tasks (notepad_id, title, due_date) VALUES ($1, $2, $3)
+        `INSERT INTO tasks (notepad_id, title, due_date, user_id) VALUES ($1, $2, $3, $4)
          RETURNING _id::text, title, description, due_date AS "dueDate",
                    created_date AS "createdDate", is_completed AS "isCompleted",
-                   COALESCE(notepad_id::text, $4) AS "notepadId"`,
-        [dbNotepadId, title, dueDate, notepadId],
+                   COALESCE(notepad_id::text, $5) AS "notepadId"`,
+        [dbNotepadId, title, dueDate, USER_ID, notepadId],
       );
       return { ...result.rows[0], subtasks: [], progress: '' };
     } catch (err) {
