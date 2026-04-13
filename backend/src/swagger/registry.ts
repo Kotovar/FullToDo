@@ -24,7 +24,10 @@ const TaskSchema = registry.register(
   dbTaskSchema.openapi({ description: 'Task' }),
 );
 
-registry.register('Notepad', dbNotepadSchema.openapi({ description: 'Notepad' }));
+registry.register(
+  'Notepad',
+  dbNotepadSchema.openapi({ description: 'Notepad' }),
+);
 
 const CreateNotepadSchema = registry.register(
   'CreateNotepad',
@@ -45,7 +48,6 @@ const PaginationMetaSchema = registry.register(
   'PaginationMeta',
   paginationMetaSchema.openapi({ description: 'Pagination metadata' }),
 );
-
 
 const taskListResponse = {
   200: {
@@ -91,7 +93,9 @@ registry.registerPath({
   path: '/notepads',
   tags: ['Notepads'],
   summary: 'Create a notepad',
-  request: { body: { content: { 'application/json': { schema: CreateNotepadSchema } } } },
+  request: {
+    body: { content: { 'application/json': { schema: CreateNotepadSchema } } },
+  },
   responses: {
     201: { description: 'Created' },
     409: { description: 'Notepad with this title already exists' },
@@ -130,7 +134,17 @@ registry.registerPath({
   path: '/tasks',
   tags: ['Tasks'],
   summary: 'Get all tasks',
-  request: { query: z.object({ page: z.coerce.number().optional(), limit: z.coerce.number().optional(), sortBy: z.enum(['createdDate', 'dueDate']).optional(), order: z.enum(['asc', 'desc']).optional(), search: z.string().optional(), isCompleted: z.enum(['true', 'false']).optional(), hasDueDate: z.enum(['true', 'false']).optional() }) },
+  request: {
+    query: z.object({
+      page: z.coerce.number().optional(),
+      limit: z.coerce.number().optional(),
+      sortBy: z.enum(['createdDate', 'dueDate']).optional(),
+      order: z.enum(['asc', 'desc']).optional(),
+      search: z.string().optional(),
+      isCompleted: z.enum(['true', 'false']).optional(),
+      hasDueDate: z.enum(['true', 'false']).optional(),
+    }),
+  },
   responses: taskListResponse,
 });
 
@@ -139,7 +153,9 @@ registry.registerPath({
   path: '/tasks',
   tags: ['Tasks'],
   summary: 'Create a task',
-  request: { body: { content: { 'application/json': { schema: CreateTaskSchema } } } },
+  request: {
+    body: { content: { 'application/json': { schema: CreateTaskSchema } } },
+  },
   responses: { 201: { description: 'Created' } },
 });
 
@@ -150,7 +166,18 @@ registry.registerPath({
   summary: 'Get a task by ID',
   request: { params: z.object({ taskId: z.string() }) },
   responses: {
-    200: { description: 'Task', content: { 'application/json': { schema: z.object({ status: z.number(), message: z.string(), data: TaskSchema }) } } },
+    200: {
+      description: 'Task',
+      content: {
+        'application/json': {
+          schema: z.object({
+            status: z.number(),
+            message: z.string(),
+            data: TaskSchema,
+          }),
+        },
+      },
+    },
     404: { description: 'Task not found' },
   },
 });
@@ -213,7 +240,18 @@ registry.registerPath({
   summary: 'Get a task in a notepad',
   request: { params: z.object({ notepadId: z.string(), taskId: z.string() }) },
   responses: {
-    200: { description: 'Task', content: { 'application/json': { schema: z.object({ status: z.number(), message: z.string(), data: TaskSchema }) } } },
+    200: {
+      description: 'Task',
+      content: {
+        'application/json': {
+          schema: z.object({
+            status: z.number(),
+            message: z.string(),
+            data: TaskSchema,
+          }),
+        },
+      },
+    },
     404: { description: 'Task not found' },
   },
 });
