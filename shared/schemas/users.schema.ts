@@ -43,6 +43,23 @@ export const dbUserSchema = z
     message: 'User must have at least one auth method',
   });
 
+export const publicUserSchema = dbUserSchema.transform(
+  ({ userId, email, isVerified }) => ({
+    userId,
+    email,
+    isVerified,
+  }),
+);
+
+export const createUserSchema = z
+  .object({ email: zEmail })
+  .and(
+    z.union([
+      z.object({ passwordHash: z.string(), googleId: z.never().optional() }),
+      z.object({ googleId: z.string(), passwordHash: z.never().optional() }),
+    ]),
+  );
+
 export const refreshTokenSchema = z.object({
   id: z.number(),
   userId: z.number(),
@@ -59,10 +76,8 @@ export type ChangePassword = z.infer<typeof changePasswordSchema>;
 export type DbUser = z.infer<typeof dbUserSchema>;
 export type RefreshToken = z.infer<typeof refreshTokenSchema>;
 
-export type CreateUser = { email: string } & (
-  | { passwordHash: string; googleId?: never }
-  | { googleId: string; passwordHash?: never }
-);
+export type CreateUser = z.infer<typeof createUserSchema>;
+export type PublicUser = z.infer<typeof publicUserSchema>;
 
 export type GoogleProfile = {
   googleId: string;

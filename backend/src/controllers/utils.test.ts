@@ -21,7 +21,7 @@ describe('parseJsonBody tests', () => {
     req.push('invalid json');
     req.push(null);
 
-    await expect(parseJsonBody<unknown>(req)).rejects.toThrow('Invalid JSON');
+    await expect(parseJsonBody(req)).rejects.toThrow('Invalid JSON');
   });
 });
 

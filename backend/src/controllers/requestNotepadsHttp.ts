@@ -16,7 +16,7 @@ export const createNotepad: ServiceHandler<NotepadService> = async (
   try {
     if (!checkContentType(req, res)) return;
 
-    const rawNotepad = await parseJsonBody<unknown>(req);
+    const rawNotepad = await parseJsonBody(req);
     const validationResult = createNotepadSchema.safeParse(rawNotepad);
 
     if (!validationResult.success) {
@@ -61,7 +61,7 @@ export const updateNotepad: ServiceHandler<NotepadService> = async (
     if (!checkContentType(req, res)) return;
 
     const { notepadId } = getId(req, 'notepad');
-    const rawNotepad = await parseJsonBody<unknown>(req);
+    const rawNotepad = await parseJsonBody(req);
     const validationResult = createNotepadSchema.safeParse(rawNotepad);
 
     if (!validationResult.success) {

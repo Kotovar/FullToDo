@@ -9,7 +9,13 @@ import { extractInvalidKeys } from '@sharedCommon/utils';
 import { AppError } from '@errors/AppError';
 import { repositoryLogger } from '@logger';
 
-export const parseJsonBody = <T>(req: IncomingMessage): Promise<T> => {
+/**
+ * Читает тело входящего запроса и парсит его как JSON.
+ * @param req — входящий HTTP-запрос.
+ * @returns Promise с распарсенными данными.
+ * @throws Error если тело не является валидным JSON.
+ */
+export const parseJsonBody = (req: IncomingMessage): Promise<unknown> => {
   return new Promise((resolve, reject) => {
     let body = '';
 
@@ -29,6 +35,12 @@ export const parseJsonBody = <T>(req: IncomingMessage): Promise<T> => {
   });
 };
 
+/**
+ * Централизованный обработчик ошибок. Определяет HTTP-статус по типу ошибки,
+ * логирует серверные ошибки (5xx) и отправляет JSON-ответ клиенту.
+ * @param res — объект HTTP-ответа.
+ * @param error — перехваченная ошибка (AppError или произвольный объект).
+ */
 export const errorHandler = (res: ServerResponse, error: unknown) => {
   const statusCode = error instanceof AppError ? error.statusCode : 500;
 
@@ -40,12 +52,26 @@ export const errorHandler = (res: ServerResponse, error: unknown) => {
   res.end(JSON.stringify({ error: error ?? 'Internal Server Error' }));
 };
 
+/**
+ * Отправляет стандартный ответ 404 с JSON-сообщением о том, что маршрут не найден.
+ * @param res — объект HTTP-ответа.
+ */
 export const handleNotFound = async (res: ServerResponse) => {
   res.statusCode = 404;
   res.setHeader('Content-Type', 'application/json');
   res.end(JSON.stringify({ message: 'Route not found' }));
 };
 
+/**
+ * Извлекает идентификаторы из URL запроса.
+ *
+ * Поддерживает два формата URL:
+ * - `/tasks/:taskId` — общий блокнот (без notepadId в пути)
+ * - `/notepads/:notepadId/tasks/:taskId` — задача конкретного блокнота
+ *
+ * @param req — входящий HTTP-запрос.
+ * @param idType — `'notepad'` возвращает только `notepadId`, `'task'` возвращает оба идентификатора.
+ */
 export function getId(
   req: IncomingMessage,
   idType: 'notepad',
@@ -64,6 +90,12 @@ export function getId(req: IncomingMessage, idType: 'notepad' | 'task') {
   return idType === 'notepad' ? { notepadId } : { notepadId, taskId };
 }
 
+/**
+ * Парсит и валидирует query-параметры задач из URL запроса.
+ * Невалидные параметры отбрасываются, остальные применяются поверх дефолтов.
+ * @param req — входящий HTTP-запрос.
+ * @returns Валидированные параметры пагинации `{ page, limit }`.
+ */
 export const getValidatedTaskParams = (
   req: IncomingMessage,
 ): TaskQueryParams => {
@@ -84,6 +116,12 @@ export const getValidatedTaskParams = (
   return taskQueryParamsSchema.parse(validParams);
 };
 
+/**
+ * Фильтрует объект параметров, исключая ключи с невалидными значениями.
+ * @param params — исходные query-параметры в виде строк.
+ * @param badKeys — список ключей, которые нужно исключить.
+ * @returns Частичный объект `TaskQueryParams` без невалидных ключей.
+ */
 const filterValidParams = (
   params: Record<string, string>,
   badKeys: string[],
@@ -92,6 +130,13 @@ const filterValidParams = (
     Object.entries(params).filter(([key]) => !badKeys.includes(key)),
   );
 
+/**
+ * Проверяет, что заголовок `Content-Type` запроса равен `application/json`.
+ * Если нет — отправляет ответ 400 и возвращает `false`.
+ * @param req — входящий HTTP-запрос.
+ * @param res — объект HTTP-ответа.
+ * @returns `true` если Content-Type корректный, иначе `false`.
+ */
 export const checkContentType = (
   req: IncomingMessage,
   res: ServerResponse,
@@ -103,6 +148,11 @@ export const checkContentType = (
   return true;
 };
 
+/**
+ * Отправляет ответ 400 с деталями ошибки валидации Zod.
+ * @param res — объект HTTP-ответа.
+ * @param error — объект ошибки Zod с описанием невалидных полей.
+ */
 export const handleValidationError = (res: ServerResponse, error: ZodError) => {
   res.writeHead(400, { 'Content-Type': 'application/json' });
   res.end(

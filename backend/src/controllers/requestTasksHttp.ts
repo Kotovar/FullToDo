@@ -18,7 +18,7 @@ export const createTask: ServiceHandler<TaskService> = async (
     if (!checkContentType(req, res)) return;
 
     const { notepadId } = getId(req, 'notepad');
-    const rawTask = await parseJsonBody<unknown>(req);
+    const rawTask = await parseJsonBody(req);
     const validationResult = createTaskSchema.safeParse(rawTask);
 
     if (!validationResult.success) {
@@ -97,7 +97,7 @@ export const updateTask: ServiceHandler<TaskService> = async (
     if (!checkContentType(req, res)) return;
 
     const { taskId } = getId(req, 'task');
-    const rawTask = await parseJsonBody<unknown>(req);
+    const rawTask = await parseJsonBody(req);
 
     const validationResult = updateTaskSchema.safeParse(rawTask);
 
