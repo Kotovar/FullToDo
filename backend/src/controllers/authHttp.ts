@@ -3,7 +3,6 @@ import {
   loginWithGoogleSchema,
   publicUserSchema,
   registerWithEmailSchema,
-  registerWithGoogleSchema,
   resendVerificationSchema,
 } from '@sharedCommon/schemas';
 import {
@@ -15,6 +14,7 @@ import {
   parseJsonBody,
   setRefreshCookie,
 } from './utils';
+import { UnauthorizedError } from '@errors/AppError';
 import type { ServiceHandler } from './types';
 import type { AuthService } from '@services/AuthService';
 
@@ -32,32 +32,6 @@ export const registerWithEmail: ServiceHandler<AuthService> = async (
       return handleValidationError(res, validation.error);
 
     const user = await service.registerWithEmail(validation.data);
-
-    res.writeHead(201, { 'Content-Type': 'application/json' }).end(
-      JSON.stringify({
-        message: `User "${user.userId}" created`,
-        user: publicUserSchema.parse(user),
-      }),
-    );
-  } catch (error) {
-    errorHandler(res, error);
-  }
-};
-
-export const registerWithGoogle: ServiceHandler<AuthService> = async (
-  { req, res },
-  service,
-) => {
-  try {
-    if (!checkContentType(req, res)) return;
-
-    const raw = await parseJsonBody(req);
-    const validation = registerWithGoogleSchema.safeParse(raw);
-
-    if (!validation.success)
-      return handleValidationError(res, validation.error);
-
-    const user = await service.registerWithGoogle(validation.data);
 
     res.writeHead(201, { 'Content-Type': 'application/json' }).end(
       JSON.stringify({
@@ -104,7 +78,7 @@ export const loginWithEmail: ServiceHandler<AuthService> = async (
 // TODO: сделать ограничения на количество попыток, например:
 // 5 попыток / 10 минут
 // делать в middleware - до контроллера
-export const loginWithGoogle: ServiceHandler<AuthService> = async (
+export const authWithGoogle: ServiceHandler<AuthService> = async (
   { req, res },
   service,
 ) => {
@@ -117,13 +91,13 @@ export const loginWithGoogle: ServiceHandler<AuthService> = async (
     if (!validation.success)
       return handleValidationError(res, validation.error);
 
-    const { accessToken, refreshToken } = await service.loginWithGoogle(
+    const { accessToken, refreshToken } = await service.authWithGoogle(
       validation.data,
     );
 
     res.writeHead(200, setRefreshCookie(refreshToken)).end(
       JSON.stringify({
-        message: 'Successful login',
+        message: 'Successful auth',
         accessToken,
       }),
     );
@@ -164,10 +138,7 @@ export const refresh: ServiceHandler<AuthService> = async (
     const { refreshToken } = parseCookies(req.headers.cookie);
 
     if (!refreshToken) {
-      res
-        .writeHead(401, { 'Content-Type': 'application/json' })
-        .end(JSON.stringify({ message: 'Refresh token missing' }));
-      return;
+      throw new UnauthorizedError('Refresh token missing');
     }
 
     const { accessToken, refreshToken: newRefreshToken } =
@@ -188,16 +159,13 @@ export const verifyEmail: ServiceHandler<AuthService> = async (
   { req, res },
   service,
 ) => {
-  const emailToken = getEmailToken(req);
-
-  if (emailToken === null) {
-    res
-      .writeHead(400, { 'Content-Type': 'application/json' })
-      .end(JSON.stringify({ message: 'Invalid or missing email token' }));
-    return;
-  }
-
   try {
+    const emailToken = getEmailToken(req);
+
+    if (emailToken === null) {
+      throw new UnauthorizedError('Invalid or missing email token');
+    }
+
     await service.verifyEmail(emailToken);
 
     res.writeHead(200, { 'Content-Type': 'application/json' }).end(

@@ -52,7 +52,13 @@ export const errorHandler = (res: ServerResponse, error: unknown) => {
   }
 
   res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ error: error ?? 'Internal Server Error' }));
+
+  const body =
+    error instanceof AppError
+      ? { error: { statusCode: error.statusCode, message: error.message } }
+      : { error: 'Internal Server Error' };
+
+  res.end(JSON.stringify(body));
 };
 
 /**

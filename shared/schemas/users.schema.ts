@@ -17,7 +17,6 @@ const zGoogleToken = z.object({
   token: z.string().min(1, 'Google token is required'),
 });
 
-export const registerWithGoogleSchema = zGoogleToken;
 export const registerWithEmailSchema = zEmailWithPassword;
 
 export const loginWithGoogleSchema = zGoogleToken;
@@ -78,7 +77,6 @@ export const deleteUserSchema = z.object({
   currentPassword: z.string().min(1).optional(),
 });
 
-export type RegisterWithGoogle = z.infer<typeof registerWithGoogleSchema>;
 export type RegisterWithEmail = z.infer<typeof registerWithEmailSchema>;
 export type LoginWithGoogle = z.infer<typeof loginWithGoogleSchema>;
 export type LoginWithEmail = z.infer<typeof loginWithEmailSchema>;

@@ -24,10 +24,7 @@ export const changePassword: ServiceHandler<AuthService> = async (
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res
-        .writeHead(401, { 'Content-Type': 'application/json' })
-        .end(JSON.stringify({ message: 'Unauthorized' }));
-      return;
+      throw new UnauthorizedError('Unauthorized');
     }
 
     const accessToken = authHeader.split(' ')[1];
@@ -66,10 +63,7 @@ export const deleteUser: ServiceHandler<AuthService> = async (
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res
-        .writeHead(401, { 'Content-Type': 'application/json' })
-        .end(JSON.stringify({ message: 'Unauthorized' }));
-      return;
+      throw new UnauthorizedError('Unauthorized');
     }
 
     const accessToken = authHeader.split(' ')[1];

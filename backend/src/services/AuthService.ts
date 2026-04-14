@@ -23,7 +23,6 @@ import type {
   LoginWithEmail,
   LoginWithGoogle,
   RegisterWithEmail,
-  RegisterWithGoogle,
 } from '@sharedCommon/schemas';
 
 export class AuthService {
@@ -63,26 +62,6 @@ export class AuthService {
     return user;
   }
 
-  async registerWithGoogle(data: RegisterWithGoogle): Promise<DbUser> {
-    const { googleId, email } = await this.oAuthService.verifyGoogleToken(
-      data.token,
-    );
-
-    const existingByGoogle = await this.userRepository.findByGoogleId(googleId);
-    if (existingByGoogle) {
-      throw new ConflictError(`User with this Google account already exists`);
-    }
-
-    const existingByEmail = await this.userRepository.findByEmail(email);
-    if (existingByEmail) {
-      throw new ConflictError(
-        `Email ${email} is already registered. Try logging in with email and password`,
-      );
-    }
-
-    return this.userRepository.createUser({ email, googleId });
-  }
-
   async loginWithEmail(data: LoginWithEmail): Promise<AuthTokens> {
     const user = await this.userRepository.findByEmail(data.email);
     if (!user) {
@@ -105,13 +84,21 @@ export class AuthService {
     return this.generateAuthTokens(user);
   }
 
-  async loginWithGoogle(data: LoginWithGoogle): Promise<AuthTokens> {
-    const { googleId } = await this.oAuthService.verifyGoogleToken(data.token);
+  async authWithGoogle(data: LoginWithGoogle): Promise<AuthTokens> {
+    const { googleId, email } = await this.oAuthService.verifyGoogleToken(
+      data.token,
+    );
 
-    const user = await this.userRepository.findByGoogleId(googleId);
+    let user = await this.userRepository.findByGoogleId(googleId);
 
     if (!user) {
-      throw new NotFoundError(`User with googleId ${googleId} not found`);
+      const existingByEmail = await this.userRepository.findByEmail(email);
+      if (existingByEmail) {
+        throw new ConflictError(
+          `Email ${email} is already registered. Try logging in with email and password`,
+        );
+      }
+      user = await this.userRepository.createUser({ email, googleId });
     }
 
     return this.generateAuthTokens(user);

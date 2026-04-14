@@ -2,6 +2,7 @@ import {
   type Task,
   type Notepad,
   type RefreshToken,
+  type DbUser,
   USER_ID,
 } from '@sharedCommon/schemas';
 
@@ -176,6 +177,7 @@ export const TASKS1: Task[] = [
     ],
   },
 ];
+
 const TASKS2: Task[] = [
   {
     _id: '12',
@@ -263,3 +265,12 @@ export const NOTEPADS: Notepad[] = [
 ];
 
 export const REFRESH_TOKENS: RefreshToken[] = [];
+
+export const USERS: DbUser[] = [
+  {
+    userId: USER_ID,
+    email: 'test@email.ru',
+    isVerified: true,
+    passwordHash: 'hash',
+  },
+];

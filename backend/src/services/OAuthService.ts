@@ -1,15 +1,15 @@
-import { OAuth2Client } from 'google-auth-library';
 import { oauthLogger } from '@logger';
 import { config } from '@configs';
+import type { OAuth2Client } from 'google-auth-library';
 import type { GoogleProfile } from '@sharedCommon/schemas';
 
-const client = new OAuth2Client(config.googleClientId);
-
 export class OAuthService {
+  constructor(private client: OAuth2Client) {}
+
   async verifyGoogleToken(token: string): Promise<GoogleProfile> {
     oauthLogger.info('Verifying Google token');
 
-    const ticket = await client.verifyIdToken({
+    const ticket = await this.client.verifyIdToken({
       idToken: token,
       audience: config.googleClientId,
     });

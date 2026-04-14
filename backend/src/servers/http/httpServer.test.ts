@@ -73,7 +73,7 @@ describe('httpServer GET', () => {
       .set('Content-Type', 'application/json');
 
     expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: {} });
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
   });
 
   test('should handle GET /notepads', async () => {
@@ -94,7 +94,7 @@ describe('httpServer GET', () => {
       .set('Content-Type', 'application/json');
 
     expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: {} });
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
   });
 
   test(`should handle GET /notepads/${NOTEPAD_ID}`, async () => {
@@ -122,7 +122,7 @@ describe('httpServer GET', () => {
       .set('Content-Type', 'application/json');
 
     expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: {} });
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
   });
 
   test(`should handle GET /notepads/${NOTEPAD_ID}/task/${TASK_ID}`, async () => {
@@ -164,7 +164,7 @@ describe('httpServer GET', () => {
       .set('Content-Type', 'application/json');
 
     expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: {} });
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
   });
 });
 
@@ -280,7 +280,7 @@ describe('httpServer POST', () => {
         .set('Content-Type', 'application/json');
 
       expect(response.status).toBe(500);
-      expect(response.body).toEqual({ error: {} });
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
     });
   });
 
@@ -384,7 +384,7 @@ describe('httpServer POST', () => {
         .set('Content-Type', 'application/json');
 
       expect(response.status).toBe(500);
-      expect(response.body).toEqual({ error: {} });
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
     });
   });
 });
@@ -507,7 +507,7 @@ describe('httpServer PATH', () => {
         .set('Content-Type', 'application/json');
 
       expect(response.status).toBe(500);
-      expect(response.body).toEqual({ error: {} });
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
     });
   });
 
@@ -635,7 +635,7 @@ describe('httpServer PATH', () => {
         .set('Content-Type', 'application/json');
 
       expect(response.status).toBe(500);
-      expect(response.body).toEqual({ error: {} });
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
     });
   });
 });
@@ -693,7 +693,7 @@ describe('httpServer DELETE', () => {
         .set('Content-Type', 'application/json');
 
       expect(response.status).toBe(500);
-      expect(response.body).toEqual({ error: {} });
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
     });
   });
 
@@ -737,7 +737,7 @@ describe('httpServer DELETE', () => {
         .set('Content-Type', 'application/json');
 
       expect(response.status).toBe(500);
-      expect(response.body).toEqual({ error: {} });
+      expect(response.body).toEqual({ error: 'Internal Server Error' });
     });
   });
 });
