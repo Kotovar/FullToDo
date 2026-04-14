@@ -1,7 +1,6 @@
 import {
   type Task,
   type Notepad,
-  type RefreshToken,
   type DbUser,
   USER_ID,
 } from '@sharedCommon/schemas';
@@ -263,8 +262,6 @@ export const NOTEPADS: Notepad[] = [
   { title: 'Быт', _id: '3', tasks: TASKS3, userId: USER_ID },
   { title: 'Временный', _id: '4', tasks: TASKS4, userId: USER_ID },
 ];
-
-export const REFRESH_TOKENS: RefreshToken[] = [];
 
 // password: Password1
 export const USERS: DbUser[] = [

@@ -6,6 +6,7 @@ import { taskRepository } from '@repositories';
 import { validTaskDataMock, validTasksData } from '@db/mock';
 import { createHttpServer, extractPath } from './httpServer';
 import { ConflictError, NotFoundError } from '@errors/AppError';
+import { generateAccessToken } from '@utils';
 import {
   type Notepad,
   type NotepadResponse,
@@ -22,6 +23,7 @@ const port = 3000;
 const server = createHttpServer();
 const internalError = new Error('Internal Server Error');
 const validationErrorMessage = 'Invalid data';
+const authHeader = `Bearer ${generateAccessToken(USER_ID)}`;
 
 type MockZodError = ZodError<{ title: string }>;
 
@@ -54,7 +56,10 @@ describe('httpServer GET', () => {
   test('should handle GET /tasks', async () => {
     vi.spyOn(taskRepository, 'getAllTasks').mockResolvedValue(validTasksData);
 
-    const response = await request(server).get(ROUTES.tasks.base);
+    const response = await request(server)
+      .get(ROUTES.tasks.base)
+      .set('Authorization', authHeader);
+
     expect(JSON.stringify(response.body.data)).toEqual(
       JSON.stringify(validTasksData.tasks),
     );
@@ -66,25 +71,14 @@ describe('httpServer GET', () => {
     const response = await request(server)
       .get(ROUTES.tasks.base)
       .set('Accept', 'application/json')
-      .set('Content-Type', 'application/json');
+      .set('Content-Type', 'application/json')
+      .set('Authorization', authHeader);
 
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Internal Server Error' });
   });
 
-  // TODO: обновить после правок интерфейса задач
-  // test('should handle GET /notepads', async () => {
-  //   vi.spyOn(taskRepository, 'getAllNotepads').mockResolvedValue(
-  //     validNotepadWithoutTasksData,
-  //   );
-
-  //   const response = await request(server).get(ROUTES.notepads.base);
-  //   expect(response.body.data).toEqual(validNotepadWithoutTasksData);
-  // });
-
-  test('should return 401 if an internal server error occurs - /notepads', async () => {
-    vi.spyOn(taskRepository, 'getAllNotepads').mockRejectedValue(internalError);
-
+  test('should return 401 if no auth token provided - /notepads', async () => {
     const response = await request(server)
       .get(ROUTES.notepads.base)
       .set('Accept', 'application/json')
@@ -103,9 +97,10 @@ describe('httpServer GET', () => {
       validTasksData,
     );
 
-    const response = await request(server).get(
-      ROUTES.notepads.getPath(NOTEPAD_ID),
-    );
+    const response = await request(server)
+      .get(ROUTES.notepads.getPath(NOTEPAD_ID))
+      .set('Authorization', authHeader);
+
     expect(response.status).toBe(200);
     expect(JSON.stringify(response.body.data)).toEqual(
       JSON.stringify(validTasksData.tasks),
@@ -120,7 +115,8 @@ describe('httpServer GET', () => {
     const response = await request(server)
       .get(ROUTES.notepads.getPath(NOTEPAD_ID))
       .set('Accept', 'application/json')
-      .set('Content-Type', 'application/json');
+      .set('Content-Type', 'application/json')
+      .set('Authorization', authHeader);
 
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -131,9 +127,10 @@ describe('httpServer GET', () => {
       validTaskDataMock,
     );
 
-    const response = await request(server).get(
-      ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID),
-    );
+    const response = await request(server)
+      .get(ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID))
+      .set('Authorization', authHeader);
+
     expect(JSON.stringify(response.body.data)).toEqual(
       JSON.stringify(validTaskDataMock),
     );
@@ -147,12 +144,14 @@ describe('httpServer GET', () => {
     const response = await request(server)
       .get(`${ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID)}`)
       .set('Accept', 'application/json')
-      .set('Content-Type', 'application/json');
+      .set('Content-Type', 'application/json')
+      .set('Authorization', authHeader);
 
     expect(response.status).toBe(404);
     expect(taskRepository.getSingleTask).toHaveBeenCalledWith(
       NOTEPAD_ID,
       TASK_ID,
+      USER_ID,
     );
   });
 
@@ -162,7 +161,8 @@ describe('httpServer GET', () => {
     const response = await request(server)
       .get(`${ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID)}`)
       .set('Accept', 'application/json')
-      .set('Content-Type', 'application/json');
+      .set('Content-Type', 'application/json')
+      .set('Authorization', authHeader);
 
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -198,7 +198,8 @@ describe('httpServer POST', () => {
         .post(ROUTES.notepads.base)
         .send(notepadData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(201);
       expect(response.body).toEqual(
@@ -207,7 +208,10 @@ describe('httpServer POST', () => {
           notepad: expect.objectContaining({ title: notepadData.title }),
         }),
       );
-      expect(taskRepository.createNotepad).toHaveBeenCalledWith(notepadData);
+      expect(taskRepository.createNotepad).toHaveBeenCalledWith(
+        notepadData,
+        USER_ID,
+      );
     });
 
     test('should return 400 if Content-Type is not application/json', async () => {
@@ -245,7 +249,8 @@ describe('httpServer POST', () => {
         .post(ROUTES.notepads.base)
         .send(invalidNotepadData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual(validationError);
@@ -264,7 +269,8 @@ describe('httpServer POST', () => {
         .post(ROUTES.notepads.base)
         .send(notepadData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(409);
     });
@@ -278,7 +284,8 @@ describe('httpServer POST', () => {
         .post(ROUTES.notepads.base)
         .send(notepadData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -308,7 +315,8 @@ describe('httpServer POST', () => {
         .post(ROUTES.notepads.getPath(NOTEPAD_ID))
         .send(taskData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(201);
       expect(response.body).toEqual(
@@ -323,6 +331,7 @@ describe('httpServer POST', () => {
       expect(taskRepository.createTask).toHaveBeenCalledWith(
         taskData,
         NOTEPAD_ID,
+        USER_ID,
       );
     });
 
@@ -367,7 +376,8 @@ describe('httpServer POST', () => {
         .post(ROUTES.notepads.getPath(NOTEPAD_ID))
         .send(invalidTaskData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual(validationError);
@@ -382,7 +392,8 @@ describe('httpServer POST', () => {
         .post(ROUTES.notepads.getPath(NOTEPAD_ID))
         .send(taskData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -423,13 +434,15 @@ describe('httpServer PATH', () => {
         .patch(`${ROUTES.notepads.base}/${NOTEPAD_ID}`)
         .send(updatedNotepadData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(notepadResponse.status);
       expect(response.body.data).toEqual(updatedNotepad);
       expect(taskRepository.updateNotepad).toHaveBeenCalledWith(
         NOTEPAD_ID,
         updatedNotepadData,
+        USER_ID,
       );
     });
 
@@ -468,7 +481,8 @@ describe('httpServer PATH', () => {
         .patch(`${ROUTES.notepads.base}/${NOTEPAD_ID}`)
         .send(invalidNotepadData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual(validationError);
@@ -485,12 +499,14 @@ describe('httpServer PATH', () => {
         .patch(`${ROUTES.notepads.base}/${NOTEPAD_ID}`)
         .send(updatedNotepadData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(404);
       expect(taskRepository.updateNotepad).toHaveBeenCalledWith(
         NOTEPAD_ID,
         updatedNotepadData,
+        USER_ID,
       );
     });
 
@@ -505,7 +521,8 @@ describe('httpServer PATH', () => {
         .patch(`${ROUTES.notepads.base}/${NOTEPAD_ID}`)
         .send(notepadData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -540,7 +557,8 @@ describe('httpServer PATH', () => {
         .patch(`${ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID)}`)
         .send(updatedTaskData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(taskResponse.status);
       expect(response.body.data).toEqual(
@@ -552,6 +570,7 @@ describe('httpServer PATH', () => {
       expect(taskRepository.updateTask).toHaveBeenCalledWith(
         TASK_ID,
         updatedTaskData,
+        USER_ID,
       );
     });
 
@@ -602,7 +621,8 @@ describe('httpServer PATH', () => {
         .patch(`${ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID)}`)
         .send(invalidTaskData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual(validationError);
@@ -617,12 +637,14 @@ describe('httpServer PATH', () => {
         .patch(`${ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID)}`)
         .send(updatedTaskData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(404);
       expect(taskRepository.updateTask).toHaveBeenCalledWith(
         TASK_ID,
         updatedTaskData,
+        USER_ID,
       );
     });
 
@@ -633,7 +655,8 @@ describe('httpServer PATH', () => {
         .patch(`${ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID)}`)
         .send(updatedTaskData)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -659,10 +682,14 @@ describe('httpServer DELETE', () => {
         .delete(`${ROUTES.notepads.base}/${NOTEPAD_ID}`)
         .send(NOTEPAD_ID)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(200);
-      expect(taskRepository.deleteNotepad).toHaveBeenCalledWith(NOTEPAD_ID);
+      expect(taskRepository.deleteNotepad).toHaveBeenCalledWith(
+        NOTEPAD_ID,
+        USER_ID,
+      );
     });
 
     test('should return 404 if notepad not found', async () => {
@@ -676,10 +703,14 @@ describe('httpServer DELETE', () => {
         .delete(`${ROUTES.notepads.base}/${NOTEPAD_ID}`)
         .send(NOTEPAD_ID)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(404);
-      expect(taskRepository.deleteNotepad).toHaveBeenCalledWith(NOTEPAD_ID);
+      expect(taskRepository.deleteNotepad).toHaveBeenCalledWith(
+        NOTEPAD_ID,
+        USER_ID,
+      );
     });
 
     test('should return 500 if an internal server error occurs', async () => {
@@ -691,7 +722,8 @@ describe('httpServer DELETE', () => {
         .delete(`${ROUTES.notepads.base}/${NOTEPAD_ID}`)
         .send(NOTEPAD_ID)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -706,10 +738,11 @@ describe('httpServer DELETE', () => {
         .delete(`${ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID)}`)
         .send(TASK_ID)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(200);
-      expect(taskRepository.deleteTask).toHaveBeenCalledWith(TASK_ID);
+      expect(taskRepository.deleteTask).toHaveBeenCalledWith(TASK_ID, USER_ID);
     });
 
     test('should return 404 if task not found', async () => {
@@ -720,10 +753,11 @@ describe('httpServer DELETE', () => {
         .delete(`${ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID)}`)
         .send(TASK_ID)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(404);
-      expect(taskRepository.deleteTask).toHaveBeenCalledWith(TASK_ID);
+      expect(taskRepository.deleteTask).toHaveBeenCalledWith(TASK_ID, USER_ID);
     });
 
     test('should return 500 if an internal server error occurs', async () => {
@@ -735,7 +769,8 @@ describe('httpServer DELETE', () => {
         .delete(`${ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID)}`)
         .send(TASK_ID)
         .set('Accept', 'application/json')
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('Authorization', authHeader);
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: 'Internal Server Error' });

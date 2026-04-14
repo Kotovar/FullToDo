@@ -1,6 +1,5 @@
 import {
   COMMON_NOTEPAD_ID,
-  USER_ID,
   PAGINATION,
   type Notepad,
   type NotepadWithoutTasks,
@@ -54,16 +53,18 @@ export class PostgresTaskRepository implements TaskRepository {
     };
   }
 
-  async createNotepad({ title }: CreateNotepad): Promise<Notepad> {
+  async createNotepad(
+    { title }: CreateNotepad,
+    userId: number,
+  ): Promise<Notepad> {
     try {
-      // TODO: заменить USER_ID на реального пользователя из сессии
       const result = await query<{
         _id: string;
         title: string;
         userId: number;
       }>(
-        'INSERT INTO notepads (title, user_id) VALUES ($1, $2) RETURNING _id::text, title, user_id as userId',
-        [title, USER_ID],
+        'INSERT INTO notepads (title, user_id) VALUES ($1, $2) RETURNING _id::text, title, user_id as "userId"',
+        [title, userId],
       );
 
       return { ...result.rows[0], tasks: [] };
@@ -76,19 +77,22 @@ export class PostgresTaskRepository implements TaskRepository {
     }
   }
 
-  async createTask(task: CreateTask, notepadId: string): Promise<Task> {
+  async createTask(
+    task: CreateTask,
+    notepadId: string,
+    userId: number,
+  ): Promise<Task> {
     const { title, dueDate } = task;
 
     const dbNotepadId = notepadId === COMMON_NOTEPAD_ID ? null : notepadId;
 
     try {
-      // TODO: заменить USER_ID на реального пользователя из сессии
       const result = await query<Task>(
         `INSERT INTO tasks (notepad_id, title, due_date, user_id) VALUES ($1, $2, $3, $4)
          RETURNING _id::text, title, description, due_date AS "dueDate",
                    created_date AS "createdDate", is_completed AS "isCompleted",
                    COALESCE(notepad_id::text, $5) AS "notepadId"`,
-        [dbNotepadId, title, dueDate, USER_ID, notepadId],
+        [dbNotepadId, title, dueDate, userId, notepadId],
       );
       return { ...result.rows[0], subtasks: [], progress: '' };
     } catch (err) {
@@ -106,7 +110,7 @@ export class PostgresTaskRepository implements TaskRepository {
 
   async getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]> {
     const notepads = await query<NotepadWithoutTasks>(
-      'SELECT title, _id::text, user_id::text AS "userId" FROM notepads WHERE user_id = $1',
+      'SELECT title, _id::text, user_id AS "userId" FROM notepads WHERE user_id = $1',
       [userId],
     );
 
@@ -116,20 +120,27 @@ export class PostgresTaskRepository implements TaskRepository {
     ];
   }
 
-  async getAllTasks(params: TaskQueryParams = {}): Promise<PaginatedTasks> {
+  async getAllTasks(
+    userId: number,
+    params: TaskQueryParams = {},
+  ): Promise<PaginatedTasks> {
     const {
       sortBy,
       order,
       page = PAGINATION.DEFAULT_PAGE,
       limit = PAGINATION.DEFAULT_LIMIT,
     } = params;
-    const { whereSQL, values } = buildTaskFilterSQL(params);
+    const { whereSQL, values } = buildTaskFilterSQL(params, userId);
     const orderSQL = buildOrderSQL(sortBy, order);
 
     return this.queryPaginatedTasks(whereSQL, values, page, limit, orderSQL);
   }
 
-  async getSingleTask(notepadId: string, taskId: string): Promise<Task> {
+  async getSingleTask(
+    notepadId: string,
+    taskId: string,
+    userId: number,
+  ): Promise<Task> {
     const isCommon = notepadId === COMMON_NOTEPAD_ID;
 
     const result = await query<Task>(
@@ -153,9 +164,9 @@ export class PostgresTaskRepository implements TaskRepository {
         ) AS subtasks
       FROM tasks t
       LEFT JOIN subtasks s ON s.task_id = t._id
-      WHERE t._id = $1 ${isCommon ? '' : 'AND t.notepad_id = $2'}
+      WHERE t._id = $1 AND t.user_id = $2 ${isCommon ? '' : 'AND t.notepad_id = $3'}
       GROUP BY t._id`,
-      isCommon ? [taskId] : [taskId, notepadId],
+      isCommon ? [taskId, userId] : [taskId, userId, notepadId],
     );
 
     if (!result.rows[0]) {
@@ -169,6 +180,7 @@ export class PostgresTaskRepository implements TaskRepository {
 
   async getSingleNotepadTasks(
     notepadId: string,
+    userId: number,
     params: TaskQueryParams = {},
   ): Promise<PaginatedTasks> {
     const isCommon = notepadId === COMMON_NOTEPAD_ID;
@@ -182,7 +194,7 @@ export class PostgresTaskRepository implements TaskRepository {
 
     const { whereSQL, values } = buildTaskFilterSQL(
       params,
-      [],
+      userId,
       isCommon ? undefined : notepadId,
     );
     const orderSQL = buildOrderSQL(sortBy, order);
@@ -193,13 +205,14 @@ export class PostgresTaskRepository implements TaskRepository {
   async updateNotepad(
     notepadId: string,
     updatedNotepadFields: Partial<CreateNotepad>,
+    userId: number,
   ): Promise<Notepad> {
     const result = await query<Notepad>(
       `UPDATE notepads
         SET title = $1
-        WHERE _id = $2
+        WHERE _id = $2 AND user_id = $3
         RETURNING _id::text, title`,
-      [updatedNotepadFields.title, notepadId],
+      [updatedNotepadFields.title, notepadId, userId],
     );
 
     if (!result.rows[0]) {
@@ -215,24 +228,35 @@ export class PostgresTaskRepository implements TaskRepository {
     return { ...result.rows[0], tasks: tasks.rows };
   }
 
-  async updateTask(taskId: string, fields: Partial<UpdateTask>): Promise<Task> {
+  async updateTask(
+    taskId: string,
+    fields: Partial<UpdateTask>,
+    userId: number,
+  ): Promise<Task> {
     const { subtasks, ...taskFields } = fields;
 
     let task: Task;
 
     if (Object.keys(taskFields).length > 0) {
       const { setSQL, values } = buildTaskUpdateSQL(taskFields);
+
+      values.push(userId);
+      const userIdIdx = values.length;
+
       values.push(taskId);
+      const taskIdIdx = values.length;
+
       const result = await query<Task>(
-        `UPDATE tasks SET ${setSQL} WHERE _id = $${values.length} RETURNING ${TASK_COLUMNS}`,
+        `UPDATE tasks SET ${setSQL} WHERE user_id = $${userIdIdx} AND _id = $${taskIdIdx} RETURNING ${TASK_COLUMNS}`,
         values,
       );
+
       if (!result.rows[0]) throw new NotFoundError(`Task ${taskId} not found`);
       task = result.rows[0];
     } else {
       const result = await query<Task>(
-        `SELECT ${TASK_COLUMNS} FROM tasks WHERE _id = $1`,
-        [taskId],
+        `SELECT ${TASK_COLUMNS} FROM tasks WHERE _id = $1 AND user_id = $2`,
+        [taskId, userId],
       );
       if (!result.rows[0]) throw new NotFoundError(`Task ${taskId} not found`);
       task = result.rows[0];
@@ -254,21 +278,25 @@ export class PostgresTaskRepository implements TaskRepository {
     return { ...task, subtasks: subtasks ?? [] };
   }
 
-  async deleteNotepad(notepadId: string): Promise<void> {
+  async deleteNotepad(notepadId: string, userId: number): Promise<void> {
     if (notepadId === COMMON_NOTEPAD_ID) {
       throw new ForbiddenError(`Cannot delete the common notepad`);
     }
 
-    const result = await query(`DELETE FROM notepads WHERE _id = $1`, [
-      notepadId,
-    ]);
+    const result = await query(
+      `DELETE FROM notepads WHERE _id = $1 AND user_id = $2`,
+      [notepadId, userId],
+    );
 
     if (result.rowCount === 0)
       throw new NotFoundError(`Notepad ${notepadId} not found`);
   }
 
-  async deleteTask(taskId: string): Promise<void> {
-    const result = await query(`DELETE FROM tasks WHERE _id = $1`, [taskId]);
+  async deleteTask(taskId: string, userId: number): Promise<void> {
+    const result = await query(
+      `DELETE FROM tasks WHERE _id = $1 AND user_id = $2`,
+      [taskId, userId],
+    );
 
     if (result.rowCount === 0)
       throw new NotFoundError(`Task with id ${taskId} not found`);

@@ -60,17 +60,18 @@ type FilterResult = {
  * pg подставляет их как безопасные литералы, а не вставляет напрямую в строку.
  *
  * @param params - параметры фильтрации из запроса
- * @param initialValues - начальные значения, если в запросе уже есть параметры до фильтров.
- *   Например, в getSingleNotepadTasks первым параметром идёт $1 = notepadId,
- *   поэтому фильтры должны начинаться с $2.
+ * @param userId - идентификатор пользователя; всегда идёт первым ($1 = user_id),
+ *   обеспечивая изоляцию данных между пользователями
+ * @param notepadId - если передан, добавляет фильтр по конкретному блокноту
  */
 export function buildTaskFilterSQL(
   params: TaskQueryParams,
-  initialValues: unknown[] = [],
+  userId: number,
   notepadId?: string,
 ): FilterResult {
   const where: string[] = [];
-  const values: unknown[] = [...initialValues];
+  const values: unknown[] = [userId];
+  where.push(`user_id = $${values.length}`);
 
   if (notepadId) {
     values.push(notepadId);

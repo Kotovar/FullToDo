@@ -56,7 +56,7 @@ describe('MockTaskRepository', () => {
   });
 
   test('method createNotepad', async () => {
-    const newNotepad = await repository.createNotepad(newTitleNotepad);
+    const newNotepad = await repository.createNotepad(newTitleNotepad, USER_ID);
 
     expect(newNotepad).toEqual(
       expect.objectContaining({
@@ -65,13 +65,15 @@ describe('MockTaskRepository', () => {
       }),
     );
 
-    await expect(repository.createNotepad(newTitleNotepad)).rejects.toThrow(
+    await expect(
+      repository.createNotepad(newTitleNotepad, USER_ID),
+    ).rejects.toThrow(
       `Notebook with title ${newTitleNotepad.title} already exists`,
     );
   });
 
   test('method createTask', async () => {
-    const newTaskData = await repository.createTask(newTask, realId);
+    const newTaskData = await repository.createTask(newTask, realId, USER_ID);
 
     expect(newTaskData).toEqual(
       expect.objectContaining({
@@ -83,13 +85,17 @@ describe('MockTaskRepository', () => {
       }),
     );
 
-    await expect(repository.createTask(newTask, notepadId)).rejects.toThrow(
-      `Notebook ${notepadId} not found`,
-    );
+    await expect(
+      repository.createTask(newTask, notepadId, USER_ID),
+    ).rejects.toThrow(`Notebook ${notepadId} not found`);
   });
 
   test('method createTask and common notepad', async () => {
-    const newTaskData = await repository.createTask(newTask, COMMON_NOTEPAD_ID);
+    const newTaskData = await repository.createTask(
+      newTask,
+      COMMON_NOTEPAD_ID,
+      USER_ID,
+    );
 
     expect(newTaskData).toEqual(
       expect.objectContaining({
@@ -113,7 +119,7 @@ describe('MockTaskRepository', () => {
   });
 
   test('method getAllTasks', async () => {
-    const response = await repository.getAllTasks();
+    const response = await repository.getAllTasks(USER_ID);
 
     const meta = getMetaMock(allTasks);
 
@@ -129,7 +135,7 @@ describe('MockTaskRepository', () => {
       hasDueDate: 'false',
     };
 
-    const response = await repository.getAllTasks(params);
+    const response = await repository.getAllTasks(USER_ID, params);
 
     const allTasksFiltered = allTasks
       .filter(task => task.isCompleted && !task.dueDate)
@@ -142,7 +148,7 @@ describe('MockTaskRepository', () => {
       tasks: allTasksFiltered,
     });
 
-    const responseGetWithDueDate = await repository.getAllTasks({
+    const responseGetWithDueDate = await repository.getAllTasks(USER_ID, {
       hasDueDate: 'true',
     });
 
@@ -154,10 +160,13 @@ describe('MockTaskRepository', () => {
       tasks: allTasksWithDueDate,
     });
 
-    const responseGetWithIsCompletedFalse = await repository.getAllTasks({
-      hasDueDate: 'false',
-      isCompleted: 'false',
-    });
+    const responseGetWithIsCompletedFalse = await repository.getAllTasks(
+      USER_ID,
+      {
+        hasDueDate: 'false',
+        isCompleted: 'false',
+      },
+    );
 
     const allTasksFilteredWithIsCompletedFalse = allTasks
       .filter(task => !task.isCompleted && !task.dueDate)
@@ -174,7 +183,7 @@ describe('MockTaskRepository', () => {
       order: 'asc',
     };
 
-    const responseGetAsc = await repository.getAllTasks(params);
+    const responseGetAsc = await repository.getAllTasks(USER_ID, params);
     const dataAsc = getSortedAllTasks(params.order, 'createdDate', allTasks);
     const meta = getMetaMock(allTasks);
 
@@ -183,7 +192,7 @@ describe('MockTaskRepository', () => {
       tasks: dataAsc,
     });
 
-    const responseGetDesc = await repository.getAllTasks({
+    const responseGetDesc = await repository.getAllTasks(USER_ID, {
       sortBy: 'createdDate',
       order: 'desc',
     });
@@ -202,7 +211,7 @@ describe('MockTaskRepository', () => {
       order: 'asc',
     };
 
-    const responseGetAsc = await repository.getAllTasks(params);
+    const responseGetAsc = await repository.getAllTasks(USER_ID, params);
     const dataAsc = getSortedAllTasks(params.order, 'dueDate', allTasks);
     const meta = getMetaMock(allTasks);
 
@@ -211,7 +220,7 @@ describe('MockTaskRepository', () => {
       tasks: dataAsc,
     });
 
-    const responseGetDesc = await repository.getAllTasks({
+    const responseGetDesc = await repository.getAllTasks(USER_ID, {
       ...params,
       order: 'desc',
     });
@@ -234,7 +243,7 @@ describe('MockTaskRepository', () => {
       },
     ]);
 
-    const responseAsc = await repository.getAllTasks({
+    const responseAsc = await repository.getAllTasks(USER_ID, {
       sortBy: 'dueDate',
       order: 'asc',
     });
@@ -243,7 +252,7 @@ describe('MockTaskRepository', () => {
     expect(responseAsc.tasks?.[1].dueDate).toBeUndefined();
     expect(responseAsc.tasks?.[2].dueDate).toBeUndefined();
 
-    const responseDesc = await repository.getAllTasks({
+    const responseDesc = await repository.getAllTasks(USER_ID, {
       sortBy: 'dueDate',
       order: 'desc',
     });
@@ -263,7 +272,7 @@ describe('MockTaskRepository', () => {
       },
     ]);
 
-    const response = await repository.getAllTasks({
+    const response = await repository.getAllTasks(USER_ID, {
       sortBy: 'dueDate',
       order: 'asc',
     });
@@ -282,7 +291,7 @@ describe('MockTaskRepository', () => {
       },
     ]);
 
-    const responseAsc = await repository.getAllTasks({
+    const responseAsc = await repository.getAllTasks(USER_ID, {
       sortBy: 'dueDate',
       order: 'asc',
     });
@@ -291,7 +300,7 @@ describe('MockTaskRepository', () => {
     expect(responseAsc.tasks?.[1].dueDate).toEqual(date2);
     expect(responseAsc.tasks?.[2].dueDate).toEqual(date3);
 
-    const responseDesc = await repository.getAllTasks({
+    const responseDesc = await repository.getAllTasks(USER_ID, {
       sortBy: 'dueDate',
       order: 'desc',
     });
@@ -306,7 +315,7 @@ describe('MockTaskRepository', () => {
       search: '  TasK  ',
     };
 
-    const responseGet = await repository.getAllTasks(params);
+    const responseGet = await repository.getAllTasks(USER_ID, params);
 
     const allTasksSearched = allTasks.filter(
       task =>
@@ -321,7 +330,9 @@ describe('MockTaskRepository', () => {
       tasks: allTasksSearched,
     });
 
-    const responseGetAgain = await repository.getAllTasks({ search: '' });
+    const responseGetAgain = await repository.getAllTasks(USER_ID, {
+      search: '',
+    });
     const metaAllTask = getMetaMock(allTasks);
     const paginatedTasks = allTasks.slice(0, PAGINATION.DEFAULT_LIMIT);
 
@@ -332,17 +343,17 @@ describe('MockTaskRepository', () => {
   });
 
   test('method getSingleTask', async () => {
-    const responseGet = await repository.getSingleTask(realId, realId);
+    const responseGet = await repository.getSingleTask(realId, realId, USER_ID);
 
     expect(responseGet).toEqual(NOTEPADS[0].tasks[0]);
 
-    await expect(repository.getSingleTask(realId, taskId)).rejects.toThrow(
-      `Task ${taskId} not found`,
-    );
+    await expect(
+      repository.getSingleTask(realId, taskId, USER_ID),
+    ).rejects.toThrow(`Task ${taskId} not found`);
   });
 
   test('method getSingleNotepadTasks', async () => {
-    const responseGet = await repository.getSingleNotepadTasks(realId);
+    const responseGet = await repository.getSingleNotepadTasks(realId, USER_ID);
 
     const meta = getMetaMock(NOTEPADS[0].tasks);
     const singleNotepadTasks = NOTEPADS[0].tasks.slice(
@@ -355,15 +366,16 @@ describe('MockTaskRepository', () => {
       tasks: singleNotepadTasks,
     });
 
-    await expect(repository.getSingleNotepadTasks(notepadId)).rejects.toThrow(
-      `Notepad ${notepadId} not found`,
-    );
+    await expect(
+      repository.getSingleNotepadTasks(notepadId, USER_ID),
+    ).rejects.toThrow(`Notepad ${notepadId} not found`);
   });
 
   test('method updateNotepad', async () => {
     const responseUpdate = await repository.updateNotepad(
       realId,
       newTitleNotepad,
+      USER_ID,
     );
 
     expect(responseUpdate).toEqual({
@@ -374,16 +386,20 @@ describe('MockTaskRepository', () => {
     });
 
     await expect(
-      repository.updateNotepad(realId, newTitleNotepad),
+      repository.updateNotepad(realId, newTitleNotepad, USER_ID),
     ).rejects.toThrow(`The title ${newTitleNotepad.title} is already in use`);
 
     await expect(
-      repository.updateNotepad(notepadId, newTitleNotepad),
+      repository.updateNotepad(notepadId, newTitleNotepad, USER_ID),
     ).rejects.toThrow(`Notepad ${notepadId} not found`);
   });
 
   test('method updateTask', async () => {
-    const responseUpdate = await repository.updateTask(realId, updatedTask);
+    const responseUpdate = await repository.updateTask(
+      realId,
+      updatedTask,
+      USER_ID,
+    );
 
     expect(responseUpdate).toEqual({
       ...NOTEPADS[0].tasks[0],
@@ -391,7 +407,7 @@ describe('MockTaskRepository', () => {
     });
 
     await expect(
-      repository.updateTask(taskId, newTitleNotepad),
+      repository.updateTask(taskId, newTitleNotepad, USER_ID),
     ).rejects.toThrow('Task not found');
   });
 
@@ -399,6 +415,7 @@ describe('MockTaskRepository', () => {
     const responseUpdate = await repository.updateTask(
       realId,
       updatedTaskWithoutTitle,
+      USER_ID,
     );
 
     expect(responseUpdate).toEqual({
@@ -408,10 +425,11 @@ describe('MockTaskRepository', () => {
   });
 
   test('method updateTask and undefined dueDate', async () => {
-    const responseUpdate = await repository.updateTask(realId, {
-      ...updatedTask,
-      dueDate: null,
-    });
+    const responseUpdate = await repository.updateTask(
+      realId,
+      { ...updatedTask, dueDate: null },
+      USER_ID,
+    );
 
     const updatedData = { ...NOTEPADS[0].tasks[0] };
     delete updatedData.dueDate;
@@ -425,10 +443,11 @@ describe('MockTaskRepository', () => {
 
   test('method updateTask and not undefined dueDate', async () => {
     const newDueDate = new Date();
-    const responseUpdate = await repository.updateTask(realId, {
-      ...updatedTask,
-      dueDate: newDueDate,
-    });
+    const responseUpdate = await repository.updateTask(
+      realId,
+      { ...updatedTask, dueDate: newDueDate },
+      USER_ID,
+    );
 
     const updatedData = { ...NOTEPADS[0].tasks[0], dueDate: newDueDate };
 
@@ -441,18 +460,20 @@ describe('MockTaskRepository', () => {
 
   test('method updateTask and notepadError', async () => {
     await expect(
-      repository.updateTask(realId, {
-        ...updatedTask,
-        notepadId: notepadId,
-      }),
+      repository.updateTask(
+        realId,
+        { ...updatedTask, notepadId: notepadId },
+        USER_ID,
+      ),
     ).rejects.toThrow(`Notebook ${notepadId} not found`);
   });
 
   test('method updateTask and common notepad', async () => {
-    const responseUpdate = await repository.updateTask(realId, {
-      ...updatedTask,
-      notepadId: COMMON_NOTEPAD_ID,
-    });
+    const responseUpdate = await repository.updateTask(
+      realId,
+      { ...updatedTask, notepadId: COMMON_NOTEPAD_ID },
+      USER_ID,
+    );
 
     expect(responseUpdate).toStrictEqual({
       ...NOTEPADS[0].tasks[0],
@@ -464,10 +485,11 @@ describe('MockTaskRepository', () => {
   test('method updateTask and switch task to another notepad', async () => {
     const anotherRealTaskId = '2';
 
-    const responseUpdate = await repository.updateTask(realId, {
-      ...updatedTask,
-      notepadId: anotherRealTaskId,
-    });
+    const responseUpdate = await repository.updateTask(
+      realId,
+      { ...updatedTask, notepadId: anotherRealTaskId },
+      USER_ID,
+    );
 
     expect(responseUpdate.notepadId).toBe(anotherRealTaskId);
   });
@@ -478,17 +500,18 @@ describe('MockTaskRepository', () => {
       subtasks: [{ isCompleted: false, title: 'Выучить Java', _id: '7' }],
     };
 
-    const response = await repository.updateTask(realId, updatedTask);
+    const response = await repository.updateTask(realId, updatedTask, USER_ID);
     expect(response.progress).toBe(
       `${updatedTask.subtasks.filter(task => task.isCompleted).length}/${updatedTask.subtasks.length}`,
     );
   });
 
   test('should handle empty subtasks with empty progress', async () => {
-    const response = await repository.updateTask(realId, {
-      title: 'Updated title',
-      subtasks: [],
-    });
+    const response = await repository.updateTask(
+      realId,
+      { title: 'Updated title', subtasks: [] },
+      USER_ID,
+    );
 
     expect(response.progress).toBe('');
   });
@@ -496,23 +519,31 @@ describe('MockTaskRepository', () => {
   test('should default finishedSubtasks and totalSubtasks to 0', async () => {
     const repo = new MockTaskRepository(customNotepad);
 
-    const updatedTask = await repo.updateTask(realId, {
-      title: 'New title',
-    });
+    const updatedTask = await repo.updateTask(
+      realId,
+      { title: 'New title' },
+      USER_ID,
+    );
 
     expect(updatedTask.progress).toBe('');
   });
 
   test('method deleteNotepad', async () => {
-    await expect(repository.deleteNotepad(realId)).resolves.toBeUndefined();
+    await expect(
+      repository.deleteNotepad(realId, USER_ID),
+    ).resolves.toBeUndefined();
 
-    await expect(repository.deleteNotepad(notepadId)).rejects.toThrow();
+    await expect(
+      repository.deleteNotepad(notepadId, USER_ID),
+    ).rejects.toThrow();
   });
 
   test('method deleteTask', async () => {
-    await expect(repository.deleteTask(realId)).resolves.toBeUndefined();
+    await expect(
+      repository.deleteTask(realId, USER_ID),
+    ).resolves.toBeUndefined();
 
-    await expect(repository.deleteTask(taskId)).rejects.toThrow();
+    await expect(repository.deleteTask(taskId, USER_ID)).rejects.toThrow();
   });
 
   test('method deleteTask with common notepad and unreal notepadId', async () => {
@@ -525,7 +556,7 @@ describe('MockTaskRepository', () => {
       },
     ]);
 
-    await expect(repository.deleteTask('1')).resolves.toBeUndefined();
-    await expect(repository.deleteTask('2')).resolves.toBeUndefined();
+    await expect(repository.deleteTask('1', USER_ID)).resolves.toBeUndefined();
+    await expect(repository.deleteTask('2', USER_ID)).resolves.toBeUndefined();
   });
 });

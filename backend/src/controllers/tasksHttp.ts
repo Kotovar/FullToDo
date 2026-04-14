@@ -7,16 +7,16 @@ import {
   handleValidationError,
   parseJsonBody,
 } from './utils';
+import { httpAuthMiddleware } from '@middleware';
 import type { TaskService } from '@services/TaskService';
 import type { ServiceHandler } from './types';
 
-export const createTask: ServiceHandler<TaskService> = async (
-  { req, res },
-  service: TaskService,
-) => {
+export const createTask: ServiceHandler<TaskService> = async (ctx, service) => {
+  const { req, res } = ctx;
   try {
     if (!checkContentType(req, res)) return;
 
+    const { userId } = httpAuthMiddleware(ctx);
     const { notepadId } = getId(req, 'notepad');
     const rawTask = await parseJsonBody(req);
     const validationResult = createTaskSchema.safeParse(rawTask);
@@ -25,7 +25,11 @@ export const createTask: ServiceHandler<TaskService> = async (
       return handleValidationError(res, validationResult.error);
     }
 
-    const task = await service.createTask(validationResult.data, notepadId);
+    const task = await service.createTask(
+      validationResult.data,
+      notepadId,
+      userId,
+    );
 
     res
       .writeHead(201, { 'Content-Type': 'application/json' })
@@ -36,12 +40,14 @@ export const createTask: ServiceHandler<TaskService> = async (
 };
 
 export const getSingleTask: ServiceHandler<TaskService> = async (
-  { req, res },
-  service: TaskService,
+  ctx,
+  service,
 ) => {
+  const { req, res } = ctx;
   try {
+    const { userId } = httpAuthMiddleware(ctx);
     const { notepadId, taskId } = getId(req, 'task');
-    const task = await service.getSingleTask(notepadId, taskId);
+    const task = await service.getSingleTask(notepadId, taskId, userId);
 
     res
       .writeHead(200, { 'Content-Type': 'application/json' })
@@ -52,13 +58,14 @@ export const getSingleTask: ServiceHandler<TaskService> = async (
 };
 
 export const getAllTasks: ServiceHandler<TaskService> = async (
-  { req, res },
-  service: TaskService,
+  ctx,
+  service,
 ) => {
-  const params = getValidatedTaskParams(req);
-
+  const { res } = ctx;
+  const params = getValidatedTaskParams(ctx.req);
   try {
-    const { tasks, meta } = await service.getAllTasks(params);
+    const { userId } = httpAuthMiddleware(ctx);
+    const { tasks, meta } = await service.getAllTasks(userId, params);
 
     res
       .writeHead(200, { 'Content-Type': 'application/json' })
@@ -69,15 +76,17 @@ export const getAllTasks: ServiceHandler<TaskService> = async (
 };
 
 export const getSingleNotepadTasks: ServiceHandler<TaskService> = async (
-  { req, res },
-  service: TaskService,
+  ctx,
+  service,
 ) => {
+  const { req, res } = ctx;
   const params = getValidatedTaskParams(req);
-
   try {
+    const { userId } = httpAuthMiddleware(ctx);
     const { notepadId } = getId(req, 'notepad');
     const { tasks, meta } = await service.getSingleNotepadTasks(
       notepadId,
+      userId,
       params,
     );
 
@@ -89,23 +98,26 @@ export const getSingleNotepadTasks: ServiceHandler<TaskService> = async (
   }
 };
 
-export const updateTask: ServiceHandler<TaskService> = async (
-  { req, res },
-  service: TaskService,
-) => {
+export const updateTask: ServiceHandler<TaskService> = async (ctx, service) => {
+  const { req, res } = ctx;
   try {
     if (!checkContentType(req, res)) return;
 
+    const { userId } = httpAuthMiddleware(ctx);
     const { taskId } = getId(req, 'task');
     const rawTask = await parseJsonBody(req);
-
     const validationResult = updateTaskSchema.safeParse(rawTask);
 
     if (!validationResult.success) {
       return handleValidationError(res, validationResult.error);
     }
 
-    const updatedTask = await service.updateTask(taskId, validationResult.data);
+    const updatedTask = await service.updateTask(
+      taskId,
+      validationResult.data,
+      userId,
+    );
+
     res.writeHead(200, { 'Content-Type': 'application/json' }).end(
       JSON.stringify({
         message: `A task with the _id ${taskId} has been successfully updated`,
@@ -117,13 +129,12 @@ export const updateTask: ServiceHandler<TaskService> = async (
   }
 };
 
-export const deleteTask: ServiceHandler<TaskService> = async (
-  { req, res },
-  service: TaskService,
-) => {
+export const deleteTask: ServiceHandler<TaskService> = async (ctx, service) => {
+  const { req, res } = ctx;
   try {
+    const { userId } = httpAuthMiddleware(ctx);
     const { taskId } = getId(req, 'task');
-    await service.deleteTask(taskId);
+    await service.deleteTask(taskId, userId);
 
     res
       .writeHead(200, { 'Content-Type': 'application/json' })

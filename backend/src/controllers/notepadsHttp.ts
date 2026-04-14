@@ -11,12 +11,14 @@ import type { NotepadService } from '@services/NotepadService';
 import type { ServiceHandler } from './types';
 
 export const createNotepad: ServiceHandler<NotepadService> = async (
-  { req, res },
-  service: NotepadService,
+  ctx,
+  service,
 ) => {
+  const { req, res } = ctx;
   try {
     if (!checkContentType(req, res)) return;
 
+    const { userId } = httpAuthMiddleware(ctx);
     const rawNotepad = await parseJsonBody(req);
     const validationResult = createNotepadSchema.safeParse(rawNotepad);
 
@@ -24,7 +26,7 @@ export const createNotepad: ServiceHandler<NotepadService> = async (
       return handleValidationError(res, validationResult.error);
     }
 
-    const notepad = await service.createNotepad(validationResult.data);
+    const notepad = await service.createNotepad(validationResult.data, userId);
 
     res.writeHead(201, { 'Content-Type': 'application/json' }).end(
       JSON.stringify({
@@ -39,10 +41,9 @@ export const createNotepad: ServiceHandler<NotepadService> = async (
 
 export const getAllNotepads: ServiceHandler<NotepadService> = async (
   ctx,
-  service: NotepadService,
+  service,
 ) => {
   const { res } = ctx;
-
   try {
     const { userId } = httpAuthMiddleware(ctx);
     const rawData = await service.getAllNotepads(userId);
@@ -56,12 +57,14 @@ export const getAllNotepads: ServiceHandler<NotepadService> = async (
 };
 
 export const updateNotepad: ServiceHandler<NotepadService> = async (
-  { req, res },
-  service: NotepadService,
+  ctx,
+  service,
 ) => {
+  const { req, res } = ctx;
   try {
     if (!checkContentType(req, res)) return;
 
+    const { userId } = httpAuthMiddleware(ctx);
     const { notepadId } = getId(req, 'notepad');
     const rawNotepad = await parseJsonBody(req);
     const validationResult = createNotepadSchema.safeParse(rawNotepad);
@@ -73,6 +76,7 @@ export const updateNotepad: ServiceHandler<NotepadService> = async (
     const updatedNotepad = await service.updateNotepad(
       notepadId,
       validationResult.data,
+      userId,
     );
 
     res.writeHead(200, { 'Content-Type': 'application/json' }).end(
@@ -87,12 +91,14 @@ export const updateNotepad: ServiceHandler<NotepadService> = async (
 };
 
 export const deleteNotepad: ServiceHandler<NotepadService> = async (
-  { req, res },
-  service: NotepadService,
+  ctx,
+  service,
 ) => {
+  const { req, res } = ctx;
   try {
+    const { userId } = httpAuthMiddleware(ctx);
     const { notepadId } = getId(req, 'notepad');
-    await service.deleteNotepad(notepadId);
+    await service.deleteNotepad(notepadId, userId);
 
     res
       .writeHead(200, { 'Content-Type': 'application/json' })
