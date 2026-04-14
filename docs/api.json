@@ -109,7 +109,7 @@
             "name": ""
           },
           "text": {
-            "value": "{\n  \"email\": \"test@example1.com\",\n  \"password\": \"Password1\"\n}",
+            "value": "{\n  \"email\": \"test@email.ru\",\n  \"password\": \"Password1\"\n}",
             "format": "text/plain"
           },
           "form": {

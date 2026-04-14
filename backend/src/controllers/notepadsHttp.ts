@@ -5,7 +5,8 @@ import {
   handleValidationError,
   parseJsonBody,
 } from './utils';
-import { createNotepadSchema, USER_ID } from '@sharedCommon/schemas';
+import { httpAuthMiddleware } from '@middleware';
+import { createNotepadSchema } from '@sharedCommon/schemas';
 import type { NotepadService } from '@services/NotepadService';
 import type { ServiceHandler } from './types';
 
@@ -37,13 +38,14 @@ export const createNotepad: ServiceHandler<NotepadService> = async (
 };
 
 export const getAllNotepads: ServiceHandler<NotepadService> = async (
-  { res },
+  ctx,
   service: NotepadService,
 ) => {
+  const { res } = ctx;
+
   try {
-    // TODO: заменить на реальные данные от JWT
-    // const userId = req.userId ?? 1;
-    const rawData = await service.getAllNotepads(USER_ID);
+    const { userId } = httpAuthMiddleware(ctx);
+    const rawData = await service.getAllNotepads(userId);
 
     res
       .writeHead(200, { 'Content-Type': 'application/json' })

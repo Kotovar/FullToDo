@@ -266,11 +266,13 @@ export const NOTEPADS: Notepad[] = [
 
 export const REFRESH_TOKENS: RefreshToken[] = [];
 
+// password: Password1
 export const USERS: DbUser[] = [
   {
     userId: USER_ID,
     email: 'test@email.ru',
     isVerified: true,
-    passwordHash: 'hash',
+    passwordHash:
+      '$2b$10$QCqk.fN63FpqtlUzGsKkoOknW6/7/7lNg0a9ey5hKvY8jpK4.CWvi',
   },
 ];

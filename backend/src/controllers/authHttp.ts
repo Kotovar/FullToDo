@@ -44,9 +44,8 @@ export const registerWithEmail: ServiceHandler<AuthService> = async (
   }
 };
 
-// TODO: сделать ограничения на количество попыток, например:
-// 5 попыток / 10 минут
-// делать в middleware - до контроллера
+// TODO: rate limiting — 5 попыток / 10 минут per IP
+// реализовать как middleware до контроллера, счётчики хранить в Redis
 export const loginWithEmail: ServiceHandler<AuthService> = async (
   { req, res },
   service,
@@ -75,9 +74,8 @@ export const loginWithEmail: ServiceHandler<AuthService> = async (
   }
 };
 
-// TODO: сделать ограничения на количество попыток, например:
-// 5 попыток / 10 минут
-// делать в middleware - до контроллера
+// TODO: rate limiting — 5 попыток / 10 минут per IP
+// реализовать как middleware до контроллера, счётчики хранить в Redis
 export const authWithGoogle: ServiceHandler<AuthService> = async (
   { req, res },
   service,
@@ -127,9 +125,8 @@ export const logout: ServiceHandler<AuthService> = async (
   }
 };
 
-// TODO: сделать ограничения на количество попыток, например:
-// 5 попыток / 10 минут
-// делать в middleware - до контроллера
+// TODO: rate limiting — 5 попыток / 10 минут per IP
+// реализовать как middleware до контроллера, счётчики хранить в Redis
 export const refresh: ServiceHandler<AuthService> = async (
   { req, res },
   service,

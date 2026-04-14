@@ -4,34 +4,22 @@ import {
   handleValidationError,
   parseJsonBody,
 } from './utils';
-import { verifyAccessToken } from '@utils';
-import { UnauthorizedError } from '@errors/AppError';
 import { changePasswordSchema, deleteUserSchema } from '@sharedCommon/schemas';
+import { httpAuthMiddleware } from '@middleware';
 import type { ServiceHandler } from './types';
 import type { AuthService } from '@services/AuthService';
 
-// TODO: сделать ограничения на количество попыток, например:
-// 5 попыток / 10 минут
-// делать в middleware - до контроллера
+// TODO: rate limiting — 5 попыток / 10 минут per IP
+// реализовать как middleware до контроллера, счётчики хранить в Redis
 export const changePassword: ServiceHandler<AuthService> = async (
-  { req, res },
+  ctx,
   service,
 ) => {
+  const { req, res } = ctx;
   try {
     if (!checkContentType(req, res)) return;
 
-    // TODO: Сделать auth middleware
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedError('Unauthorized');
-    }
-
-    const accessToken = authHeader.split(' ')[1];
-    // TODO: вынести в middleware: handler знает слишком много про auth
-    const payload = verifyAccessToken(accessToken);
-
-    if (!payload) throw new UnauthorizedError('Invalid access token');
+    const { userId } = httpAuthMiddleware(ctx);
 
     const raw = await parseJsonBody(req);
     const validation = changePasswordSchema.safeParse(raw);
@@ -39,7 +27,6 @@ export const changePassword: ServiceHandler<AuthService> = async (
     if (!validation.success)
       return handleValidationError(res, validation.error);
 
-    const { userId } = payload;
     const { oldPassword, newPassword } = validation.data;
 
     await service.changePassword(userId, oldPassword, newPassword);
@@ -52,26 +39,12 @@ export const changePassword: ServiceHandler<AuthService> = async (
   }
 };
 
-export const deleteUser: ServiceHandler<AuthService> = async (
-  { req, res },
-  service,
-) => {
+export const deleteUser: ServiceHandler<AuthService> = async (ctx, service) => {
+  const { req, res } = ctx;
   try {
     if (!checkContentType(req, res)) return;
 
-    // TODO: Сделать auth middleware
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedError('Unauthorized');
-    }
-
-    const accessToken = authHeader.split(' ')[1];
-
-    // TODO: вынести в middleware: handler знает слишком много про auth
-    const payload = verifyAccessToken(accessToken);
-
-    if (!payload) throw new UnauthorizedError('Invalid access token');
+    const { userId } = httpAuthMiddleware(ctx);
 
     const raw = await parseJsonBody(req);
     const validation = deleteUserSchema.safeParse(raw);
@@ -79,7 +52,6 @@ export const deleteUser: ServiceHandler<AuthService> = async (
     if (!validation.success)
       return handleValidationError(res, validation.error);
 
-    const { userId } = payload;
     const { currentPassword } = validation.data;
     await service.deleteUser(userId, currentPassword);
 
