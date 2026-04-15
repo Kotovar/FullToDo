@@ -1,6 +1,14 @@
-import { DatabaseError, Pool } from 'pg';
+import { DatabaseError, Pool, types } from 'pg';
 import { config } from '@configs';
 import { repositoryLogger } from '@logger/repositories';
+
+// PostgreSQL по умолчанию возвращает колонки типа BIGINT (OID 20) и BIGSERIAL как строки.
+// Это связано с тем, что числа JS — 64-битные float и не могут точно представить все
+// 64-битные целые (потеря точности выше Number.MAX_SAFE_INTEGER ≈ 9 квадриллионов).
+// Текущие ID — небольшие последовательные числа, поэтому parseInt здесь безопасен.
+// setTypeParser регистрирует кастомный декодер: когда pg получает значение типа
+// OID 20 от сервера, он вызывает эту функцию вместо того, чтобы вернуть сырую строку.
+types.setTypeParser(20, val => parseInt(val, 10));
 
 export const pool = new Pool({
   user: config.db.user,

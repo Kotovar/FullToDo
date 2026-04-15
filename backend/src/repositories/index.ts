@@ -10,6 +10,7 @@ import type {
   TaskRepository,
   UserRepository,
 } from './interfaces';
+import { PostgresRefreshTokenRepository } from './postgres/PostgresRefreshTokenRepository';
 
 const {
   db: { type },
@@ -39,7 +40,7 @@ export const userRepository: UserRepository = (() => {
 export const refreshTokenRepository: RefreshTokenRepository = (() => {
   switch (type) {
     case 'postgres':
-      return new MockRefreshTokenRepository();
+      return new PostgresRefreshTokenRepository();
     default:
       return new MockRefreshTokenRepository();
   }
