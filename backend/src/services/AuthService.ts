@@ -72,6 +72,10 @@ export class AuthService {
       throw new UnauthorizedError('This account uses Google login');
     }
 
+    if (!user.isVerified) {
+      throw new UnauthorizedError('Email not verified');
+    }
+
     const isPasswordValid = await comparePassword(
       data.password,
       user.passwordHash,
@@ -85,9 +89,8 @@ export class AuthService {
   }
 
   async authWithGoogle(data: LoginWithGoogle): Promise<AuthTokens> {
-    const { googleId, email } = await this.oAuthService.verifyGoogleToken(
-      data.token,
-    );
+    const { googleId, email, emailVerified } =
+      await this.oAuthService.verifyGoogleToken(data.token);
 
     let user = await this.userRepository.findByGoogleId(googleId);
 
@@ -98,7 +101,11 @@ export class AuthService {
           `Email ${email} is already registered. Try logging in with email and password`,
         );
       }
-      user = await this.userRepository.createUser({ email, googleId });
+      user = await this.userRepository.createUser({
+        email,
+        googleId,
+        isVerified: emailVerified,
+      });
     }
 
     return this.generateAuthTokens(user);
@@ -191,9 +198,7 @@ export class AuthService {
       throw new UnauthorizedError('Re-auth required');
     }
 
-    // TODO: нужны транзакции - делать оба действия или ни одного
     await this.userRepository.deleteUser(userId);
-    await this.tokenRepository.deleteAllByUserId(userId);
 
     userLogger.info({ userId }, 'User deleted');
   }

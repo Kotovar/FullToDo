@@ -23,6 +23,7 @@ export class OAuthService {
     return {
       googleId: payload.sub,
       email: payload.email,
+      emailVerified: payload.email_verified ?? false,
     };
   }
 }

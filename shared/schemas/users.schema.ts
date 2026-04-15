@@ -35,8 +35,8 @@ export const dbUserSchema = z
     userId: z.number(),
     email: zEmail,
     isVerified: z.boolean().default(false),
-    passwordHash: z.string().optional(),
-    googleId: z.string().optional(),
+    passwordHash: z.string().nullish(),
+    googleId: z.string().nullish(),
   })
   .refine(data => data.passwordHash || data.googleId, {
     message: 'User must have at least one auth method',
@@ -51,7 +51,7 @@ export const publicUserSchema = dbUserSchema.transform(
 );
 
 export const createUserSchema = z
-  .object({ email: zEmail })
+  .object({ email: zEmail, isVerified: z.boolean().optional() })
   .and(
     z.union([
       z.object({ passwordHash: z.string(), googleId: z.never().optional() }),
@@ -90,6 +90,7 @@ export type PublicUser = z.infer<typeof publicUserSchema>;
 export type GoogleProfile = {
   googleId: string;
   email: string;
+  emailVerified: boolean;
 };
 
 export type AuthTokens = {

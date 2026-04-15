@@ -258,7 +258,7 @@
         "queryParams": [],
         "pathParams": [],
         "auth": {
-          "type": "none"
+          "type": "inherited"
         },
         "body": {
           "type": "none",
@@ -267,6 +267,41 @@
           },
           "text": {
             "value": "",
+            "format": "application/json"
+          },
+          "form": {
+            "isMultipart": false,
+            "fields": []
+          },
+          "graphql": {
+            "query": "",
+            "variables": ""
+          }
+        }
+      },
+      {
+        "name": "Пользователи / Сменить пароль",
+        "url": "http://localhost:5000/auth/change-password",
+        "method": "POST",
+        "headers": [
+          {
+            "name": "Content-Type",
+            "value": "application/json",
+            "enabled": true
+          }
+        ],
+        "queryParams": [],
+        "pathParams": [],
+        "auth": {
+          "type": "inherited"
+        },
+        "body": {
+          "type": "text",
+          "file": {
+            "name": ""
+          },
+          "text": {
+            "value": "{\n  \"oldPassword\": \"OldPass123\",\n  \"newPassword\": \"NewPass456\"\n}",
             "format": "application/json"
           },
           "form": {

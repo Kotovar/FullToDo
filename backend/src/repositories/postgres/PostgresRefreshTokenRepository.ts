@@ -41,26 +41,18 @@ export class PostgresRefreshTokenRepository implements RefreshTokenRepository {
   }
 
   async deleteByTokenHash(tokenHash: string): Promise<void> {
-    try {
-      await query(
-        `DELETE FROM refresh_tokens
-         WHERE token_hash = $1`,
-        [tokenHash],
-      );
-    } catch {
-      throw new Error('Failed to delete refresh token.');
-    }
+    await query(
+      `DELETE FROM refresh_tokens
+       WHERE token_hash = $1`,
+      [tokenHash],
+    );
   }
 
   async deleteAllByUserId(userId: number): Promise<void> {
-    try {
-      await query(
-        `DELETE FROM refresh_tokens
-         WHERE user_id = $1`,
-        [userId],
-      );
-    } catch {
-      throw new Error('Failed to delete all refresh tokens for user.');
-    }
+    await query(
+      `DELETE FROM refresh_tokens
+       WHERE user_id = $1`,
+      [userId],
+    );
   }
 }

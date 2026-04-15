@@ -2,15 +2,21 @@ export * from './interfaces';
 
 import { config } from '@configs';
 import { NOTEPADS, USERS } from '@db/mock';
-import { MockTaskRepository, MockUserRepository } from './mock';
-import { MockRefreshTokenRepository } from './mock/MockRefreshTokenRepository';
-import { PostgresTaskRepository } from './postgres/PostgresTaskRepository';
+import {
+  MockTaskRepository,
+  MockUserRepository,
+  MockRefreshTokenRepository,
+} from './mock';
+import {
+  PostgresTaskRepository,
+  PostgresRefreshTokenRepository,
+  PostgresUserRepository,
+} from './postgres';
 import type {
   RefreshTokenRepository,
   TaskRepository,
   UserRepository,
 } from './interfaces';
-import { PostgresRefreshTokenRepository } from './postgres/PostgresRefreshTokenRepository';
 
 const {
   db: { type },
@@ -27,11 +33,10 @@ export const taskRepository: TaskRepository = (() => {
   }
 })();
 
-//TODO: Пока без реализации postgres
 export const userRepository: UserRepository = (() => {
   switch (type) {
     case 'postgres':
-      return new MockUserRepository(USERS);
+      return new PostgresUserRepository();
     default:
       return new MockUserRepository(USERS);
   }

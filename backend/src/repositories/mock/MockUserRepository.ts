@@ -15,7 +15,7 @@ export class MockUserRepository implements UserRepository {
   }
 
   async createUser(data: CreateUser): Promise<DbUser> {
-    const { email, googleId, passwordHash } = data;
+    const { email, googleId, passwordHash, isVerified = false } = data;
     if (this.users.some(user => user.email === email)) {
       throw new ConflictError(`User with email ${email} already exists`);
     }
@@ -26,7 +26,7 @@ export class MockUserRepository implements UserRepository {
 
     const newUser = {
       userId: this.generateUserId(),
-      isVerified: false,
+      isVerified,
       email,
       passwordHash,
       googleId,
