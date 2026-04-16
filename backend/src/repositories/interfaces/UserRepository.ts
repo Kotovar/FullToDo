@@ -6,6 +6,6 @@ export interface UserRepository {
   findById(userId: number): Promise<DbUser | null>;
   findByEmail(email: string): Promise<DbUser | null>;
   findByGoogleId(googleId: string): Promise<DbUser | null>;
-  updatePassword(userId: number, passwordHash: string): Promise<void>;
+  changePassword(userId: number, passwordHash: string): Promise<void>;
   deleteUser(userId: number): Promise<void>;
 }

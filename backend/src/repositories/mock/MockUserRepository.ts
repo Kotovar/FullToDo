@@ -59,7 +59,7 @@ export class MockUserRepository implements UserRepository {
     return user ?? null;
   }
 
-  async updatePassword(userId: number, passwordHash: string): Promise<void> {
+  async changePassword(userId: number, passwordHash: string): Promise<void> {
     const user = await this.findById(userId);
 
     if (!user) {

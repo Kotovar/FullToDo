@@ -177,9 +177,11 @@ export class AuthService {
 
     const newHash = await hashPassword(newPassword);
 
-    // TODO: нужны транзакции - делать все действия или ни одного
-    await this.userRepository.updatePassword(userId, newHash);
+    // Postgres: changePassword выполняет UPDATE password + DELETE токены атомарно в транзакции.
+    // Mock:     changePassword обновляет только пароль, токены удаляются отдельно ниже.
+    await this.userRepository.changePassword(userId, newHash);
     await this.tokenRepository.deleteAllByUserId(userId);
+
     await this.emailService.sendPasswordChanged(user.email);
   }
 

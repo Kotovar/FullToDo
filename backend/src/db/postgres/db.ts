@@ -1,4 +1,4 @@
-import { DatabaseError, Pool, types } from 'pg';
+import { DatabaseError, Pool, PoolClient, types } from 'pg';
 import { config } from '@configs';
 import { repositoryLogger } from '@logger/repositories';
 
@@ -31,6 +31,41 @@ export const query = async <T extends object = Record<string, unknown>>(
     'executed query',
   );
   return res;
+};
+
+/**
+ * Выполняет набор SQL-запросов в одной транзакции.
+ *
+ * Берёт клиента из пула соединений и передаёт его в колбек `fn`.
+ * Все запросы внутри `fn` должны использовать этот клиент — только тогда
+ * они выполнятся в одной транзакции и будут атомарными.
+ *
+ * - Если `fn` завершился успешно → COMMIT (все изменения сохраняются).
+ * - Если `fn` выбросил ошибку → ROLLBACK (все изменения отменяются).
+ * - Клиент возвращается в пул в любом случае (блок finally).
+ *
+ * @example
+ * await withTransaction(async (client) => {
+ *   await client.query('UPDATE users SET password_hash = $1 WHERE _id = $2', [hash, id]);
+ *   await client.query('DELETE FROM refresh_tokens WHERE user_id = $1', [id]);
+ *   // Если второй запрос упадёт — первый тоже откатится
+ * });
+ */
+export const withTransaction = async <T>(
+  fn: (client: PoolClient) => Promise<T>,
+): Promise<T> => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await fn(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
 };
 
 export const isDbError = (err: unknown): err is DatabaseError =>

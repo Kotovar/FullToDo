@@ -1,4 +1,4 @@
-import { DB_ERRORS, isDbError, query } from '@db/postgres';
+import { DB_ERRORS, isDbError, query, withTransaction } from '@db/postgres';
 import { ConflictError, NotFoundError } from '@errors/AppError';
 import { UserRepository } from '@repositories/interfaces';
 import type { CreateUser, DbUser } from '@sharedCommon/schemas';
@@ -85,15 +85,21 @@ export class PostgresUserRepository implements UserRepository {
     return result.rows[0] ? rowToDbUser(result.rows[0]) : null;
   }
 
-  async updatePassword(userId: number, passwordHash: string): Promise<void> {
-    const result = await query(
-      `UPDATE users SET password_hash = $1 WHERE _id = $2`,
-      [passwordHash, userId],
-    );
+  async changePassword(userId: number, passwordHash: string): Promise<void> {
+    await withTransaction(async client => {
+      const result = await client.query(
+        `UPDATE users SET password_hash = $1 WHERE _id = $2`,
+        [passwordHash, userId],
+      );
 
-    if (result.rowCount === 0) {
-      throw new NotFoundError(`User ${userId} not found`);
-    }
+      if (result.rowCount === 0) {
+        throw new NotFoundError(`User ${userId} not found`);
+      }
+
+      await client.query(`DELETE FROM refresh_tokens WHERE user_id = $1`, [
+        userId,
+      ]);
+    });
   }
 
   async deleteUser(userId: number): Promise<void> {
