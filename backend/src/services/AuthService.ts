@@ -194,9 +194,6 @@ export class AuthService {
 
       const isValid = await comparePassword(currentPassword, user.passwordHash);
       if (!isValid) throw new UnauthorizedError('Invalid credentials');
-    } else {
-      // TODO: OAuth re-auth (email/Google re-login)
-      throw new UnauthorizedError('Re-auth required');
     }
 
     await this.userRepository.deleteUser(userId);

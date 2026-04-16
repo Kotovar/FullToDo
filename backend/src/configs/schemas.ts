@@ -23,6 +23,7 @@ export const ConfigSchema = z.object({
   server: ServerSchema,
   db: DBSchema,
   smtp: SmtpSchema,
+  corsOrigin: z.url(),
   emailTokenSecret: z.string().min(1),
   accessTokenSecret: z.string().min(1),
   refreshTokenSecret: z.string().min(1),
