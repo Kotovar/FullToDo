@@ -14,9 +14,15 @@ export const DBSchema = z.object({
   port: z.number().min(1).max(65535).default(5432),
 });
 
+export const SmtpSchema = z.object({
+  user: z.string().min(1),
+  pass: z.string().min(1),
+});
+
 export const ConfigSchema = z.object({
   server: ServerSchema,
   db: DBSchema,
+  smtp: SmtpSchema,
   emailTokenSecret: z.string().min(1),
   accessTokenSecret: z.string().min(1),
   refreshTokenSecret: z.string().min(1),

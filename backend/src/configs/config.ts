@@ -17,6 +17,10 @@ export const config = ConfigSchema.parse({
     password: process.env.DB_PASSWORD,
     port: Number(process.env.DB_PORT),
   },
+  smtp: {
+    user: process.env.MAILTRAP_USER,
+    pass: process.env.MAILTRAP_PASS,
+  },
   emailTokenSecret: process.env.EMAIL_TOKEN_SECRET,
   accessTokenSecret: process.env.ACCESS_TOKEN_SECRET,
   refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,

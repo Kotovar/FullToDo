@@ -177,9 +177,10 @@ export class AuthService {
 
     const newHash = await hashPassword(newPassword);
 
-    // TODO: нужны транзакции - делать оба действия или ни одного
+    // TODO: нужны транзакции - делать все действия или ни одного
     await this.userRepository.updatePassword(userId, newHash);
     await this.tokenRepository.deleteAllByUserId(userId);
+    await this.emailService.sendPasswordChanged(user.email);
   }
 
   async deleteUser(userId: number, currentPassword?: string): Promise<void> {
@@ -199,6 +200,7 @@ export class AuthService {
     }
 
     await this.userRepository.deleteUser(userId);
+    await this.emailService.sendAccountDeleted(user.email);
 
     userLogger.info({ userId }, 'User deleted');
   }
