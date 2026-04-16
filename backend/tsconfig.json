@@ -3,6 +3,7 @@
     "target": "es2023",
     "useDefineForClassFields": true,
     "module": "commonjs",
+    "jsx": "react-jsx",
     "rootDir": "../",
     "outDir": "dist",
 
