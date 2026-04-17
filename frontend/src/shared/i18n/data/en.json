@@ -66,6 +66,11 @@
       "CONFLICT": "A notepad with this name already exists",
       "UNDEFINED": "Notepad not found or system notepad was selected"
     },
+    "auth": {
+      "CONFLICT": "A user with this email already exists",
+      "UNAUTHORIZED": "Invalid credentials or session expired",
+      "UNDEFINED": "User not found"
+    },
     "tasks": {
       "CONFLICT": "A task with this name already exists",
       "UNDEFINED": "Notepad not found"
