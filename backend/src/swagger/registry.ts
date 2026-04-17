@@ -223,6 +223,25 @@ registry.registerPath({
 });
 
 registry.registerPath({
+  method: 'get',
+  path: '/auth/me',
+  tags: ['Auth'],
+  summary: 'Get current user',
+  security: bearerAuth,
+  responses: {
+    200: {
+      description: 'Current authenticated user',
+      content: {
+        'application/json': {
+          schema: z.object({ user: PublicUserSchema }),
+        },
+      },
+    },
+    ...unauthorizedResponse,
+  },
+});
+
+registry.registerPath({
   method: 'post',
   path: '/auth/logout',
   tags: ['Auth'],

@@ -25,6 +25,7 @@ import {
   authWithGoogle,
   logout,
   refresh,
+  getCurrentUser,
   verifyEmail,
   resendVerification,
   changePassword,
@@ -64,6 +65,7 @@ export const BASE_ROUTES: Record<string, RouteHandler> = {
   [`POST ${ROUTES.auth.login}`]: ctx => loginWithEmail(ctx, authService),
   [`POST ${ROUTES.auth.logout}`]: ctx => logout(ctx, authService),
   [`POST ${ROUTES.auth.refresh}`]: ctx => refresh(ctx, authService),
+  [`GET ${ROUTES.auth.me}`]: ctx => getCurrentUser(ctx, authService),
   [`POST ${ROUTES.auth.google}`]: ctx => authWithGoogle(ctx, authService),
   [`GET ${ROUTES.auth.verifyEmail}`]: ctx => verifyEmail(ctx, authService),
   [`POST ${ROUTES.auth.resendVerification}`]: ctx =>

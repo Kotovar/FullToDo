@@ -14,6 +14,7 @@ import {
   parseJsonBody,
   setRefreshCookie,
 } from './utils';
+import { httpAuthMiddleware } from '@middleware';
 import { UnauthorizedError } from '@errors/AppError';
 import type { ServiceHandler } from './types';
 import type { AuthService } from '@services/AuthService';
@@ -168,6 +169,26 @@ export const verifyEmail: ServiceHandler<AuthService> = async (
     res.writeHead(200, { 'Content-Type': 'application/json' }).end(
       JSON.stringify({
         message: 'Email verified successfully',
+      }),
+    );
+  } catch (error) {
+    errorHandler(res, error);
+  }
+};
+
+export const getCurrentUser: ServiceHandler<AuthService> = async (
+  ctx,
+  service,
+) => {
+  const { res } = ctx;
+
+  try {
+    const { userId } = httpAuthMiddleware(ctx);
+    const user = await service.getCurrentUser(userId);
+
+    res.writeHead(200, { 'Content-Type': 'application/json' }).end(
+      JSON.stringify({
+        user: publicUserSchema.parse(user),
       }),
     );
   } catch (error) {

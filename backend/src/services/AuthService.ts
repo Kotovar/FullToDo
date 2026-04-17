@@ -139,6 +139,16 @@ export class AuthService {
     return this.generateAuthTokens(user);
   }
 
+  async getCurrentUser(userId: number): Promise<DbUser> {
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      throw new UnauthorizedError('Invalid credentials');
+    }
+
+    return user;
+  }
+
   async logout(refreshToken: string): Promise<void> {
     const tokenHash = hashToken(refreshToken);
     await this.tokenRepository.deleteByTokenHash(tokenHash);

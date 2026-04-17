@@ -2,12 +2,13 @@ import request from 'supertest';
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { ZodError } from 'zod';
 import { ROUTES } from '@sharedCommon/routes';
-import { taskRepository } from '@repositories';
+import { taskRepository, userRepository } from '@repositories';
 import { validTaskDataMock, validTasksData } from '@db/mock';
 import { createHttpServer, extractPath } from './httpServer';
 import { ConflictError, NotFoundError } from '@errors/AppError';
 import { generateAccessToken } from '@utils';
 import {
+  type DbUser,
   type Notepad,
   type NotepadResponse,
   type Task,
@@ -90,6 +91,31 @@ describe('httpServer GET', () => {
         statusCode: 401,
       },
     });
+  });
+
+  test('should handle GET /auth/me', async () => {
+    const currentUser: DbUser = {
+      userId: USER_ID,
+      email: 'user@example.com',
+      isVerified: true,
+      passwordHash: 'hash',
+    };
+
+    vi.spyOn(userRepository, 'findById').mockResolvedValue(currentUser);
+
+    const response = await request(server)
+      .get(ROUTES.auth.me)
+      .set('Authorization', authHeader);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      user: {
+        userId: USER_ID,
+        email: 'user@example.com',
+        isVerified: true,
+      },
+    });
+    expect(userRepository.findById).toHaveBeenCalledWith(USER_ID);
   });
 
   test(`should handle GET /notepads/${NOTEPAD_ID}`, async () => {

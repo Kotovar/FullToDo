@@ -133,12 +133,41 @@
           "type": "inherited"
         },
         "body": {
-          "type": "text",
+          "type": "none",
           "file": {
             "name": ""
           },
           "text": {
-            "value": "{\n  \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3NzYxNjY1MzUsImV4cCI6MTc3NjE2NzQzNX0.vRXlVn2-g-59Hycxeba6nahUEBha7x3aU8Zu9Wa3QCY\"\n}",
+            "value": "",
+            "format": "application/json"
+          },
+          "form": {
+            "isMultipart": false,
+            "fields": []
+          },
+          "graphql": {
+            "query": "",
+            "variables": ""
+          }
+        }
+      },
+      {
+        "name": "Аутентификация / Текущий пользователь",
+        "url": "http://localhost:5000/auth/me",
+        "method": "GET",
+        "headers": [],
+        "queryParams": [],
+        "pathParams": [],
+        "auth": {
+          "type": "inherited"
+        },
+        "body": {
+          "type": "none",
+          "file": {
+            "name": ""
+          },
+          "text": {
+            "value": "",
             "format": "application/json"
           },
           "form": {

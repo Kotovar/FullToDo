@@ -18,6 +18,7 @@ export const ROUTES = {
     login: '/auth/login',
     logout: '/auth/logout',
     refresh: '/auth/refresh',
+    me: '/auth/me',
     google: '/auth/google',
     changePassword: '/auth/change-password',
     deleteUser: '/auth/delete-user',
