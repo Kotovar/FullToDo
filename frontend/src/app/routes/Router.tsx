@@ -1,11 +1,14 @@
+import { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Tasks } from '@pages/Tasks';
 import { Error } from '@pages/Error';
 import { Home } from '@pages/Home';
+import { Login } from '@pages/Login';
+import { Register } from '@pages/Register';
 import { LayoutSkeleton } from '@app/layout/skeleton';
+import { ROUTES } from '@sharedCommon';
 import { TaskDetailSkeleton } from '@shared/ui';
-import { ROUTES } from '@sharedCommon/';
-import { WithSuspense } from './utils';
+import { GuestOnlyRoute, ProtectedRoute } from './guards';
 import { Layout, TaskDetail } from './components';
 
 export const Router = () => {
@@ -14,37 +17,44 @@ export const Router = () => {
       <Routes>
         <Route index element={<Home />} />
 
-        <Route
-          element={
-            <WithSuspense fallback={<LayoutSkeleton />}>
-              <Layout />
-            </WithSuspense>
-          }
-        >
-          <Route path={ROUTES.notepads.base}>
-            <Route index element={<Tasks />} />
-            <Route path={ROUTES.notepads.byId} element={<Tasks />} />
-            <Route path={ROUTES.notepads.tasks} element={<Tasks />} />
-            <Route
-              path={ROUTES.notepads.taskDetail}
-              element={
-                <WithSuspense fallback={<TaskDetailSkeleton />}>
-                  <TaskDetail />
-                </WithSuspense>
-              }
-            />
-          </Route>
+        <Route element={<GuestOnlyRoute />}>
+          <Route path={ROUTES.app.login} element={<Login />} />
+          <Route path={ROUTES.app.register} element={<Register />} />
+        </Route>
 
-          <Route path={ROUTES.tasks.base}>
-            <Route index element={<Tasks />} />
-            <Route
-              path={ROUTES.tasks.byId}
-              element={
-                <WithSuspense fallback={<TaskDetailSkeleton />}>
-                  <TaskDetail />
-                </WithSuspense>
-              }
-            />
+        <Route element={<ProtectedRoute />}>
+          <Route
+            element={
+              <Suspense fallback={<LayoutSkeleton />}>
+                <Layout />
+              </Suspense>
+            }
+          >
+            <Route path={ROUTES.notepads.base}>
+              <Route index element={<Tasks />} />
+              <Route path={ROUTES.notepads.byId} element={<Tasks />} />
+              <Route path={ROUTES.notepads.tasks} element={<Tasks />} />
+              <Route
+                path={ROUTES.notepads.taskDetail}
+                element={
+                  <Suspense fallback={<TaskDetailSkeleton />}>
+                    <TaskDetail />
+                  </Suspense>
+                }
+              />
+            </Route>
+
+            <Route path={ROUTES.tasks.base}>
+              <Route index element={<Tasks />} />
+              <Route
+                path={ROUTES.tasks.byId}
+                element={
+                  <Suspense fallback={<TaskDetailSkeleton />}>
+                    <TaskDetail />
+                  </Suspense>
+                }
+              />
+            </Route>
           </Route>
         </Route>
 

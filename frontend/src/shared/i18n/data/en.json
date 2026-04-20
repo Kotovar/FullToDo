@@ -13,6 +13,14 @@
     "mainTitle": "Home page",
     "open": "Open notebooks"
   },
+  "login": {
+    "title": "Login",
+    "register": "Register"
+  },
+  "register": {
+    "title": "Register",
+    "login": "Login"
+  },
   "card": {
     "additionalMenu": "additional menu"
   },

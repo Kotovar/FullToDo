@@ -1,4 +1,9 @@
 export const ROUTES = {
+  app: {
+    home: '/',
+    login: '/login',
+    register: '/register',
+  },
   notepads: {
     base: '/notepads',
     byId: '/notepads/:notepadId',
