@@ -15,10 +15,42 @@
   },
   "login": {
     "title": "Login",
+    "description": "The login form will be added in the next step.",
+    "afterRegister": {
+      "title": "Registration is almost complete",
+      "message": "We sent a verification email to {{email}}. Follow the link from the email and then sign in to your account.",
+      "fallbackEmail": "your email address"
+    },
     "register": "Register"
   },
   "register": {
     "title": "Register",
+    "description": "After registration we will send a confirmation email. This flow does not sign the user in automatically.",
+    "form": {
+      "email": {
+        "label": "Email",
+        "placeholder": "Enter your email"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Enter your password",
+        "hint": "At least 8 characters, one uppercase letter and one number",
+        "show": "Show password",
+        "hide": "Hide password"
+      },
+      "submit": "Create account",
+      "submitting": "Creating account..."
+    },
+    "validation": {
+      "email": {
+        "invalid": "Enter a valid email"
+      },
+      "password": {
+        "min": "Password must be at least 8 characters",
+        "uppercase": "Password must contain at least one uppercase letter",
+        "number": "Password must contain at least one number"
+      }
+    },
     "login": "Login"
   },
   "card": {
