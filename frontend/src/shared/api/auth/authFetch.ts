@@ -34,8 +34,8 @@ export const buildAuthHeaders = (
  * - всегда отправляет `credentials: 'include'`, чтобы браузер прикладывал
  *   HttpOnly cookie с refresh token;
  * - при `withAuth = true` добавляет Bearer access token в `Authorization`;
- * - позволяет отключить Bearer-заголовок для публичных auth-эндпоинтов
- *   вроде `login`, `register`, `refresh`, `logout`.
+ * - позволяет отключить Bearer-заголовок для auth-эндпоинтов, которые
+ *   работают без access token, например `login`, `register`, `refresh`, `logout`.
  *
  * Нужен как единая точка для auth-сетевых запросов, чтобы логика cookies
  * и access token не дублировалась по всему приложению.

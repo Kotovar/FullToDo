@@ -11,6 +11,12 @@ import { AuthContext, type AuthContextValue } from './AuthContext';
 
 const AUTH_QUERY_KEY = ['auth', 'me'] as const;
 
+/**
+ * Определяет, можно ли трактовать ошибку как отсутствие активной сессии гостя.
+ *
+ * @param error Ошибка из auth-запроса.
+ * @returns `true`, если ошибка означает отсутствие авторизации или пользователя.
+ */
 const isGuestError = (error: unknown) => {
   const normalizedError = handleMutationError(error);
 
@@ -20,11 +26,22 @@ const isGuestError = (error: unknown) => {
   );
 };
 
+/**
+ * Загружает текущего авторизованного пользователя через `/auth/me`.
+ *
+ * @returns Публичные данные текущего пользователя.
+ */
 const getCurrentUser = async () => {
   const { user } = await authService.me();
   return user;
 };
 
+/**
+ * Восстанавливает auth-сессию при старте приложения.
+ * Сначала использует access token, а при необходимости пытается обновить его через refresh cookie.
+ *
+ * @returns Текущего пользователя или `null`, если сессии нет.
+ */
 const resolveCurrentUser = async (): Promise<PublicUser | null> => {
   const accessToken = getAccessToken();
 
@@ -67,14 +84,13 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const value = useMemo<AuthContextValue>(
     () => ({
       user: data ?? null,
-      status: isPending ? 'loading' : data ? 'user' : 'guest',
+      status: data ? 'user' : 'guest',
       isAuthenticated: Boolean(data),
-      isLoading: isPending,
       isError,
       error,
       refetchUser,
     }),
-    [data, error, isError, isPending, refetchUser],
+    [data, error, isError, refetchUser],
   );
 
   if (isPending) {
