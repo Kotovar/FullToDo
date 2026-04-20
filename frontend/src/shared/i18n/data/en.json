@@ -15,17 +15,41 @@
   },
   "login": {
     "title": "Login",
-    "description": "The login form will be added in the next step.",
+    "welcome": "Sign in with the method you prefer to access your tasks.",
+    "description": "Enter your email and password to continue.",
+    "divider": "or",
     "afterRegister": {
       "title": "Registration is almost complete",
       "message": "We sent a verification email to {{email}}. Follow the link from the email and then sign in to your account.",
       "fallbackEmail": "your email address"
     },
+    "form": {
+      "email": {
+        "label": "Email",
+        "placeholder": "Enter your email"
+      },
+      "password": {
+        "label": "Password",
+        "placeholder": "Enter your password",
+        "show": "Show password",
+        "hide": "Hide password"
+      },
+      "submit": "Sign in",
+      "submitting": "Signing in..."
+    },
+    "validation": {
+      "email": {
+        "invalid": "Enter a valid email"
+      },
+      "password": {
+        "required": "Enter your password"
+      }
+    },
     "register": "Register"
   },
   "register": {
     "title": "Register",
-    "description": "After registration we will send a confirmation email. This flow does not sign the user in automatically.",
+    "description": "Enter your email and password to register.",
     "form": {
       "email": {
         "label": "Email",
@@ -53,6 +77,13 @@
     },
     "login": "Login"
   },
+  "logout": {
+    "label": "Logout",
+    "confirm": "Do you want to log out?",
+    "cancel": "Cancel",
+    "confirmAction": "Log out",
+    "submitting": "Logging out..."
+  },
   "card": {
     "additionalMenu": "additional menu"
   },
@@ -69,6 +100,9 @@
   "common": {
     "notFound": "Nothing found"
   },
+  "auth": {
+    "divider": "or"
+  },
   "notepads": {
     "notFound": "Notepad not found",
     "add": "Add a notebook"
@@ -83,6 +117,7 @@
     "detail": "Task details",
     "description": "Description",
     "empty": "No subtasks",
+    "all": "All tasks",
     "steps": {
       "first": "First step",
       "next": "Next step"
@@ -159,6 +194,9 @@
     }
   },
   "notifications": {
+    "auth": {
+      "register": "Verification email sent successfully"
+    },
     "tasks": {
       "create": "Task successfully created",
       "update": "Task updated successfully",

@@ -47,7 +47,7 @@ describe('useNotepad hook', () => {
     expect(result.current.notepadId).toBe(COMMON_NOTEPAD_ID);
 
     await waitFor(() => {
-      expect(result.current.title).toBe('Все задачи');
+      expect(result.current.title).toBe('tasks.all');
     });
   });
 

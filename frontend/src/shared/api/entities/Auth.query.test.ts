@@ -7,6 +7,7 @@ import {
 import { authService } from './Auth.query';
 import type {
   LoginWithEmail,
+  LoginWithGoogle,
   PublicUser,
   RegisterWithEmail,
 } from 'shared/schemas';
@@ -19,6 +20,10 @@ const loginCredentials: LoginWithEmail = {
 const registerCredentials: RegisterWithEmail = {
   email: 'user@example.com',
   password: 'Password1',
+};
+
+const googleCredentials: LoginWithGoogle = {
+  token: 'google-token',
 };
 
 const user: PublicUser = {
@@ -90,6 +95,25 @@ describe('AuthService', () => {
     expect(result).toEqual({ user });
     expect(init?.credentials).toBe('include');
     expect(headers.get('Authorization')).toBe('Bearer access-token-2');
+  });
+
+  test('google login stores access token after successful response', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      createJsonResponse({
+        message: 'Successful login',
+        accessToken: 'google-access-token',
+      }),
+    );
+
+    const result = await authService.loginWithGoogle(googleCredentials);
+
+    const [, init] = fetchSpy.mock.calls[0] ?? [];
+    const headers = new Headers(init?.headers);
+
+    expect(result.accessToken).toBe('google-access-token');
+    expect(getAccessToken()).toBe('google-access-token');
+    expect(init?.credentials).toBe('include');
+    expect(headers.get('Authorization')).toBeNull();
   });
 
   test('refresh replaces access token', async () => {

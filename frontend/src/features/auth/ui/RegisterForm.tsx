@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Translation } from '@shared/i18n';
 import { Button, Icon, Input } from '@shared/ui';
-import { useRegisterForm } from '../model/useRegisterForm';
+import { createTranslationKeyGuard } from '../lib/createTranslationKeyGuard';
+import { useRegisterForm } from '../model/register/useRegisterForm';
 
-const isTranslationKey = (value: string): value is Translation =>
-  value.startsWith('register.') || value.startsWith('errors.');
+const isTranslationKey = createTranslationKeyGuard('register');
 
 export const RegisterForm = () => {
   const { t } = useTranslation();
@@ -21,11 +20,7 @@ export const RegisterForm = () => {
   } = useRegisterForm();
 
   return (
-    <form
-      className='flex w-full max-w-md flex-col gap-4'
-      onSubmit={submit}
-      noValidate
-    >
+    <form className='flex w-full flex-col gap-4' onSubmit={submit} noValidate>
       <p className='text-center text-sm'>{t('register.description')}</p>
 
       <div className='flex flex-col gap-1'>
@@ -95,13 +90,13 @@ export const RegisterForm = () => {
             />
           </button>
         </div>
-        <p
-          id='register-password-help'
-          className='text-left text-sm text-slate-500'
-        >
-          {t('register.form.password.hint')}
-        </p>
-        <div className='min-h-5'>
+        <div className='min-h-10'>
+          <p
+            id='register-password-help'
+            className='text-left text-sm text-slate-500'
+          >
+            {t('register.form.password.hint')}
+          </p>
           {errors.password ? (
             <p
               id='register-password-error'

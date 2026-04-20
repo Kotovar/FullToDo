@@ -1,13 +1,11 @@
 import { Outlet } from 'react-router';
-import { ToastContainer, Slide } from 'react-toastify';
 import { clsx } from 'clsx';
 import { Header } from '@widgets/Header';
 import { NavigationBar } from '@widgets/NavigationBar';
-import { useVisibility, useDarkToast } from './hooks';
+import { useVisibility } from './hooks';
 
 const Layout = () => {
   const [isHidden, handleVisibility, turnOffVisibility] = useVisibility();
-  const { theme } = useDarkToast();
 
   return (
     <div className='font-display h-screen'>
@@ -35,20 +33,6 @@ const Layout = () => {
         >
           <Outlet />
         </section>
-        <ToastContainer
-          toastClassName={
-            'relative flex p-40 min-h-10 rounded-md cursor-pointer text-dark bg-red-50'
-          }
-          position='top-right'
-          transition={Slide}
-          autoClose={1500}
-          hideProgressBar={true}
-          limit={3}
-          theme={theme}
-          closeOnClick
-          draggable
-          stacked
-        />
       </main>
     </div>
   );

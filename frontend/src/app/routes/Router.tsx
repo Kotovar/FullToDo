@@ -2,24 +2,25 @@ import { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Tasks } from '@pages/Tasks';
 import { Error } from '@pages/Error';
-import { Home } from '@pages/Home';
 import { Login } from '@pages/Login';
 import { Register } from '@pages/Register';
 import { LayoutSkeleton } from '@app/layout/skeleton';
 import { ROUTES } from '@sharedCommon';
 import { TaskDetailSkeleton } from '@shared/ui';
-import { GuestOnlyRoute, ProtectedRoute } from './guards';
-import { Layout, TaskDetail } from './components';
+import { GuestOnlyRoute, ProtectedRoute, RootRedirect } from './guards';
+import { AuthLayout, Layout, TaskDetail } from './components';
 
 export const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<Home />} />
+        <Route index element={<RootRedirect />} />
 
         <Route element={<GuestOnlyRoute />}>
-          <Route path={ROUTES.app.login} element={<Login />} />
-          <Route path={ROUTES.app.register} element={<Register />} />
+          <Route element={<AuthLayout />}>
+            <Route path={ROUTES.app.login} element={<Login />} />
+            <Route path={ROUTES.app.register} element={<Register />} />
+          </Route>
         </Route>
 
         <Route element={<ProtectedRoute />}>

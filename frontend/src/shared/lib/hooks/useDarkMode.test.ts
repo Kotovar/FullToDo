@@ -2,6 +2,8 @@ import { renderHook, act } from '@testing-library/react';
 import { useLocalStorage, useMediaQuery } from 'usehooks-ts';
 import { useDarkMode } from './useDarkMode';
 
+vi.mock('usehooks-ts');
+
 const setDarkModeMock = vi.fn();
 const removeDarkModeMock = vi.fn();
 
@@ -15,8 +17,6 @@ const getMocks = (media: boolean = true, local: boolean = true) => {
 };
 
 describe('useDarkMode', () => {
-  vi.mock('usehooks-ts');
-
   test('dark theme on', () => {
     getMocks();
 

@@ -3,13 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import type { PublicUser } from 'shared/schemas';
 import {
   authService,
+  authKeys,
   clearAccessToken,
+  fetchCurrentUser,
   getAccessToken,
   handleMutationError,
 } from '@shared/api';
 import { AuthContext, type AuthContextValue } from './AuthContext';
-
-const AUTH_QUERY_KEY = ['auth', 'me'] as const;
 
 /**
  * Определяет, можно ли трактовать ошибку как отсутствие активной сессии гостя.
@@ -27,16 +27,6 @@ const isGuestError = (error: unknown) => {
 };
 
 /**
- * Загружает текущего авторизованного пользователя через `/auth/me`.
- *
- * @returns Публичные данные текущего пользователя.
- */
-const getCurrentUser = async () => {
-  const { user } = await authService.me();
-  return user;
-};
-
-/**
  * Восстанавливает auth-сессию при старте приложения.
  * Сначала использует access token, а при необходимости пытается обновить его через refresh cookie.
  *
@@ -47,7 +37,7 @@ const resolveCurrentUser = async (): Promise<PublicUser | null> => {
 
   if (accessToken) {
     try {
-      return await getCurrentUser();
+      return await fetchCurrentUser();
     } catch (error) {
       if (!isGuestError(error)) {
         throw error;
@@ -57,7 +47,7 @@ const resolveCurrentUser = async (): Promise<PublicUser | null> => {
 
   try {
     await authService.refresh();
-    return await getCurrentUser();
+    return await fetchCurrentUser();
   } catch (error) {
     if (isGuestError(error)) {
       clearAccessToken();
@@ -71,7 +61,7 @@ const resolveCurrentUser = async (): Promise<PublicUser | null> => {
 /** Инициализирует auth-сессию при старте приложения и делает её доступной через контекст. */
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const { data, error, isError, isPending, refetch } = useQuery({
-    queryKey: AUTH_QUERY_KEY,
+    queryKey: authKeys.me(),
     queryFn: resolveCurrentUser,
     retry: false,
   });

@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import type { AuthContextValue } from '@app/providers/AuthContext';
 import { AuthContext } from '@app/providers/AuthContext';
 import { ROUTES } from '@sharedCommon';
-import { GuestOnlyRoute, ProtectedRoute } from './';
+import { GuestOnlyRoute, ProtectedRoute, RootRedirect } from './';
 
 const createAuthValue = (
   overrides: Partial<AuthContextValue> = {},
@@ -30,6 +30,38 @@ const renderWithAuth = (
   );
 
 describe('Route guards', () => {
+  test('redirects guest from root route to login', async () => {
+    renderWithAuth(
+      createAuthValue(),
+      <Routes>
+        <Route index element={<RootRedirect />} />
+        <Route path={ROUTES.app.login} element={<div>Login page</div>} />
+      </Routes>,
+    );
+
+    expect(await screen.findByText('Login page')).toBeInTheDocument();
+  });
+
+  test('redirects authenticated user from root route to tasks', async () => {
+    renderWithAuth(
+      createAuthValue({
+        user: {
+          userId: 1,
+          email: 'user@example.com',
+          isVerified: true,
+        },
+        status: 'user',
+        isAuthenticated: true,
+      }),
+      <Routes>
+        <Route index element={<RootRedirect />} />
+        <Route path={ROUTES.tasks.base} element={<div>Tasks page</div>} />
+      </Routes>,
+    );
+
+    expect(await screen.findByText('Tasks page')).toBeInTheDocument();
+  });
+
   test('redirects guest from protected route to login', async () => {
     renderWithAuth(
       createAuthValue(),

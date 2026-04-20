@@ -5,6 +5,10 @@ import { AdditionalActions } from './AdditionalActions';
 import { useDarkMode } from '@shared/lib/hooks';
 import { useTranslation } from 'react-i18next';
 
+vi.mock('@features/auth', () => ({
+  LogoutButton: () => <button type='button'>logout.label</button>,
+}));
+
 vi.mock('react-i18next', async importOriginal => {
   const actual = await importOriginal<typeof import('react-i18next')>();
   return {
@@ -63,5 +67,11 @@ describe('AdditionalActions component', () => {
       expect(toggle).toHaveBeenCalled();
       expect(isDarkMode).toBeFalsy();
     });
+  });
+
+  test('renders logout button slot', () => {
+    renderWithRouter(<AdditionalActions />);
+
+    expect(screen.getByText('logout.label')).toBeInTheDocument();
   });
 });

@@ -2,42 +2,36 @@ import {
   useCallback,
   useMemo,
   useState,
-  type SyntheticEvent,
   type ChangeEvent,
+  type SyntheticEvent,
 } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { useSessionStorage } from 'usehooks-ts';
 import { z } from 'zod';
-import { authService, handleMutationError } from '@shared/api';
 import {
-  ROUTES,
-  registerWithEmailSchema,
-  type RegisterWithEmail,
-} from '@sharedCommon';
-import { createRegisterRedirectState } from './redirect';
+  authKeys,
+  authService,
+  fetchCurrentUser,
+  handleMutationError,
+} from '@shared/api';
+import { loginWithEmailSchema, type LoginWithEmail } from '@sharedCommon';
 import type { Translation } from '@shared/i18n';
 
-type RegisterField = keyof RegisterWithEmail;
-type RegisterFormErrors = Partial<Record<RegisterField, string>>;
+const LOGIN_EMAIL_STORAGE_KEY = 'login-email';
 
-const REGISTER_EMAIL_STORAGE_KEY = 'register-email';
+type LoginField = keyof LoginWithEmail;
+type LoginFormErrors = Partial<Record<LoginField, string>>;
 
 const VALIDATION_MESSAGE_MAP: Record<string, Translation> = {
-  'Invalid email': 'register.validation.email.invalid',
-  'Password must be at least 8 characters': 'register.validation.password.min',
-  'Must contain at least one uppercase letter':
-    'register.validation.password.uppercase',
-  'Must contain at least one number': 'register.validation.password.number',
+  'Invalid email': 'login.validation.email.invalid',
 };
 
 const getValidationMessage = (message: string) =>
   VALIDATION_MESSAGE_MAP[message] ?? message;
 
-const validateRegisterForm = (
-  values: RegisterWithEmail,
-): RegisterFormErrors | null => {
-  const result = registerWithEmailSchema.safeParse(values);
+const validateLoginForm = (values: LoginWithEmail): LoginFormErrors | null => {
+  const result = loginWithEmailSchema.safeParse(values);
 
   if (result.success) {
     return null;
@@ -49,38 +43,48 @@ const validateRegisterForm = (
     email: fieldErrors.properties?.email?.errors?.[0]
       ? getValidationMessage(fieldErrors.properties.email.errors[0])
       : undefined,
-    password: fieldErrors.properties?.password?.errors?.[0]
-      ? getValidationMessage(fieldErrors.properties.password.errors[0])
-      : undefined,
+    password:
+      values.password.length === 0
+        ? 'login.validation.password.required'
+        : undefined,
   };
 };
 
-/**
- * Управляет формой регистрации по email и паролю.
- * После успешной регистрации перенаправляет на логин без автологина.
- */
-export const useRegisterForm = () => {
+type UseLoginFormOptions = {
+  initialEmail?: string | null;
+  redirectTo: string;
+};
+
+export const useLoginForm = ({
+  initialEmail,
+  redirectTo,
+}: UseLoginFormOptions) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [storedEmail, setStoredEmail] = useSessionStorage(
-    REGISTER_EMAIL_STORAGE_KEY,
+    LOGIN_EMAIL_STORAGE_KEY,
     '',
   );
-  const [values, setValues] = useState<RegisterWithEmail>({
-    email: storedEmail,
+  const [values, setValues] = useState<LoginWithEmail>({
+    email: initialEmail ?? storedEmail,
     password: '',
   });
-  const [errors, setErrors] = useState<RegisterFormErrors>({});
+  const [errors, setErrors] = useState<LoginFormErrors>({});
   const [submitError, setSubmitError] = useState<Translation | null>(null);
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (nextValues: RegisterWithEmail) =>
-      authService.register(nextValues),
-    onSuccess: (_, submittedValues) => {
-      setStoredEmail('');
-      navigate(ROUTES.app.login, {
-        replace: true,
-        state: createRegisterRedirectState(submittedValues.email),
+    mutationFn: (nextValues: LoginWithEmail) => authService.login(nextValues),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: authKeys.me(),
       });
+      await queryClient.fetchQuery({
+        queryKey: authKeys.me(),
+        queryFn: fetchCurrentUser,
+      });
+
+      setStoredEmail('');
+      navigate(redirectTo, { replace: true });
     },
     onError: error => {
       const normalizedError = handleMutationError(error);
@@ -89,7 +93,7 @@ export const useRegisterForm = () => {
   });
 
   const updateField = useCallback(
-    (field: RegisterField) => (event: ChangeEvent<HTMLInputElement>) => {
+    (field: LoginField) => (event: ChangeEvent<HTMLInputElement>) => {
       const nextValue = event.target.value;
 
       setValues(prev => ({
@@ -112,7 +116,7 @@ export const useRegisterForm = () => {
     async (event: SyntheticEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const validationErrors = validateRegisterForm(values);
+      const validationErrors = validateLoginForm(values);
 
       if (validationErrors) {
         setErrors(validationErrors);

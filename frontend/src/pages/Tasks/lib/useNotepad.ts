@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { notepadService } from '@entities/Notepad';
@@ -11,6 +12,7 @@ export const useNotepad = () => {
   const { notepadId } = useParams();
   const { showError } = useNotifications();
   const { pathname } = useLocation();
+  const { t } = useTranslation();
   const { data, isError, isLoading, error } = useQuery({
     queryKey: ['notepads'],
     queryFn: notepadService.getNotepads,
@@ -29,12 +31,12 @@ export const useNotepad = () => {
     const hasDataLoaded = !isLoading && !isError;
 
     return {
-      title: isCommon ? 'Все задачи' : (currentNotepad?.title ?? ''),
+      title: isCommon ? t('tasks.all') : (currentNotepad?.title ?? ''),
       notepadId: isCommon ? COMMON_NOTEPAD_ID : (currentNotepad?._id ?? ''),
       location: pathname,
       notFound: hasDataLoaded && !currentNotepad && !isCommon,
       isError,
       isLoading,
     };
-  }, [data, isError, isLoading, notepadId, pathname]);
+  }, [data, isError, isLoading, notepadId, pathname, t]);
 };

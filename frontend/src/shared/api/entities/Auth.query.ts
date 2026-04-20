@@ -9,6 +9,7 @@ import {
 import { authFetch, clearAccessToken, setAccessToken } from '@shared/api/auth';
 import type {
   LoginWithEmail,
+  LoginWithGoogle,
   PublicUser,
   RegisterWithEmail,
 } from 'shared/schemas';
@@ -20,10 +21,15 @@ if (!URL) {
 const authRoutes = {
   register: `${URL}${ROUTES.auth.register}`,
   login: `${URL}${ROUTES.auth.login}`,
+  google: `${URL}${ROUTES.auth.google}`,
   logout: `${URL}${ROUTES.auth.logout}`,
   refresh: `${URL}${ROUTES.auth.refresh}`,
   me: `${URL}${ROUTES.auth.me}`,
 } as const;
+
+export const authKeys = {
+  me: () => ['auth', 'me'] as const,
+};
 
 export type AuthUserResponse = {
   user: PublicUser;
@@ -36,6 +42,11 @@ export type AuthAccessTokenResponse = {
 
 export type AuthMessageResponse = {
   message: string;
+};
+
+export const fetchCurrentUser = async (): Promise<PublicUser> => {
+  const { user } = await authService.me();
+  return user;
 };
 
 class AuthService extends BaseService {
@@ -80,6 +91,26 @@ class AuthService extends BaseService {
   async login(credentials: LoginWithEmail): Promise<AuthAccessTokenResponse> {
     try {
       const response = await authFetch(authRoutes.login, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(credentials),
+        withAuth: false,
+      });
+      const data = await this.handleResponse<AuthAccessTokenResponse>(response);
+
+      setAccessToken(data.accessToken);
+
+      return data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async loginWithGoogle(
+    credentials: LoginWithGoogle,
+  ): Promise<AuthAccessTokenResponse> {
+    try {
+      const response = await authFetch(authRoutes.google, {
         method: 'POST',
         headers: HEADERS,
         body: JSON.stringify(credentials),

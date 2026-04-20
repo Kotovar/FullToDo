@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react';
+import { LogoutButton } from '@features/auth';
 import { Button, COLORS, Icon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib/hooks';
 import { useLanguage } from '.';
@@ -32,6 +33,7 @@ export const AdditionalActions = memo(() => {
       >
         <Icon name={iconNameTheme} fill={COLORS.WHITE} />
       </Button>
+      <LogoutButton />
     </nav>
   );
 });
