@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   _id           BIGSERIAL PRIMARY KEY,
   email         TEXT UNIQUE,
   password_hash TEXT,

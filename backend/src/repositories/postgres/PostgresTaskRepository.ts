@@ -70,7 +70,7 @@ export class PostgresTaskRepository implements TaskRepository {
       return { ...result.rows[0], tasks: [] };
     } catch (err) {
       if (isDbError(err) && err.code === DB_ERRORS.DUPLICATE) {
-        throw new ConflictError(`Task with title ${title} already exists`);
+        throw new ConflictError(`Notepad with title ${title} already exists`);
       }
 
       throw err;

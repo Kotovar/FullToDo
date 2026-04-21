@@ -1,6 +1,0 @@
-TRUNCATE TABLE tasks CASCADE;
-
--- Добавить user_id в tasks
-ALTER TABLE tasks
-  ADD COLUMN IF NOT EXISTS user_id BIGINT NOT NULL
-  REFERENCES users(_id) ON DELETE CASCADE;
