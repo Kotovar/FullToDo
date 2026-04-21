@@ -4,6 +4,7 @@ import { Tasks } from '@pages/Tasks';
 import { Error } from '@pages/Error';
 import { Login } from '@pages/Login';
 import { Register } from '@pages/Register';
+import { VerifyEmail } from '@pages/VerifyEmail';
 import { LayoutSkeleton } from '@app/layout/skeleton';
 import { ROUTES } from '@sharedCommon';
 import { TaskDetailSkeleton } from '@shared/ui';
@@ -22,6 +23,8 @@ export const Router = () => {
             <Route path={ROUTES.app.register} element={<Register />} />
           </Route>
         </Route>
+
+        <Route path={ROUTES.app.verifyEmail} element={<VerifyEmail />} />
 
         <Route element={<ProtectedRoute />}>
           <Route

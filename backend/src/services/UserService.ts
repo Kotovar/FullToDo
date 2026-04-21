@@ -10,7 +10,7 @@ export class UserService {
     return await this.repository.createUser(data);
   }
 
-  async markVerified(userId: number): Promise<void> {
+  async markVerified(userId: number): Promise<boolean> {
     return await this.repository.markVerified(userId);
   }
 }

@@ -153,6 +153,24 @@ describe('AuthService', () => {
     expect(init?.credentials).toBe('include');
   });
 
+  test('verifyEmail sends request without Authorization header', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        createJsonResponse({ message: 'Email verified successfully' }),
+      );
+
+    const result = await authService.verifyEmail('token-123');
+
+    const [url, init] = fetchSpy.mock.calls[0] ?? [];
+    const headers = new Headers(init?.headers);
+
+    expect(String(url)).toContain('/auth/verify-email?token=token-123');
+    expect(result.message).toBe('Email verified successfully');
+    expect(init?.credentials).toBe('include');
+    expect(headers.get('Authorization')).toBeNull();
+  });
+
   test('returns unauthorized error details for 401 responses', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
       createJsonResponse({ message: 'Invalid credentials' }, 401),

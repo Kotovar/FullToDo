@@ -3,6 +3,7 @@ export const ROUTES = {
     home: '/',
     login: '/login',
     register: '/register',
+    verifyEmail: '/verify-email',
   },
   notepads: {
     base: '/notepads',

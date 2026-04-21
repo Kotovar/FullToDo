@@ -164,11 +164,14 @@ export const verifyEmail: ServiceHandler<AuthService> = async (
       throw new UnauthorizedError('Invalid or missing email token');
     }
 
-    await service.verifyEmail(emailToken);
+    const status = await service.verifyEmail(emailToken);
 
     res.writeHead(200, { 'Content-Type': 'application/json' }).end(
       JSON.stringify({
-        message: 'Email verified successfully',
+        message:
+          status === 'verified'
+            ? 'Email verified successfully'
+            : 'Email already verified',
       }),
     );
   } catch (error) {

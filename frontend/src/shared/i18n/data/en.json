@@ -77,6 +77,19 @@
     },
     "login": "Login"
   },
+  "verifyEmail": {
+    "title": "Email verification",
+    "loading": "Verifying email...",
+    "successTitle": "Email verified",
+    "successMessage": "Your account has been activated. You can now sign in.",
+    "alreadyVerifiedTitle": "Email already verified",
+    "alreadyVerifiedMessage": "This email has already been verified. You can sign in to your account.",
+    "errorTitle": "Could not verify email",
+    "errorMessage": "The link is invalid, expired, or has already been used.",
+    "missingToken": "The verification link does not contain a token.",
+    "login": "Go to login",
+    "register": "Back to registration"
+  },
   "logout": {
     "label": "Logout",
     "confirm": "Do you want to log out?",

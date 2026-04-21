@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
 import { config } from '@configs';
 import { emailLogger } from '@logger';
+import { ROUTES } from '@sharedCommon/routes';
 import VerificationEmail from '../emails/VerificationEmail';
 import PasswordChangedEmail from '../emails/PasswordChangedEmail';
 import AccountDeletedEmail from '../emails/AccountDeletedEmail';
@@ -27,7 +28,7 @@ const buildMail = (to: string, subject: string, html: string) => ({
 
 export class EmailService {
   async sendVerification(email: string, token: string): Promise<void> {
-    const verifyUrl = `http://localhost:${config.server.port}/auth/verify-email?token=${token}`;
+    const verifyUrl = `${config.corsOrigin}${ROUTES.app.verifyEmail}?token=${token}`;
     const html = await render(VerificationEmail({ verifyUrl }));
 
     await transporter.sendMail(

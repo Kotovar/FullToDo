@@ -50,15 +50,25 @@ export class PostgresUserRepository implements UserRepository {
     }
   }
 
-  async markVerified(userId: number): Promise<void> {
+  async markVerified(userId: number): Promise<boolean> {
     const result = await query(
-      `UPDATE users SET is_verified = TRUE WHERE _id = $1`,
+      `UPDATE users
+       SET is_verified = TRUE
+       WHERE _id = $1 AND is_verified = FALSE`,
       [userId],
     );
 
-    if (result.rowCount === 0) {
+    if ((result.rowCount ?? 0) > 0) {
+      return true;
+    }
+
+    const user = await this.findById(userId);
+
+    if (!user) {
       throw new NotFoundError(`User ${userId} not found`);
     }
+
+    return false;
   }
 
   async findById(userId: number): Promise<DbUser | null> {

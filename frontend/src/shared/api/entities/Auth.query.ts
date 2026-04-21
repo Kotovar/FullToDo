@@ -25,6 +25,8 @@ const authRoutes = {
   logout: `${URL}${ROUTES.auth.logout}`,
   refresh: `${URL}${ROUTES.auth.refresh}`,
   me: `${URL}${ROUTES.auth.me}`,
+  verifyEmail: (token: string) =>
+    `${URL}${ROUTES.auth.verifyEmail}?token=${encodeURIComponent(token)}`,
 } as const;
 
 export const authKeys = {
@@ -165,6 +167,18 @@ class AuthService extends BaseService {
       clearAccessToken();
 
       return data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async verifyEmail(token: string): Promise<AuthMessageResponse> {
+    try {
+      const response = await authFetch(authRoutes.verifyEmail(token), {
+        withAuth: false,
+      });
+
+      return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);
     }

@@ -37,11 +37,19 @@ export class MockUserRepository implements UserRepository {
     return newUser;
   }
 
-  async markVerified(userId: number): Promise<void> {
+  async markVerified(userId: number): Promise<boolean> {
     const user = await this.findById(userId);
-    if (user) {
-      user.isVerified = true;
+
+    if (!user) {
+      throw new NotFoundError(`User with userId ${userId} not found`);
     }
+
+    if (user.isVerified) {
+      return false;
+    }
+
+    user.isVerified = true;
+    return true;
   }
 
   async findById(userId: number): Promise<DbUser | null> {
