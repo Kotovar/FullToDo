@@ -14,6 +14,7 @@ const renderVerifyEmail = (
     userId: number;
     email: string;
     isVerified: boolean;
+    hasPassword: boolean;
   } | null = null,
 ) => {
   const queryClient = new QueryClient({
@@ -117,6 +118,7 @@ describe('VerifyEmail', () => {
       userId: 99,
       email: 'active@example.com',
       isVerified: true,
+      hasPassword: true,
     });
 
     await waitFor(() =>

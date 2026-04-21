@@ -20,6 +20,7 @@ const renderLogout = () => {
     userId: 1,
     email: 'user@example.com',
     isVerified: true,
+    hasPassword: true,
   });
 
   return {

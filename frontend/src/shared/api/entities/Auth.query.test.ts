@@ -30,6 +30,7 @@ const user: PublicUser = {
   userId: 1,
   email: 'user@example.com',
   isVerified: true,
+  hasPassword: true,
 };
 
 const createJsonResponse = (body: unknown, status = 200) =>

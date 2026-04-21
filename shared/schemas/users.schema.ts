@@ -43,10 +43,11 @@ export const dbUserSchema = z
   });
 
 export const publicUserSchema = dbUserSchema.transform(
-  ({ userId, email, isVerified }) => ({
+  ({ userId, email, isVerified, passwordHash }) => ({
     userId,
     email,
     isVerified,
+    hasPassword: Boolean(passwordHash),
   }),
 );
 

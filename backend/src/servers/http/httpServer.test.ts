@@ -113,6 +113,7 @@ describe('httpServer GET', () => {
         userId: USER_ID,
         email: 'user@example.com',
         isVerified: true,
+        hasPassword: true,
       },
     });
     expect(userRepository.findById).toHaveBeenCalledWith(USER_ID);
