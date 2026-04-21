@@ -9,6 +9,7 @@ import type {
   AuthAccessTokenResponse,
   AuthMessageResponse,
   AuthUserResponse,
+  AuthVerifyEmailResponse,
 } from './Auth.query.types';
 import type {
   ChangePassword,
@@ -143,7 +144,7 @@ class AuthService extends BaseService {
     }
   }
 
-  async verifyEmail(token: string): Promise<AuthMessageResponse> {
+  async verifyEmail(token: string): Promise<AuthVerifyEmailResponse> {
     try {
       const response = await authFetch(authRoutes.verifyEmail(token), {
         withAuth: false,

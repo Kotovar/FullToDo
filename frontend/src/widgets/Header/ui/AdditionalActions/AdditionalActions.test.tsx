@@ -5,10 +5,6 @@ import { AdditionalActions } from './AdditionalActions';
 import { useDarkMode } from '@shared/lib/hooks';
 import { useTranslation } from 'react-i18next';
 
-vi.mock('@features/auth', () => ({
-  LogoutButton: () => <button type='button'>logout.label</button>,
-}));
-
 vi.mock('react-i18next', async importOriginal => {
   const actual = await importOriginal<typeof import('react-i18next')>();
   return {
@@ -69,9 +65,12 @@ describe('AdditionalActions component', () => {
     });
   });
 
-  test('renders logout button slot', () => {
+  test('renders link to account page', () => {
     renderWithRouter(<AdditionalActions />);
 
-    expect(screen.getByText('logout.label')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'account.nav' })).toHaveAttribute(
+      'href',
+      '/account',
+    );
   });
 });

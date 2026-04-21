@@ -166,11 +166,12 @@ describe('AuthService', () => {
   });
 
   test('verifyEmail sends request without Authorization header', async () => {
-    const fetchSpy = vi
-      .spyOn(globalThis, 'fetch')
-      .mockResolvedValueOnce(
-        createJsonResponse({ message: 'Email verified successfully' }),
-      );
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      createJsonResponse({
+        message: 'Email verified successfully',
+        email: 'verified@example.com',
+      }),
+    );
 
     const result = await authService.verifyEmail('token-123');
 
@@ -179,6 +180,7 @@ describe('AuthService', () => {
 
     expect(String(url)).toContain('/auth/verify-email?token=token-123');
     expect(result.message).toBe('Email verified successfully');
+    expect(result.email).toBe('verified@example.com');
     expect(init?.credentials).toBe('include');
     expect(headers.get('Authorization')).toBeNull();
   });

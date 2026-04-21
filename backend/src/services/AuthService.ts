@@ -154,14 +154,24 @@ export class AuthService {
     await this.tokenRepository.deleteByTokenHash(tokenHash);
   }
 
-  async verifyEmail(token: string): Promise<'verified' | 'already_verified'> {
+  async verifyEmail(
+    token: string,
+  ): Promise<{ status: 'verified' | 'already_verified'; email: string }> {
     const payload = verifyEmailToken(token);
 
     if (!payload) throw new UnauthorizedError('Invalid or expired token');
 
-    const wasVerifiedNow = await this.userRepository.markVerified(payload.userId);
+    const user = await this.userRepository.findById(payload.userId);
+    if (!user) throw new UnauthorizedError('Invalid or expired token');
 
-    return wasVerifiedNow ? 'verified' : 'already_verified';
+    const wasVerifiedNow = await this.userRepository.markVerified(
+      payload.userId,
+    );
+
+    return {
+      status: wasVerifiedNow ? 'verified' : 'already_verified',
+      email: user.email,
+    };
   }
 
   async resendVerification(email: string): Promise<void> {

@@ -97,6 +97,31 @@
     "confirmAction": "Log out",
     "submitting": "Logging out..."
   },
+  "account": {
+    "nav": "Account",
+    "title": "Account",
+    "description": "This page will host your security settings and profile management.",
+    "backToTasks": "Back to tasks",
+    "profile": {
+      "title": "Profile",
+      "email": "Email",
+      "status": "Status",
+      "verified": "Verified",
+      "notVerified": "Not verified",
+      "provider": "Sign-in method",
+      "passwordUser": "Email and password",
+      "googleUser": "Google"
+    },
+    "security": {
+      "title": "Security",
+      "passwordEnabled": "Password change is available for this account.",
+      "passwordDisabled": "This account uses Google sign-in, so there is no local password configured right now."
+    },
+    "dangerZone": {
+      "title": "Danger zone",
+      "description": "Irreversible account deletion will be available here."
+    }
+  },
   "card": {
     "additionalMenu": "additional menu"
   },

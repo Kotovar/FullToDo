@@ -97,6 +97,31 @@
     "confirmAction": "Выйти",
     "submitting": "Выходим..."
   },
+  "account": {
+    "nav": "Аккаунт",
+    "title": "Аккаунт",
+    "description": "Здесь будут настройки безопасности и управления профилем.",
+    "backToTasks": "Вернуться к задачам",
+    "profile": {
+      "title": "Профиль",
+      "email": "Email",
+      "status": "Статус",
+      "verified": "Подтверждён",
+      "notVerified": "Не подтверждён",
+      "provider": "Способ входа",
+      "passwordUser": "Email и пароль",
+      "googleUser": "Google"
+    },
+    "security": {
+      "title": "Безопасность",
+      "passwordEnabled": "Для этого аккаунта доступна смена пароля.",
+      "passwordDisabled": "Этот аккаунт использует вход через Google, поэтому локальный пароль сейчас не настроен."
+    },
+    "dangerZone": {
+      "title": "Опасная зона",
+      "description": "Здесь будет доступно необратимое удаление аккаунта."
+    }
+  },
   "card": {
     "additionalMenu": "дополнительное меню"
   },

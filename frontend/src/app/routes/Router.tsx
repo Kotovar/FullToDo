@@ -4,6 +4,7 @@ import { Tasks } from '@pages/Tasks';
 import { Error } from '@pages/Error';
 import { Login } from '@pages/Login';
 import { Register } from '@pages/Register';
+import { Account } from '@pages/Account';
 import { VerifyEmail } from '@pages/VerifyEmail';
 import { LayoutSkeleton } from '@app/layout/skeleton';
 import { ROUTES } from '@sharedCommon';
@@ -34,6 +35,8 @@ export const Router = () => {
               </Suspense>
             }
           >
+            <Route path={ROUTES.app.account} element={<Account />} />
+
             <Route path={ROUTES.notepads.base}>
               <Route index element={<Tasks />} />
               <Route path={ROUTES.notepads.byId} element={<Tasks />} />

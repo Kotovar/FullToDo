@@ -268,7 +268,14 @@ registry.registerPath({
     query: z.object({ token: z.string() }),
   },
   responses: {
-    200: { description: 'Email verified' },
+    200: {
+      description: 'Email verified',
+      content: {
+        'application/json': {
+          schema: z.object({ message: z.string(), email: z.email() }),
+        },
+      },
+    },
     ...unauthorizedResponse,
   },
 });

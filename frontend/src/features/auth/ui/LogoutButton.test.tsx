@@ -77,4 +77,20 @@ describe('LogoutButton', () => {
 
     expect(logoutSpy).not.toHaveBeenCalled();
   });
+
+  test('renders confirmation dialog centered on screen', async () => {
+    const user = userEvent.setup();
+
+    renderLogout();
+
+    await user.click(screen.getByRole('button', { name: 'logout.label' }));
+
+    const dialog = screen.getByLabelText('logout.confirm');
+
+    expect(dialog.className).toContain('fixed');
+    expect(dialog.className).toContain('top-1/2');
+    expect(dialog.className).toContain('left-1/2');
+    expect(dialog.className).toContain('-translate-x-1/2');
+    expect(dialog.className).toContain('-translate-y-1/2');
+  });
 });

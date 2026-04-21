@@ -1,12 +1,27 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { I18nextProvider } from 'react-i18next';
-import { MemoryRouter, Route, Routes } from 'react-router';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router';
 import { authKeys, authService } from '@shared/api';
 import { i18nForTests } from '@shared/testing';
 import { ROUTES } from '@sharedCommon';
 import { VerifyEmail } from './VerifyEmail';
 import userEvent from '@testing-library/user-event';
+
+const LoginProbe = () => {
+  const location = useLocation();
+  const registeredEmail =
+    typeof location.state?.registeredEmail === 'string'
+      ? location.state.registeredEmail
+      : 'none';
+
+  return (
+    <div>
+      <span>login-page</span>
+      <span>{registeredEmail}</span>
+    </div>
+  );
+};
 
 const renderVerifyEmail = (
   initialEntry: string,
@@ -33,7 +48,7 @@ const renderVerifyEmail = (
         <MemoryRouter initialEntries={[initialEntry]}>
           <Routes>
             <Route path={ROUTES.app.verifyEmail} element={<VerifyEmail />} />
-            <Route path={ROUTES.app.login} element={<div>login-page</div>} />
+            <Route path={ROUTES.app.login} element={<LoginProbe />} />
             <Route
               path={ROUTES.app.register}
               element={<div>register-page</div>}
@@ -53,6 +68,7 @@ describe('VerifyEmail', () => {
   test('shows success state after email verification', async () => {
     vi.spyOn(authService, 'verifyEmail').mockResolvedValue({
       message: 'Email verified successfully',
+      email: 'verified@example.com',
     });
 
     renderVerifyEmail(`${ROUTES.app.verifyEmail}?token=token-123`);
@@ -93,6 +109,7 @@ describe('VerifyEmail', () => {
   test('shows already verified state when email was verified before', async () => {
     vi.spyOn(authService, 'verifyEmail').mockResolvedValue({
       message: 'Email already verified',
+      email: 'verified@example.com',
     });
 
     renderVerifyEmail(`${ROUTES.app.verifyEmail}?token=reused-token`);
@@ -109,6 +126,7 @@ describe('VerifyEmail', () => {
 
     vi.spyOn(authService, 'verifyEmail').mockResolvedValue({
       message: 'Email verified successfully',
+      email: 'verified@example.com',
     });
     vi.spyOn(authService, 'logout').mockResolvedValue({
       message: 'Successful logout',
@@ -130,6 +148,7 @@ describe('VerifyEmail', () => {
     await waitFor(() =>
       expect(screen.getByText('login-page')).toBeInTheDocument(),
     );
+    expect(screen.getByText('verified@example.com')).toBeInTheDocument();
     expect(authService.logout).toHaveBeenCalled();
   });
 });

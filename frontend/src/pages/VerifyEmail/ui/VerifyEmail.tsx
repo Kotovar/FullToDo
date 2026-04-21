@@ -9,6 +9,7 @@ import {
 import { useNotifications } from '@shared/lib';
 import { Button } from '@shared/ui';
 import { ROUTES } from '@sharedCommon';
+import { createRegisterRedirectState } from '@features/auth';
 
 type VerificationStatus = 'loading' | 'success' | 'alreadyVerified' | 'error';
 
@@ -55,7 +56,10 @@ export const VerifyEmail = () => {
 
     await resetGuestSession(queryClient);
 
-    navigate(ROUTES.app.login, { replace: true });
+    navigate(ROUTES.app.login, {
+      replace: true,
+      state: data?.email ? createRegisterRedirectState(data.email) : undefined,
+    });
   };
 
   return (

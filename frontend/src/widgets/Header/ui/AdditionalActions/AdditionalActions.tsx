@@ -1,7 +1,8 @@
 import { memo, useMemo } from 'react';
-import { LogoutButton } from '@features/auth';
+import { Link } from 'react-router';
 import { Button, COLORS, Icon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib/hooks';
+import { ROUTES } from '@sharedCommon';
 import { useLanguage } from '.';
 
 export const AdditionalActions = memo(() => {
@@ -33,7 +34,13 @@ export const AdditionalActions = memo(() => {
       >
         <Icon name={iconNameTheme} fill={COLORS.WHITE} />
       </Button>
-      <LogoutButton />
+      <Link
+        to={ROUTES.app.account}
+        aria-label={t('account.nav')}
+        className='hover:border-light focus-visible:ring-light rounded-xl border border-transparent p-1 text-white focus:outline-none focus-visible:ring-2'
+      >
+        {t('account.nav')}
+      </Link>
     </nav>
   );
 });

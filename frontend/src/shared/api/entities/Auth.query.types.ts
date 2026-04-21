@@ -13,6 +13,11 @@ export type AuthMessageResponse = {
   message: string;
 };
 
+export type AuthVerifyEmailResponse = {
+  message: string;
+  email: string;
+};
+
 export type AuthErrorPayload = {
   error?: { message?: string };
 };
