@@ -100,4 +100,14 @@ describe('useNotepads hook', () => {
       expect(notepadService.deleteNotepad).toHaveBeenCalledWith(NOTEPAD_ID);
     });
   });
+
+  test('should not load notepads without an authenticated session', async () => {
+    renderHook(() => useNotepads(), {
+      wrapper: createWrapperWithRouter(undefined, null),
+    });
+
+    await waitFor(() => {
+      expect(notepadService.getNotepads).not.toHaveBeenCalled();
+    });
+  });
 });

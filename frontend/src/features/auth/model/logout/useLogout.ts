@@ -6,6 +6,7 @@ import {
   authService,
   fetchCurrentUser,
   handleMutationError,
+  resetGuestSession,
 } from '@shared/api';
 import { useNotifications } from '@shared/lib';
 import { ROUTES } from '@sharedCommon';
@@ -23,13 +24,7 @@ export const useLogout = () => {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: () => authService.logout(),
     onSuccess: async () => {
-      queryClient.setQueryData(authKeys.me(), null);
-      queryClient.removeQueries({
-        predicate: query =>
-          ['notepads', 'tasks', 'task'].includes(
-            String(query.queryKey.at(0) ?? ''),
-          ),
-      });
+      await resetGuestSession(queryClient);
       await queryClient.invalidateQueries({
         queryKey: authKeys.me(),
       });

@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import {
   useInfiniteQuery,
   useMutation,
+  useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
 import {
@@ -14,16 +15,21 @@ import {
 } from '@shared/lib';
 import {
   authKeys,
+  fetchCurrentUser,
   getUserQueryScope,
   taskService,
   type MutationMethods,
 } from '@shared/api';
 import { PAGINATION, type Task } from '@sharedCommon/';
-import type { PublicUser } from 'shared/schemas';
 
 export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
-  const user = queryClient.getQueryData<PublicUser | null>(authKeys.me());
+  const { data: user } = useQuery({
+    queryKey: authKeys.me(),
+    queryFn: fetchCurrentUser,
+    enabled: false,
+  });
+  const isAuthenticated = Boolean(user);
   const userScope = getUserQueryScope(user?.userId);
   const isCommon = isCommonNotepad(notepadId);
   const queryKey = useMemo(
@@ -55,7 +61,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       lastPage.meta.page < lastPage.meta.totalPages
         ? lastPage.meta.page + 1
         : undefined,
-    enabled: !isCommon,
+    enabled: isAuthenticated && !isCommon,
   });
 
   const {
@@ -80,7 +86,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       lastPage.meta?.page < lastPage.meta?.totalPages
         ? lastPage.meta.page + 1
         : undefined,
-    enabled: isCommon,
+    enabled: isAuthenticated && isCommon,
   });
 
   const { mutateAsync: mutationUpdate } = useMutation({

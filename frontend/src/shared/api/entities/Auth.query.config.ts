@@ -1,5 +1,5 @@
 import { ROUTES } from 'shared/routes';
-import { COMMON_ERRORS, URL } from '@shared/api';
+import { COMMON_ERRORS, URL } from '../consts';
 
 if (!URL) {
   throw new Error(COMMON_ERRORS.URL.message);

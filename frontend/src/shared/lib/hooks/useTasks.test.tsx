@@ -129,4 +129,18 @@ describe('useTasks hook', () => {
       expect(taskService.deleteTask).toHaveBeenCalledWith(TASK_ID);
     });
   });
+
+  test('should not load tasks without an authenticated session', async () => {
+    renderHook(
+      () => useTasks({ notepadId: NOTEPAD_ID, params, entity: 'task' }),
+      {
+        wrapper: createWrapper(null),
+      },
+    );
+
+    await waitFor(() => {
+      expect(taskService.getTasksFromNotepad).not.toHaveBeenCalled();
+      expect(taskService.getAllTasks).not.toHaveBeenCalled();
+    });
+  });
 });

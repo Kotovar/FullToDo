@@ -1,10 +1,11 @@
 import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { getNotepadsQueryKey, notepadService } from '@entities/Notepad';
 import { ROUTES } from 'shared/routes';
 import {
   authKeys,
+  fetchCurrentUser,
   getUserQueryScope,
   handleMutationError,
   type MutationMethods,
@@ -14,17 +15,21 @@ import {
   handleMutationSuccess,
   MutationUpdateProps,
 } from '@widgets/NavigationBar/lib';
-import type { PublicUser } from 'shared/schemas';
 
 export const useNotepads = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const user = queryClient.getQueryData<PublicUser | null>(authKeys.me());
+  const { data: user } = useQuery({
+    queryKey: authKeys.me(),
+    queryFn: fetchCurrentUser,
+    enabled: false,
+  });
+  const isAuthenticated = Boolean(user);
   const userScope = getUserQueryScope(user?.userId);
   const { data, isError, isLoading, refetch } = useQuery({
     queryKey: getNotepadsQueryKey(userScope),
     queryFn: () => notepadService.getNotepads(),
     select: data => data.data,
+    enabled: isAuthenticated,
   });
 
   const { onSuccess, onError } = useApiNotifications('notepad');

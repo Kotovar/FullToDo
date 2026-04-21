@@ -1,6 +1,5 @@
-import { useCallback, useMemo, type PropsWithChildren } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import type { PublicUser } from 'shared/schemas';
+import { useCallback, useEffect, useMemo, type PropsWithChildren } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   authService,
   authKeys,
@@ -8,8 +7,11 @@ import {
   fetchCurrentUser,
   getAccessToken,
   handleMutationError,
+  resetGuestSession,
+  subscribeToUnauthorizedSession,
 } from '@shared/api';
 import { AuthContext, type AuthContextValue } from './AuthContext';
+import type { PublicUser } from 'shared/schemas';
 
 /**
  * Определяет, можно ли трактовать ошибку как отсутствие активной сессии гостя.
@@ -60,11 +62,20 @@ const resolveCurrentUser = async (): Promise<PublicUser | null> => {
 
 /** Инициализирует auth-сессию при старте приложения и делает её доступной через контекст. */
 export const AuthProvider = ({ children }: PropsWithChildren) => {
+  const queryClient = useQueryClient();
   const { data, error, isError, isPending, refetch } = useQuery({
     queryKey: authKeys.me(),
     queryFn: resolveCurrentUser,
     retry: false,
   });
+
+  useEffect(() => {
+    const unsubscribe = subscribeToUnauthorizedSession(() => {
+      void resetGuestSession(queryClient);
+    });
+
+    return unsubscribe;
+  }, [queryClient]);
 
   const refetchUser = useCallback(async () => {
     const result = await refetch();

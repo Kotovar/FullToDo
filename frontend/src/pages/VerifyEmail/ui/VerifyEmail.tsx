@@ -1,7 +1,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { authKeys, authService, handleMutationError } from '@shared/api';
+import {
+  authService,
+  handleMutationError,
+  resetGuestSession,
+} from '@shared/api';
 import { useNotifications } from '@shared/lib';
 import { Button } from '@shared/ui';
 import { ROUTES } from '@sharedCommon';
@@ -49,13 +53,7 @@ export const VerifyEmail = () => {
       showError(handleMutationError(error).message);
     }
 
-    queryClient.setQueryData(authKeys.me(), null);
-    queryClient.removeQueries({
-      predicate: query =>
-        ['notepads', 'tasks', 'task'].includes(
-          String(query.queryKey.at(0) ?? ''),
-        ),
-    });
+    await resetGuestSession(queryClient);
 
     navigate(ROUTES.app.login, { replace: true });
   };

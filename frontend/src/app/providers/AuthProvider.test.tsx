@@ -1,6 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
-import { authService, clearAccessToken, setAccessToken } from '@shared/api';
+import {
+  authService,
+  clearAccessToken,
+  emitUnauthorizedSessionEvent,
+  setAccessToken,
+} from '@shared/api';
 import { AuthProvider } from './AuthProvider';
 import { useAuth } from './useAuth';
 
@@ -99,5 +104,23 @@ describe('AuthProvider', () => {
     expect(screen.getByText('anonymous')).toBeInTheDocument();
     expect(screen.getByText('false')).toBeInTheDocument();
     expect(meSpy).not.toHaveBeenCalled();
+  });
+
+  test('switches to guest state after a global unauthorized session event', async () => {
+    setAccessToken('active-token');
+    vi.spyOn(authService, 'me').mockResolvedValue({
+      user: USER,
+    });
+
+    renderWithAuthProvider();
+
+    await waitFor(() => expect(screen.getByText('user')).toBeInTheDocument());
+
+    emitUnauthorizedSessionEvent();
+
+    await waitFor(() => expect(screen.getByText('guest')).toBeInTheDocument());
+
+    expect(screen.getByText('anonymous')).toBeInTheDocument();
+    expect(screen.getByText('false')).toBeInTheDocument();
   });
 });

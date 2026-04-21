@@ -12,17 +12,22 @@ import {
 } from '@shared/lib';
 import {
   authKeys,
+  fetchCurrentUser,
   getUserQueryScope,
   taskService,
   type MutationMethods,
 } from '@shared/api';
 import type { Task } from '@sharedCommon/*';
-import type { PublicUser } from 'shared/schemas';
 
 export const useTaskDetail = ({ entity }: UseTaskDetailProps) => {
   const { notepadId, taskId = '' } = useParams();
   const queryClient = useQueryClient();
-  const user = queryClient.getQueryData<PublicUser | null>(authKeys.me());
+  const { data: user } = useQuery({
+    queryKey: authKeys.me(),
+    queryFn: fetchCurrentUser,
+    enabled: false,
+  });
+  const isAuthenticated = Boolean(user);
   const userScope = getUserQueryScope(user?.userId);
   const queryKey = useMemo(
     () => getTaskQueryKey(userScope, notepadId),
@@ -38,7 +43,7 @@ export const useTaskDetail = ({ entity }: UseTaskDetailProps) => {
     queryKey: getTaskDetailQueryKey(userScope, notepadId, taskId),
     queryFn: () => taskService.getSingleTask(taskId, notepadId),
     select: data => data.data,
-    enabled: taskId.length > 0,
+    enabled: isAuthenticated && taskId.length > 0,
   });
 
   const { mutateAsync } = useMutation({
