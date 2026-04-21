@@ -8,6 +8,7 @@ type TranslationKeys = Extract<
   | 'errors.common.URL'
   | 'errors.auth.CONFLICT'
   | 'errors.auth.UNAUTHORIZED'
+  | 'errors.auth.EMAIL_NOT_VERIFIED'
   | 'errors.auth.UNDEFINED'
   | 'errors.notepad.CONFLICT'
   | 'errors.notepad.UNDEFINED'
@@ -22,6 +23,7 @@ export type QueryError = {
   message:
     | 'errors.auth.CONFLICT'
     | 'errors.auth.UNAUTHORIZED'
+    | 'errors.auth.EMAIL_NOT_VERIFIED'
     | 'errors.auth.UNDEFINED'
     | 'errors.notepad.CONFLICT'
     | 'errors.tasks.CONFLICT'
@@ -35,6 +37,7 @@ export type ErrorType =
   | 'SERVER_ERROR'
   | 'UNDEFINED'
   | 'UNAUTHORIZED'
+  | 'EMAIL_NOT_VERIFIED'
   | 'NETWORK_ERROR'
   | 'URL'
   | 'JSON';
@@ -44,7 +47,10 @@ export type BaseErrorType = Extract<
   'SERVER_ERROR' | 'NETWORK_ERROR' | 'URL' | 'JSON'
 >;
 
-export type EntityErrorType = Exclude<ErrorType, 'UNAUTHORIZED'>;
+export type EntityErrorType = Exclude<
+  ErrorType,
+  'UNAUTHORIZED' | 'EMAIL_NOT_VERIFIED'
+>;
 
 export type ErrorDetail = {
   type: ErrorType;

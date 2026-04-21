@@ -72,7 +72,7 @@ export const useLoginForm = ({
   const [errors, setErrors] = useState<LoginFormErrors>({});
   const [submitError, setSubmitError] = useState<Translation | null>(null);
 
-  const { mutateAsync, isPending } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (nextValues: LoginWithEmail) => authService.login(nextValues),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
@@ -113,7 +113,7 @@ export const useLoginForm = ({
   );
 
   const submit = useCallback(
-    async (event: SyntheticEvent<HTMLFormElement>) => {
+    (event: SyntheticEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       const validationErrors = validateLoginForm(values);
@@ -124,9 +124,9 @@ export const useLoginForm = ({
       }
 
       setSubmitError(null);
-      await mutateAsync(values);
+      mutate(values);
     },
-    [mutateAsync, values],
+    [mutate, values],
   );
 
   const isSubmitDisabled = useMemo(

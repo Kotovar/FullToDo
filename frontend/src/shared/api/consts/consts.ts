@@ -48,6 +48,10 @@ export const AUTH_ERRORS: Record<ErrorType, ErrorDetail> = {
     type: 'UNAUTHORIZED',
     message: 'errors.auth.UNAUTHORIZED',
   },
+  EMAIL_NOT_VERIFIED: {
+    type: 'EMAIL_NOT_VERIFIED',
+    message: 'errors.auth.EMAIL_NOT_VERIFIED',
+  },
   UNDEFINED: {
     type: 'UNDEFINED',
     message: 'errors.auth.UNDEFINED',

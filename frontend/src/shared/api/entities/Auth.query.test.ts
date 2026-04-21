@@ -184,6 +184,22 @@ describe('AuthService', () => {
     );
   });
 
+  test('returns email not verified error details for auth verify case', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      createJsonResponse(
+        { error: { statusCode: 401, message: 'Email not verified' } },
+        401,
+      ),
+    );
+
+    await expect(authService.login(loginCredentials)).rejects.toThrow(
+      expect.objectContaining({
+        message: 'Unauthorized',
+        cause: AUTH_ERRORS.EMAIL_NOT_VERIFIED,
+      }),
+    );
+  });
+
   test('returns network error details when fetch fails without cause', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(
       new Error('Failed to fetch'),

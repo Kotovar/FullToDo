@@ -103,4 +103,31 @@ describe('LoginForm', () => {
     });
     expect(window.sessionStorage.getItem('login-email')).toBe('""');
   });
+
+  test('shows explicit message when email is not verified', async () => {
+    const user = userEvent.setup();
+
+    vi.spyOn(authService, 'login').mockRejectedValue(
+      new Error('Unauthorized', {
+        cause: {
+          type: 'UNAUTHORIZED',
+          message: 'errors.auth.EMAIL_NOT_VERIFIED',
+        },
+      }),
+    );
+
+    renderLoginFlow('user@example.com');
+
+    await user.type(
+      screen.getByLabelText('login.form.password.label'),
+      'Password1',
+    );
+    await user.click(screen.getByRole('button', { name: 'login.form.submit' }));
+
+    await waitFor(() =>
+      expect(
+        screen.getByText('errors.auth.EMAIL_NOT_VERIFIED'),
+      ).toBeInTheDocument(),
+    );
+  });
 });

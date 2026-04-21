@@ -1,65 +1,34 @@
-import { ROUTES } from 'shared/routes';
-import {
-  BaseService,
-  AUTH_ERRORS,
-  COMMON_ERRORS,
-  HEADERS,
-  URL,
-} from '@shared/api';
+import { BaseService, AUTH_ERRORS, HEADERS } from '@shared/api';
 import { authFetch, clearAccessToken, setAccessToken } from '@shared/api/auth';
+import { authRoutes } from './Auth.query.config';
+import {
+  getUnauthorizedAuthError,
+  parseAuthErrorPayload,
+} from './Auth.query.utils';
+import type {
+  AuthAccessTokenResponse,
+  AuthMessageResponse,
+  AuthUserResponse,
+} from './Auth.query.types';
 import type {
   LoginWithEmail,
   LoginWithGoogle,
   PublicUser,
   RegisterWithEmail,
-} from 'shared/schemas';
-
-if (!URL) {
-  throw new Error(COMMON_ERRORS.URL.message);
-}
-
-const authRoutes = {
-  register: `${URL}${ROUTES.auth.register}`,
-  login: `${URL}${ROUTES.auth.login}`,
-  google: `${URL}${ROUTES.auth.google}`,
-  logout: `${URL}${ROUTES.auth.logout}`,
-  refresh: `${URL}${ROUTES.auth.refresh}`,
-  me: `${URL}${ROUTES.auth.me}`,
-  verifyEmail: (token: string) =>
-    `${URL}${ROUTES.auth.verifyEmail}?token=${encodeURIComponent(token)}`,
-} as const;
-
-export const authKeys = {
-  me: () => ['auth', 'me'] as const,
-};
-
-export const getUserQueryScope = (userId?: number | null) => userId ?? 'guest';
-
-export type AuthUserResponse = {
-  user: PublicUser;
-};
-
-export type AuthAccessTokenResponse = {
-  message: string;
-  accessToken: string;
-};
-
-export type AuthMessageResponse = {
-  message: string;
-};
-
-export const fetchCurrentUser = async (): Promise<PublicUser> => {
-  const { user } = await authService.me();
-  return user;
-};
+} from '@sharedCommon';
 
 class AuthService extends BaseService {
   protected async handleResponse<T>(response: Response): Promise<T> {
     if (response.ok) return response.json();
 
     switch (response.status) {
-      case 401:
-        throw new Error('Unauthorized', { cause: AUTH_ERRORS.UNAUTHORIZED });
+      case 401: {
+        const payload = await parseAuthErrorPayload(response);
+
+        throw new Error('Unauthorized', {
+          cause: getUnauthorizedAuthError(payload),
+        });
+      }
       case 404:
         throw new Error('Not found', { cause: AUTH_ERRORS.UNDEFINED });
       case 409:
@@ -186,3 +155,10 @@ class AuthService extends BaseService {
 }
 
 export const authService = new AuthService();
+
+export const fetchCurrentUser = async (): Promise<PublicUser> => {
+  const { user } = await authService.me();
+  return user;
+};
+
+export { authKeys, getUserQueryScope } from './Auth.query.config';
