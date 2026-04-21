@@ -11,6 +11,8 @@ import type {
   AuthUserResponse,
 } from './Auth.query.types';
 import type {
+  ChangePassword,
+  DeleteUser,
   LoginWithEmail,
   LoginWithGoogle,
   PublicUser,
@@ -148,6 +150,45 @@ class AuthService extends BaseService {
       });
 
       return this.handleResponse(response);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async changePassword(
+    credentials: ChangePassword,
+  ): Promise<AuthMessageResponse> {
+    try {
+      const response = await authFetch(authRoutes.changePassword, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(credentials),
+      });
+
+      return this.handleResponse(response);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async deleteUser(credentials: DeleteUser): Promise<AuthMessageResponse> {
+    try {
+      const response = await authFetch(authRoutes.deleteUser, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(credentials),
+      });
+
+      if (response.status === 204) {
+        clearAccessToken();
+        return { message: 'Account deleted' };
+      }
+
+      const data = await this.handleResponse<AuthMessageResponse>(response);
+
+      clearAccessToken();
+
+      return data;
     } catch (error) {
       return this.handleError(error);
     }

@@ -6,6 +6,8 @@ import {
 } from '@shared/api/auth';
 import { authService } from './Auth.query';
 import type {
+  ChangePassword,
+  DeleteUser,
   LoginWithEmail,
   LoginWithGoogle,
   PublicUser,
@@ -24,6 +26,15 @@ const registerCredentials: RegisterWithEmail = {
 
 const googleCredentials: LoginWithGoogle = {
   token: 'google-token',
+};
+
+const changePasswordCredentials: ChangePassword = {
+  oldPassword: 'Password1',
+  newPassword: 'Password2',
+};
+
+const deleteUserCredentials: DeleteUser = {
+  currentPassword: 'Password1',
 };
 
 const user: PublicUser = {
@@ -170,6 +181,45 @@ describe('AuthService', () => {
     expect(result.message).toBe('Email verified successfully');
     expect(init?.credentials).toBe('include');
     expect(headers.get('Authorization')).toBeNull();
+  });
+
+  test('changePassword sends authorized JSON request', async () => {
+    setAccessToken('access-token-4');
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      createJsonResponse({
+        message: 'Password changed successfully',
+      }),
+    );
+
+    const result = await authService.changePassword(changePasswordCredentials);
+
+    const [url, init] = fetchSpy.mock.calls[0] ?? [];
+    const headers = new Headers(init?.headers);
+
+    expect(String(url)).toContain('/auth/change-password');
+    expect(result.message).toBe('Password changed successfully');
+    expect(init?.credentials).toBe('include');
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(headers.get('Authorization')).toBe('Bearer access-token-4');
+  });
+
+  test('deleteUser handles 204 response and clears access token', async () => {
+    setAccessToken('access-token-5');
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+
+    const result = await authService.deleteUser(deleteUserCredentials);
+
+    const [url, init] = fetchSpy.mock.calls[0] ?? [];
+    const headers = new Headers(init?.headers);
+
+    expect(String(url)).toContain('/auth/delete-user');
+    expect(result.message).toBe('Account deleted');
+    expect(getAccessToken()).toBeNull();
+    expect(init?.credentials).toBe('include');
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(headers.get('Authorization')).toBe('Bearer access-token-5');
   });
 
   test('returns unauthorized error details for 401 responses', async () => {

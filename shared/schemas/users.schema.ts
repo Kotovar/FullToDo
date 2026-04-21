@@ -82,6 +82,7 @@ export type RegisterWithEmail = z.infer<typeof registerWithEmailSchema>;
 export type LoginWithGoogle = z.infer<typeof loginWithGoogleSchema>;
 export type LoginWithEmail = z.infer<typeof loginWithEmailSchema>;
 export type ChangePassword = z.infer<typeof changePasswordSchema>;
+export type DeleteUser = z.infer<typeof deleteUserSchema>;
 export type DbUser = z.infer<typeof dbUserSchema>;
 export type RefreshToken = z.infer<typeof refreshTokenSchema>;
 
