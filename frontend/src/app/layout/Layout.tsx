@@ -11,12 +11,22 @@ const Layout = () => {
   const isAccountPage = pathname === ROUTES.app.account;
 
   return (
-    <div className='font-display h-screen'>
+    <div
+      className={clsx('bg-grey-light font-display', {
+        ['h-dvh overflow-hidden']: !isAccountPage,
+        ['min-h-dvh']: isAccountPage,
+      })}
+    >
       <Header
-        className='bg-accent fixed z-10 flex h-16 w-full items-center gap-x-1 px-2'
+        className='bg-accent fixed top-0 left-0 z-10 flex h-16 w-full items-center gap-x-1 px-2'
         changeVisibility={handleVisibility}
       />
-      <main className='bg-grey-light text-dark flex h-full pt-16 text-2xl'>
+      <main
+        className={clsx('text-dark flex text-2xl', {
+          ['h-full overflow-hidden pt-16']: !isAccountPage,
+          ['min-h-dvh pt-16']: isAccountPage,
+        })}
+      >
         {!isAccountPage && (
           <NavigationBar
             className={clsx(
@@ -31,11 +41,15 @@ const Layout = () => {
           />
         )}
         <section
-          className={clsx('flex w-full flex-col p-4 md:flex landscape:p-1', {
-            ['hidden']: !isAccountPage && !isHidden,
-            ['mx-auto max-w-5xl p-4 md:px-8 md:py-6 landscape:p-4']:
-              isAccountPage,
-          })}
+          className={clsx(
+            'flex w-full min-w-0 flex-col p-4 md:flex landscape:p-1',
+            {
+              ['hidden']: !isAccountPage && !isHidden,
+              ['overflow-hidden']: !isAccountPage,
+              ['mx-auto max-w-5xl p-4 md:px-8 md:py-6 landscape:p-4']:
+                isAccountPage,
+            },
+          )}
           aria-live='polite'
         >
           <Outlet />

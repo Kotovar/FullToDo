@@ -8,6 +8,7 @@ import type { PublicUser } from 'shared/schemas';
 import { Account } from './Account';
 
 vi.mock('@features/auth', () => ({
+  ChangePasswordForm: () => <form aria-label='change-password-form' />,
   LogoutButton: () => <button type='button'>logout.label</button>,
 }));
 
@@ -66,6 +67,9 @@ describe('Account page', () => {
     expect(
       screen.getByText('account.security.passwordEnabled'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole('form', { name: 'change-password-form' }),
+    ).toBeInTheDocument();
     expect(screen.getByText('logout.label')).toBeInTheDocument();
   });
 
@@ -83,5 +87,8 @@ describe('Account page', () => {
     expect(
       screen.getByText('account.security.passwordDisabled'),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('form', { name: 'change-password-form' }),
+    ).not.toBeInTheDocument();
   });
 });

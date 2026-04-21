@@ -16,9 +16,8 @@ import {
   handleMutationError,
 } from '@shared/api';
 import { loginWithEmailSchema, type LoginWithEmail } from '@sharedCommon';
+import { LOGIN_EMAIL_STORAGE_KEY } from '../register/redirect';
 import type { Translation } from '@shared/i18n';
-
-const LOGIN_EMAIL_STORAGE_KEY = 'login-email';
 
 type LoginField = keyof LoginWithEmail;
 type LoginFormErrors = Partial<Record<LoginField, string>>;

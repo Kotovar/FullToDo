@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import {
+  getLoginPrefilledEmail,
   getLoginRedirectTarget,
   getRegisterRedirectEmail,
   LoginForm,
@@ -11,12 +12,13 @@ export const Login = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const registeredEmail = getRegisterRedirectEmail(location.state);
+  const prefilledEmail = getLoginPrefilledEmail(location.state);
   const registrationCompleted = registeredEmail !== null;
   const redirectTo = getLoginRedirectTarget(location.state);
 
   return (
     <>
-      <LoginForm initialEmail={registeredEmail} redirectTo={redirectTo} />
+      <LoginForm initialEmail={prefilledEmail} redirectTo={redirectTo} />
       <Link
         className='w-full max-w-md rounded border border-slate-300 bg-white p-2 text-slate-700 transition hover:bg-slate-50'
         to={ROUTES.app.register}

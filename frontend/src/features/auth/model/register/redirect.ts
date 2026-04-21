@@ -1,6 +1,11 @@
-export type RegisterRedirectState = {
+export const LOGIN_EMAIL_STORAGE_KEY = 'login-email';
+
+export type LoginEmailPrefillState = {
+  loginEmail: string;
+};
+
+export type RegisterRedirectState = LoginEmailPrefillState & {
   registrationCompleted: true;
-  registeredEmail: string;
 };
 
 /**
@@ -14,8 +19,31 @@ export const createRegisterRedirectState = (
   email: string,
 ): RegisterRedirectState => ({
   registrationCompleted: true,
-  registeredEmail: email,
+  loginEmail: email,
 });
+
+export const createLoginPrefillState = (
+  email: string,
+): LoginEmailPrefillState => ({
+  loginEmail: email,
+});
+
+/**
+ * Сохраняет email в `sessionStorage`, чтобы страница логина
+ * могла подставить его в поле email после редиректа.
+ *
+ * Используется как fallback на случай, если `location.state`
+ * не будет доступен после навигации.
+ *
+ * @param email Email для предзаполнения формы логина.
+ */
+export const persistLoginPrefilledEmail = (email: string): void => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  window.sessionStorage.setItem(LOGIN_EMAIL_STORAGE_KEY, JSON.stringify(email));
+};
 
 /**
  * Проверяет, является ли `state` допустимым состоянием редиректа после регистрации.
@@ -29,9 +57,15 @@ const isRegisterRedirectState = (
   typeof state === 'object' &&
   state !== null &&
   'registrationCompleted' in state &&
-  'registeredEmail' in state &&
+  'loginEmail' in state &&
   state.registrationCompleted === true &&
-  typeof state.registeredEmail === 'string';
+  typeof state.loginEmail === 'string';
+
+const hasLoginEmail = (state: unknown): state is LoginEmailPrefillState =>
+  typeof state === 'object' &&
+  state !== null &&
+  'loginEmail' in state &&
+  typeof state.loginEmail === 'string';
 
 /**
  * Безопасно извлекает email из `location.state`, переданного после регистрации.
@@ -41,7 +75,15 @@ const isRegisterRedirectState = (
  */
 export const getRegisterRedirectEmail = (state: unknown): string | null => {
   if (isRegisterRedirectState(state)) {
-    return state.registeredEmail;
+    return state.loginEmail;
+  }
+
+  return null;
+};
+
+export const getLoginPrefilledEmail = (state: unknown): string | null => {
+  if (hasLoginEmail(state)) {
+    return state.loginEmail;
   }
 
   return null;

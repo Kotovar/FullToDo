@@ -11,8 +11,8 @@ import userEvent from '@testing-library/user-event';
 const LoginProbe = () => {
   const location = useLocation();
   const registeredEmail =
-    typeof location.state?.registeredEmail === 'string'
-      ? location.state.registeredEmail
+    typeof location.state?.loginEmail === 'string'
+      ? location.state.loginEmail
       : 'none';
 
   return (

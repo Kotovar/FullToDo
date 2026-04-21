@@ -11,8 +11,8 @@ import { RegisterForm } from './RegisterForm';
 const LoginProbe = () => {
   const location = useLocation();
   const registeredEmail =
-    typeof location.state?.registeredEmail === 'string'
-      ? location.state.registeredEmail
+    typeof location.state?.loginEmail === 'string'
+      ? location.state.loginEmail
       : 'none';
 
   return (

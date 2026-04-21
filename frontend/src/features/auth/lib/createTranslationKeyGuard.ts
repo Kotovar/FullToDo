@@ -1,6 +1,6 @@
 import type { Translation } from '@shared/i18n';
 
-type AuthTranslationScope = 'login' | 'register';
+type AuthTranslationScope = 'login' | 'register' | 'account';
 
 export const createTranslationKeyGuard =
   (scope: AuthTranslationScope) =>

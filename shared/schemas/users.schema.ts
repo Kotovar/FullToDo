@@ -25,10 +25,18 @@ export const loginWithEmailSchema = z.object({
   password: z.string().min(1),
 });
 
-export const changePasswordSchema = z.object({
-  oldPassword: z.string().min(1),
-  newPassword: zPassword,
-});
+export const changePasswordSchema = z
+  .object({
+    oldPassword: z.string().min(1),
+    newPassword: zPassword,
+  })
+  .refine(
+    ({ oldPassword, newPassword }) => oldPassword !== newPassword,
+    {
+      path: ['newPassword'],
+      message: 'New password must differ from current password',
+    },
+  );
 
 export const dbUserSchema = z
   .object({

@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { LogoutButton } from '@features/auth';
+import { ChangePasswordForm, LogoutButton } from '@features/auth';
 import { authKeys, fetchCurrentUser } from '@shared/api';
 import { ROUTES } from '@sharedCommon';
 
@@ -18,7 +18,7 @@ export const Account = () => {
   }
 
   return (
-    <main className='flex min-h-full w-full flex-col gap-6 pb-8 md:pb-10'>
+    <main className='flex w-full flex-col gap-6 pb-8 md:pb-10'>
       <header className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
         <div className='flex flex-col gap-2'>
           <h1 className='text-3xl font-semibold'>{t('account.title')}</h1>
@@ -57,11 +57,18 @@ export const Account = () => {
         <h2 className='text-2xl font-semibold'>
           {t('account.security.title')}
         </h2>
-        <p className='text-base text-slate-700 dark:text-slate-200'>
-          {user.hasPassword
-            ? t('account.security.passwordEnabled')
-            : t('account.security.passwordDisabled')}
-        </p>
+        {user.hasPassword ? (
+          <>
+            <p className='text-base text-slate-700 dark:text-slate-200'>
+              {t('account.security.passwordEnabled')}
+            </p>
+            <ChangePasswordForm email={user.email} />
+          </>
+        ) : (
+          <p className='text-base text-slate-700 dark:text-slate-200'>
+            {t('account.security.passwordDisabled')}
+          </p>
+        )}
         <div className='pt-2'>
           <LogoutButton
             className='border-slate-400 bg-slate-100 text-slate-800 shadow-sm enabled:hover:bg-slate-200 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:enabled:hover:bg-slate-800'

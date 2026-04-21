@@ -100,7 +100,7 @@
   "account": {
     "nav": "Account",
     "title": "Account",
-    "description": "This page will host your security settings and profile management.",
+    "description": "Security settings and profile management.",
     "backToTasks": "Back to tasks",
     "profile": {
       "title": "Profile",
@@ -115,7 +115,46 @@
     "security": {
       "title": "Security",
       "passwordEnabled": "Password change is available for this account.",
-      "passwordDisabled": "This account uses Google sign-in, so there is no local password configured right now."
+      "passwordDisabled": "This account uses Google sign-in, so there is no local password configured right now.",
+      "sessionReset": "After changing the password, the current session will be closed and you will need to sign in again.",
+      "form": {
+        "currentPassword": {
+          "label": "Current password",
+          "placeholder": "Enter your current password",
+          "show": "Show current password",
+          "hide": "Hide current password"
+        },
+        "newPassword": {
+          "label": "New password",
+          "placeholder": "Enter your new password",
+          "hint": "At least 8 characters, one uppercase letter and one number",
+          "show": "Show new password",
+          "hide": "Hide new password"
+        },
+        "confirmPassword": {
+          "label": "Confirm new password",
+          "placeholder": "Repeat your new password",
+          "show": "Show password confirmation",
+          "hide": "Hide password confirmation"
+        },
+        "submit": "Change password",
+        "submitSubmitting": "Saving..."
+      },
+      "validation": {
+        "currentPassword": {
+          "required": "Enter your current password"
+        },
+        "newPassword": {
+          "min": "Password must be at least 8 characters",
+          "uppercase": "Password must contain at least one uppercase letter",
+          "number": "Password must contain at least one number",
+          "sameAsCurrent": "New password must differ from the current password"
+        },
+        "confirmPassword": {
+          "required": "Confirm your new password",
+          "mismatch": "Passwords do not match"
+        }
+      }
     },
     "dangerZone": {
       "title": "Danger zone",
@@ -234,7 +273,8 @@
   },
   "notifications": {
     "auth": {
-      "register": "Verification email sent successfully"
+      "register": "Verification email sent successfully",
+      "passwordChanged": "Password changed successfully"
     },
     "tasks": {
       "create": "Task successfully created",
