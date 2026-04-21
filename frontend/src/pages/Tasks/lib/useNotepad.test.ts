@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { useNotepad } from './useNotepad';
-import { createWrapperWithRouter } from '@shared/mocks';
+import { createWrapperWithRouter, MOCK_NOTEPADS_RESPONSE } from '@shared/mocks';
 import { ROUTES } from 'shared/routes';
 import { notepadService } from '@entities/Notepad';
 import { getUseNotificationsMock, setupMockServer } from '@shared/testing';
@@ -25,6 +25,9 @@ describe('useNotepad hook', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(notepadService, 'getNotepads').mockResolvedValue(
+      MOCK_NOTEPADS_RESPONSE,
+    );
   });
 
   test('should return a specific notebook along the route', async () => {

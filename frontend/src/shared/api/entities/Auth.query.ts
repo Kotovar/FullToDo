@@ -31,6 +31,8 @@ export const authKeys = {
   me: () => ['auth', 'me'] as const,
 };
 
+export const getUserQueryScope = (userId?: number | null) => userId ?? 'guest';
+
 export type AuthUserResponse = {
   user: PublicUser;
 };

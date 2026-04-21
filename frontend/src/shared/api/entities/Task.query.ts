@@ -5,6 +5,7 @@ import {
   COMMON_ERRORS,
   HEADERS,
   BaseService,
+  authFetch,
 } from '@shared/api';
 import {
   CreateTask,
@@ -62,7 +63,7 @@ class TaskService extends BaseService {
     notepadId?: string,
   ): Promise<TaskResponse> {
     try {
-      const response = await fetch(
+      const response = await authFetch(
         notepadId
           ? taskRoutes.single(notepadId, taskId)
           : taskRoutes.singleInCommonNotepad(taskId),
@@ -89,7 +90,7 @@ class TaskService extends BaseService {
         default:
           endpoint = ROUTES.notepads.getPath(notepadId);
       }
-      const response = await fetch(
+      const response = await authFetch(
         `${URL}${endpoint}${this.buildQueryString(params)}`,
       );
       return this.handleResponse(response);
@@ -100,7 +101,7 @@ class TaskService extends BaseService {
 
   async getAllTasks(params: URLSearchParams): Promise<TasksResponse> {
     try {
-      const response = await fetch(
+      const response = await authFetch(
         `${taskRoutes.all}${this.buildQueryString(params)}`,
       );
       return this.handleResponse(response);
@@ -118,7 +119,7 @@ class TaskService extends BaseService {
         ? taskRoutes.forCreate(notepadId)
         : taskRoutes.forCreateInCommonNotepad;
 
-      const response = await fetch(patch, {
+      const response = await authFetch(patch, {
         method: 'POST',
         headers: HEADERS,
         body: JSON.stringify(task),
@@ -134,11 +135,14 @@ class TaskService extends BaseService {
     updatedTaskFields: Partial<Task>,
   ): Promise<TaskResponseSingle> {
     try {
-      const response = await fetch(taskRoutes.singleInCommonNotepad(taskId), {
-        method: 'PATCH',
-        headers: HEADERS,
-        body: JSON.stringify(updatedTaskFields),
-      });
+      const response = await authFetch(
+        taskRoutes.singleInCommonNotepad(taskId),
+        {
+          method: 'PATCH',
+          headers: HEADERS,
+          body: JSON.stringify(updatedTaskFields),
+        },
+      );
       return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);
@@ -147,10 +151,13 @@ class TaskService extends BaseService {
 
   async deleteTask(taskId: string): Promise<TaskResponseSingle> {
     try {
-      const response = await fetch(taskRoutes.singleInCommonNotepad(taskId), {
-        method: 'DELETE',
-        headers: HEADERS,
-      });
+      const response = await authFetch(
+        taskRoutes.singleInCommonNotepad(taskId),
+        {
+          method: 'DELETE',
+          headers: HEADERS,
+        },
+      );
       return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);

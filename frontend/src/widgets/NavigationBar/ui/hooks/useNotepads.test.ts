@@ -25,6 +25,9 @@ describe('useNotepads hook', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(notepadService, 'getNotepads').mockResolvedValue(
+      MOCK_NOTEPADS_RESPONSE,
+    );
 
     vi.spyOn(notepadService, 'createNotepad').mockResolvedValue({
       status: 201,

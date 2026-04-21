@@ -12,13 +12,24 @@ import {
   useApiNotifications,
   UseTasksProps,
 } from '@shared/lib';
-import { taskService, type MutationMethods } from '@shared/api';
+import {
+  authKeys,
+  getUserQueryScope,
+  taskService,
+  type MutationMethods,
+} from '@shared/api';
 import { PAGINATION, type Task } from '@sharedCommon/';
+import type { PublicUser } from 'shared/schemas';
 
 export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<PublicUser | null>(authKeys.me());
+  const userScope = getUserQueryScope(user?.userId);
   const isCommon = isCommonNotepad(notepadId);
-  const queryKey = useMemo(() => getTaskQueryKey(notepadId), [notepadId]);
+  const queryKey = useMemo(
+    () => getTaskQueryKey(userScope, notepadId),
+    [notepadId, userScope],
+  );
   const paramsObj = useMemo(() => Object.fromEntries(params), [params]);
   const initialPage = Number(params.get('page') ?? PAGINATION.DEFAULT_PAGE);
 
@@ -29,7 +40,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     fetchNextPage: fetchNextPagePrivate,
     hasNextPage: hasNextPagePrivate,
   } = useInfiniteQuery({
-    queryKey: ['tasks', notepadId, initialPage, paramsObj],
+    queryKey: ['tasks', userScope, notepadId, initialPage, paramsObj],
     queryFn: ({ pageParam = initialPage }) => {
       const queryParams = new URLSearchParams(paramsObj);
       queryParams.set('page', pageParam.toString());
@@ -54,7 +65,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     fetchNextPage: fetchNextPageCommon,
     hasNextPage: hasNextPageCommon,
   } = useInfiniteQuery({
-    queryKey: ['tasks', initialPage, paramsObj],
+    queryKey: ['tasks', userScope, initialPage, paramsObj],
     queryFn: ({ pageParam = initialPage }) => {
       const queryParams = new URLSearchParams(paramsObj);
       queryParams.set('page', pageParam.toString());
@@ -97,17 +108,27 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       );
       if (updatedTask.notepadId) {
         queryClient.invalidateQueries({
-          queryKey: getTaskQueryKey(updatedTask.notepadId),
+          queryKey: getTaskQueryKey(userScope, updatedTask.notepadId),
         });
       }
 
       if (result && !isCommon) {
-        await queryClient.invalidateQueries({ queryKey: getTaskQueryKey() });
+        await queryClient.invalidateQueries({
+          queryKey: getTaskQueryKey(userScope),
+        });
       }
 
       return result;
     },
-    [mutationUpdate, onError, onSuccess, queryClient, queryKey, isCommon],
+    [
+      mutationUpdate,
+      onError,
+      onSuccess,
+      queryClient,
+      queryKey,
+      isCommon,
+      userScope,
+    ],
   );
 
   const deleteTask = useCallback(
@@ -120,12 +141,22 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       });
 
       if (result && !isCommon) {
-        await queryClient.invalidateQueries({ queryKey: getTaskQueryKey() });
+        await queryClient.invalidateQueries({
+          queryKey: getTaskQueryKey(userScope),
+        });
       }
 
       return result;
     },
-    [mutationDelete, queryClient, queryKey, isCommon, onSuccess, onError],
+    [
+      mutationDelete,
+      queryClient,
+      queryKey,
+      isCommon,
+      onSuccess,
+      onError,
+      userScope,
+    ],
   );
 
   const tasksPrivateResult = useMemo(
