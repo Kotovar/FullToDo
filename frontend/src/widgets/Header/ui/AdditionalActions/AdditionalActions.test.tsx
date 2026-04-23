@@ -73,4 +73,12 @@ describe('AdditionalActions component', () => {
       '/account',
     );
   });
+
+  test('can hide link to account page', () => {
+    renderWithRouter(<AdditionalActions showAccountLink={false} />);
+
+    expect(
+      screen.queryByRole('link', { name: 'account.nav' }),
+    ).not.toBeInTheDocument();
+  });
 });

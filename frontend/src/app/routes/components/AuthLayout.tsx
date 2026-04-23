@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { getLoginRedirectTarget, GoogleAuthSection } from '@features/auth';
+import { AdditionalActions } from '@widgets/Header';
 import { ROUTES } from '@sharedCommon';
 
 export const AuthLayout = () => {
@@ -12,7 +13,10 @@ export const AuthLayout = () => {
     : ROUTES.tasks.base;
 
   return (
-    <main className='bg-light text-dark flex min-h-dvh flex-col items-center justify-center gap-4 p-6 text-center'>
+    <main className='bg-light text-dark relative flex min-h-dvh flex-col items-center justify-center gap-4 p-6 text-center'>
+      <div className='bg-accent absolute top-4 right-4 rounded-2xl p-1 shadow-sm'>
+        <AdditionalActions showAccountLink={false} />
+      </div>
       <h1 className='text-3xl font-semibold'>
         {t(isLoginPage ? 'login.title' : 'register.title')}
       </h1>
