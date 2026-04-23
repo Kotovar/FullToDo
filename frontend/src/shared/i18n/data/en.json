@@ -222,7 +222,12 @@
   },
   "errors": {
     "notFound": "Page not found",
+    "notFoundDescription": "The link may be outdated, the page may have moved, or the address may be incorrect.",
     "errorBoundary": "Something went wrong",
+    "errorBoundaryDescription": "The application hit an unexpected error. Try again or reload the page.",
+    "goHome": "Go home",
+    "tryAgain": "Try again",
+    "reload": "Reload page",
     "loadingFail": "Task not found. It may have been deleted or the link is incorrect.",
     "common": {
       "SERVER_ERROR": "Server error",

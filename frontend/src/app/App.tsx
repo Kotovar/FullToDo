@@ -10,7 +10,9 @@ const App = () => {
   const { theme } = useDarkToast();
 
   return (
-    <ErrorBoundary fallback={<ErrorFallback />}>
+    <ErrorBoundary
+      fallback={(_error, reset) => <ErrorFallback reset={reset} />}
+    >
       <AuthProvider>
         <Router />
       </AuthProvider>
