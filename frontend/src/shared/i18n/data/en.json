@@ -137,6 +137,8 @@
           "show": "Show password confirmation",
           "hide": "Hide password confirmation"
         },
+        "open": "Change password",
+        "cancel": "Cancel",
         "submit": "Change password",
         "submitSubmitting": "Saving..."
       },
@@ -158,7 +160,21 @@
     },
     "dangerZone": {
       "title": "Danger zone",
-      "description": "Irreversible account deletion will be available here."
+      "description": "Account deletion is always available and permanently removes your profile.",
+      "warning": "This action cannot be undone: your tasks, notebooks, and account access will be deleted forever.",
+      "trigger": "Delete account",
+      "confirmTitle": "Confirm account deletion",
+      "confirmDescription": "You are deleting account {{email}}. After confirmation, the data cannot be restored.",
+      "cancel": "Cancel",
+      "confirmAction": "Delete permanently",
+      "confirmActionSubmitting": "Deleting...",
+      "password": {
+        "label": "Current password",
+        "placeholder": "Enter your current password to confirm",
+        "show": "Show password",
+        "hide": "Hide password",
+        "required": "Enter your current password"
+      }
     }
   },
   "card": {
@@ -274,7 +290,8 @@
   "notifications": {
     "auth": {
       "register": "Verification email sent successfully",
-      "passwordChanged": "Password changed successfully"
+      "passwordChanged": "Password changed successfully",
+      "accountDeleted": "Account deleted successfully"
     },
     "tasks": {
       "create": "Task successfully created",

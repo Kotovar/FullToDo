@@ -1,7 +1,11 @@
 import { Link } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { ChangePasswordForm, LogoutButton } from '@features/auth';
+import {
+  ChangePasswordForm,
+  DeleteAccountSection,
+  LogoutButton,
+} from '@features/auth';
 import { authKeys, fetchCurrentUser } from '@shared/api';
 import { ROUTES } from '@sharedCommon';
 
@@ -69,9 +73,9 @@ export const Account = () => {
             {t('account.security.passwordDisabled')}
           </p>
         )}
-        <div className='pt-2'>
+        <div className='mt-2 border-t border-slate-200 pt-4 dark:border-slate-700'>
           <LogoutButton
-            className='border-slate-400 bg-slate-100 text-slate-800 shadow-sm enabled:hover:bg-slate-200 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:enabled:hover:bg-slate-800'
+            className='w-full justify-center border-slate-400 bg-slate-100 text-slate-800 shadow-sm enabled:hover:bg-slate-200 sm:w-auto sm:min-w-44 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:enabled:hover:bg-slate-800'
             appearance='ghost'
             padding='md'
           />
@@ -82,9 +86,10 @@ export const Account = () => {
         <h2 className='text-2xl font-semibold text-rose-700 dark:text-rose-300'>
           {t('account.dangerZone.title')}
         </h2>
-        <p className='text-base text-slate-700 dark:text-slate-200'>
-          {t('account.dangerZone.description')}
-        </p>
+        <DeleteAccountSection
+          email={user.email}
+          hasPassword={user.hasPassword}
+        />
       </section>
     </main>
   );

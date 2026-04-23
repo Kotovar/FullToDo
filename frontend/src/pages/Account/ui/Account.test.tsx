@@ -9,6 +9,7 @@ import { Account } from './Account';
 
 vi.mock('@features/auth', () => ({
   ChangePasswordForm: () => <form aria-label='change-password-form' />,
+  DeleteAccountSection: () => <section aria-label='delete-account-section' />,
   LogoutButton: () => <button type='button'>logout.label</button>,
 }));
 
@@ -71,6 +72,9 @@ describe('Account page', () => {
       screen.getByRole('form', { name: 'change-password-form' }),
     ).toBeInTheDocument();
     expect(screen.getByText('logout.label')).toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: 'delete-account-section' }),
+    ).toBeInTheDocument();
   });
 
   test('renders google account security message', () => {

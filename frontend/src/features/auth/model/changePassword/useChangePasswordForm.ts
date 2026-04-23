@@ -28,6 +28,11 @@ import {
 type ChangePasswordField = 'oldPassword' | 'newPassword' | 'confirmPassword';
 type ChangePasswordFormValues = ChangePassword & { confirmPassword: string };
 type ChangePasswordFormErrors = Partial<Record<ChangePasswordField, string>>;
+const INITIAL_VALUES: ChangePasswordFormValues = {
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+};
 
 const VALIDATION_MESSAGE_MAP: Record<string, Translation> = {
   'Password must be at least 8 characters':
@@ -80,11 +85,8 @@ export const useChangePasswordForm = (email: string) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { showSuccess } = useNotifications();
-  const [values, setValues] = useState<ChangePasswordFormValues>({
-    oldPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
+  const [values, setValues] =
+    useState<ChangePasswordFormValues>(INITIAL_VALUES);
   const [errors, setErrors] = useState<ChangePasswordFormErrors>({});
   const [submitError, setSubmitError] = useState<Translation | null>(null);
 
@@ -157,6 +159,12 @@ export const useChangePasswordForm = (email: string) => {
     ],
   );
 
+  const resetForm = useCallback(() => {
+    setValues(INITIAL_VALUES);
+    setErrors({});
+    setSubmitError(null);
+  }, []);
+
   return {
     values,
     errors,
@@ -165,5 +173,6 @@ export const useChangePasswordForm = (email: string) => {
     isSubmitDisabled,
     updateField,
     submit,
+    resetForm,
   };
 };

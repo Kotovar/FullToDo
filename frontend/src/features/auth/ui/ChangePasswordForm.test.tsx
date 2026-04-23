@@ -62,10 +62,35 @@ describe('ChangePasswordForm', () => {
     window.sessionStorage.clear();
   });
 
+  test('renders collapsed state by default and expands on click', async () => {
+    const user = userEvent.setup();
+
+    renderChangePasswordForm();
+
+    expect(
+      screen.queryByLabelText('account.security.form.currentPassword.label'),
+    ).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole('button', { name: 'account.security.form.open' }),
+    );
+
+    expect(
+      screen.getByLabelText('account.security.form.currentPassword.label'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'account.security.form.cancel' }),
+    ).toBeInTheDocument();
+  });
+
   test('toggles visibility for all password fields', async () => {
     const user = userEvent.setup();
 
     renderChangePasswordForm();
+
+    await user.click(
+      screen.getByRole('button', { name: 'account.security.form.open' }),
+    );
 
     const currentPasswordInput = screen.getByLabelText(
       'account.security.form.currentPassword.label',
@@ -107,6 +132,10 @@ describe('ChangePasswordForm', () => {
 
     renderChangePasswordForm();
 
+    await user.click(
+      screen.getByRole('button', { name: 'account.security.form.open' }),
+    );
+
     await user.type(
       screen.getByLabelText('account.security.form.currentPassword.label'),
       'Password1',
@@ -137,6 +166,10 @@ describe('ChangePasswordForm', () => {
     const changePasswordSpy = vi.spyOn(authService, 'changePassword');
 
     renderChangePasswordForm();
+
+    await user.click(
+      screen.getByRole('button', { name: 'account.security.form.open' }),
+    );
 
     await user.type(
       screen.getByLabelText('account.security.form.currentPassword.label'),
@@ -172,6 +205,10 @@ describe('ChangePasswordForm', () => {
 
     const { queryClient } = renderChangePasswordForm();
 
+    await user.click(
+      screen.getByRole('button', { name: 'account.security.form.open' }),
+    );
+
     await user.type(
       screen.getByLabelText('account.security.form.currentPassword.label'),
       'Password1',
@@ -201,5 +238,64 @@ describe('ChangePasswordForm', () => {
     expect(window.sessionStorage.getItem('login-email')).toBe(
       '"user@example.com"',
     );
+  });
+
+  test('collapses expanded form on cancel', async () => {
+    const user = userEvent.setup();
+
+    renderChangePasswordForm();
+
+    await user.click(
+      screen.getByRole('button', { name: 'account.security.form.open' }),
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'account.security.form.cancel' }),
+    );
+
+    expect(
+      screen.queryByLabelText('account.security.form.currentPassword.label'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'account.security.form.open' }),
+    ).toBeInTheDocument();
+  });
+
+  test('clears entered values after cancel and reopen', async () => {
+    const user = userEvent.setup();
+
+    renderChangePasswordForm();
+
+    await user.click(
+      screen.getByRole('button', { name: 'account.security.form.open' }),
+    );
+    await user.type(
+      screen.getByLabelText('account.security.form.currentPassword.label'),
+      'Password1',
+    );
+    await user.type(
+      screen.getByLabelText('account.security.form.newPassword.label'),
+      'Password2',
+    );
+    await user.type(
+      screen.getByLabelText('account.security.form.confirmPassword.label'),
+      'Password2',
+    );
+    await user.click(
+      screen.getByRole('button', { name: 'account.security.form.cancel' }),
+    );
+
+    await user.click(
+      screen.getByRole('button', { name: 'account.security.form.open' }),
+    );
+
+    expect(
+      screen.getByLabelText('account.security.form.currentPassword.label'),
+    ).toHaveValue('');
+    expect(
+      screen.getByLabelText('account.security.form.newPassword.label'),
+    ).toHaveValue('');
+    expect(
+      screen.getByLabelText('account.security.form.confirmPassword.label'),
+    ).toHaveValue('');
   });
 });
