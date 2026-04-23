@@ -2,15 +2,22 @@ import { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Tasks } from '@pages/Tasks';
 import { Error } from '@pages/Error';
-import { Login } from '@pages/Login';
-import { Register } from '@pages/Register';
-import { Account } from '@pages/Account';
-import { VerifyEmail } from '@pages/VerifyEmail';
 import { LayoutSkeleton } from '@app/layout/skeleton';
 import { ROUTES } from '@sharedCommon';
 import { TaskDetailSkeleton } from '@shared/ui';
 import { GuestOnlyRoute, ProtectedRoute, RootRedirect } from './guards';
-import { AuthLayout, Layout, TaskDetail } from './components';
+import {
+  Account,
+  AccountSkeleton,
+  AuthPageSkeleton,
+  AuthLayout,
+  Layout,
+  Login,
+  Register,
+  TaskDetail,
+  VerifyEmailSkeleton,
+  VerifyEmail,
+} from './components';
 
 export const Router = () => {
   return (
@@ -20,12 +27,33 @@ export const Router = () => {
 
         <Route element={<GuestOnlyRoute />}>
           <Route element={<AuthLayout />}>
-            <Route path={ROUTES.app.login} element={<Login />} />
-            <Route path={ROUTES.app.register} element={<Register />} />
+            <Route
+              path={ROUTES.app.login}
+              element={
+                <Suspense fallback={<AuthPageSkeleton />}>
+                  <Login />
+                </Suspense>
+              }
+            />
+            <Route
+              path={ROUTES.app.register}
+              element={
+                <Suspense fallback={<AuthPageSkeleton />}>
+                  <Register />
+                </Suspense>
+              }
+            />
           </Route>
         </Route>
 
-        <Route path={ROUTES.app.verifyEmail} element={<VerifyEmail />} />
+        <Route
+          path={ROUTES.app.verifyEmail}
+          element={
+            <Suspense fallback={<VerifyEmailSkeleton />}>
+              <VerifyEmail />
+            </Suspense>
+          }
+        />
 
         <Route element={<ProtectedRoute />}>
           <Route
@@ -35,7 +63,14 @@ export const Router = () => {
               </Suspense>
             }
           >
-            <Route path={ROUTES.app.account} element={<Account />} />
+            <Route
+              path={ROUTES.app.account}
+              element={
+                <Suspense fallback={<AccountSkeleton />}>
+                  <Account />
+                </Suspense>
+              }
+            />
 
             <Route path={ROUTES.notepads.base}>
               <Route index element={<Tasks />} />
