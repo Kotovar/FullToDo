@@ -1,50 +1,102 @@
+import { Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router';
 import { Tasks } from '@pages/Tasks';
 import { Error } from '@pages/Error';
-import { Home } from '@pages/Home';
 import { LayoutSkeleton } from '@app/layout/skeleton';
+import { ROUTES } from '@sharedCommon';
 import { TaskDetailSkeleton } from '@shared/ui';
-import { ROUTES } from '@sharedCommon/';
-import { WithSuspense } from './utils';
-import { Layout, TaskDetail } from './components';
+import { GuestOnlyRoute, ProtectedRoute, RootRedirect } from './guards';
+import {
+  Account,
+  AccountSkeleton,
+  AuthPageSkeleton,
+  AuthLayout,
+  Layout,
+  Login,
+  Register,
+  TaskDetail,
+  VerifyEmailSkeleton,
+  VerifyEmail,
+} from './components';
 
 export const Router = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<Home />} />
+        <Route index element={<RootRedirect />} />
 
-        <Route
-          element={
-            <WithSuspense fallback={<LayoutSkeleton />}>
-              <Layout />
-            </WithSuspense>
-          }
-        >
-          <Route path={ROUTES.NOTEPADS}>
-            <Route index element={<Tasks />} />
-            <Route path={ROUTES.NOTEPAD_ID} element={<Tasks />} />
-            <Route path={ROUTES.NOTEPAD_TASKS} element={<Tasks />} />
+        <Route element={<GuestOnlyRoute />}>
+          <Route element={<AuthLayout />}>
             <Route
-              path={ROUTES.TASK_DETAIL}
+              path={ROUTES.app.login}
               element={
-                <WithSuspense fallback={<TaskDetailSkeleton />}>
-                  <TaskDetail />
-                </WithSuspense>
+                <Suspense fallback={<AuthPageSkeleton />}>
+                  <Login />
+                </Suspense>
+              }
+            />
+            <Route
+              path={ROUTES.app.register}
+              element={
+                <Suspense fallback={<AuthPageSkeleton />}>
+                  <Register />
+                </Suspense>
               }
             />
           </Route>
+        </Route>
 
-          <Route path={ROUTES.TASKS}>
-            <Route index element={<Tasks />} />
+        <Route
+          path={ROUTES.app.verifyEmail}
+          element={
+            <Suspense fallback={<VerifyEmailSkeleton />}>
+              <VerifyEmail />
+            </Suspense>
+          }
+        />
+
+        <Route element={<ProtectedRoute />}>
+          <Route
+            element={
+              <Suspense fallback={<LayoutSkeleton />}>
+                <Layout />
+              </Suspense>
+            }
+          >
             <Route
-              path={ROUTES.COMMON_TASK_DETAIL}
+              path={ROUTES.app.account}
               element={
-                <WithSuspense fallback={<TaskDetailSkeleton />}>
-                  <TaskDetail />
-                </WithSuspense>
+                <Suspense fallback={<AccountSkeleton />}>
+                  <Account />
+                </Suspense>
               }
             />
+
+            <Route path={ROUTES.notepads.base}>
+              <Route index element={<Tasks />} />
+              <Route path={ROUTES.notepads.byId} element={<Tasks />} />
+              <Route path={ROUTES.notepads.tasks} element={<Tasks />} />
+              <Route
+                path={ROUTES.notepads.taskDetail}
+                element={
+                  <Suspense fallback={<TaskDetailSkeleton />}>
+                    <TaskDetail />
+                  </Suspense>
+                }
+              />
+            </Route>
+
+            <Route path={ROUTES.tasks.base}>
+              <Route index element={<Tasks />} />
+              <Route
+                path={ROUTES.tasks.byId}
+                element={
+                  <Suspense fallback={<TaskDetailSkeleton />}>
+                    <TaskDetail />
+                  </Suspense>
+                }
+              />
+            </Route>
           </Route>
         </Route>
 

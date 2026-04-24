@@ -1,9 +1,15 @@
 import { useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { notepadService } from '@entities/Notepad';
+import { getNotepadsQueryKey, notepadService } from '@entities/Notepad';
 import { ROUTES } from 'shared/routes';
-import { handleMutationError, type MutationMethods } from '@shared/api';
+import {
+  authKeys,
+  fetchCurrentUser,
+  getUserQueryScope,
+  handleMutationError,
+  type MutationMethods,
+} from '@shared/api';
 import { useApiNotifications } from '@shared/lib';
 import {
   handleMutationSuccess,
@@ -12,10 +18,18 @@ import {
 
 export const useNotepads = () => {
   const navigate = useNavigate();
+  const { data: user } = useQuery({
+    queryKey: authKeys.me(),
+    queryFn: fetchCurrentUser,
+    enabled: false,
+  });
+  const isAuthenticated = Boolean(user);
+  const userScope = getUserQueryScope(user?.userId);
   const { data, isError, isLoading, refetch } = useQuery({
-    queryKey: ['notepads'],
-    queryFn: notepadService.getNotepads,
+    queryKey: getNotepadsQueryKey(userScope),
+    queryFn: () => notepadService.getNotepads(),
     select: data => data.data,
+    enabled: isAuthenticated,
   });
 
   const { onSuccess, onError } = useApiNotifications('notepad');
@@ -51,7 +65,8 @@ export const useNotepads = () => {
 
   const { mutateAsync: mutationDelete } = useMutation({
     mutationFn: (notepadId: string) => notepadService.deleteNotepad(notepadId),
-    onSuccess: () => handleMutationSuccess(refetch, navigate, ROUTES.TASKS),
+    onSuccess: () =>
+      handleMutationSuccess(refetch, navigate, ROUTES.tasks.base),
   });
 
   const createNotepad = useCallback(

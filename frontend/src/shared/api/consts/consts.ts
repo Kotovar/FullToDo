@@ -1,4 +1,9 @@
-import type { BaseErrorType, ErrorDetail, ErrorType } from '../types';
+import type {
+  BaseErrorType,
+  EntityErrorType,
+  ErrorDetail,
+  ErrorType,
+} from '../types';
 
 export const URL = import.meta.env.VITE_URL;
 export const HEADERS = { 'Content-Type': 'application/json' };
@@ -22,7 +27,7 @@ export const COMMON_ERRORS: Record<BaseErrorType, ErrorDetail> = {
   },
 } as const;
 
-export const NOTEPAD_ERRORS: Record<ErrorType, ErrorDetail> = {
+export const NOTEPAD_ERRORS: Record<EntityErrorType, ErrorDetail> = {
   CONFLICT: {
     type: 'CONFLICT',
     message: 'errors.notepad.CONFLICT',
@@ -34,7 +39,27 @@ export const NOTEPAD_ERRORS: Record<ErrorType, ErrorDetail> = {
   ...COMMON_ERRORS,
 } as const;
 
-export const TASKS_ERRORS: Record<ErrorType, ErrorDetail> = {
+export const AUTH_ERRORS: Record<ErrorType, ErrorDetail> = {
+  CONFLICT: {
+    type: 'CONFLICT',
+    message: 'errors.auth.CONFLICT',
+  },
+  UNAUTHORIZED: {
+    type: 'UNAUTHORIZED',
+    message: 'errors.auth.UNAUTHORIZED',
+  },
+  EMAIL_NOT_VERIFIED: {
+    type: 'EMAIL_NOT_VERIFIED',
+    message: 'errors.auth.EMAIL_NOT_VERIFIED',
+  },
+  UNDEFINED: {
+    type: 'UNDEFINED',
+    message: 'errors.auth.UNDEFINED',
+  },
+  ...COMMON_ERRORS,
+} as const;
+
+export const TASKS_ERRORS: Record<EntityErrorType, ErrorDetail> = {
   CONFLICT: {
     type: 'CONFLICT',
     message: 'errors.tasks.CONFLICT',

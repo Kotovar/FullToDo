@@ -7,9 +7,10 @@ import {
   errorHandler,
   getId,
   getValidatedTaskParams,
+  setRefreshCookie,
 } from './utils';
 import {
-  commonNotepadId,
+  COMMON_NOTEPAD_ID,
   PAGINATION,
   TaskQueryParams,
 } from '@sharedCommon/schemas';
@@ -21,7 +22,7 @@ describe('parseJsonBody tests', () => {
     req.push('invalid json');
     req.push(null);
 
-    await expect(parseJsonBody<unknown>(req)).rejects.toThrow('Invalid JSON');
+    await expect(parseJsonBody(req)).rejects.toThrow('Invalid JSON');
   });
 });
 
@@ -61,7 +62,7 @@ describe('getId tests', () => {
     const req = { url } as IncomingMessage;
     const { notepadId } = getId(req, 'notepad');
 
-    expect(notepadId).toBe(commonNotepadId);
+    expect(notepadId).toBe(COMMON_NOTEPAD_ID);
   });
 
   test('get empty taskId if url[1] isn`t exists', async () => {
@@ -69,7 +70,7 @@ describe('getId tests', () => {
     const req = { url } as IncomingMessage;
     const { notepadId, taskId } = getId(req, 'task');
 
-    expect(notepadId).toBe(commonNotepadId);
+    expect(notepadId).toBe(COMMON_NOTEPAD_ID);
     expect(taskId).toBe('');
   });
 });
@@ -107,6 +108,29 @@ describe('getValidatedTaskParams tests', () => {
       page: PAGINATION.DEFAULT_PAGE,
       limit: PAGINATION.DEFAULT_LIMIT,
     });
+  });
+});
+
+describe('setRefreshCookie tests', () => {
+  const token = 'test-token';
+
+  test('should not include Secure flag outside of production', () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    const headers = setRefreshCookie(token);
+
+    expect(headers['Set-Cookie']).not.toContain('Secure');
+    expect(headers['Set-Cookie']).toContain(`refreshToken=${token}`);
+
+    vi.unstubAllEnvs();
+  });
+
+  test('should include Secure flag in production', () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    const headers = setRefreshCookie(token);
+
+    expect(headers['Set-Cookie']).toContain('Secure');
+
+    vi.unstubAllEnvs();
   });
 });
 

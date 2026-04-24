@@ -104,6 +104,17 @@
 }
 
 @layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-grey-light);
+  }
+
   .dark {
     --color-accent: oklch(0.32 0.06 255);
     --color-light: oklch(0.4 0.05 258);

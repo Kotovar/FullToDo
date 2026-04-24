@@ -8,22 +8,30 @@ import {
 export class NotepadService {
   constructor(private repository: TaskRepository) {}
 
-  async createNotepad(task: CreateNotepad): Promise<Notepad> {
-    return await this.repository.createNotepad(task);
+  async createNotepad(
+    notepad: CreateNotepad,
+    userId: number,
+  ): Promise<Notepad> {
+    return await this.repository.createNotepad(notepad, userId);
   }
 
-  async getAllNotepads(): Promise<NotepadWithoutTasks[]> {
-    return await this.repository.getAllNotepads();
+  async getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]> {
+    return await this.repository.getAllNotepads(userId);
   }
 
   async updateNotepad(
     notepadId: string,
     updatedNotepadFields: Partial<CreateNotepad>,
+    userId: number,
   ): Promise<Notepad> {
-    return await this.repository.updateNotepad(notepadId, updatedNotepadFields);
+    return await this.repository.updateNotepad(
+      notepadId,
+      updatedNotepadFields,
+      userId,
+    );
   }
 
-  async deleteNotepad(notepadId: string): Promise<void> {
-    return await this.repository.deleteNotepad(notepadId);
+  async deleteNotepad(notepadId: string, userId: number): Promise<void> {
+    return await this.repository.deleteNotepad(notepadId, userId);
   }
 }

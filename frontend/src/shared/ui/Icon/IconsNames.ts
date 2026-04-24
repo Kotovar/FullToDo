@@ -5,6 +5,8 @@ import Calendar from './icons/calendar.svg?react';
 import CircleEmpty from './icons/circle-empty.svg?react';
 import CircleFilled from './icons/circle-filled.svg?react';
 import Cross from './icons/cross.svg?react';
+import Eye from './icons/eye.svg?react';
+import EyeOff from './icons/eye-off.svg?react';
 import FlagRu from './icons/flag-ru.svg?react';
 import FlagEn from './icons/flag-en.svg?react';
 import ThemeLight from './icons/light-theme.svg?react';
@@ -13,6 +15,7 @@ import Loupe from './icons/loupe-search.svg?react';
 import Plus from './icons/plus.svg?react';
 import Filter from './icons/task-filter.svg?react';
 import ThreeDots from './icons/three-dots-vertical.svg?react';
+import User from './icons/user.svg?react';
 
 export const iconsNames = {
   burger: Burger,
@@ -22,6 +25,8 @@ export const iconsNames = {
   circleEmpty: CircleEmpty,
   circleFilled: CircleFilled,
   cross: Cross,
+  eye: Eye,
+  eyeOff: EyeOff,
   flagRu: FlagRu,
   flagEn: FlagEn,
   themeLight: ThemeLight,
@@ -30,4 +35,5 @@ export const iconsNames = {
   plus: Plus,
   filter: Filter,
   threeDots: ThreeDots,
+  user: User,
 };

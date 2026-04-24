@@ -6,6 +6,10 @@ type TranslationKeys = Extract<
   | 'errors.common.NETWORK_ERROR'
   | 'errors.common.JSON'
   | 'errors.common.URL'
+  | 'errors.auth.CONFLICT'
+  | 'errors.auth.UNAUTHORIZED'
+  | 'errors.auth.EMAIL_NOT_VERIFIED'
+  | 'errors.auth.UNDEFINED'
   | 'errors.notepad.CONFLICT'
   | 'errors.notepad.UNDEFINED'
   | 'errors.tasks.CONFLICT'
@@ -15,17 +19,25 @@ type TranslationKeys = Extract<
 export type MutationMethods = 'create' | 'update' | 'delete';
 
 export type QueryError = {
-  type: 'CONFLICT' | 'SERVER_ERROR';
+  type: 'CONFLICT' | 'SERVER_ERROR' | 'UNAUTHORIZED' | 'UNDEFINED';
   message:
+    | 'errors.auth.CONFLICT'
+    | 'errors.auth.UNAUTHORIZED'
+    | 'errors.auth.EMAIL_NOT_VERIFIED'
+    | 'errors.auth.UNDEFINED'
     | 'errors.notepad.CONFLICT'
     | 'errors.tasks.CONFLICT'
-    | 'errors.common.SERVER_ERROR';
+    | 'errors.common.SERVER_ERROR'
+    | 'errors.notepad.UNDEFINED'
+    | 'errors.tasks.UNDEFINED';
 };
 
 export type ErrorType =
   | 'CONFLICT'
   | 'SERVER_ERROR'
   | 'UNDEFINED'
+  | 'UNAUTHORIZED'
+  | 'EMAIL_NOT_VERIFIED'
   | 'NETWORK_ERROR'
   | 'URL'
   | 'JSON';
@@ -33,6 +45,11 @@ export type ErrorType =
 export type BaseErrorType = Extract<
   ErrorType,
   'SERVER_ERROR' | 'NETWORK_ERROR' | 'URL' | 'JSON'
+>;
+
+export type EntityErrorType = Exclude<
+  ErrorType,
+  'UNAUTHORIZED' | 'EMAIL_NOT_VERIFIED'
 >;
 
 export type ErrorDetail = {

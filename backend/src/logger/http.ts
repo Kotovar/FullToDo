@@ -1,8 +1,9 @@
 import pino from 'pino';
 
 export const httpLogger =
-  process.env.NODE_ENV !== 'production'
-    ? pino({
+  process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'test'
+    ? null
+    : pino({
         level: 'info',
         transport: {
           target: 'pino-pretty',
@@ -12,5 +13,4 @@ export const httpLogger =
             ignore: 'pid,hostname',
           },
         },
-      }).child({ layer: 'http' })
-    : null;
+      }).child({ layer: 'http' });

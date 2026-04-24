@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import {
   useInfiniteQuery,
   useMutation,
+  useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
 import {
@@ -12,13 +13,29 @@ import {
   useApiNotifications,
   UseTasksProps,
 } from '@shared/lib';
-import { taskService, type MutationMethods } from '@shared/api';
+import {
+  authKeys,
+  fetchCurrentUser,
+  getUserQueryScope,
+  taskService,
+  type MutationMethods,
+} from '@shared/api';
 import { PAGINATION, type Task } from '@sharedCommon/';
 
 export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
+  const { data: user } = useQuery({
+    queryKey: authKeys.me(),
+    queryFn: fetchCurrentUser,
+    enabled: false,
+  });
+  const isAuthenticated = Boolean(user);
+  const userScope = getUserQueryScope(user?.userId);
   const isCommon = isCommonNotepad(notepadId);
-  const queryKey = useMemo(() => getTaskQueryKey(notepadId), [notepadId]);
+  const queryKey = useMemo(
+    () => getTaskQueryKey(userScope, notepadId),
+    [notepadId, userScope],
+  );
   const paramsObj = useMemo(() => Object.fromEntries(params), [params]);
   const initialPage = Number(params.get('page') ?? PAGINATION.DEFAULT_PAGE);
 
@@ -29,7 +46,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     fetchNextPage: fetchNextPagePrivate,
     hasNextPage: hasNextPagePrivate,
   } = useInfiniteQuery({
-    queryKey: ['tasks', notepadId, initialPage, paramsObj],
+    queryKey: ['tasks', userScope, notepadId, initialPage, paramsObj],
     queryFn: ({ pageParam = initialPage }) => {
       const queryParams = new URLSearchParams(paramsObj);
       queryParams.set('page', pageParam.toString());
@@ -44,7 +61,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       lastPage.meta.page < lastPage.meta.totalPages
         ? lastPage.meta.page + 1
         : undefined,
-    enabled: !isCommon,
+    enabled: isAuthenticated && !isCommon,
   });
 
   const {
@@ -54,7 +71,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     fetchNextPage: fetchNextPageCommon,
     hasNextPage: hasNextPageCommon,
   } = useInfiniteQuery({
-    queryKey: ['tasks', initialPage, paramsObj],
+    queryKey: ['tasks', userScope, initialPage, paramsObj],
     queryFn: ({ pageParam = initialPage }) => {
       const queryParams = new URLSearchParams(paramsObj);
       queryParams.set('page', pageParam.toString());
@@ -69,7 +86,7 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       lastPage.meta?.page < lastPage.meta?.totalPages
         ? lastPage.meta.page + 1
         : undefined,
-    enabled: isCommon,
+    enabled: isAuthenticated && isCommon,
   });
 
   const { mutateAsync: mutationUpdate } = useMutation({
@@ -97,17 +114,27 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       );
       if (updatedTask.notepadId) {
         queryClient.invalidateQueries({
-          queryKey: getTaskQueryKey(updatedTask.notepadId),
+          queryKey: getTaskQueryKey(userScope, updatedTask.notepadId),
         });
       }
 
       if (result && !isCommon) {
-        await queryClient.invalidateQueries({ queryKey: getTaskQueryKey() });
+        await queryClient.invalidateQueries({
+          queryKey: getTaskQueryKey(userScope),
+        });
       }
 
       return result;
     },
-    [mutationUpdate, onError, onSuccess, queryClient, queryKey, isCommon],
+    [
+      mutationUpdate,
+      onError,
+      onSuccess,
+      queryClient,
+      queryKey,
+      isCommon,
+      userScope,
+    ],
   );
 
   const deleteTask = useCallback(
@@ -120,12 +147,22 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
       });
 
       if (result && !isCommon) {
-        await queryClient.invalidateQueries({ queryKey: getTaskQueryKey() });
+        await queryClient.invalidateQueries({
+          queryKey: getTaskQueryKey(userScope),
+        });
       }
 
       return result;
     },
-    [mutationDelete, queryClient, queryKey, isCommon, onSuccess, onError],
+    [
+      mutationDelete,
+      queryClient,
+      queryKey,
+      isCommon,
+      onSuccess,
+      onError,
+      userScope,
+    ],
   );
 
   const tasksPrivateResult = useMemo(

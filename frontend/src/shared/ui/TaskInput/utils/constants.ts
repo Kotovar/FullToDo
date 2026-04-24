@@ -5,7 +5,7 @@ export const styles = {
   addTaskText: 'grid-cols-[auto_1fr] bg-light',
   addTaskDate: 'grid-cols-[auto_1fr_auto]',
   input: 'min-w-0 outline-0 w-full placeholder:text-grey',
-  dateInput: 'w-fit [&::-webkit-calendar-picker-indicator]:hidden',
+  dateInput: 'w-fit cursor-pointer select-none text-base md:text-inherit',
 } as const;
 
 export const ICONS = {

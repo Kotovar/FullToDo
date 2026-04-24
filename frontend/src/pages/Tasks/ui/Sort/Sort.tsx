@@ -21,7 +21,7 @@ export const Sort = ({ params, setParams }: SortProps) => {
   const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
 
   return (
-    <div className='relative flex w-60 items-center justify-end-safe gap-2'>
+    <div className='relative z-20 flex w-60 items-center justify-end-safe gap-2'>
       <Button
         onClick={toggleMenu}
         appearance='ghost'

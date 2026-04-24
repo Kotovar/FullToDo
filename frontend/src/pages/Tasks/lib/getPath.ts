@@ -5,6 +5,6 @@ export const getPath = (
   notepadPathName: string,
   notepadId?: string,
 ) =>
-  notepadPathName !== ROUTES.TASKS && notepadId
-    ? `${ROUTES.getTaskDetailPath(notepadId, id)}`
-    : `${ROUTES.TASKS}/${id}`;
+  notepadPathName !== ROUTES.tasks.base && notepadId
+    ? `${ROUTES.notepads.getTaskPath(notepadId, id)}`
+    : `${ROUTES.tasks.base}/${id}`;

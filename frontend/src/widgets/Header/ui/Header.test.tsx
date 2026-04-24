@@ -13,6 +13,7 @@ describe('Header component', () => {
   beforeEach(() => {
     vi.spyOn(useSearchHook, 'useSearch').mockReturnValue({
       value: typedValue,
+      isSearching: false,
       onChange: mockChange,
       onClear: vi.fn(),
     });

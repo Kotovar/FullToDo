@@ -6,12 +6,15 @@ import {
   isCommonNotepad,
   UseCreateTaskProps,
 } from '@shared/lib';
+import { authKeys, getUserQueryScope, taskService } from '@shared/api';
 import type { CreateTask } from '@sharedCommon/*';
-import { taskService } from '@shared/api';
+import type { PublicUser } from 'shared/schemas';
 
 export const useCreateTask = ({ notepadId, entity }: UseCreateTaskProps) => {
   const queryClient = useQueryClient();
-  const queryKey = getTaskQueryKey(notepadId);
+  const user = queryClient.getQueryData<PublicUser | null>(authKeys.me());
+  const userScope = getUserQueryScope(user?.userId);
+  const queryKey = getTaskQueryKey(userScope, notepadId);
 
   const { mutateAsync } = useMutation({
     mutationFn: (task: CreateTask) => taskService.createTask(task, notepadId),
@@ -28,7 +31,9 @@ export const useCreateTask = ({ notepadId, entity }: UseCreateTaskProps) => {
     });
 
     if (result && !isCommonNotepad(notepadId)) {
-      await queryClient.invalidateQueries({ queryKey: getTaskQueryKey() });
+      await queryClient.invalidateQueries({
+        queryKey: getTaskQueryKey(userScope),
+      });
     }
 
     return result;

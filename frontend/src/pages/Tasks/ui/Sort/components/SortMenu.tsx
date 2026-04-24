@@ -1,4 +1,4 @@
-import { useRef, RefObject, useCallback } from 'react';
+import { useRef, RefObject, useCallback, type SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SortState } from '@pages/Tasks/lib';
 import { getTypedEntries, useFocusTrap } from '@shared/lib';
@@ -27,7 +27,7 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
   );
 
   const handleSortClick = useCallback(
-    (sort: SortState) => (e: React.FormEvent) => handleSubmit(e, sort),
+    (sort: SortState) => (e: SyntheticEvent) => handleSubmit(e, sort),
     [handleSubmit],
   );
 
@@ -35,7 +35,7 @@ export const SortMenu = ({ buttonRef, closeMenu, onApply }: SortMenuProps) => {
 
   return (
     <dialog
-      className='border-bg-dark bg-light absolute top-full flex w-max flex-col items-center rounded-md border p-2 shadow-md md:left-0'
+      className='border-bg-dark bg-light absolute top-full z-30 flex w-max flex-col items-center rounded-md border p-2 shadow-md md:left-0'
       aria-modal='true'
       aria-labelledby='modal'
       ref={menuRef}

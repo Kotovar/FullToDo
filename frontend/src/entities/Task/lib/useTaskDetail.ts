@@ -1,21 +1,38 @@
 import { useCallback, useMemo } from 'react';
+import { useParams } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  getTaskDetailQueryKey,
   getTaskQueryKey,
   handleMutation,
   isCommonNotepad,
+  useApiNotifications,
   type MutationUpdateProps,
   type UseTaskDetailProps,
 } from '@shared/lib';
-import { taskService, type MutationMethods } from '@shared/api';
+import {
+  authKeys,
+  fetchCurrentUser,
+  getUserQueryScope,
+  taskService,
+  type MutationMethods,
+} from '@shared/api';
 import type { Task } from '@sharedCommon/*';
-import { useApiNotifications } from '@shared/lib';
-import { useParams } from 'react-router';
 
 export const useTaskDetail = ({ entity }: UseTaskDetailProps) => {
   const { notepadId, taskId = '' } = useParams();
   const queryClient = useQueryClient();
-  const queryKey = useMemo(() => getTaskQueryKey(notepadId), [notepadId]);
+  const { data: user } = useQuery({
+    queryKey: authKeys.me(),
+    queryFn: fetchCurrentUser,
+    enabled: false,
+  });
+  const isAuthenticated = Boolean(user);
+  const userScope = getUserQueryScope(user?.userId);
+  const queryKey = useMemo(
+    () => getTaskQueryKey(userScope, notepadId),
+    [notepadId, userScope],
+  );
 
   const {
     data: task,
@@ -23,9 +40,10 @@ export const useTaskDetail = ({ entity }: UseTaskDetailProps) => {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ['task', notepadId, taskId],
+    queryKey: getTaskDetailQueryKey(userScope, notepadId, taskId),
     queryFn: () => taskService.getSingleTask(taskId, notepadId),
     select: data => data.data,
+    enabled: isAuthenticated && taskId.length > 0,
   });
 
   const { mutateAsync } = useMutation({
@@ -52,12 +70,22 @@ export const useTaskDetail = ({ entity }: UseTaskDetailProps) => {
       );
 
       if (result && !isCommonNotepad(notepadId)) {
-        await queryClient.invalidateQueries({ queryKey: getTaskQueryKey() });
+        await queryClient.invalidateQueries({
+          queryKey: getTaskQueryKey(userScope),
+        });
       }
 
       return result;
     },
-    [mutateAsync, onError, onSuccess, queryClient, queryKey, notepadId],
+    [
+      mutateAsync,
+      onError,
+      onSuccess,
+      queryClient,
+      queryKey,
+      notepadId,
+      userScope,
+    ],
   );
 
   return {

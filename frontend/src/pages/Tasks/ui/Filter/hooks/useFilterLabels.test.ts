@@ -46,7 +46,7 @@ describe('getTranslationKey', () => {
   test('getTranslationKey - isCompleted - error', () => {
     expect(() =>
       getTranslationKey('isCompleted', 'low' as FilterValue<'isCompleted'>),
-    ).toThrowError('Invalid filter combination: isCompleted.low');
+    ).toThrow('Invalid filter combination: isCompleted.low');
   });
 
   test('getTranslationKey - hasDueDate', () => {
@@ -58,6 +58,6 @@ describe('getTranslationKey', () => {
   test('getTranslationKey - hasDueDate - error', () => {
     expect(() =>
       getTranslationKey('hasDueDate', 'low' as FilterValue<'hasDueDate'>),
-    ).toThrowError(`Invalid filter combination: hasDueDate.low`);
+    ).toThrow(`Invalid filter combination: hasDueDate.low`);
   });
 });

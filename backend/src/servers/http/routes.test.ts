@@ -3,6 +3,7 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import * as controllers from '@controllers';
 import { handleRoute } from './routes';
 import { TaskService } from '@services/TaskService';
+import { AuthService } from '@services/AuthService';
 
 describe('routes', () => {
   const res = {
@@ -68,5 +69,17 @@ describe('routes', () => {
     handleRoute({ req, res }, '/notepads/1');
 
     expect(controllers.handleNotFound).toHaveBeenCalledWith(res);
+  });
+
+  test('GET /auth/me dispatches to getCurrentUser controller', () => {
+    const req = getReq('GET');
+    vi.spyOn(controllers, 'getCurrentUser').mockResolvedValue();
+
+    handleRoute({ req, res }, '/auth/me');
+
+    expect(controllers.getCurrentUser).toHaveBeenCalledWith(
+      { req, res },
+      expect.any(AuthService),
+    );
   });
 });

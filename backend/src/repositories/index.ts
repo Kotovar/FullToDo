@@ -1,10 +1,22 @@
-export * from './TaskRepository';
+export * from './interfaces';
 
 import { config } from '@configs';
-import { MockTaskRepository } from './MockTaskRepository';
-import { PostgresTaskRepository } from './PostgresTaskRepository';
-import { NOTEPADS } from '@db/mock/mock-db';
-import type { TaskRepository } from './TaskRepository';
+import { NOTEPADS, USERS } from '@db/mock';
+import {
+  MockTaskRepository,
+  MockUserRepository,
+  MockRefreshTokenRepository,
+} from './mock';
+import {
+  PostgresTaskRepository,
+  PostgresRefreshTokenRepository,
+  PostgresUserRepository,
+} from './postgres';
+import type {
+  RefreshTokenRepository,
+  TaskRepository,
+  UserRepository,
+} from './interfaces';
 
 const {
   db: { type },
@@ -18,5 +30,23 @@ export const taskRepository: TaskRepository = (() => {
       return new PostgresTaskRepository();
     default:
       return new MockTaskRepository(NOTEPADS);
+  }
+})();
+
+export const userRepository: UserRepository = (() => {
+  switch (type) {
+    case 'postgres':
+      return new PostgresUserRepository();
+    default:
+      return new MockUserRepository(USERS);
+  }
+})();
+
+export const refreshTokenRepository: RefreshTokenRepository = (() => {
+  switch (type) {
+    case 'postgres':
+      return new PostgresRefreshTokenRepository();
+    default:
+      return new MockRefreshTokenRepository();
   }
 })();
