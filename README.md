@@ -143,7 +143,6 @@ npm run email --workspace=fulltodo_backend
 
 - Добавление поддержки ещё одной БД (`mongo`)
 - Добавление поддержки ещё двух серверов (`express`/`nextJs`)
-- Фронтенд: UI авторизации и регистрации
 
 ---
 
@@ -289,4 +288,3 @@ Preview opens at `http://localhost:3000`.
 
 - Added support for one more database (`mongo`)
 - Added support for two more servers (`express`/`nextJs`)
-- Frontend: auth and registration UI
