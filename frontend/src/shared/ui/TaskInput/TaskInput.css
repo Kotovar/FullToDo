@@ -1,0 +1,45 @@
+@import 'react-day-picker/style.css';
+
+.task-date-picker .rdp-root {
+  --rdp-accent-color: var(--color-accent);
+  --rdp-accent-background-color: var(--color-bg-second);
+  --rdp-day-width: 2.25rem;
+  --rdp-day-height: 2.25rem;
+  --rdp-day_button-width: 2.25rem;
+  --rdp-day_button-height: 2.25rem;
+  --rdp-nav_button-width: 2rem;
+  --rdp-nav_button-height: 2rem;
+  color: var(--color-dark);
+}
+
+.task-date-picker .rdp-months {
+  justify-content: center;
+}
+
+.task-date-picker .rdp-month_caption {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.task-date-picker .rdp-caption_label {
+  text-transform: capitalize;
+}
+
+.task-date-picker .rdp-weekday {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.task-date-picker .rdp-day_button:hover:not(:disabled) {
+  background: var(--color-bg-second);
+}
+
+.task-date-picker .rdp-button_next,
+.task-date-picker .rdp-button_previous {
+  border-radius: 0.5rem;
+}
+
+.task-date-picker .rdp-button_next:hover:not(:disabled),
+.task-date-picker .rdp-button_previous:hover:not(:disabled) {
+  background: var(--color-bg-second);
+}

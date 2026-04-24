@@ -219,6 +219,11 @@
     "actions": {
       "complete": "Mark as done",
       "incomplete": "Unmark as done"
+    },
+    "calendar": {
+      "dialog": "Date picker calendar",
+      "clear": "Clear",
+      "today": "Today"
     }
   },
   "errors": {
