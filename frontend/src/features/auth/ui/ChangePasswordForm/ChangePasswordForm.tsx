@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon, Input } from '@shared/ui';
-import { createTranslationKeyGuard } from '../lib/createTranslationKeyGuard';
-import { useChangePasswordForm } from '../model/changePassword/useChangePasswordForm';
+import { createTranslationKeyGuard } from '../../lib/createTranslationKeyGuard';
+import { useChangePasswordForm } from '../../model/changePassword/useChangePasswordForm';
 
 const isTranslationKey = createTranslationKeyGuard('account');
 

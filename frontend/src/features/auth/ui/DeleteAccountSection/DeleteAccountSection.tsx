@@ -1,4 +1,4 @@
-import { useId, useRef, useState, type SyntheticEvent } from 'react';
+import { useId, type SyntheticEvent } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ import {
 import { useNotifications } from '@shared/lib';
 import { Button, Icon, Input } from '@shared/ui';
 import { ROUTES } from '@sharedCommon';
-import type { Translation } from '@shared/i18n';
+import { useDeleteAccountDialog } from './useDeleteAccountDialog';
 
 type DeleteAccountSectionProps = {
   email: string;
@@ -28,12 +28,25 @@ export const DeleteAccountSection = ({
   const passwordErrorId = useId();
   const submitErrorId = useId();
   const popoverId = useId();
-  const popoverRef = useRef<HTMLDivElement | null>(null);
-  const [isConfirmOpen, setConfirmOpen] = useState(false);
-  const [isPasswordVisible, setPasswordVisible] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [passwordError, setPasswordError] = useState<Translation | null>(null);
-  const [submitError, setSubmitError] = useState<Translation | null>(null);
+  const {
+    popoverRef,
+    state,
+    openConfirm,
+    closeConfirm,
+    handlePasswordChange,
+    handleToggle,
+    togglePasswordVisibility,
+    setPasswordError,
+    setSubmitError,
+    clearErrors,
+  } = useDeleteAccountDialog();
+  const {
+    isConfirmOpen,
+    isPasswordVisible,
+    currentPassword,
+    passwordError,
+    submitError,
+  } = state;
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: () =>
@@ -51,28 +64,6 @@ export const DeleteAccountSection = ({
     },
   });
 
-  const openConfirm = () => {
-    popoverRef.current?.showPopover?.();
-    setConfirmOpen(true);
-    setPasswordError(null);
-    setSubmitError(null);
-  };
-
-  const closeConfirm = () => {
-    popoverRef.current?.hidePopover?.();
-    setConfirmOpen(false);
-    setPasswordVisible(false);
-    setCurrentPassword('');
-    setPasswordError(null);
-    setSubmitError(null);
-  };
-
-  const handlePasswordChange = (value: string) => {
-    setCurrentPassword(value);
-    setPasswordError(null);
-    setSubmitError(null);
-  };
-
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -81,17 +72,12 @@ export const DeleteAccountSection = ({
       return;
     }
 
-    setPasswordError(null);
-    setSubmitError(null);
+    clearErrors();
     try {
       await mutateAsync();
     } catch {
       return;
     }
-  };
-
-  const handleToggle = (event: SyntheticEvent<HTMLDivElement>) => {
-    setConfirmOpen(event.currentTarget.matches(':popover-open'));
   };
 
   return (
@@ -164,7 +150,7 @@ export const DeleteAccountSection = ({
                 <button
                   type='button'
                   className='absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
-                  onClick={() => setPasswordVisible(prev => !prev)}
+                  onClick={togglePasswordVisibility}
                   aria-label={t(
                     `account.dangerZone.password.${isPasswordVisible ? 'hide' : 'show'}`,
                   )}

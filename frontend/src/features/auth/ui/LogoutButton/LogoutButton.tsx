@@ -1,7 +1,7 @@
 import { useId, useRef, useState, type SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@shared/ui';
-import { useLogout } from '../model/logout/useLogout';
+import { useLogout } from '../../model/logout/useLogout';
 
 type LogoutButtonProps = {
   appearance?: 'primary' | 'ghost';

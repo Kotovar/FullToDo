@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useGoogleLogin } from '../model/login/useGoogleLogin';
+import { useGoogleLogin } from '../../model/login/useGoogleLogin';
 
 type GoogleAuthSectionProps = {
   redirectTo: string;

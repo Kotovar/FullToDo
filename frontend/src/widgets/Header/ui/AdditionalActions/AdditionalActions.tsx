@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { Link } from 'react-router';
 import { Button, COLORS, Icon } from '@shared/ui';
 import { useDarkMode } from '@shared/lib/hooks';
@@ -13,10 +13,7 @@ export const AdditionalActions = memo(
   ({ showAccountLink = true }: AdditionalActionsProps) => {
     const { isDarkMode, toggle } = useDarkMode();
     const { t, iconNameLanguage, changeLanguage } = useLanguage();
-
-    const iconNameTheme = useMemo(() => {
-      return isDarkMode ? 'themeLight' : 'themeDark';
-    }, [isDarkMode]);
+    const iconNameTheme = isDarkMode ? 'themeLight' : 'themeDark';
 
     return (
       <nav className='flex gap-x-2' aria-label={t('additionalActions')}>

@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
@@ -27,6 +27,7 @@ export const LinkCard = memo((props: LinkCardProps) => {
   } = props;
 
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const { notepadId } = useParams();
   const { t } = useTranslation();
   const { fill } = useDarkMode();
@@ -66,6 +67,17 @@ export const LinkCard = memo((props: LinkCardProps) => {
     path,
   });
 
+  useEffect(() => {
+    if (!isEditing || !titleInputRef.current) {
+      return;
+    }
+
+    titleInputRef.current.focus();
+
+    const titleLength = titleInputRef.current.value.length;
+    titleInputRef.current.setSelectionRange(titleLength, titleLength);
+  }, [isEditing]);
+
   const inputTitle = (
     <input
       type='text'
@@ -86,11 +98,11 @@ export const LinkCard = memo((props: LinkCardProps) => {
         onChange={titleMethods.onChange}
         onBlur={titleMethods.onBlur}
         onKeyDown={titleMethods.handleKeyDown}
+        ref={titleInputRef}
         className={clsx(
           'h-full w-full rounded leading-normal focus:outline-none focus-visible:ring-2',
           linkClassName,
         )}
-        autoFocus
       />
       {body}
     </div>

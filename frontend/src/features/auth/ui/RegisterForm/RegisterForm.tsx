@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Icon, Input } from '@shared/ui';
-import { createTranslationKeyGuard } from '../lib/createTranslationKeyGuard';
-import { useRegisterForm } from '../model/register/useRegisterForm';
+import { createTranslationKeyGuard } from '../../lib/createTranslationKeyGuard';
+import { useRegisterForm } from '../../model/register/useRegisterForm';
 
 const isTranslationKey = createTranslationKeyGuard('register');
 

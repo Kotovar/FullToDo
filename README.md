@@ -1,6 +1,7 @@
 # FullToDo
 
 [![CI/CD](https://github.com/Kotovar/FullToDo/actions/workflows/main.yml/badge.svg)](https://github.com/Kotovar/FullToDo/actions/workflows/main.yml)
+[![React Doctor](https://www.react.doctor/share/badge?p=fulltodo&s=99&w=2&f=2)](https://www.react.doctor/share?p=fulltodo&s=99&w=2&f=2)
 
 Pet проект для управления задачами (todo-приложение) с возможностью выбора различных бэкенд-технологий.
 
