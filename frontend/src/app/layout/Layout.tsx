@@ -60,7 +60,7 @@ const Layout = () => {
           <div
             ref={navigationWrapperRef}
             className={clsx(
-              'fixed top-16 left-0 z-20 h-[calc(100dvh-4rem)] w-screen overflow-hidden transition-transform duration-300 ease-out md:static md:z-auto md:h-auto md:w-full md:transition-none',
+              'fixed top-16 left-0 z-40 h-[calc(100dvh-4rem)] w-screen overflow-hidden transition-transform duration-300 ease-out md:static md:z-auto md:h-auto md:w-full md:transition-none',
               {
                 ['translate-x-0']: !isHidden,
                 ['-translate-x-full md:translate-x-0']: isHidden,
@@ -84,7 +84,7 @@ const Layout = () => {
         )}
         <section
           className={clsx(
-            'flex w-full min-w-0 flex-col p-4 md:flex landscape:p-1',
+            'flex w-full min-w-0 flex-col px-4 pt-4 pb-0 md:flex md:p-4 landscape:p-1',
             {
               ['overflow-hidden']: !isAccountPage,
               ['mx-auto max-w-5xl p-4 md:px-8 md:py-6 landscape:p-4']:

@@ -210,6 +210,7 @@
     "date": "Completion date",
     "detail": "Task details",
     "description": "Description",
+    "backToTop": "Back to top",
     "empty": "No subtasks",
     "all": "All tasks",
     "steps": {
