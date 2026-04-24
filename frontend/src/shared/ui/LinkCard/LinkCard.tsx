@@ -56,7 +56,13 @@ export const LinkCard = memo((props: LinkCardProps) => {
     onSaveTitle,
   });
 
-  const { isCurrentMenuOpen, isNotMainNotepad, menuMethods } = useMenuToggle({
+  const {
+    isCurrentMenuOpen,
+    isClosingMenu,
+    isNotMainNotepad,
+    menuPosition,
+    menuMethods,
+  } = useMenuToggle({
     path,
   });
 
@@ -125,18 +131,20 @@ export const LinkCard = memo((props: LinkCardProps) => {
         <div className='relative flex'>
           <Button
             appearance='ghost'
-            onClick={menuMethods.toggleMenu}
+            onClick={() => menuMethods.toggleMenu(buttonRef.current)}
             aria-label={t('card.additionalMenu')}
             ref={buttonRef}
           >
             <Icon name='threeDots' fill={fill} size={ICON_SIZES.DEFAULT} />
           </Button>
-          {isCurrentMenuOpen && (
+          {(isCurrentMenuOpen || isClosingMenu) && (
             <OptionsMenu
               buttonRef={buttonRef}
+              position={menuPosition}
               renameHandler={handleClickRename}
               deleteHandler={handleClickDelete}
               closeMenu={menuMethods.closeMenu}
+              isClosing={isClosingMenu}
             />
           )}
         </div>

@@ -2,47 +2,48 @@ import {
   ComponentPropsWithRef,
   RefObject,
   useCallback,
-  useLayoutEffect,
+  useEffect,
   useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { useFocusTrap } from '@shared/lib';
+import type { OptionsMenuPosition } from './constants';
 
 interface OptionsMenuProps extends ComponentPropsWithRef<'dialog'> {
   buttonRef: RefObject<HTMLButtonElement | null>;
+  position: OptionsMenuPosition;
   path?: string;
   renameHandler: () => void;
   deleteHandler: () => void;
   closeMenu: () => void;
+  isClosing?: boolean;
 }
 
 const POSITION_TOP_WITH_BUTTON_HEIGHT = `-translate-y-[calc(100%+36px)]`;
 
 export const OptionsMenu = (props: OptionsMenuProps) => {
-  const { buttonRef, renameHandler, deleteHandler, closeMenu, ...rest } = props;
+  const {
+    buttonRef,
+    position,
+    renameHandler,
+    deleteHandler,
+    closeMenu,
+    isClosing = false,
+    ...rest
+  } = props;
   const menuRef = useRef<HTMLDialogElement>(null);
   const { t } = useTranslation();
-  const [position, setPosition] = useState<'top' | 'bottom'>('bottom');
+  const [isVisible, setIsVisible] = useState(false);
 
-  useLayoutEffect(() => {
-    const menu = menuRef.current;
-    if (!menu) return;
-
-    menu.setAttribute('inert', '');
-
-    requestAnimationFrame(() => {
-      menu.removeAttribute('inert');
-
-      if (!menuRef.current || !buttonRef.current) return;
-
-      const rect = menuRef.current.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-
-      setPosition(rect.bottom > viewportHeight ? 'top' : 'bottom');
+  useEffect(() => {
+    const frameId = requestAnimationFrame(() => {
+      setIsVisible(true);
     });
-  }, [buttonRef]);
+
+    return () => cancelAnimationFrame(frameId);
+  }, []);
 
   const handleRename = useCallback(() => {
     renameHandler();
@@ -61,8 +62,10 @@ export const OptionsMenu = (props: OptionsMenuProps) => {
       className={clsx(
         {
           [POSITION_TOP_WITH_BUTTON_HEIGHT]: position === 'top',
+          ['pointer-events-none scale-95 opacity-0']: isClosing || !isVisible,
+          ['scale-100 opacity-100']: !isClosing && isVisible,
         },
-        'border-bg-dark bg-light absolute top-full flex w-max -translate-x-full flex-col gap-0.5 rounded-md border p-2 shadow-md',
+        'border-bg-dark bg-light absolute top-full flex w-max origin-top-right -translate-x-full flex-col gap-0.5 rounded-md border p-2 shadow-md transition duration-180 ease-out',
       )}
       ref={menuRef}
       aria-modal='true'
