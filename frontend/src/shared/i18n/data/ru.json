@@ -182,7 +182,8 @@
   },
   "search": {
     "common": "Поиск",
-    "clear": "очистить поиск"
+    "clear": "очистить поиск",
+    "pending": "Поиск..."
   },
   "additionalActions": "дополнительные действия",
   "change": {

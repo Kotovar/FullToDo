@@ -15,6 +15,7 @@ import Loupe from './icons/loupe-search.svg?react';
 import Plus from './icons/plus.svg?react';
 import Filter from './icons/task-filter.svg?react';
 import ThreeDots from './icons/three-dots-vertical.svg?react';
+import User from './icons/user.svg?react';
 
 export const iconsNames = {
   burger: Burger,
@@ -34,4 +35,5 @@ export const iconsNames = {
   plus: Plus,
   filter: Filter,
   threeDots: ThreeDots,
+  user: User,
 };

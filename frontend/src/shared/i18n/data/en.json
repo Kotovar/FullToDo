@@ -182,7 +182,8 @@
   },
   "search": {
     "common": "Search",
-    "clear": "clear search"
+    "clear": "clear search",
+    "pending": "Searching..."
   },
   "additionalActions": "additional actions",
   "change": {

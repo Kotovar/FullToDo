@@ -23,12 +23,14 @@ export const AdditionalActions = memo(
         <Button
           onClick={changeLanguage}
           aria-label={t('change.language')}
-          className='hover:border-light flex w-24 gap-x-2 rounded-xl border border-transparent'
+          className='hover:border-light flex w-10 justify-center gap-x-2 rounded-xl border border-transparent sm:w-24'
           appearance='ghost'
           padding='sm'
         >
           <Icon name={iconNameLanguage} />
-          <span className='text-white capitalize'>{t('language')}</span>
+          <span className='hidden text-white capitalize sm:inline'>
+            {t('language')}
+          </span>
         </Button>
         <Button
           onClick={toggle}
@@ -43,9 +45,10 @@ export const AdditionalActions = memo(
           <Link
             to={ROUTES.app.account}
             aria-label={t('account.nav')}
-            className='hover:border-light focus-visible:ring-light rounded-xl border border-transparent p-1 text-white focus:outline-none focus-visible:ring-2'
+            className='hover:border-light focus-visible:ring-light inline-flex items-center justify-center gap-x-2 rounded-xl border border-transparent p-1 text-white focus:outline-none focus-visible:ring-2 sm:px-2'
           >
-            {t('account.nav')}
+            <Icon name='user' />
+            <span className='hidden sm:inline'>{t('account.nav')}</span>
           </Link>
         ) : null}
       </nav>
