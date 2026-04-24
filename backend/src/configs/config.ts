@@ -10,7 +10,7 @@ const isTestEnv =
 const getRequiredEnv = (name: string, testFallback?: string) => {
   const value = process.env[name];
 
-  if (value !== undefined) {
+  if (value !== undefined && value.trim().length > 0) {
     return value;
   }
 
