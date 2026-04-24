@@ -1,4 +1,5 @@
-import { getAccessToken } from './accessToken';
+import { authRoutes } from '../entities/Auth.query.config';
+import { getAccessToken, setAccessToken } from './accessToken';
 import { emitUnauthorizedSessionEvent } from './session';
 
 type AuthFetchOptions = RequestInit & {
@@ -21,6 +22,8 @@ const getRequestUrl = (input: RequestInfo | URL) => {
 
 const isAuthRequest = (input: RequestInfo | URL) =>
   getRequestUrl(input).includes(AUTH_ROUTE_SEGMENT);
+
+let refreshPromise: Promise<boolean> | null = null;
 
 /**
  * Формирует заголовки для auth-запросов.
@@ -46,6 +49,65 @@ export const buildAuthHeaders = (
 };
 
 /**
+ * Выполняет auth запрос с cookie и опциональным Bearer access token.
+ *
+ * Используется как низкоуровневая обёртка поверх `fetch`, чтобы повторно
+ * вызывать исходный запрос после успешного refresh без дублирования логики
+ * сборки headers/credentials.
+ */
+const performAuthFetch = (
+  input: RequestInfo | URL,
+  { withAuth = true, headers, ...init }: AuthFetchOptions = {},
+) =>
+  fetch(input, {
+    ...init,
+    credentials: 'include',
+    headers: buildAuthHeaders(headers, withAuth),
+  });
+
+/**
+ * Обновляет access token через refresh cookie.
+ *
+ * Использует single-flight семантику: пока refresh уже выполняется,
+ * последующие вызовы ожидают тот же самый `Promise`, а не создают новые
+ * запросы к `/auth/refresh`.
+ *
+ * @returns `true`, если backend вернул новый access token и он сохранён в
+ * in-memory хранилище, иначе `false`.
+ */
+const refreshAccessToken = async () => {
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  refreshPromise = (async () => {
+    const response = await performAuthFetch(authRoutes.refresh, {
+      method: 'POST',
+      withAuth: false,
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const data = (await response.json()) as { accessToken?: string };
+
+    if (!data.accessToken) {
+      return false;
+    }
+
+    setAccessToken(data.accessToken);
+    return true;
+  })();
+
+  try {
+    return await refreshPromise;
+  } finally {
+    refreshPromise = null;
+  }
+};
+
+/**
  * Обёртка над стандартным `fetch` для запросов, связанных с авторизацией.
  *
  * Что делает:
@@ -62,13 +124,19 @@ export const authFetch = async (
   input: RequestInfo | URL,
   { withAuth = true, headers, ...init }: AuthFetchOptions = {},
 ) => {
-  const response = await fetch(input, {
+  const response = await performAuthFetch(input, {
+    withAuth,
+    headers,
     ...init,
-    credentials: 'include',
-    headers: buildAuthHeaders(headers, withAuth),
   });
 
   if (withAuth && response.status === 401 && !isAuthRequest(input)) {
+    const isRefreshed = await refreshAccessToken();
+
+    if (isRefreshed) {
+      return performAuthFetch(input, { withAuth, headers, ...init });
+    }
+
     emitUnauthorizedSessionEvent();
   }
 

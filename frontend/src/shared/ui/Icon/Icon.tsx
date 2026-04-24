@@ -23,6 +23,8 @@ export const Icon = memo((props: IconProps) => {
       fill={fill}
       stroke={stroke}
       aria-label={ariaLabel}
+      aria-hidden={ariaLabel ? undefined : true}
+      focusable='false'
       className='shrink-0'
     />
   );
