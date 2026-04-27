@@ -8,7 +8,7 @@ import {
 import { notepadService } from '@entities/Notepad';
 import { useNotepads } from './useNotepads';
 import { setupMockServer } from '@shared/testing';
-import { notepadId } from 'shared/schemas';
+import { NOTEPAD_ID } from 'shared/schemas/mocks';
 
 const getInitialData = async () => {
   const { result } = renderHook(() => useNotepads(), {
@@ -25,6 +25,9 @@ describe('useNotepads hook', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(notepadService, 'getNotepads').mockResolvedValue(
+      MOCK_NOTEPADS_RESPONSE,
+    );
 
     vi.spyOn(notepadService, 'createNotepad').mockResolvedValue({
       status: 201,
@@ -33,7 +36,7 @@ describe('useNotepads hook', () => {
 
     vi.spyOn(notepadService, 'updateNotepad').mockResolvedValue({
       status: 200,
-      message: `A notepad with the id ${notepadId} has been successfully updated`,
+      message: `A notepad with the id ${NOTEPAD_ID} has been successfully updated`,
     });
 
     vi.spyOn(notepadService, 'deleteNotepad').mockResolvedValue(
@@ -78,12 +81,12 @@ describe('useNotepads hook', () => {
   test('updateNotepad should be called when changing the notebook name', async () => {
     const result = await getInitialData();
     result.current.methods.updateNotepadTitle(
-      notepadId,
+      NOTEPAD_ID,
       MOCK_TITLE_NON_EXISTING,
     );
 
     await waitFor(() => {
-      expect(notepadService.updateNotepad).toHaveBeenCalledWith(notepadId, {
+      expect(notepadService.updateNotepad).toHaveBeenCalledWith(NOTEPAD_ID, {
         title: MOCK_TITLE_NON_EXISTING,
       });
     });
@@ -91,10 +94,20 @@ describe('useNotepads hook', () => {
 
   test('should call deleteNotepad when deleting a notepad', async () => {
     const result = await getInitialData();
-    result.current.methods.deleteNotepad(notepadId);
+    result.current.methods.deleteNotepad(NOTEPAD_ID);
 
     await waitFor(() => {
-      expect(notepadService.deleteNotepad).toHaveBeenCalledWith(notepadId);
+      expect(notepadService.deleteNotepad).toHaveBeenCalledWith(NOTEPAD_ID);
+    });
+  });
+
+  test('should not load notepads without an authenticated session', async () => {
+    renderHook(() => useNotepads(), {
+      wrapper: createWrapperWithRouter(undefined, null),
+    });
+
+    await waitFor(() => {
+      expect(notepadService.getNotepads).not.toHaveBeenCalled();
     });
   });
 });

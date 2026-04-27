@@ -1,5 +1,5 @@
 import { COMMON_ERRORS, TASKS_ERRORS } from '@shared/api';
-import { commonNotepadId, notepadId, taskId } from 'shared/schemas';
+import { COMMON_NOTEPAD_ID, NOTEPAD_ID, TASK_ID } from 'shared/schemas';
 import {
   getDeleteResponse,
   MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS,
@@ -49,8 +49,8 @@ describe('MockTaskService', () => {
       const fetchSpy = getFailFetchResponse(409);
 
       await expect(
-        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
-      ).rejects.toThrowError(
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, NOTEPAD_ID),
+      ).rejects.toThrow(
         expect.objectContaining({
           message: 'Conflict',
           cause: TASKS_ERRORS.CONFLICT,
@@ -64,8 +64,8 @@ describe('MockTaskService', () => {
       const fetchSpy = getFailFetchResponse(404);
 
       await expect(
-        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
-      ).rejects.toThrowError(
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, NOTEPAD_ID),
+      ).rejects.toThrow(
         expect.objectContaining({
           message: 'Not found',
           cause: TASKS_ERRORS.UNDEFINED,
@@ -79,8 +79,8 @@ describe('MockTaskService', () => {
       const fetchSpy = getFailFetchResponse(500);
 
       await expect(
-        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
-      ).rejects.toThrowError(
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, NOTEPAD_ID),
+      ).rejects.toThrow(
         expect.objectContaining({
           message: 'Server error',
           cause: TASKS_ERRORS.SERVER_ERROR,
@@ -96,8 +96,8 @@ describe('MockTaskService', () => {
       const fetchSpy = getErrorMock(true);
 
       await expect(
-        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
-      ).rejects.toThrowError(
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, NOTEPAD_ID),
+      ).rejects.toThrow(
         expect.objectContaining({
           message: 'Failed to fetch',
           cause: 'Error',
@@ -111,10 +111,8 @@ describe('MockTaskService', () => {
       const fetchSpy = getErrorMock();
 
       await expect(
-        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, notepadId),
-      ).rejects.toThrowError(
-        expect.objectContaining(getErrorResult(TASKS_ERRORS)),
-      );
+        taskService.createTask({ title: MOCK_TITLE_NON_EXISTING }, NOTEPAD_ID),
+      ).rejects.toThrow(expect.objectContaining(getErrorResult(TASKS_ERRORS)));
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
@@ -122,14 +120,14 @@ describe('MockTaskService', () => {
 
   describe('getSingleTask', () => {
     test('success with notepadId', async () => {
-      const responseGet = await taskService.getSingleTask(taskId, notepadId);
+      const responseGet = await taskService.getSingleTask(TASK_ID, NOTEPAD_ID);
 
       expect(responseGet.status).toEqual(MOCK_SINGE_TASK_RESPONSE.status);
       expect(responseGet.message).toEqual(MOCK_SINGE_TASK_RESPONSE.message);
     });
 
     test('success without notepadId', async () => {
-      const responseGet = await taskService.getSingleTask(taskId);
+      const responseGet = await taskService.getSingleTask(TASK_ID);
 
       expect(responseGet.status).toEqual(MOCK_SINGE_TASK_RESPONSE.status);
       expect(responseGet.message).toEqual(MOCK_SINGE_TASK_RESPONSE.message);
@@ -139,10 +137,8 @@ describe('MockTaskService', () => {
       const fetchSpy = getErrorMock();
 
       await expect(
-        taskService.getSingleTask(notepadId, taskId),
-      ).rejects.toThrowError(
-        expect.objectContaining(getErrorResult(TASKS_ERRORS)),
-      );
+        taskService.getSingleTask(NOTEPAD_ID, TASK_ID),
+      ).rejects.toThrow(expect.objectContaining(getErrorResult(TASKS_ERRORS)));
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
@@ -151,7 +147,7 @@ describe('MockTaskService', () => {
   describe('getTasksFromNotepad', () => {
     test('success with notepadId', async () => {
       const responseGet = await taskService.getTasksFromNotepad(
-        notepadId,
+        NOTEPAD_ID,
         emptyParams,
       );
 
@@ -171,7 +167,7 @@ describe('MockTaskService', () => {
 
     test('success with common notepadId', async () => {
       const responseGet = await taskService.getTasksFromNotepad(
-        commonNotepadId,
+        COMMON_NOTEPAD_ID,
         emptyParams,
       );
 
@@ -181,7 +177,7 @@ describe('MockTaskService', () => {
 
     test('success with  params', async () => {
       const responseGet = await taskService.getTasksFromNotepad(
-        notepadId,
+        NOTEPAD_ID,
         params,
       );
       expect(responseGet).toEqual(MOCK_SINGE_NOTEPAD_RESPONSE_WITH_PARAMS);
@@ -191,10 +187,8 @@ describe('MockTaskService', () => {
       const fetchSpy = getErrorMock();
 
       await expect(
-        taskService.getTasksFromNotepad(notepadId, params),
-      ).rejects.toThrowError(
-        expect.objectContaining(getErrorResult(TASKS_ERRORS)),
-      );
+        taskService.getTasksFromNotepad(NOTEPAD_ID, params),
+      ).rejects.toThrow(expect.objectContaining(getErrorResult(TASKS_ERRORS)));
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
@@ -216,7 +210,7 @@ describe('MockTaskService', () => {
     test('should throw error if error in not instanceof Error', async () => {
       const fetchSpy = getErrorMock();
 
-      await expect(taskService.getAllTasks(emptyParams)).rejects.toThrowError(
+      await expect(taskService.getAllTasks(emptyParams)).rejects.toThrow(
         expect.objectContaining(getErrorResult(TASKS_ERRORS)),
       );
 
@@ -228,7 +222,7 @@ describe('MockTaskService', () => {
     test('success', async () => {
       const responsePost = await taskService.createTask(
         { title: MOCK_TITLE_NON_EXISTING },
-        notepadId,
+        NOTEPAD_ID,
       );
 
       expect(responsePost).toStrictEqual({
@@ -251,7 +245,7 @@ describe('MockTaskService', () => {
     test('return error if title exists', async () => {
       const responsePost = await taskService.createTask(
         { title: MOCK_TITLE_EXISTING },
-        notepadId,
+        NOTEPAD_ID,
       );
 
       expect(responsePost).toStrictEqual({
@@ -263,7 +257,7 @@ describe('MockTaskService', () => {
 
   describe('updateTask', () => {
     test('success', async () => {
-      const responsePost = await taskService.updateTask(taskId, {
+      const responsePost = await taskService.updateTask(TASK_ID, {
         title: MOCK_TITLE_NON_EXISTING,
       });
 
@@ -272,7 +266,7 @@ describe('MockTaskService', () => {
     });
 
     test('return error if title exists', async () => {
-      const responsePost = await taskService.updateTask(taskId, {
+      const responsePost = await taskService.updateTask(TASK_ID, {
         title: MOCK_TITLE_EXISTING,
       });
 
@@ -286,12 +280,10 @@ describe('MockTaskService', () => {
       const fetchSpy = getErrorMock();
 
       await expect(
-        taskService.updateTask(taskId, {
+        taskService.updateTask(TASK_ID, {
           title: MOCK_TITLE_NON_EXISTING,
         }),
-      ).rejects.toThrowError(
-        expect.objectContaining(getErrorResult(TASKS_ERRORS)),
-      );
+      ).rejects.toThrow(expect.objectContaining(getErrorResult(TASKS_ERRORS)));
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
     });
@@ -299,14 +291,14 @@ describe('MockTaskService', () => {
 
   describe('deleteTask', () => {
     test('success', async () => {
-      const responseDelete = await taskService.deleteTask(taskId);
+      const responseDelete = await taskService.deleteTask(TASK_ID);
       expect(responseDelete).toStrictEqual(getDeleteResponse('Task'));
     });
 
     test('should throw error if error in not instanceof Error', async () => {
       const fetchSpy = getErrorMock();
 
-      await expect(taskService.deleteTask(taskId)).rejects.toThrowError(
+      await expect(taskService.deleteTask(TASK_ID)).rejects.toThrow(
         expect.objectContaining(getErrorResult(TASKS_ERRORS)),
       );
 

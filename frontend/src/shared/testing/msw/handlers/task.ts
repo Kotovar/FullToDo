@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw';
-import { type CreateTask, notepadId, ROUTES, taskId } from '@sharedCommon/';
+import { type CreateTask, NOTEPAD_ID, ROUTES, TASK_ID } from '@sharedCommon/';
 import {
   getDeleteResponse,
   MOCK_SINGE_NOTEPAD_RESPONSE,
@@ -23,18 +23,18 @@ type AddTaskResponseBody = {
 
 export const taskHandlers = [
   http.get(
-    `${import.meta.env.VITE_URL}${ROUTES.getTaskDetailPath(notepadId, taskId)}`,
+    `${import.meta.env.VITE_URL}${ROUTES.notepads.getTaskPath(NOTEPAD_ID, TASK_ID)}`,
     () => {
       return HttpResponse.json(MOCK_SINGE_TASK_RESPONSE);
     },
   ),
 
-  http.get(`${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`, () => {
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.tasks.base}/${TASK_ID}`, () => {
     return HttpResponse.json(MOCK_SINGE_TASK_RESPONSE);
   }),
 
   http.get(
-    `${import.meta.env.VITE_URL}${ROUTES.getNotepadPath(notepadId)}`,
+    `${import.meta.env.VITE_URL}${ROUTES.notepads.getPath(NOTEPAD_ID)}`,
     ({ request }) => {
       const url = new URL(request.url);
       const hasSearch = url.searchParams.get('search') === 'task';
@@ -45,7 +45,7 @@ export const taskHandlers = [
     },
   ),
 
-  http.get(`${import.meta.env.VITE_URL}${ROUTES.TASKS}`, ({ request }) => {
+  http.get(`${import.meta.env.VITE_URL}${ROUTES.tasks.base}`, ({ request }) => {
     const url = new URL(request.url);
     const hasSearch = url.searchParams.get('search') === 'task';
 
@@ -55,7 +55,7 @@ export const taskHandlers = [
   }),
 
   http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.getNotepadPath(notepadId)}`,
+    `${import.meta.env.VITE_URL}${ROUTES.notepads.getPath(NOTEPAD_ID)}`,
     async ({ request }) => {
       const { title } = await request.json();
 
@@ -74,7 +74,7 @@ export const taskHandlers = [
   ),
 
   http.post<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.TASKS}`,
+    `${import.meta.env.VITE_URL}${ROUTES.tasks.base}`,
     async ({ request }) => {
       const { title } = await request.json();
 
@@ -93,7 +93,7 @@ export const taskHandlers = [
   ),
 
   http.patch<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.tasks.base}/${TASK_ID}`,
     async ({ request }) => {
       const { title } = await request.json();
 
@@ -112,7 +112,7 @@ export const taskHandlers = [
   ),
 
   http.delete<AddTaskRequestParams, AddTaskRequestBody, AddTaskResponseBody>(
-    `${import.meta.env.VITE_URL}${ROUTES.TASKS}/${taskId}`,
+    `${import.meta.env.VITE_URL}${ROUTES.tasks.base}/${TASK_ID}`,
     async () => {
       return HttpResponse.json(getDeleteResponse('Task'));
     },

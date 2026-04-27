@@ -1,0 +1,127 @@
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Icon, Input } from '@shared/ui';
+import { createTranslationKeyGuard } from '../../lib/createTranslationKeyGuard';
+import { useLoginForm } from '../../model/login/useLoginForm';
+
+const isTranslationKey = createTranslationKeyGuard('login');
+
+type LoginFormProps = {
+  initialEmail?: string | null;
+  redirectTo: string;
+};
+
+export const LoginForm = ({ initialEmail, redirectTo }: LoginFormProps) => {
+  const { t } = useTranslation();
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const {
+    values,
+    errors,
+    submitError,
+    isPending,
+    isSubmitDisabled,
+    updateField,
+    submit,
+  } = useLoginForm({ initialEmail, redirectTo });
+
+  return (
+    <form className='flex w-full flex-col gap-4' onSubmit={submit} noValidate>
+      <p className='text-center text-sm'>{t('login.description')}</p>
+
+      <div className='flex flex-col gap-1'>
+        <label className='text-left text-sm font-medium' htmlFor='login-email'>
+          {t('login.form.email.label')}
+        </label>
+        <Input
+          id='login-email'
+          className='rounded border border-slate-300 bg-white px-3 py-2 text-base text-slate-900 placeholder:text-slate-400 dark:text-slate-900'
+          type='email'
+          autoComplete='email'
+          value={values.email}
+          onChange={updateField('email')}
+          placeholder={t('login.form.email.placeholder')}
+          aria-invalid={Boolean(errors.email)}
+          aria-describedby='login-email-error'
+        />
+        <div className='min-h-5'>
+          {errors.email ? (
+            <p
+              id='login-email-error'
+              className='text-left text-sm text-red-600'
+            >
+              {isTranslationKey(errors.email) ? t(errors.email) : errors.email}
+            </p>
+          ) : null}
+        </div>
+      </div>
+
+      <div className='flex flex-col gap-1'>
+        <label
+          className='text-left text-sm font-medium'
+          htmlFor='login-password'
+        >
+          {t('login.form.password.label')}
+        </label>
+        <div className='relative'>
+          <Input
+            id='login-password'
+            className='w-full rounded border border-slate-300 bg-white px-3 py-2 pr-11 text-base text-slate-900 placeholder:text-slate-400 dark:text-slate-900'
+            type={isPasswordVisible ? 'text' : 'password'}
+            autoComplete='current-password'
+            value={values.password}
+            onChange={updateField('password')}
+            placeholder={t('login.form.password.placeholder')}
+            aria-invalid={Boolean(errors.password)}
+            aria-describedby='login-password-error'
+          />
+          <button
+            type='button'
+            className='absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-500 transition hover:text-slate-700'
+            onClick={() => setPasswordVisible(prev => !prev)}
+            aria-label={t(
+              isPasswordVisible
+                ? 'login.form.password.hide'
+                : 'login.form.password.show',
+            )}
+            aria-pressed={isPasswordVisible}
+          >
+            <Icon
+              name={isPasswordVisible ? 'eyeOff' : 'eye'}
+              size={20}
+              stroke='currentColor'
+            />
+          </button>
+        </div>
+        <div className='min-h-10'>
+          {errors.password ? (
+            <p
+              id='login-password-error'
+              className='text-left text-sm text-red-600'
+            >
+              {isTranslationKey(errors.password)
+                ? t(errors.password)
+                : errors.password}
+            </p>
+          ) : null}
+        </div>
+      </div>
+
+      <div className='min-h-14'>
+        {submitError ? (
+          <p className='rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700'>
+            {t(submitError)}
+          </p>
+        ) : null}
+      </div>
+
+      <Button
+        type='submit'
+        className='w-full justify-center disabled:border-slate-300 disabled:bg-slate-300 disabled:text-slate-500'
+        padding='md'
+        disabled={isSubmitDisabled}
+      >
+        {isPending ? t('login.form.submitting') : t('login.form.submit')}
+      </Button>
+    </form>
+  );
+};

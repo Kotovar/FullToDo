@@ -1,23 +1,22 @@
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { renderWithRouter } from '@shared/testing';
 import { Error } from './Error';
+import { renderWithRouter } from '@shared/testing';
 
-describe('Error component', () => {
-  const user = userEvent.setup();
-  const onClickMock = vi.fn();
+describe('Error page', () => {
+  test('renders not found state with actions', () => {
+    renderWithRouter(<Error />, {
+      initialEntries: ['/unknown-route'],
+      path: '*',
+    });
 
-  test('render correctly', async () => {
-    renderWithRouter(<Error />);
-
-    const heading = screen.getByRole('heading');
-    const button = screen.getByRole('button');
-    expect(heading).toBeInTheDocument();
-    expect(button).toBeInTheDocument();
-
-    button.onclick = onClickMock;
-
-    await user.click(button);
-    expect(onClickMock).toHaveBeenCalled();
+    expect(
+      screen.getByRole('heading', { name: 'errors.notFound' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('404')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'back' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'errors.goHome' })).toHaveAttribute(
+      'href',
+      '/',
+    );
   });
 });

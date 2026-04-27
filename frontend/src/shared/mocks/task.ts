@@ -1,10 +1,11 @@
-import type {
-  Subtask,
-  Task,
-  NotepadResponse,
-  NotepadWithoutTasksResponse,
-  TaskResponseSingle,
-} from '@sharedCommon/*';
+import {
+  type Subtask,
+  type Task,
+  type NotepadResponse,
+  type NotepadWithoutTasksResponse,
+  type TaskResponseSingle,
+  USER_ID,
+} from '@sharedCommon';
 
 export const MOCK_SUBTASK: Subtask = {
   isCompleted: false,
@@ -22,6 +23,7 @@ export const MOCK_TASK: Task = {
   title: 'Задача 1',
   notepadId: '1',
   _id: '1',
+  userId: USER_ID,
   description: 'Описание для задачи 1',
   createdDate: new Date('2025-04-11T06:26:26.561Z'),
   dueDate: new Date('2025-04-11T06:26:26.561Z'),
@@ -37,6 +39,7 @@ export const MOCK_SINGE_TASK_RESPONSE: TaskResponseSingle = {
     title: 'Задача 1',
     notepadId: '1',
     _id: '1',
+    userId: USER_ID,
     description: 'Описание для задачи 1',
     createdDate: new Date('2025-04-11T06:26:26.561Z'),
     isCompleted: false,
@@ -77,10 +80,12 @@ export const MOCK_SINGE_NOTEPAD_RESPONSE: NotepadResponse = {
   data: {
     title: '123',
     _id: '123',
+    userId: USER_ID,
     tasks: [
       {
         _id: '12',
         notepadId: '1',
+        userId: USER_ID,
         title: 'Задача 12',
         description: 'Описание для задачи 3',
         isCompleted: false,
@@ -107,6 +112,7 @@ export const MOCK_SINGE_NOTEPAD_RESPONSE: NotepadResponse = {
       {
         _id: '13',
         notepadId: '2',
+        userId: USER_ID,
         title: 'Задача 13',
         isCompleted: false,
         createdDate: new Date('2025-04-14T05:36:46.981Z'),
@@ -146,6 +152,7 @@ export const MOCK_TASK_UPDATE_RESPONSE: TaskResponseSingle = {
   data: {
     _id: '1',
     notepadId: '1',
+    userId: USER_ID,
     title: 'new23211',
     description: 'Описание для задачи 1',
     dueDate: new Date('2025-04-14T05:36:46.981Z'),

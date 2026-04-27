@@ -2,7 +2,7 @@ import { useLocation } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import type { ComponentPropsWithoutRef } from 'react';
-import { commonNotepadId, ROUTES } from '@sharedCommon/';
+import { COMMON_NOTEPAD_ID, ROUTES } from '@sharedCommon/';
 import { LinkCard, Input, Icon, Button } from '@shared/ui';
 import { useDarkMode } from '@shared/lib';
 import { NavigationBarSkeleton } from './skeleton';
@@ -37,7 +37,9 @@ export const NavigationBar = ({
 
   const notepadList = notepads.map(({ title, _id }) => {
     const path =
-      _id === commonNotepadId ? ROUTES.TASKS : ROUTES.getNotepadPath(_id);
+      _id === COMMON_NOTEPAD_ID
+        ? ROUTES.tasks.base
+        : ROUTES.notepads.getPath(_id);
 
     return (
       <LinkCard

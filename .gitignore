@@ -31,3 +31,6 @@ coverage
 *.sln
 *.sw?
 .env
+.zed
+.claude/
+.codex

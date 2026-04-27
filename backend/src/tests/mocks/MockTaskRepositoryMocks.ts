@@ -1,7 +1,8 @@
 import { NOTEPADS } from '@db/mock';
 import {
-  commonNotepadId,
+  COMMON_NOTEPAD_ID,
   PAGINATION,
+  USER_ID,
   type Notepad,
 } from '@sharedCommon/schemas';
 
@@ -22,6 +23,7 @@ export const newTask = {
   notepadId: realId,
   dueDate: new Date(),
   description: 'Task description',
+  userId: USER_ID,
 };
 
 export const allTasks = NOTEPADS.flatMap(notepad => notepad.tasks);
@@ -31,6 +33,7 @@ export const customNotepad: Notepad[] = [
   {
     title: 'Рабочее',
     _id: realId,
+    userId: USER_ID,
     tasks: [{ ...newTask, progress: '', _id: realId }],
   },
 ];
@@ -39,6 +42,7 @@ export const tasksWithUndefined = [
   {
     title: 'Task 1',
     _id: '1',
+    userId: USER_ID,
     createdDate: new Date(),
     isCompleted: false,
     notepadId: realId,
@@ -50,6 +54,7 @@ export const tasksWithUndefined = [
   {
     title: 'Task 2',
     _id: '2',
+    userId: USER_ID,
     createdDate: new Date(),
     isCompleted: false,
     notepadId: realId,
@@ -61,6 +66,7 @@ export const tasksWithUndefined = [
   {
     title: 'Task 3',
     _id: '3',
+    userId: USER_ID,
     createdDate: new Date(),
     isCompleted: false,
     notepadId: realId,
@@ -75,6 +81,7 @@ export const tasksWithEqualDates = [
   {
     title: 'Task 1',
     _id: '1',
+    userId: USER_ID,
     createdDate: sameDate,
     isCompleted: false,
     notepadId: realId,
@@ -86,6 +93,7 @@ export const tasksWithEqualDates = [
   {
     title: 'Task 2',
     _id: '2',
+    userId: USER_ID,
     createdDate: sameDate,
     isCompleted: false,
     notepadId: realId,
@@ -100,6 +108,7 @@ export const tasksWithDifferentDates = [
   {
     title: 'Task 1',
     _id: '1',
+    userId: USER_ID,
     createdDate: new Date(),
     isCompleted: false,
     notepadId: realId,
@@ -111,6 +120,7 @@ export const tasksWithDifferentDates = [
   {
     title: 'Task 2',
     _id: '2',
+    userId: USER_ID,
     createdDate: new Date(),
     isCompleted: false,
     notepadId: realId,
@@ -122,6 +132,7 @@ export const tasksWithDifferentDates = [
   {
     title: 'Task 3',
     _id: '3',
+    userId: USER_ID,
     createdDate: new Date(),
     isCompleted: false,
     notepadId: realId,
@@ -136,9 +147,10 @@ export const tasksWithCommonAndUnrealNotepadIds = [
   {
     title: 'Task 2',
     _id: '1',
+    userId: USER_ID,
     createdDate: new Date(),
     isCompleted: false,
-    notepadId: commonNotepadId,
+    notepadId: COMMON_NOTEPAD_ID,
     dueDate: dates.date1,
     description: 'Description 2',
     subtasks: [],
@@ -147,6 +159,7 @@ export const tasksWithCommonAndUnrealNotepadIds = [
   {
     title: 'Task 2',
     _id: '2',
+    userId: USER_ID,
     createdDate: new Date(),
     isCompleted: false,
     notepadId: '1111111',

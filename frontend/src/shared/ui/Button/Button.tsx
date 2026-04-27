@@ -12,9 +12,10 @@ interface ButtonProps extends ComponentPropsWithRef<'button'> {
   className?: string;
 }
 
-const BASE_STYLES = 'rounded cursor-pointer border-transparent';
+const BASE_STYLES =
+  'rounded border-transparent cursor-pointer disabled:cursor-not-allowed disabled:opacity-55';
 const VARIANT_STYLES: Record<ButtonAppearance, string> = {
-  primary: 'bg-accent hover:bg-accent/80 text-white dark:border-dark',
+  primary: 'bg-accent enabled:hover:bg-accent/80 text-white dark:border-dark',
   ghost: 'focus-visible:ring-dark focus:outline-none focus-visible:ring-2',
 };
 

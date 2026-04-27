@@ -1,7 +1,12 @@
-import { memo, ComponentPropsWithRef, JSX } from 'react';
+import {
+  memo,
+  type ComponentPropsWithRef,
+  type HTMLInputTypeAttribute,
+  type JSX,
+} from 'react';
 
 export interface InputProps extends ComponentPropsWithRef<'input'> {
-  type: 'text' | 'date';
+  type: HTMLInputTypeAttribute;
   leftContent?: JSX.Element | null;
   rightContent?: JSX.Element | null;
 }

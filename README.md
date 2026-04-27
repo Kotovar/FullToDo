@@ -1,6 +1,7 @@
 # FullToDo
 
 [![CI/CD](https://github.com/Kotovar/FullToDo/actions/workflows/main.yml/badge.svg)](https://github.com/Kotovar/FullToDo/actions/workflows/main.yml)
+[![React Doctor](https://www.react.doctor/share/badge?p=fulltodo&s=99&w=2&f=2)](https://www.react.doctor/share?p=fulltodo&s=99&w=2&f=2)
 
 Pet проект для управления задачами (todo-приложение) с возможностью выбора различных бэкенд-технологий.
 
@@ -21,6 +22,7 @@ Pet проект для управления задачами (todo-прилож
 ## Технологии
 
 ### Frontend
+
 - React + TypeScript
 - Vite
 - TailwindCSS
@@ -29,51 +31,157 @@ Pet проект для управления задачами (todo-прилож
 - Vitest
 
 ### Backend
+
 - Node.js + TypeScript
-- HTTP-модуль (текущая версия)
+- HTTP-модуль
 - Express (в разработке)
+- Mock-база (JSON-в памяти)
+- PostgreSQL
+- Redis (rate limiting auth endpoints)
+- Pino (логирование)
+- Nodemailer + Mailtrap Sandbox (отправка писем)
+- React Email (шаблоны писем)
+- Swagger UI
 - Nest.js (в разработке)
-- Mock-база (JSON)
-- `MongoDB` (в разработке)
-- `postgres` (в разработке)
+- MongoDB (в разработке)
 - Vitest
 
 ## Запуск
 
 Скопировать файл окружения:
+
 ```bash
 cp .env.example .env
 ```
 
 Установить зависимости:
+
 ```bash
 npm install
 ```
 
-Запустить проект (из корня проекта):
+### С mock-базой (без Docker)
+
+В `.env` указать:
+
+```
+DB_TYPE=mock
+SERVER_TYPE=http
+```
+
+Запустить (из корня проекта):
+
 ```bash
 npm run dev
 ```
-Будет запущен frontend и backend одновременно.
 
-Файл .env содержит:
+### С PostgreSQL и Redis (через Docker)
 
-- `PORT` - порт для backend-сервера (по умолчанию `5000`)
-- `DB_TYPE` - тип базы данных (`mock`/`mongo`/`postgres`)
-- `SERVER_TYPE` - тип сервера (`http`/`express`/`nextJs`)
-- `VITE_URL` - базовый URL для фронтенда
+В `.env` указать:
+
+```
+DB_TYPE=postgres
+SERVER_TYPE=http
+```
+
+Запустить (из корня проекта):
+
+```bash
+npm run dev
+```
+
+Команда поднимет контейнеры с PostgreSQL и Redis, затем запустит frontend и backend одновременно.
+
+Остановить контейнеры:
+
+```bash
+npm run stop:docker
+```
+
+### Redis
+
+Redis используется для rate limiting на auth endpoints.
+
+Подключиться к Redis внутри Docker-контейнера:
+
+```bash
+docker exec -it todo-redis redis-cli
+```
+
+Полезные команды в `redis-cli`:
+
+```redis
+PING
+DBSIZE
+SCAN 0 MATCH rate-limit:* COUNT 100
+GET rate-limit:auth:login:ip:::ffff:127.0.0.1
+TTL rate-limit:auth:login:ip:::ffff:127.0.0.1
+DEL rate-limit:auth:login:ip:::ffff:127.0.0.1
+```
+
+`SCAN` показывает ключи лимитера. `GET` показывает количество попыток, `TTL` — сколько секунд осталось до автоматического удаления ключа, `DEL` сбрасывает конкретный лимит.
+
+Для логина создаются два типа ключей: общий лимит по IP (`auth:login:ip`) и лимит по аккаунту (`auth:login:account:<sha256-email>`). Email в ключах не хранится напрямую.
+
+### Swagger UI
+
+После запуска сервера документация API доступна по адресу:
+
+```
+http://localhost:5000/api-docs
+```
+
+### Почтовый сервис
+
+Письма отправляются через [Mailtrap Sandbox](https://mailtrap.io/inboxes) — реальным пользователям не доставляются, только в песочницу. Используется для разработки.
+
+Отправляются письма:
+
+- Верификация email при регистрации
+- Уведомление о смене пароля
+- Уведомление об удалении аккаунта
+
+Шаблоны писем написаны с помощью [React Email](https://react.email) и находятся в `backend/src/emails/`.
+
+Для просмотра превью шаблонов в браузере:
+
+```bash
+npm run email --workspace=fulltodo_backend
+```
+
+Откроется превью на `http://localhost:3000`.
+
+### Переменные окружения (.env)
+
+| Переменная      | Описание                  | Значения                |
+| --------------- | ------------------------- | ----------------------- |
+| `PORT`          | Порт backend-сервера      | `5000` (по умолчанию)   |
+| `SERVER_TYPE`   | Тип сервера               | `http` / `express`      |
+| `DB_TYPE`       | Тип базы данных           | `mock` / `postgres`     |
+| `VITE_URL`      | Базовый URL для фронтенда | `http://localhost:5000` |
+| `DB_USER`       | Пользователь PostgreSQL   | `postgres`              |
+| `DB_PASSWORD`   | Пароль PostgreSQL         | —                       |
+| `DB_HOST`       | Хост PostgreSQL           | `localhost`             |
+| `DB_PORT`       | Порт PostgreSQL           | `5432`                  |
+| `DB_NAME`       | Имя базы данных           | `fulltodo`              |
+| `REDIS_HOST`    | Хост Redis                | `localhost`             |
+| `REDIS_PORT`    | Порт Redis                | `6379`                  |
+| `MAILTRAP_USER` | SMTP логин Mailtrap       | —                       |
+| `MAILTRAP_PASS` | SMTP пароль Mailtrap      | —                       |
 
 ## Планы развития
-- Добавление поддержки 3 серверов (`http`/`express`/`nextJs`)
-- Добавление поддержки 2 БД (`mongo`/`postgres`)
-- Возможность переключения между разными серверами и БД
-- Реализация функционала приоритетов задач
 
-#  FullToDo (English version)
+- Добавление поддержки ещё одной БД (`mongo`)
+- Добавление поддержки ещё двух серверов (`express`/`nextJs`)
+
+---
+
+# FullToDo (English version)
 
 A pet project for task management (todo app) with the ability to choose different backend technologies.
 
 ## Features
+
 - Create/delete/edit notebooks and tasks
 - Task details:
   - Title, description, due date
@@ -98,41 +206,145 @@ A pet project for task management (todo app) with the ability to choose differen
 - Vitest
 
 ### Backend
+
 - Node.js + TypeScript
-- HTTP module (current version)
+- HTTP module
 - Express (in development)
+- Mock database (in-memory JSON)
+- PostgreSQL
+- Redis (auth endpoint rate limiting)
+- Pino (logging)
+- Nodemailer + Mailtrap Sandbox (transactional emails)
+- React Email (email templates)
+- Swagger UI
 - Nest.js (in development)
-- Mock database (JSON)
-- `MongoDB` (in development)
-- `postgres` (in development)
+- MongoDB (in development)
 - Vitest
 
 ## Running
+
 Copy environment file:
+
 ```bash
 cp .env.example .env
 ```
+
 Install dependencies:
 
 ```bash
 npm install
 ```
-Run the project (from project root):
+
+### With mock database (no Docker)
+
+Set in `.env`:
+
+```
+DB_TYPE=mock
+SERVER_TYPE=http
+```
+
+Run (from project root):
 
 ```bash
 npm run dev
 ```
-This command starts both frontend and backend simultaneously.
 
-The .env file contains:
+### With PostgreSQL and Redis (via Docker)
 
-- `PORT` - port for backend server (default `5000`)
-- `DB_TYPE` - database type (`mock`/`mongo`/`postgres`)
-- `SERVER_TYPE` - server type (`http`/`express`/`nextJs`)
-- `VITE_URL` - base URL for frontend
+Set in `.env`:
+
+```
+DB_TYPE=postgres
+SERVER_TYPE=http
+```
+
+Run (from project root):
+
+```bash
+npm run dev
+```
+
+This command starts PostgreSQL and Redis containers, then runs both frontend and backend simultaneously.
+
+Stop the containers:
+
+```bash
+npm run stop:docker
+```
+
+### Redis
+
+Redis is used for rate limiting on auth endpoints.
+
+Connect to Redis inside the Docker container:
+
+```bash
+docker exec -it todo-redis redis-cli
+```
+
+Useful commands in `redis-cli`:
+
+```redis
+PING
+DBSIZE
+SCAN 0 MATCH rate-limit:* COUNT 100
+GET rate-limit:auth:login:ip:::ffff:127.0.0.1
+TTL rate-limit:auth:login:ip:::ffff:127.0.0.1
+DEL rate-limit:auth:login:ip:::ffff:127.0.0.1
+```
+
+`SCAN` lists limiter keys. `GET` shows the number of attempts, `TTL` shows how many seconds remain before automatic key deletion, and `DEL` resets a specific limit.
+
+Login creates two key types: a global IP limit (`auth:login:ip`) and an account limit (`auth:login:account:<sha256-email>`). Email is not stored directly in Redis keys.
+
+### Swagger UI
+
+After starting the server, the API documentation is available at:
+
+```
+http://localhost:5000/api-docs
+```
+
+### Email service
+
+Emails are sent via [Mailtrap Sandbox](https://mailtrap.io/inboxes) — not delivered to real users, sandbox only. Used for development.
+
+Sent emails:
+
+- Email verification on registration
+- Password change notification
+- Account deletion notification
+
+Email templates are built with [React Email](https://react.email) and located in `backend/src/emails/`.
+
+To preview templates in the browser:
+
+```bash
+npm run email --workspace=fulltodo_backend
+```
+
+Preview opens at `http://localhost:3000`.
+
+### Environment variables (.env)
+
+| Variable        | Description            | Values                  |
+| --------------- | ---------------------- | ----------------------- |
+| `PORT`          | Backend server port    | `5000` (default)        |
+| `SERVER_TYPE`   | Server type            | `http` / `express`      |
+| `DB_TYPE`       | Database type          | `mock` / `postgres`     |
+| `VITE_URL`      | Base URL for frontend  | `http://localhost:5000` |
+| `DB_USER`       | PostgreSQL user        | `postgres`              |
+| `DB_PASSWORD`   | PostgreSQL password    | —                       |
+| `DB_HOST`       | PostgreSQL host        | `localhost`             |
+| `DB_PORT`       | PostgreSQL port        | `5432`                  |
+| `DB_NAME`       | Database name          | `fulltodo`              |
+| `REDIS_HOST`    | Redis host             | `localhost`             |
+| `REDIS_PORT`    | Redis port             | `6379`                  |
+| `MAILTRAP_USER` | Mailtrap SMTP login    | —                       |
+| `MAILTRAP_PASS` | Mailtrap SMTP password | —                       |
 
 ## Roadmap
-- Adding support for 3 servers (`http`/`express`/`nextJs`)
-- Adding support for 2 databases (`mongo`/`postgres`)
-- Ability to switch between different servers and databases
-- Implementation of task priorities functionality
+
+- Added support for one more database (`mongo`)
+- Added support for two more servers (`express`/`nextJs`)

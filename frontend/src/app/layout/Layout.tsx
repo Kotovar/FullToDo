@@ -1,54 +1,100 @@
-import { Outlet } from 'react-router';
-import { ToastContainer, Slide } from 'react-toastify';
+import { useCallback, useRef } from 'react';
+import { Outlet, useLocation } from 'react-router';
 import { clsx } from 'clsx';
 import { Header } from '@widgets/Header';
 import { NavigationBar } from '@widgets/NavigationBar';
-import { useVisibility, useDarkToast } from './hooks';
+import { ROUTES } from '@sharedCommon';
+import { useVisibility } from './hooks';
 
 const Layout = () => {
+  const { pathname } = useLocation();
   const [isHidden, handleVisibility, turnOffVisibility] = useVisibility();
-  const { theme } = useDarkToast();
+  const navigationWrapperRef = useRef<HTMLDivElement>(null);
+  const isAccountPage = pathname === ROUTES.app.account;
+
+  const clearNavigationFocus = useCallback(() => {
+    const activeElement = document.activeElement;
+
+    if (
+      activeElement instanceof HTMLElement &&
+      navigationWrapperRef.current?.contains(activeElement)
+    ) {
+      activeElement.blur();
+    }
+  }, []);
+
+  const handleTurnOffVisibility = useCallback(() => {
+    clearNavigationFocus();
+    turnOffVisibility();
+  }, [clearNavigationFocus, turnOffVisibility]);
 
   return (
-    <div className='font-display h-screen'>
+    <div
+      className={clsx('bg-grey-light font-display', {
+        ['h-dvh overflow-hidden']: !isAccountPage,
+        ['min-h-dvh']: isAccountPage,
+      })}
+    >
       <Header
-        className='bg-accent fixed z-10 flex h-16 w-full items-center gap-x-1 px-2'
+        className='bg-accent fixed top-0 left-0 z-10 flex h-16 w-full items-center gap-x-1 px-2'
         changeVisibility={handleVisibility}
       />
-      <main className='bg-grey-light text-dark flex h-full pt-16 text-2xl'>
-        <NavigationBar
+      <main
+        className={clsx('text-dark flex text-2xl md:grid', {
+          ['h-full overflow-hidden pt-16']: !isAccountPage,
+          ['min-h-dvh pt-16']: isAccountPage,
+          ['md:transition-[grid-template-columns] md:duration-300']:
+            !isAccountPage,
+        })}
+        style={
+          !isAccountPage
+            ? {
+                gridTemplateColumns: isHidden
+                  ? '0px minmax(0, 1fr)'
+                  : '20rem minmax(0, 1fr)',
+              }
+            : undefined
+        }
+      >
+        {!isAccountPage && (
+          <div
+            ref={navigationWrapperRef}
+            className={clsx(
+              'fixed top-16 left-0 z-40 h-[calc(100dvh-4rem)] w-screen overflow-hidden transition-transform duration-300 ease-out md:static md:z-auto md:h-auto md:w-full md:transition-none',
+              {
+                ['translate-x-0']: !isHidden,
+                ['-translate-x-full md:translate-x-0']: isHidden,
+              },
+            )}
+            inert={isHidden}
+          >
+            <NavigationBar
+              className={clsx(
+                'bg-light scrollbar-notepads flex h-full w-full overflow-y-scroll p-2 transition-transform duration-300 ease-out md:p-4 md:pr-2',
+                {
+                  ['translate-x-0']: !isHidden,
+                  ['-translate-x-6 md:translate-x-0']: isHidden,
+                },
+              )}
+              turnOffVisibility={handleTurnOffVisibility}
+              isHidden={isHidden}
+              aria-expanded={!isHidden}
+            />
+          </div>
+        )}
+        <section
           className={clsx(
-            'bg-light scrollbar-notepads flex flex-auto overflow-y-scroll p-2 md:w-3xs md:flex-none md:p-4 md:pr-2 lg:w-80 2xl:max-w-100',
+            'flex w-full min-w-0 flex-col px-4 pt-4 pb-0 md:flex md:p-4 landscape:p-1',
             {
-              ['hidden']: isHidden,
+              ['overflow-hidden']: !isAccountPage,
+              ['mx-auto max-w-5xl p-4 md:px-8 md:py-6 landscape:p-4']:
+                isAccountPage,
             },
           )}
-          turnOffVisibility={turnOffVisibility}
-          isHidden={isHidden}
-          aria-expanded={!isHidden}
-        />
-        <section
-          className={clsx('flex w-full flex-col p-4 md:flex landscape:p-1', {
-            ['hidden']: !isHidden,
-          })}
           aria-live='polite'
         >
           <Outlet />
         </section>
-        <ToastContainer
-          toastClassName={
-            'relative flex p-40 min-h-10 rounded-md cursor-pointer text-dark bg-red-50'
-          }
-          position='top-right'
-          transition={Slide}
-          autoClose={1500}
-          hideProgressBar={true}
-          limit={3}
-          theme={theme}
-          closeOnClick
-          draggable
-          stacked
-        />
       </main>
     </div>
   );

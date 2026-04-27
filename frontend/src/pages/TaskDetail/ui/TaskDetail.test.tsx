@@ -10,6 +10,8 @@ import { getUseTaskDetailsMock } from '@entities/Task';
 import TaskDetail from '@pages/TaskDetail';
 import * as taskModule from '@pages/TaskDetail/ui/Subtasks';
 
+const formatTestDate = (date: Date) => date.toISOString().slice(0, 10);
+
 const onChangeTitleMock = vi.fn();
 const onChangeSubtaskTitleMock = vi.fn();
 const onChangeDueDateMock = vi.fn();
@@ -164,8 +166,14 @@ describe('TaskDetail component', () => {
       const dateInput = screen.getByLabelText('tasks.date', {
         selector: 'input',
       });
-      await user.clear(dateInput);
-      await user.type(dateInput, '2025-04-20');
+      const today = new Date();
+
+      await user.click(dateInput);
+      await user.click(
+        screen.getByRole('button', {
+          name: 'tasks.calendar.today',
+        }),
+      );
 
       const saveButton = screen.getByText('save');
       await user.click(saveButton);
@@ -173,7 +181,7 @@ describe('TaskDetail component', () => {
       await waitFor(() => {
         expect(updateTaskMock).toHaveBeenCalledWith(
           {
-            dueDate: new Date('2025-04-20'),
+            dueDate: new Date(formatTestDate(today)),
           },
           '1',
           'update',
@@ -300,7 +308,12 @@ describe('TaskDetail component', () => {
       const input = screen.getByLabelText('tasks.date', {
         selector: 'input',
       });
-      await user.type(input, '2025-04-19');
+      await user.click(input);
+      await user.click(
+        screen.getByRole('button', {
+          name: 'tasks.calendar.today',
+        }),
+      );
 
       await waitFor(() => {
         expect(onChangeDueDateMock).toHaveBeenCalled();

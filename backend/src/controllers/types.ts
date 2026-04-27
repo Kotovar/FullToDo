@@ -1,12 +1,11 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import type { TaskRepository } from '@repositories/TaskRepository';
 
 export interface HttpContext {
   req: IncomingMessage;
   res: ServerResponse;
 }
 
-export type RequestHandler = (
+export type ServiceHandler<Service> = (
   context: HttpContext,
-  repository: TaskRepository,
+  service: Service,
 ) => Promise<void>;

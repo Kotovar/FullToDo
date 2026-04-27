@@ -1,22 +1,21 @@
 import {
-  commonNotepadId,
-  type NotepadWithoutTasksResponse,
-  type TaskResponse,
-  type TasksResponse,
+  COMMON_NOTEPAD_ID,
+  NotepadWithoutTasks,
+  PaginatedTasks,
+  Task,
+  USER_ID,
 } from '@sharedCommon/schemas';
 import { TASKS1 } from './mock-db';
 import { getMetaMock } from '@tests/utils';
 
 const meta = getMetaMock(TASKS1);
 
-export const validTasksData: TasksResponse = {
-  status: 200,
-  message: 'Success',
-  data: TASKS1,
+export const validTasksData: PaginatedTasks = {
+  tasks: TASKS1,
   meta,
 };
 
-const validTaskDataMock = {
+export const validTaskDataMock: Task = {
   _id: '1',
   notepadId: '1',
   title: 'Задача 1',
@@ -25,6 +24,7 @@ const validTaskDataMock = {
   createdDate: new Date(),
   isCompleted: false,
   progress: '1 из 5',
+  userId: USER_ID,
   subtasks: [
     { isCompleted: false, title: 'Выучить Node.js', _id: '1' },
     { isCompleted: true, title: 'Выучить js', _id: '2' },
@@ -34,19 +34,10 @@ const validTaskDataMock = {
   ],
 };
 
-export const validTaskData: TaskResponse = {
-  status: 200,
-  message: 'Success',
-  data: validTaskDataMock,
-};
-
-export const validNotepadWithoutTasksData: NotepadWithoutTasksResponse = {
-  status: 200,
-  message: 'Success',
-  data: [
-    {
-      title: 'Задачи',
-      _id: commonNotepadId,
-    },
-  ],
-};
+export const validNotepadWithoutTasksData: NotepadWithoutTasks[] = [
+  {
+    title: 'Задачи',
+    _id: COMMON_NOTEPAD_ID,
+    userId: USER_ID,
+  },
+];

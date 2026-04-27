@@ -1,18 +1,22 @@
 import http from 'http';
-import morgan from 'morgan';
-import { taskRepository } from '@repositories';
 import { handleNotFound } from '@controllers';
-import { BASE_ROUTES, processRoute } from './routes';
+import { config } from '@configs';
+import { handleRoute } from './routes';
+import { httpLogger } from '@logger/http';
 
-const logger = morgan('tiny');
+const setHeaders = (req: http.IncomingMessage, res: http.ServerResponse) => {
+  const origin = req.headers.origin;
 
-const setHeaders = (res: http.ServerResponse) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  if (origin === config.corsOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  }
+
   res.setHeader(
     'Access-Control-Allow-Methods',
     'GET, POST, PATCH, DELETE, OPTIONS',
   );
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 };
 
 export const extractPath = (reqUrl?: string): string | undefined => {
@@ -22,8 +26,8 @@ export const extractPath = (reqUrl?: string): string | undefined => {
 
 export const createHttpServer = () => {
   const server = http.createServer((req, res) => {
-    logger(req, res, () => {});
-    setHeaders(res);
+    setHeaders(req, res);
+    httpLogger?.info({ method: req.method, url: req.url }, 'Incoming request');
 
     if (req.method === 'OPTIONS') {
       res.writeHead(204);
@@ -32,16 +36,9 @@ export const createHttpServer = () => {
     }
 
     const url = extractPath(req.url);
-    const routeKey = `${req.method} ${url}`;
 
-    if (BASE_ROUTES[routeKey]) {
-      return BASE_ROUTES[routeKey]({ req, res }, taskRepository);
-    }
-
-    const routeResult = processRoute(req, res, url);
-
-    if (!routeResult) {
-      return handleNotFound(res);
+    if (!handleRoute({ req, res }, url)) {
+      handleNotFound(res);
     }
   });
 

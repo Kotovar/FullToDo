@@ -8,4 +8,5 @@ export * from './Input';
 export * from './LinkCard';
 export * from './OptionsMenu';
 export * from './RadioGroup';
+export * from './TaskDetailSkeleton';
 export * from './TaskInput';

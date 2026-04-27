@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 import { renderWithRouter, setupMockServer } from '@shared/testing';
 import { MOCK_TASK } from '@shared/mocks/';
-import { notepadId } from 'shared/schemas';
+import { NOTEPAD_ID } from 'shared/schemas';
 import { TaskItem } from './TaskItem';
 import userEvent from '@testing-library/user-event';
 
@@ -12,7 +12,7 @@ const renameTaskMock = vi.fn();
 const handleSaveTitleMock = vi.fn();
 
 const props = {
-  notepadId: notepadId,
+  notepadId: NOTEPAD_ID,
   notepadPathName: '/notepads/1',
   currentModalId: '1',
   editingTaskId: '1',

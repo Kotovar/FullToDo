@@ -1,8 +1,13 @@
-import http from 'http';
-import { ROUTE_REGEX } from './routeRegex';
+import { OAuth2Client } from 'google-auth-library';
+import { OAuthService } from '@services/OAuthService';
+import {
+  TaskService,
+  NotepadService,
+  AuthService,
+  EmailService,
+} from '@services';
 import { ROUTES } from '@sharedCommon/routes';
-import { taskRepository } from '@repositories';
-import type { RequestHandler } from '@controllers/types';
+import { ROUTE_REGEX } from './routeRegex';
 import {
   createNotepad,
   createTask,
@@ -15,77 +20,147 @@ import {
   handleNotFound,
   updateNotepad,
   updateTask,
+  registerWithEmail,
+  loginWithEmail,
+  authWithGoogle,
+  logout,
+  refresh,
+  getCurrentUser,
+  verifyEmail,
+  resendVerification,
+  changePassword,
+  deleteUser,
 } from '@controllers';
+import {
+  refreshTokenRepository,
+  taskRepository,
+  userRepository,
+} from '@repositories';
+import { handleSwaggerSpec, handleSwaggerUI } from '@swagger/handler';
+import { config } from '@configs';
+import type { HttpContext } from '@controllers/types';
 
-export const BASE_ROUTES: Record<string, RequestHandler> = {
-  [`POST ${ROUTES.NOTEPADS}`]: createNotepad,
-  [`POST ${ROUTES.TASKS}`]: createTask,
-  [`GET ${ROUTES.NOTEPADS}`]: getAllNotepads,
-  [`GET ${ROUTES.TASKS}`]: getAllTasks,
+const oauthClient = new OAuth2Client(config.googleClientId);
+const oauthService = new OAuthService(oauthClient);
+const emailService = new EmailService();
+const authService = new AuthService(
+  userRepository,
+  refreshTokenRepository,
+  emailService,
+  oauthService,
+);
+
+const taskService = new TaskService(taskRepository);
+const notepadService = new NotepadService(taskRepository);
+
+type RouteHandler = (ctx: HttpContext) => Promise<void>;
+
+export const BASE_ROUTES: Record<string, RouteHandler> = {
+  [`POST ${ROUTES.notepads.base}`]: ctx => createNotepad(ctx, notepadService),
+  [`POST ${ROUTES.tasks.base}`]: ctx => createTask(ctx, taskService),
+  [`GET ${ROUTES.notepads.base}`]: ctx => getAllNotepads(ctx, notepadService),
+  [`GET ${ROUTES.tasks.base}`]: ctx => getAllTasks(ctx, taskService),
+
+  [`POST ${ROUTES.auth.register}`]: ctx => registerWithEmail(ctx, authService),
+  [`POST ${ROUTES.auth.login}`]: ctx => loginWithEmail(ctx, authService),
+  [`POST ${ROUTES.auth.logout}`]: ctx => logout(ctx, authService),
+  [`POST ${ROUTES.auth.refresh}`]: ctx => refresh(ctx, authService),
+  [`GET ${ROUTES.auth.me}`]: ctx => getCurrentUser(ctx, authService),
+  [`POST ${ROUTES.auth.google}`]: ctx => authWithGoogle(ctx, authService),
+  [`GET ${ROUTES.auth.verifyEmail}`]: ctx => verifyEmail(ctx, authService),
+  [`POST ${ROUTES.auth.resendVerification}`]: ctx =>
+    resendVerification(ctx, authService),
+  [`POST ${ROUTES.auth.changePassword}`]: ctx =>
+    changePassword(ctx, authService),
+  [`POST ${ROUTES.auth.deleteUser}`]: ctx => deleteUser(ctx, authService),
 };
 
-export const processRoute = (
-  req: http.IncomingMessage,
-  res: http.ServerResponse<http.IncomingMessage>,
-  url?: string,
-) => {
-  if (!url) return null;
+export const handleRoute = (ctx: HttpContext, url?: string): boolean => {
+  if (!url) return false;
 
-  const notepadTasksMatch = url.match(ROUTE_REGEX.NOTEPAD_TASKS);
+  const { req, res } = ctx;
 
-  if (notepadTasksMatch) {
+  if (url === '/api-docs' && req.method === 'GET') {
+    handleSwaggerUI(req, res);
+    return true;
+  }
+
+  if (url === '/api-docs/spec.json' && req.method === 'GET') {
+    handleSwaggerSpec(req, res);
+    return true;
+  }
+
+  const routeKey = `${ctx.req.method} ${url}`;
+
+  if (BASE_ROUTES[routeKey]) {
+    BASE_ROUTES[routeKey](ctx);
+    return true;
+  }
+
+  if (url.match(ROUTE_REGEX.NOTEPAD_TASKS)) {
     switch (req.method) {
       case 'POST':
-        return createTask({ req, res }, taskRepository);
+        createTask(ctx, taskService);
+        break;
       case 'GET':
-        return getSingleNotepadTasks({ req, res }, taskRepository);
+        getSingleNotepadTasks(ctx, taskService);
+        break;
       default:
-        return handleNotFound(res);
+        handleNotFound(res);
     }
+
+    return true;
   }
 
-  const commonTaskDetailMatch = url.match(ROUTE_REGEX.COMMON_TASK_DETAIL);
-
-  if (commonTaskDetailMatch) {
+  if (url.match(ROUTE_REGEX.COMMON_TASK_DETAIL)) {
     switch (req.method) {
       case 'GET':
-        return getSingleTask({ req, res }, taskRepository);
+        getSingleTask(ctx, taskService);
+        break;
       case 'PATCH':
-        return updateTask({ req, res }, taskRepository);
+        updateTask(ctx, taskService);
+        break;
       case 'DELETE':
-        return deleteTask({ req, res }, taskRepository);
+        deleteTask(ctx, taskService);
+        break;
       default:
-        return handleNotFound(res);
+        handleNotFound(res);
     }
+
+    return true;
   }
 
-  const taskDetailMatch = url.match(ROUTE_REGEX.TASK_DETAIL);
-
-  if (taskDetailMatch) {
+  if (url.match(ROUTE_REGEX.TASK_DETAIL)) {
     switch (req.method) {
       case 'GET':
-        return getSingleTask({ req, res }, taskRepository);
+        getSingleTask(ctx, taskService);
+        break;
       case 'PATCH':
-        return updateTask({ req, res }, taskRepository);
+        updateTask(ctx, taskService);
+        break;
       case 'DELETE':
-        return deleteTask({ req, res }, taskRepository);
+        deleteTask(ctx, taskService);
+        break;
       default:
-        return handleNotFound(res);
+        handleNotFound(res);
     }
+
+    return true;
   }
 
-  const notepadMatch = url.match(ROUTE_REGEX.NOTEPAD_ID);
-
-  if (notepadMatch) {
+  if (url.match(ROUTE_REGEX.NOTEPAD_ID)) {
     switch (req.method) {
       case 'PATCH':
-        return updateNotepad({ req, res }, taskRepository);
+        updateNotepad(ctx, notepadService);
+        break;
       case 'DELETE':
-        return deleteNotepad({ req, res }, taskRepository);
+        deleteNotepad(ctx, notepadService);
+        break;
       default:
-        return handleNotFound(res);
+        handleNotFound(res);
     }
+    return true;
   }
 
-  return null;
+  return false;
 };

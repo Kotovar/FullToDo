@@ -4,6 +4,7 @@ import {
   NOTEPAD_ERRORS,
   HEADERS,
   BaseService,
+  authFetch,
 } from '@shared/api';
 import { ROUTES } from 'shared/routes';
 import type {
@@ -17,9 +18,12 @@ if (!URL) {
 }
 
 const notepadRoutes = {
-  all: `${URL}${ROUTES.NOTEPADS}`,
-  single: (notepadId: string) => `${URL}${ROUTES.NOTEPADS}/${notepadId}`,
+  all: `${URL}${ROUTES.notepads.base}`,
+  single: (notepadId: string) => `${URL}${ROUTES.notepads.base}/${notepadId}`,
 };
+
+export const getNotepadsQueryKey = (userScope: number | 'guest') =>
+  ['notepads', userScope] as const;
 
 export class NotepadService extends BaseService {
   protected async handleResponse<T>(response: Response): Promise<T> {
@@ -45,8 +49,8 @@ export class NotepadService extends BaseService {
 
   async getNotepads(): Promise<NotepadWithoutTasksResponse> {
     try {
-      const response = await fetch(notepadRoutes.all);
-      return response.json();
+      const response = await authFetch(notepadRoutes.all);
+      return this.handleResponse(response);
     } catch (error) {
       return this.handleError(error);
     }
@@ -54,10 +58,10 @@ export class NotepadService extends BaseService {
 
   async createNotepad(title: string): Promise<NotepadResponse> {
     try {
-      const response = await fetch(notepadRoutes.all, {
+      const response = await authFetch(notepadRoutes.all, {
         method: 'POST',
         headers: HEADERS,
-        body: JSON.stringify({ title: title }),
+        body: JSON.stringify({ title }),
       });
       return this.handleResponse(response);
     } catch (error) {
@@ -70,7 +74,7 @@ export class NotepadService extends BaseService {
     updatedNotepadFields: Partial<CreateNotepad>,
   ): Promise<NotepadResponse> {
     try {
-      const response = await fetch(notepadRoutes.single(notepadId), {
+      const response = await authFetch(notepadRoutes.single(notepadId), {
         method: 'PATCH',
         headers: HEADERS,
         body: JSON.stringify(updatedNotepadFields),
@@ -83,7 +87,7 @@ export class NotepadService extends BaseService {
 
   async deleteNotepad(notepadId: string): Promise<NotepadResponse> {
     try {
-      const response = await fetch(notepadRoutes.single(notepadId), {
+      const response = await authFetch(notepadRoutes.single(notepadId), {
         method: 'DELETE',
         headers: HEADERS,
       });

@@ -3,6 +3,7 @@
     "target": "es2023",
     "useDefineForClassFields": true,
     "module": "commonjs",
+    "jsx": "react-jsx",
     "rootDir": "../",
     "outDir": "dist",
 
@@ -16,18 +17,27 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    "baseUrl": "..",
     "skipLibCheck": true,
     "paths": {
-      "@sharedCommon/*": ["shared/*"],
-      "@db/*": ["backend/src/db/*"],
-      "@configs": ["backend/src/configs/index.ts"],
-      "@configs/*": ["backend/src/configs/*"],
-      "@tests/*": ["backend/src/tests/*"],
-      "@controllers": ["backend/src/controllers/index.ts"],
-      "@controllers/*": ["backend/src/controllers/*"],
-      "@repositories": ["backend/src/repositories/index.ts"],
-      "@repositories/*": ["backend/src/repositories/*"]
+      "@sharedCommon/*": ["../shared/*"],
+      "@db/*": ["./src/db/*"],
+      "@configs": ["./src/configs/index.ts"],
+      "@configs/*": ["./src/configs/*"],
+      "@tests/*": ["./src/tests/*"],
+      "@controllers": ["./src/controllers/index.ts"],
+      "@controllers/*": ["./src/controllers/*"],
+      "@repositories": ["./src/repositories/index.ts"],
+      "@repositories/*": ["./src/repositories/*"],
+      "@services/*": ["./src/services/*"],
+      "@services": ["./src/services/index.ts"],
+      "@errors/*": ["./src/errors/*"],
+      "@errors": ["./src/errors/index.ts"],
+      "@logger": ["./src/logger/index.ts"],
+      "@logger/*": ["./src/logger/*"],
+      "@swagger/*": ["./src/swagger/*"],
+      "@utils": ["./src/utils/index.ts"],
+      "@middleware": ["./src/middleware/index.ts"],
+      "@middleware/*": ["./src/middleware/*"]
     }
   }
 }

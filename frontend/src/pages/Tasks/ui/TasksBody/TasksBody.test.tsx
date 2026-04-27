@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/react';
 import { renderWithRouter, setupMockServer } from '@shared/testing';
 import { MOCK_TASK } from '@shared/mocks/';
-import { notepadId } from 'shared/schemas';
+import { NOTEPAD_ID } from 'shared/schemas';
 import { TasksBody } from './TasksBody';
 import * as useTaskHook from '@shared/lib';
 
 const props = {
-  notepadId: notepadId,
+  notepadId: NOTEPAD_ID,
   notepadPathName: '/notepads/1',
   params: new URLSearchParams(),
 };

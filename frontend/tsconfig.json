@@ -25,17 +25,17 @@
 
     "skipLibCheck": true,
 
-    "baseUrl": ".",
     "paths": {
-      "@app/*": ["src/app/*"],
-      "@entities/*": ["src/entities/*"],
-      "@features/*": ["src/features/*"],
-      "@shared/*": ["src/shared/*"],
-      "@pages/*": ["src/pages/*"],
-      "@widgets/*": ["src/widgets/*"],
+      "@app/*": ["./src/app/*"],
+      "@entities/*": ["./src/entities/*"],
+      "@features/*": ["./src/features/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@widgets/*": ["./src/widgets/*"],
+      "@sharedCommon": ["../shared"],
       "@sharedCommon/*": ["../shared"]
     },
     "types": ["vitest/globals", "@testing-library/jest-dom/vitest"]
   },
-  "include": ["src"]
+  "include": ["src", "setupTests.ts", "vite.config.ts"]
 }

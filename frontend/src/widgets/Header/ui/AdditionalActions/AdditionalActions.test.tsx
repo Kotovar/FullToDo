@@ -64,4 +64,21 @@ describe('AdditionalActions component', () => {
       expect(isDarkMode).toBeFalsy();
     });
   });
+
+  test('renders link to account page', () => {
+    renderWithRouter(<AdditionalActions />);
+
+    expect(screen.getByRole('link', { name: 'account.nav' })).toHaveAttribute(
+      'href',
+      '/account',
+    );
+  });
+
+  test('can hide link to account page', () => {
+    renderWithRouter(<AdditionalActions showAccountLink={false} />);
+
+    expect(
+      screen.queryByRole('link', { name: 'account.nav' }),
+    ).not.toBeInTheDocument();
+  });
 });

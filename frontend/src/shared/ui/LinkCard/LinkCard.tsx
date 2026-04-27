@@ -1,11 +1,11 @@
-import { memo, useCallback, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { clsx } from 'clsx';
 import { Button, Icon, ICON_SIZES, OptionsMenu } from '@shared/ui';
 import { useDarkMode, useTaskParams, useTasks } from '@shared/lib';
 import { useMenuToggle, useEditableTitle } from './hooks';
-import { commonNotepadId } from 'shared/schemas';
+import { COMMON_NOTEPAD_ID } from 'shared/schemas';
 import { Wrappers } from './wrappers';
 import type { LinkCardProps } from './LinkCard.interface';
 
@@ -27,6 +27,7 @@ export const LinkCard = memo((props: LinkCardProps) => {
   } = props;
 
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const { notepadId } = useParams();
   const { t } = useTranslation();
   const { fill } = useDarkMode();
@@ -56,9 +57,26 @@ export const LinkCard = memo((props: LinkCardProps) => {
     onSaveTitle,
   });
 
-  const { isCurrentMenuOpen, isNotMainNotepad, menuMethods } = useMenuToggle({
+  const {
+    isCurrentMenuOpen,
+    isClosingMenu,
+    isNotMainNotepad,
+    menuPosition,
+    menuMethods,
+  } = useMenuToggle({
     path,
   });
+
+  useEffect(() => {
+    if (!isEditing || !titleInputRef.current) {
+      return;
+    }
+
+    titleInputRef.current.focus();
+
+    const titleLength = titleInputRef.current.value.length;
+    titleInputRef.current.setSelectionRange(titleLength, titleLength);
+  }, [isEditing]);
 
   const inputTitle = (
     <input
@@ -80,11 +98,11 @@ export const LinkCard = memo((props: LinkCardProps) => {
         onChange={titleMethods.onChange}
         onBlur={titleMethods.onBlur}
         onKeyDown={titleMethods.handleKeyDown}
+        ref={titleInputRef}
         className={clsx(
           'h-full w-full rounded leading-normal focus:outline-none focus-visible:ring-2',
           linkClassName,
         )}
-        autoFocus
       />
       {body}
     </div>
@@ -114,7 +132,7 @@ export const LinkCard = memo((props: LinkCardProps) => {
   return (
     <Wrapper
       {...rest}
-      notepadId={notepadId ?? commonNotepadId}
+      notepadId={notepadId ?? COMMON_NOTEPAD_ID}
       taskId={taskId ?? ''}
       path={path}
       handleMove={moveTaskToNotepad}
@@ -125,18 +143,20 @@ export const LinkCard = memo((props: LinkCardProps) => {
         <div className='relative flex'>
           <Button
             appearance='ghost'
-            onClick={menuMethods.toggleMenu}
+            onClick={() => menuMethods.toggleMenu(buttonRef.current)}
             aria-label={t('card.additionalMenu')}
             ref={buttonRef}
           >
             <Icon name='threeDots' fill={fill} size={ICON_SIZES.DEFAULT} />
           </Button>
-          {isCurrentMenuOpen && (
+          {(isCurrentMenuOpen || isClosingMenu) && (
             <OptionsMenu
               buttonRef={buttonRef}
+              position={menuPosition}
               renameHandler={handleClickRename}
               deleteHandler={handleClickDelete}
               closeMenu={menuMethods.closeMenu}
+              isClosing={isClosingMenu}
             />
           )}
         </div>

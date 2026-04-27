@@ -19,8 +19,7 @@ jobs:
           node-version: '24'
           cache: 'npm'
 
-      - name: Install Frontend Dependencies
-        working-directory: ./frontend
+      - name: Install Dependencies
         env:
           HUSKY: 0
         run: npm ci
@@ -61,8 +60,7 @@ jobs:
           node-version: '24'
           cache: 'npm'
 
-      - name: Install Backend Dependencies
-        working-directory: ./backend
+      - name: Install Dependencies
         env:
           HUSKY: 0
         run: npm ci

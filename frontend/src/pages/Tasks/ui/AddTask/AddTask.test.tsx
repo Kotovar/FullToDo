@@ -9,6 +9,7 @@ vi.mock('@entities/Task', () => ({
 }));
 
 const mockCreateTask = vi.fn();
+const formatTestDate = (date: Date) => date.toISOString().slice(0, 10);
 
 const getElements = () => {
   const textInput = screen.getByLabelText('tasks.add', {
@@ -72,15 +73,21 @@ describe('AddTask component', () => {
     });
 
     const { textInput, dateInput, saveButton } = getElements();
+    const today = new Date();
 
-    await user.type(dateInput, '2025-04-20');
+    await user.click(dateInput);
+    await user.click(
+      screen.getByRole('button', {
+        name: 'tasks.calendar.today',
+      }),
+    );
     await user.type(textInput, 'Test');
     await user.click(saveButton);
 
     await waitFor(() => {
       expect(mockCreateTask).toHaveBeenCalledWith(
         expect.objectContaining({
-          dueDate: new Date('2025-04-20'),
+          dueDate: new Date(formatTestDate(today)),
         }),
       );
     });
