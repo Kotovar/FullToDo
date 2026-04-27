@@ -16,9 +16,18 @@ import {
   setRefreshCookie,
 } from './utils';
 import { httpAuthMiddleware, httpRateLimit } from '@middleware';
-import { UnauthorizedError } from '@errors/AppError';
+import { NotFoundError, UnauthorizedError } from '@errors/AppError';
 import type { ServiceHandler } from './types';
 import type { AuthService } from '@services/AuthService';
+
+const refreshFailureRateLimitOptions = {
+  keyPrefix: 'auth:refresh:failed',
+  maxRequests: 5,
+  windowSeconds: 10 * 60,
+};
+
+const isRefreshAuthFailure = (error: unknown) =>
+  error instanceof UnauthorizedError || error instanceof NotFoundError;
 
 export const registerWithEmail: ServiceHandler<AuthService> = async (
   { req, res },
@@ -152,9 +161,8 @@ export const refresh: ServiceHandler<AuthService> = async (ctx, service) => {
 
   try {
     await httpRateLimit(ctx, {
-      keyPrefix: 'auth:refresh',
-      maxRequests: 5,
-      windowSeconds: 10 * 60,
+      ...refreshFailureRateLimitOptions,
+      consume: false,
     });
 
     const { refreshToken } = parseCookies(req.headers.cookie);
@@ -173,6 +181,14 @@ export const refresh: ServiceHandler<AuthService> = async (ctx, service) => {
       }),
     );
   } catch (error) {
+    if (isRefreshAuthFailure(error)) {
+      try {
+        await httpRateLimit(ctx, refreshFailureRateLimitOptions);
+      } catch (rateLimitError) {
+        return errorHandler(res, rateLimitError);
+      }
+    }
+
     errorHandler(res, error);
   }
 };

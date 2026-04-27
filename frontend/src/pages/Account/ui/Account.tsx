@@ -8,6 +8,20 @@ import {
 } from '@features/auth';
 import { authKeys, fetchCurrentUser } from '@shared/api';
 import { ROUTES } from '@sharedCommon';
+import type { Translation } from '@shared/i18n';
+
+const getAuthProviderLabelKey = (user: {
+  hasPassword: boolean;
+  hasGoogle: boolean;
+}): Translation => {
+  if (user.hasPassword && user.hasGoogle) {
+    return 'account.profile.passwordAndGoogleUser';
+  }
+
+  return user.hasPassword
+    ? 'account.profile.passwordUser'
+    : 'account.profile.googleUser';
+};
 
 export const Account = () => {
   const { t } = useTranslation();
@@ -49,11 +63,7 @@ export const Account = () => {
           <dt className='font-medium text-slate-600 dark:text-slate-300'>
             {t('account.profile.provider')}
           </dt>
-          <dd>
-            {user.hasPassword
-              ? t('account.profile.passwordUser')
-              : t('account.profile.googleUser')}
-          </dd>
+          <dd>{t(getAuthProviderLabelKey(user))}</dd>
         </dl>
       </section>
 

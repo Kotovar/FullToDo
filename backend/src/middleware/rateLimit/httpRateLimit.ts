@@ -6,6 +6,7 @@ type RateLimitOptions = {
   keyPrefix: string;
   maxRequests: number;
   windowSeconds: number;
+  consume?: boolean;
 };
 
 /**
@@ -41,14 +42,30 @@ const getClientIp = (ctx: HttpContext) => {
  * @param options.keyPrefix - логический префикс ключа, например `auth:login`.
  * @param options.maxRequests - максимальное число запросов за окно.
  * @param options.windowSeconds - длительность окна в секундах.
+ * @param options.consume - увеличивать ли счётчик. Если false, только проверяет текущий лимит.
  * @throws TooManyRequestsError если лимит запросов превышен.
  */
 export const httpRateLimit = async (
   ctx: HttpContext,
-  { keyPrefix, maxRequests, windowSeconds }: RateLimitOptions,
+  {
+    keyPrefix,
+    maxRequests,
+    windowSeconds,
+    consume = true,
+  }: RateLimitOptions,
 ) => {
   const ip = getClientIp(ctx);
   const key = `rate-limit:${keyPrefix}:${ip}`;
+
+  if (!consume) {
+    const currentCount = Number((await redisClient.get(key)) ?? 0);
+
+    if (currentCount >= maxRequests) {
+      throw new TooManyRequestsError(`Too many attempts. Try again later.`);
+    }
+
+    return;
+  }
 
   const count = await redisClient.incr(key);
 

@@ -39,7 +39,7 @@ Pet проект для управления задачами (todo-прилож
 - PostgreSQL
 - Redis (rate limiting auth endpoints)
 - Pino (логирование)
-- Nodemailer + Mailtrap Sandbox (отправка писем)
+- Email providers: Mailtrap Sandbox / Resend
 - React Email (шаблоны писем)
 - Swagger UI
 - Nest.js (в разработке)
@@ -133,7 +133,10 @@ http://localhost:5000/api-docs
 
 ### Почтовый сервис
 
-Письма отправляются через [Mailtrap Sandbox](https://mailtrap.io/inboxes) — реальным пользователям не доставляются, только в песочницу. Используется для разработки.
+Письма отправляются через выбранный email-провайдер. Провайдер переключается через `EMAIL_PROVIDER` в `.env`:
+
+- `mailtrap` — Mailtrap Sandbox через SMTP/Nodemailer. Подходит для локальной разработки: письма не доставляются реальным пользователям, а попадают в песочницу.
+- `resend` — Resend API. Подходит для проверки реальной доставки и production-like сценариев.
 
 Отправляются письма:
 
@@ -142,6 +145,29 @@ http://localhost:5000/api-docs
 - Уведомление об удалении аккаунта
 
 Шаблоны писем написаны с помощью [React Email](https://react.email) и находятся в `backend/src/emails/`.
+
+Для Mailtrap:
+
+```env
+EMAIL_PROVIDER=mailtrap
+EMAIL_FROM='FullToDo <noreply@fulltodo.dev>'
+MAILTRAP_USER='...'
+MAILTRAP_PASS='...'
+```
+
+Для Resend в локальной разработке можно использовать тестовый отправитель:
+
+```env
+EMAIL_PROVIDER=resend
+EMAIL_FROM='FullToDo <onboarding@resend.dev>'
+RESEND_API_KEY='re_...'
+```
+
+При использовании `onboarding@resend.dev` Resend разрешает отправку только на email в Resend-аккаунт. Для отправки на любые адреса нужно подтвердить свой домен в Resend и указать отправителя с этого домена:
+
+```env
+EMAIL_FROM='FullToDo <noreply@your-verified-domain.com>'
+```
 
 Для просмотра превью шаблонов в браузере:
 
@@ -153,21 +179,24 @@ npm run email --workspace=fulltodo_backend
 
 ### Переменные окружения (.env)
 
-| Переменная      | Описание                  | Значения                |
-| --------------- | ------------------------- | ----------------------- |
-| `PORT`          | Порт backend-сервера      | `5000` (по умолчанию)   |
-| `SERVER_TYPE`   | Тип сервера               | `http` / `express`      |
-| `DB_TYPE`       | Тип базы данных           | `mock` / `postgres`     |
-| `VITE_URL`      | Базовый URL для фронтенда | `http://localhost:5000` |
-| `DB_USER`       | Пользователь PostgreSQL   | `postgres`              |
-| `DB_PASSWORD`   | Пароль PostgreSQL         | —                       |
-| `DB_HOST`       | Хост PostgreSQL           | `localhost`             |
-| `DB_PORT`       | Порт PostgreSQL           | `5432`                  |
-| `DB_NAME`       | Имя базы данных           | `fulltodo`              |
-| `REDIS_HOST`    | Хост Redis                | `localhost`             |
-| `REDIS_PORT`    | Порт Redis                | `6379`                  |
-| `MAILTRAP_USER` | SMTP логин Mailtrap       | —                       |
-| `MAILTRAP_PASS` | SMTP пароль Mailtrap      | —                       |
+| Переменная       | Описание                  | Значения                |
+| ---------------- | ------------------------- | ----------------------- |
+| `PORT`           | Порт backend-сервера      | `5000` (по умолчанию)   |
+| `SERVER_TYPE`    | Тип сервера               | `http` / `express`      |
+| `DB_TYPE`        | Тип базы данных           | `mock` / `postgres`     |
+| `VITE_URL`       | Базовый URL для фронтенда | `http://localhost:5000` |
+| `DB_USER`        | Пользователь PostgreSQL   | `postgres`              |
+| `DB_PASSWORD`    | Пароль PostgreSQL         | —                       |
+| `DB_HOST`        | Хост PostgreSQL           | `localhost`             |
+| `DB_PORT`        | Порт PostgreSQL           | `5432`                  |
+| `DB_NAME`        | Имя базы данных           | `fulltodo`              |
+| `REDIS_HOST`     | Хост Redis                | `localhost`             |
+| `REDIS_PORT`     | Порт Redis                | `6379`                  |
+| `EMAIL_PROVIDER` | Почтовый провайдер        | `mailtrap` / `resend`   |
+| `EMAIL_FROM`     | Адрес отправителя писем   | зависит от провайдера   |
+| `MAILTRAP_USER`  | SMTP логин Mailtrap       | —                       |
+| `MAILTRAP_PASS`  | SMTP пароль Mailtrap      | —                       |
+| `RESEND_API_KEY` | API-ключ Resend           | —                       |
 
 ## Планы развития
 
@@ -214,7 +243,7 @@ A pet project for task management (todo app) with the ability to choose differen
 - PostgreSQL
 - Redis (auth endpoint rate limiting)
 - Pino (logging)
-- Nodemailer + Mailtrap Sandbox (transactional emails)
+- Email providers: Mailtrap Sandbox / Resend
 - React Email (email templates)
 - Swagger UI
 - Nest.js (in development)
@@ -308,7 +337,10 @@ http://localhost:5000/api-docs
 
 ### Email service
 
-Emails are sent via [Mailtrap Sandbox](https://mailtrap.io/inboxes) — not delivered to real users, sandbox only. Used for development.
+Emails are sent through the selected email provider. The provider is selected with `EMAIL_PROVIDER` in `.env`:
+
+- `mailtrap` — Mailtrap Sandbox via SMTP/Nodemailer. Good for local development: emails are not delivered to real users and are visible only in the sandbox.
+- `resend` — Resend API. Good for checking real delivery and production-like flows.
 
 Sent emails:
 
@@ -317,6 +349,29 @@ Sent emails:
 - Account deletion notification
 
 Email templates are built with [React Email](https://react.email) and located in `backend/src/emails/`.
+
+For Mailtrap:
+
+```env
+EMAIL_PROVIDER=mailtrap
+EMAIL_FROM='FullToDo <noreply@fulltodo.dev>'
+MAILTRAP_USER='...'
+MAILTRAP_PASS='...'
+```
+
+For local Resend testing, use Resend's test sender:
+
+```env
+EMAIL_PROVIDER=resend
+EMAIL_FROM='FullToDo <onboarding@resend.dev>'
+RESEND_API_KEY='re_...'
+```
+
+When using `onboarding@resend.dev`, Resend only allows sending to the email address of your Resend account. To send to arbitrary recipients, verify your own domain in Resend and use a sender from that domain:
+
+```env
+EMAIL_FROM='FullToDo <noreply@your-verified-domain.com>'
+```
 
 To preview templates in the browser:
 
@@ -328,21 +383,24 @@ Preview opens at `http://localhost:3000`.
 
 ### Environment variables (.env)
 
-| Variable        | Description            | Values                  |
-| --------------- | ---------------------- | ----------------------- |
-| `PORT`          | Backend server port    | `5000` (default)        |
-| `SERVER_TYPE`   | Server type            | `http` / `express`      |
-| `DB_TYPE`       | Database type          | `mock` / `postgres`     |
-| `VITE_URL`      | Base URL for frontend  | `http://localhost:5000` |
-| `DB_USER`       | PostgreSQL user        | `postgres`              |
-| `DB_PASSWORD`   | PostgreSQL password    | —                       |
-| `DB_HOST`       | PostgreSQL host        | `localhost`             |
-| `DB_PORT`       | PostgreSQL port        | `5432`                  |
-| `DB_NAME`       | Database name          | `fulltodo`              |
-| `REDIS_HOST`    | Redis host             | `localhost`             |
-| `REDIS_PORT`    | Redis port             | `6379`                  |
-| `MAILTRAP_USER` | Mailtrap SMTP login    | —                       |
-| `MAILTRAP_PASS` | Mailtrap SMTP password | —                       |
+| Variable         | Description            | Values                  |
+| ---------------- | ---------------------- | ----------------------- |
+| `PORT`           | Backend server port    | `5000` (default)        |
+| `SERVER_TYPE`    | Server type            | `http` / `express`      |
+| `DB_TYPE`        | Database type          | `mock` / `postgres`     |
+| `VITE_URL`       | Base URL for frontend  | `http://localhost:5000` |
+| `DB_USER`        | PostgreSQL user        | `postgres`              |
+| `DB_PASSWORD`    | PostgreSQL password    | —                       |
+| `DB_HOST`        | PostgreSQL host        | `localhost`             |
+| `DB_PORT`        | PostgreSQL port        | `5432`                  |
+| `DB_NAME`        | Database name          | `fulltodo`              |
+| `REDIS_HOST`     | Redis host             | `localhost`             |
+| `REDIS_PORT`     | Redis port             | `6379`                  |
+| `EMAIL_PROVIDER` | Email provider         | `mailtrap` / `resend`   |
+| `EMAIL_FROM`     | Email sender address   | depends on provider     |
+| `MAILTRAP_USER`  | Mailtrap SMTP login    | —                       |
+| `MAILTRAP_PASS`  | Mailtrap SMTP password | —                       |
+| `RESEND_API_KEY` | Resend API key         | —                       |
 
 ## Roadmap
 

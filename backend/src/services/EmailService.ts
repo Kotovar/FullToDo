@@ -1,4 +1,3 @@
-import nodemailer from 'nodemailer';
 import { render } from '@react-email/render';
 import { config } from '@configs';
 import { emailLogger } from '@logger';
@@ -6,55 +5,55 @@ import { ROUTES } from '@sharedCommon/routes';
 import VerificationEmail from '../emails/VerificationEmail';
 import PasswordChangedEmail from '../emails/PasswordChangedEmail';
 import AccountDeletedEmail from '../emails/AccountDeletedEmail';
-
-const HOST = 'sandbox.smtp.mailtrap.io';
-const PORT = 2525;
-
-const transporter = nodemailer.createTransport({
-  host: HOST,
-  port: PORT,
-  auth: {
-    user: config.smtp.user,
-    pass: config.smtp.pass,
-  },
-});
-
-const buildMail = (to: string, subject: string, html: string) => ({
-  from: '"FullToDo" <noreply@fulltodo.dev>',
-  to,
-  subject,
-  html,
-});
+import { createEmailProvider } from './emailProviders';
+import type { EmailProvider } from './emailProviders';
 
 export class EmailService {
+  constructor(private emailProvider: EmailProvider = createEmailProvider()) {}
+
   async sendVerification(email: string, token: string): Promise<void> {
     const verifyUrl = `${config.corsOrigin}${ROUTES.app.verifyEmail}?token=${token}`;
     const html = await render(VerificationEmail({ verifyUrl }));
 
-    await transporter.sendMail(
-      buildMail(email, 'Подтвердите email — FullToDo', html),
-    );
+    await this.emailProvider.sendEmail({
+      to: email,
+      subject: 'Подтвердите email — FullToDo',
+      html,
+    });
 
-    emailLogger.info({ email }, 'Sending verification email');
+    emailLogger.info(
+      { email, provider: config.email.provider },
+      'Sending verification email',
+    );
   }
 
   async sendPasswordChanged(email: string): Promise<void> {
     const html = await render(PasswordChangedEmail({ email }));
 
-    await transporter.sendMail(
-      buildMail(email, 'Пароль изменён — FullToDo', html),
-    );
+    await this.emailProvider.sendEmail({
+      to: email,
+      subject: 'Пароль изменён — FullToDo',
+      html,
+    });
 
-    emailLogger.info({ email }, 'Sending password changed email');
+    emailLogger.info(
+      { email, provider: config.email.provider },
+      'Sending password changed email',
+    );
   }
 
   async sendAccountDeleted(email: string): Promise<void> {
     const html = await render(AccountDeletedEmail({ email }));
 
-    await transporter.sendMail(
-      buildMail(email, 'Аккаунт удалён — FullToDo', html),
-    );
+    await this.emailProvider.sendEmail({
+      to: email,
+      subject: 'Аккаунт удалён — FullToDo',
+      html,
+    });
 
-    emailLogger.info({ email }, 'Sending account deleted email');
+    emailLogger.info(
+      { email, provider: config.email.provider },
+      'Sending account deleted email',
+    );
   }
 }

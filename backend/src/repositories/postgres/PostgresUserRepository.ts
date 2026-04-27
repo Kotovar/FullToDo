@@ -95,6 +95,31 @@ export class PostgresUserRepository implements UserRepository {
     return result.rows[0] ? rowToDbUser(result.rows[0]) : null;
   }
 
+  async linkGoogleAccount(userId: number, googleId: string): Promise<DbUser> {
+    try {
+      const result = await query<UserRow>(
+        `UPDATE users
+         SET google_id = $1, is_verified = TRUE
+         WHERE _id = $2
+         RETURNING _id AS "userId", email, password_hash AS "passwordHash",
+                   google_id AS "googleId", is_verified AS "isVerified"`,
+        [googleId, userId],
+      );
+
+      if (!result.rows[0]) {
+        throw new NotFoundError(`User ${userId} not found`);
+      }
+
+      return rowToDbUser(result.rows[0]);
+    } catch (err) {
+      if (isDbError(err) && err.code === DB_ERRORS.DUPLICATE) {
+        throw new ConflictError(`User with this Google ID already exists`);
+      }
+
+      throw err;
+    }
+  }
+
   async changePassword(userId: number, passwordHash: string): Promise<void> {
     await withTransaction(async client => {
       const result = await client.query(

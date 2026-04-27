@@ -110,6 +110,7 @@
       "notVerified": "Не подтверждён",
       "provider": "Способ входа",
       "passwordUser": "Email и пароль",
+      "passwordAndGoogleUser": "Email и пароль / Google",
       "googleUser": "Google"
     },
     "security": {

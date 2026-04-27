@@ -67,6 +67,23 @@ export class MockUserRepository implements UserRepository {
     return user ?? null;
   }
 
+  async linkGoogleAccount(userId: number, googleId: string): Promise<DbUser> {
+    if (this.users.some(user => user.googleId === googleId)) {
+      throw new ConflictError(`User with googleId ${googleId} already exists`);
+    }
+
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new NotFoundError(`User with userId ${userId} not found`);
+    }
+
+    user.googleId = googleId;
+    user.isVerified = true;
+
+    return user;
+  }
+
   async changePassword(userId: number, passwordHash: string): Promise<void> {
     const user = await this.findById(userId);
 
