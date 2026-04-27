@@ -19,10 +19,16 @@ export const SmtpSchema = z.object({
   pass: z.string().min(1),
 });
 
+export const RedisSchema = z.object({
+  host: z.string().default('localhost'),
+  port: z.number().min(1).max(65535).default(6379),
+});
+
 export const ConfigSchema = z.object({
   server: ServerSchema,
   db: DBSchema,
   smtp: SmtpSchema,
+  redis: RedisSchema,
   corsOrigin: z.url(),
   emailTokenSecret: z.string().min(1),
   accessTokenSecret: z.string().min(1),

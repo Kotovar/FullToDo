@@ -9,6 +9,7 @@ const StatusResponseEnum = z.union([
   z.literal(403),
   z.literal(404),
   z.literal(409),
+  z.literal(429),
   z.literal(500),
 ]);
 

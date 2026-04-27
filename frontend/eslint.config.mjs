@@ -10,21 +10,21 @@ import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   {
-    ignores: [
-      'dist',
-      'coverage',
-      'eslint.config.mjs',
-      'commitlint.config.ts',
-      'vite.config.ts',
-      'setupTests.ts',
-    ],
+    ignores: ['dist', 'coverage', 'commitlint.config.ts', 'setupTests.ts'],
+  },
+  {
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   ...pluginQuery.configs['flat/recommended'],
   reactHooksExtra.configs.recommended,
   {
-    files: ['**/*.{c,m,}{t,j}s', '**/*.tsx'],
+    files: ['src/**/*.{ts,tsx}', 'vite.config.ts'],
     languageOptions: {
       ecmaVersion: 2020,
       sourceType: 'module',

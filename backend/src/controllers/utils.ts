@@ -10,7 +10,7 @@ import { extractInvalidKeys } from '@sharedCommon/utils';
 import { AppError } from '@errors/AppError';
 import { repositoryLogger } from '@logger';
 import { ROUTES } from '@sharedCommon/routes';
-import { REFRESH_TOKEN_EXPIRES_S } from '@utils';
+import { hashToken, REFRESH_TOKEN_EXPIRES_S } from '@utils';
 
 /**
  * Читает тело входящего запроса и парсит его как JSON.
@@ -231,4 +231,19 @@ export const getEmailToken = (req: IncomingMessage): string | null => {
   const validation = emailTokenSchema.safeParse(rawParams);
 
   return validation.success ? validation.data.token : null;
+};
+
+/**
+ * Формирует безопасный идентификатор аккаунта для rate limiting.
+ *
+ * Email нормализуется перед хешированием, чтобы разные варианты написания
+ * одного адреса (`User@Example.com`, ` user@example.com `) попадали в один
+ * rate-limit ключ. В Redis сохраняется только SHA-256 хеш, а не сам email.
+ *
+ * @param email - email пользователя из валидированного тела запроса.
+ * @returns SHA-256 хеш нормализованного email.
+ */
+export const getAccountRateLimitKey = (email: string): string => {
+  const normalizedEmail = email.trim().toLowerCase();
+  return hashToken(normalizedEmail);
 };

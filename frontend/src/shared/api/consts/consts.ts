@@ -52,6 +52,10 @@ export const AUTH_ERRORS: Record<ErrorType, ErrorDetail> = {
     type: 'EMAIL_NOT_VERIFIED',
     message: 'errors.auth.EMAIL_NOT_VERIFIED',
   },
+  TOO_MANY_REQUESTS: {
+    type: 'TOO_MANY_REQUESTS',
+    message: 'errors.auth.TOO_MANY_REQUESTS',
+  },
   UNDEFINED: {
     type: 'UNDEFINED',
     message: 'errors.auth.UNDEFINED',
