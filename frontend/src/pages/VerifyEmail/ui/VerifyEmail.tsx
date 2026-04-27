@@ -13,6 +13,25 @@ import { createLoginPrefillState } from '@features/auth';
 
 type VerificationStatus = 'loading' | 'success' | 'alreadyVerified' | 'error';
 
+const getVerificationStatus = ({
+  dataMessage,
+  isError,
+  isPending,
+  token,
+}: {
+  dataMessage?: string;
+  isError: boolean;
+  isPending: boolean;
+  token: string | null;
+}): VerificationStatus => {
+  if (token === null) return 'error';
+  if (isPending) return 'loading';
+  if (isError) return 'error';
+  if (dataMessage === 'Email already verified') return 'alreadyVerified';
+
+  return 'success';
+};
+
 export const VerifyEmail = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -28,22 +47,18 @@ export const VerifyEmail = () => {
     retry: false,
   });
 
-  let status: VerificationStatus = 'loading';
-  let errorMessage: string | null = null;
-
-  if (token === null) {
-    status = 'error';
-    errorMessage = t('verifyEmail.missingToken');
-  } else if (isPending) {
-    status = 'loading';
-  } else if (isError) {
-    status = 'error';
-    errorMessage = t(handleMutationError(error).message);
-  } else if (data?.message === 'Email already verified') {
-    status = 'alreadyVerified';
-  } else {
-    status = 'success';
-  }
+  const status = getVerificationStatus({
+    dataMessage: data?.message,
+    isError,
+    isPending,
+    token,
+  });
+  const errorMessage =
+    token === null
+      ? t('verifyEmail.missingToken')
+      : isError
+        ? t(handleMutationError(error).message)
+        : null;
 
   const isSuccess = status === 'success' || status === 'alreadyVerified';
 
