@@ -42,6 +42,8 @@ Pet проект для управления задачами (todo-прилож
 - Nodemailer + Mailtrap Sandbox (отправка писем)
 - React Email (шаблоны писем)
 - Swagger UI
+- Nest.js (в разработке)
+- MongoDB (в разработке)
 - Vitest
 
 ## Запуск
@@ -215,6 +217,8 @@ A pet project for task management (todo app) with the ability to choose differen
 - Nodemailer + Mailtrap Sandbox (transactional emails)
 - React Email (email templates)
 - Swagger UI
+- Nest.js (in development)
+- MongoDB (in development)
 - Vitest
 
 ## Running
