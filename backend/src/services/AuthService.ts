@@ -12,7 +12,7 @@ import {
 import { userLogger } from '@logger';
 import { EmailService } from './EmailService';
 import { OAuthService } from './OAuthService';
-import { ConflictError, NotFoundError, UnauthorizedError } from '@errors';
+import { NotFoundError, UnauthorizedError } from '@errors';
 import type {
   RefreshTokenRepository,
   UserRepository,
@@ -97,15 +97,21 @@ export class AuthService {
     if (!user) {
       const existingByEmail = await this.userRepository.findByEmail(email);
       if (existingByEmail) {
-        throw new ConflictError(
-          `Email ${email} is already registered. Try logging in with email and password`,
+        if (!emailVerified) {
+          throw new UnauthorizedError('Google email is not verified');
+        }
+
+        user = await this.userRepository.linkGoogleAccount(
+          existingByEmail.userId,
+          googleId,
         );
+      } else {
+        user = await this.userRepository.createUser({
+          email,
+          googleId,
+          isVerified: emailVerified,
+        });
       }
-      user = await this.userRepository.createUser({
-        email,
-        googleId,
-        isVerified: emailVerified,
-      });
     }
 
     return this.generateAuthTokens(user);

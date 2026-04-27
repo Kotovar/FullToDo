@@ -42,6 +42,7 @@ const user: PublicUser = {
   email: 'user@example.com',
   isVerified: true,
   hasPassword: true,
+  hasGoogle: false,
 };
 
 const createJsonResponse = (body: unknown, status = 200) =>

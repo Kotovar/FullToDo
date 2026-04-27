@@ -17,6 +17,7 @@ const DEFAULT_AUTH_USER: PublicUser = {
   email: 'user@example.com',
   isVerified: true,
   hasPassword: true,
+  hasGoogle: false,
 };
 
 const createTestQueryClient = (user: PublicUser | null = DEFAULT_AUTH_USER) => {

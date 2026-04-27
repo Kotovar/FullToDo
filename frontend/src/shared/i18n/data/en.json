@@ -110,6 +110,7 @@
       "notVerified": "Not verified",
       "provider": "Sign-in method",
       "passwordUser": "Email and password",
+      "passwordAndGoogleUser": "Email and password / Google",
       "googleUser": "Google"
     },
     "security": {

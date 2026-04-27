@@ -77,6 +77,7 @@ describe('LoginForm', () => {
         email: 'user@example.com',
         isVerified: true,
         hasPassword: true,
+        hasGoogle: false,
       },
     });
 
@@ -102,6 +103,7 @@ describe('LoginForm', () => {
       email: 'user@example.com',
       isVerified: true,
       hasPassword: true,
+      hasGoogle: false,
     });
     expect(window.sessionStorage.getItem('login-email')).toBe('""');
   });

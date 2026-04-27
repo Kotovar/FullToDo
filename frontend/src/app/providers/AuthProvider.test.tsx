@@ -14,6 +14,7 @@ const USER = {
   email: 'user@example.com',
   isVerified: true,
   hasPassword: true,
+  hasGoogle: false,
 } as const;
 
 const AuthProbe = () => {

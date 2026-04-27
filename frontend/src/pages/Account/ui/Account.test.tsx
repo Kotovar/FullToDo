@@ -28,6 +28,7 @@ const createUser = (overrides: Partial<PublicUser> = {}): PublicUser => ({
   email: 'user@example.com',
   isVerified: true,
   hasPassword: true,
+  hasGoogle: false,
   ...overrides,
 });
 
@@ -83,6 +84,7 @@ describe('Account page', () => {
         userId: 2,
         email: 'google@example.com',
         hasPassword: false,
+        hasGoogle: true,
       }),
     );
 
@@ -94,5 +96,21 @@ describe('Account page', () => {
     expect(
       screen.queryByRole('form', { name: 'change-password-form' }),
     ).not.toBeInTheDocument();
+  });
+
+  test('renders linked password and google account provider', () => {
+    renderAccount(
+      createUser({
+        hasPassword: true,
+        hasGoogle: true,
+      }),
+    );
+
+    expect(
+      screen.getByText('account.profile.passwordAndGoogleUser'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('account.security.passwordEnabled'),
+    ).toBeInTheDocument();
   });
 });

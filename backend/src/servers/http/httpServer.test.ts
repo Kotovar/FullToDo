@@ -114,6 +114,7 @@ describe('httpServer GET', () => {
         email: 'user@example.com',
         isVerified: true,
         hasPassword: true,
+        hasGoogle: false,
       },
     });
     expect(userRepository.findById).toHaveBeenCalledWith(USER_ID);

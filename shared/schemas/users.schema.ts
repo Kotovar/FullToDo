@@ -51,11 +51,12 @@ export const dbUserSchema = z
   });
 
 export const publicUserSchema = dbUserSchema.transform(
-  ({ userId, email, isVerified, passwordHash }) => ({
+  ({ userId, email, isVerified, passwordHash, googleId }) => ({
     userId,
     email,
     isVerified,
     hasPassword: Boolean(passwordHash),
+    hasGoogle: Boolean(googleId),
   }),
 );
 
