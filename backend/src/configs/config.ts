@@ -38,9 +38,16 @@ export const config = ConfigSchema.parse({
     host: getRequiredEnv('REDIS_HOST', 'localhost'),
     port: Number(getRequiredEnv('REDIS_PORT', '6379')),
   },
+  email: {
+    provider: getRequiredEnv('EMAIL_PROVIDER', 'mailtrap'),
+    from: getRequiredEnv('EMAIL_FROM', '"FullToDo" <noreply@fulltodo.dev>'),
+  },
   smtp: {
     user: getRequiredEnv('MAILTRAP_USER', 'test-mailtrap-user'),
     pass: getRequiredEnv('MAILTRAP_PASS', 'test-mailtrap-pass'),
+  },
+  resend: {
+    apiKey: getRequiredEnv('RESEND_API_KEY', 'test-resend-api-key'),
   },
   corsOrigin: getRequiredEnv('CORS_ORIGIN', 'http://localhost:5173'),
   emailTokenSecret: getRequiredEnv('EMAIL_TOKEN_SECRET', 'test-email-secret'),

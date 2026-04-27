@@ -23,7 +23,7 @@
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
     "@react-email/render": "^2.0.7",
-    "@react-email/ui": "^6.0.0",
+    "@react-email/ui": "^6.0.1",
     "bcrypt": "^6.0.0",
     "express": "^5.2.1",
     "google-auth-library": "^10.6.2",
@@ -36,6 +36,7 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "redis": "^5.12.1",
+    "resend": "^6.12.2",
     "shared": "file:../shared"
   },
   "devDependencies": {
@@ -57,7 +58,7 @@
     "eslint": "^10.2.1",
     "globals": "^17.5.0",
     "nodemon": "^3.1.14",
-    "react-email": "^6.0.0",
+    "react-email": "^6.0.1",
     "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
