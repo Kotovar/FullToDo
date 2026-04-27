@@ -49,8 +49,19 @@ services:
           memory: 512m # максимум 512 МБ RAM
           cpus: '0.5' # максимум 50% одного ядра CPU
 
+  redis:
+    image: redis:8.6-trixie
+    container_name: todo-redis
+    ports:
+      - '${REDIS_PORT}:6379'
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes']
+
 # Именованные тома — Docker сам управляет хранилищем на хосте.
 # Данные сохраняются между перезапусками и не удаляются при docker compose down.
 # Удалить том вручную: docker volume rm fulltodo_postgres_data
 volumes:
   postgres_data:
+  redis_data:

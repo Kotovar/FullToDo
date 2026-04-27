@@ -36,6 +36,10 @@ class AuthService extends BaseService {
         throw new Error('Not found', { cause: AUTH_ERRORS.UNDEFINED });
       case 409:
         throw new Error('Conflict', { cause: AUTH_ERRORS.CONFLICT });
+      case 429:
+        throw new Error('Too many requests', {
+          cause: AUTH_ERRORS.TOO_MANY_REQUESTS,
+        });
       default:
         throw new Error('Server error', { cause: AUTH_ERRORS.SERVER_ERROR });
     }

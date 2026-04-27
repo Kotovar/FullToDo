@@ -34,6 +34,10 @@ export const config = ConfigSchema.parse({
     password: getRequiredEnv('DB_PASSWORD', 'secret'),
     port: Number(getRequiredEnv('DB_PORT', '5432')),
   },
+  redis: {
+    host: getRequiredEnv('REDIS_HOST', 'localhost'),
+    port: Number(getRequiredEnv('REDIS_PORT', '6379')),
+  },
   smtp: {
     user: getRequiredEnv('MAILTRAP_USER', 'test-mailtrap-user'),
     pass: getRequiredEnv('MAILTRAP_PASS', 'test-mailtrap-pass'),

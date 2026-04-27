@@ -5,12 +5,10 @@ import {
   parseJsonBody,
 } from './utils';
 import { changePasswordSchema, deleteUserSchema } from '@sharedCommon/schemas';
-import { httpAuthMiddleware } from '@middleware';
+import { httpAuthMiddleware, httpRateLimit } from '@middleware';
 import type { ServiceHandler } from './types';
 import type { AuthService } from '@services/AuthService';
 
-// TODO: rate limiting — 5 попыток / 10 минут per IP
-// реализовать как middleware до контроллера, счётчики хранить в Redis
 export const changePassword: ServiceHandler<AuthService> = async (
   ctx,
   service,
@@ -20,6 +18,12 @@ export const changePassword: ServiceHandler<AuthService> = async (
     if (!checkContentType(req, res)) return;
 
     const { userId } = httpAuthMiddleware(ctx);
+
+    await httpRateLimit(ctx, {
+      keyPrefix: `auth:change-password:user:${userId}`,
+      maxRequests: 5,
+      windowSeconds: 10 * 60,
+    });
 
     const raw = await parseJsonBody(req);
     const validation = changePasswordSchema.safeParse(raw);
@@ -45,6 +49,12 @@ export const deleteUser: ServiceHandler<AuthService> = async (ctx, service) => {
     if (!checkContentType(req, res)) return;
 
     const { userId } = httpAuthMiddleware(ctx);
+
+    await httpRateLimit(ctx, {
+      keyPrefix: `auth:delete-user:user:${userId}`,
+      maxRequests: 5,
+      windowSeconds: 10 * 60,
+    });
 
     const raw = await parseJsonBody(req);
     const validation = deleteUserSchema.safeParse(raw);

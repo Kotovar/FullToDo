@@ -250,6 +250,7 @@
       "CONFLICT": "A user with this email already exists",
       "UNAUTHORIZED": "Invalid credentials or session expired",
       "EMAIL_NOT_VERIFIED": "Your account is not verified yet. Follow the link from the email to confirm it.",
+      "TOO_MANY_REQUESTS": "Too many attempts. Try again later.",
       "UNDEFINED": "User not found"
     },
     "tasks": {

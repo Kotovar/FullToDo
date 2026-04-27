@@ -37,6 +37,7 @@ Pet проект для управления задачами (todo-прилож
 - Express (в разработке)
 - Mock-база (JSON-в памяти)
 - PostgreSQL
+- Redis (rate limiting auth endpoints)
 - Pino (логирование)
 - Nodemailer + Mailtrap Sandbox (отправка писем)
 - React Email (шаблоны писем)
@@ -72,7 +73,7 @@ SERVER_TYPE=http
 npm run dev
 ```
 
-### С PostgreSQL (через Docker)
+### С PostgreSQL и Redis (через Docker)
 
 В `.env` указать:
 
@@ -84,16 +85,41 @@ SERVER_TYPE=http
 Запустить (из корня проекта):
 
 ```bash
-npm run dev:docker
+npm run dev
 ```
 
-Команда поднимет контейнер с PostgreSQL и запустит frontend и backend одновременно.
+Команда поднимет контейнеры с PostgreSQL и Redis, затем запустит frontend и backend одновременно.
 
-Остановить контейнер:
+Остановить контейнеры:
 
 ```bash
 npm run stop:docker
 ```
+
+### Redis
+
+Redis используется для rate limiting на auth endpoints.
+
+Подключиться к Redis внутри Docker-контейнера:
+
+```bash
+docker exec -it todo-redis redis-cli
+```
+
+Полезные команды в `redis-cli`:
+
+```redis
+PING
+DBSIZE
+SCAN 0 MATCH rate-limit:* COUNT 100
+GET rate-limit:auth:login:ip:::ffff:127.0.0.1
+TTL rate-limit:auth:login:ip:::ffff:127.0.0.1
+DEL rate-limit:auth:login:ip:::ffff:127.0.0.1
+```
+
+`SCAN` показывает ключи лимитера. `GET` показывает количество попыток, `TTL` — сколько секунд осталось до автоматического удаления ключа, `DEL` сбрасывает конкретный лимит.
+
+Для логина создаются два типа ключей: общий лимит по IP (`auth:login:ip`) и лимит по аккаунту (`auth:login:account:<sha256-email>`). Email в ключах не хранится напрямую.
 
 ### Swagger UI
 
@@ -136,6 +162,8 @@ npm run email --workspace=fulltodo_backend
 | `DB_HOST`       | Хост PostgreSQL           | `localhost`             |
 | `DB_PORT`       | Порт PostgreSQL           | `5432`                  |
 | `DB_NAME`       | Имя базы данных           | `fulltodo`              |
+| `REDIS_HOST`    | Хост Redis                | `localhost`             |
+| `REDIS_PORT`    | Порт Redis                | `6379`                  |
 | `MAILTRAP_USER` | SMTP логин Mailtrap       | —                       |
 | `MAILTRAP_PASS` | SMTP пароль Mailtrap      | —                       |
 
@@ -182,6 +210,7 @@ A pet project for task management (todo app) with the ability to choose differen
 - Express (in development)
 - Mock database (in-memory JSON)
 - PostgreSQL
+- Redis (auth endpoint rate limiting)
 - Pino (logging)
 - Nodemailer + Mailtrap Sandbox (transactional emails)
 - React Email (email templates)
@@ -217,7 +246,7 @@ Run (from project root):
 npm run dev
 ```
 
-### With PostgreSQL (via Docker)
+### With PostgreSQL and Redis (via Docker)
 
 Set in `.env`:
 
@@ -229,16 +258,41 @@ SERVER_TYPE=http
 Run (from project root):
 
 ```bash
-npm run dev:docker
+npm run dev
 ```
 
-This command starts a PostgreSQL container and runs both frontend and backend simultaneously.
+This command starts PostgreSQL and Redis containers, then runs both frontend and backend simultaneously.
 
-Stop the container:
+Stop the containers:
 
 ```bash
 npm run stop:docker
 ```
+
+### Redis
+
+Redis is used for rate limiting on auth endpoints.
+
+Connect to Redis inside the Docker container:
+
+```bash
+docker exec -it todo-redis redis-cli
+```
+
+Useful commands in `redis-cli`:
+
+```redis
+PING
+DBSIZE
+SCAN 0 MATCH rate-limit:* COUNT 100
+GET rate-limit:auth:login:ip:::ffff:127.0.0.1
+TTL rate-limit:auth:login:ip:::ffff:127.0.0.1
+DEL rate-limit:auth:login:ip:::ffff:127.0.0.1
+```
+
+`SCAN` lists limiter keys. `GET` shows the number of attempts, `TTL` shows how many seconds remain before automatic key deletion, and `DEL` resets a specific limit.
+
+Login creates two key types: a global IP limit (`auth:login:ip`) and an account limit (`auth:login:account:<sha256-email>`). Email is not stored directly in Redis keys.
 
 ### Swagger UI
 
@@ -281,6 +335,8 @@ Preview opens at `http://localhost:3000`.
 | `DB_HOST`       | PostgreSQL host        | `localhost`             |
 | `DB_PORT`       | PostgreSQL port        | `5432`                  |
 | `DB_NAME`       | Database name          | `fulltodo`              |
+| `REDIS_HOST`    | Redis host             | `localhost`             |
+| `REDIS_PORT`    | Redis port             | `6379`                  |
 | `MAILTRAP_USER` | Mailtrap SMTP login    | —                       |
 | `MAILTRAP_PASS` | Mailtrap SMTP password | —                       |
 

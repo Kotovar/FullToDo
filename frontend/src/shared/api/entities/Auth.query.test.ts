@@ -253,6 +253,22 @@ describe('AuthService', () => {
     );
   });
 
+  test('returns too many requests error details for 429 responses', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      createJsonResponse(
+        { error: { statusCode: 429, message: 'Too many attempts' } },
+        429,
+      ),
+    );
+
+    await expect(authService.login(loginCredentials)).rejects.toThrow(
+      expect.objectContaining({
+        message: 'Too many requests',
+        cause: AUTH_ERRORS.TOO_MANY_REQUESTS,
+      }),
+    );
+  });
+
   test('returns network error details when fetch fails without cause', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(
       new Error('Failed to fetch'),

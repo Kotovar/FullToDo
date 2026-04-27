@@ -8,13 +8,14 @@ import {
 import {
   checkContentType,
   errorHandler,
+  getAccountRateLimitKey,
   getEmailToken,
   handleValidationError,
   parseCookies,
   parseJsonBody,
   setRefreshCookie,
 } from './utils';
-import { httpAuthMiddleware } from '@middleware';
+import { httpAuthMiddleware, httpRateLimit } from '@middleware';
 import { UnauthorizedError } from '@errors/AppError';
 import type { ServiceHandler } from './types';
 import type { AuthService } from '@services/AuthService';
@@ -45,13 +46,19 @@ export const registerWithEmail: ServiceHandler<AuthService> = async (
   }
 };
 
-// TODO: rate limiting — 5 попыток / 10 минут per IP
-// реализовать как middleware до контроллера, счётчики хранить в Redis
 export const loginWithEmail: ServiceHandler<AuthService> = async (
-  { req, res },
+  ctx,
   service,
 ) => {
+  const { req, res } = ctx;
+
   try {
+    await httpRateLimit(ctx, {
+      keyPrefix: 'auth:login:ip',
+      maxRequests: 30,
+      windowSeconds: 10 * 60,
+    });
+
     if (!checkContentType(req, res)) return;
 
     const raw = await parseJsonBody(req);
@@ -59,6 +66,14 @@ export const loginWithEmail: ServiceHandler<AuthService> = async (
 
     if (!validation.success)
       return handleValidationError(res, validation.error);
+
+    await httpRateLimit(ctx, {
+      keyPrefix: `auth:login:account:${getAccountRateLimitKey(
+        validation.data.email,
+      )}`,
+      maxRequests: 5,
+      windowSeconds: 10 * 60,
+    });
 
     const { accessToken, refreshToken } = await service.loginWithEmail(
       validation.data,
@@ -75,13 +90,19 @@ export const loginWithEmail: ServiceHandler<AuthService> = async (
   }
 };
 
-// TODO: rate limiting — 5 попыток / 10 минут per IP
-// реализовать как middleware до контроллера, счётчики хранить в Redis
 export const authWithGoogle: ServiceHandler<AuthService> = async (
-  { req, res },
+  ctx,
   service,
 ) => {
+  const { req, res } = ctx;
+
   try {
+    await httpRateLimit(ctx, {
+      keyPrefix: 'auth:google',
+      maxRequests: 5,
+      windowSeconds: 10 * 60,
+    });
+
     if (!checkContentType(req, res)) return;
 
     const raw = await parseJsonBody(req);
@@ -126,13 +147,16 @@ export const logout: ServiceHandler<AuthService> = async (
   }
 };
 
-// TODO: rate limiting — 5 попыток / 10 минут per IP
-// реализовать как middleware до контроллера, счётчики хранить в Redis
-export const refresh: ServiceHandler<AuthService> = async (
-  { req, res },
-  service,
-) => {
+export const refresh: ServiceHandler<AuthService> = async (ctx, service) => {
+  const { req, res } = ctx;
+
   try {
+    await httpRateLimit(ctx, {
+      keyPrefix: 'auth:refresh',
+      maxRequests: 5,
+      windowSeconds: 10 * 60,
+    });
+
     const { refreshToken } = parseCookies(req.headers.cookie);
 
     if (!refreshToken) {
