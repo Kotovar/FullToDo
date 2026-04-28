@@ -47,12 +47,7 @@ const getClientIp = (ctx: HttpContext) => {
  */
 export const httpRateLimit = async (
   ctx: HttpContext,
-  {
-    keyPrefix,
-    maxRequests,
-    windowSeconds,
-    consume = true,
-  }: RateLimitOptions,
+  { keyPrefix, maxRequests, windowSeconds, consume = true }: RateLimitOptions,
 ) => {
   const ip = getClientIp(ctx);
   const key = `rate-limit:${keyPrefix}:${ip}`;

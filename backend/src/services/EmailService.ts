@@ -5,6 +5,7 @@ import { ROUTES } from '@sharedCommon/routes';
 import VerificationEmail from '../emails/VerificationEmail';
 import PasswordChangedEmail from '../emails/PasswordChangedEmail';
 import AccountDeletedEmail from '../emails/AccountDeletedEmail';
+import PasswordResetEmail from '../emails/PasswordResetEmail';
 import { createEmailProvider } from './emailProviders';
 import type { EmailProvider } from './emailProviders';
 
@@ -54,6 +55,21 @@ export class EmailService {
     emailLogger.info(
       { email, provider: config.email.provider },
       'Sending account deleted email',
+    );
+  }
+
+  async sendPasswordReset(email: string, resetUrl: string): Promise<void> {
+    const html = await render(PasswordResetEmail({ resetUrl }));
+
+    await this.emailProvider.sendEmail({
+      to: email,
+      subject: 'Сброс пароля — FullToDo',
+      html,
+    });
+
+    emailLogger.info(
+      { email, provider: config.email.provider },
+      'Sending password reset email',
     );
   }
 }

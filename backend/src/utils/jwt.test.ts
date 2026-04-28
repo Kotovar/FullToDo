@@ -1,11 +1,15 @@
 import { describe, test, expect } from 'vitest';
 import {
   generateAccessToken,
-  generateRefreshToken,
   generateEmailToken,
+  generatePasswordResetToken,
+  generateRefreshToken,
   verifyAccessToken,
+  verifyEmailToken,
+  verifyPasswordResetToken,
   verifyRefreshToken,
   isAccessTokenPayload,
+  isPasswordResetTokenPayload,
   isRefreshTokenPayload,
 } from './jwt';
 
@@ -57,6 +61,36 @@ describe('generateEmailToken', () => {
     expect(typeof token).toBe('string');
     expect(token.length).toBeGreaterThan(0);
   });
+
+  test('verifyEmailToken returns null for password reset token', () => {
+    const resetToken = generatePasswordResetToken(USER_ID);
+    expect(verifyEmailToken(resetToken)).toBeNull();
+  });
+});
+
+describe('generatePasswordResetToken / verifyPasswordResetToken', () => {
+  test('verifyPasswordResetToken returns payload with correct userId and type', () => {
+    const token = generatePasswordResetToken(USER_ID);
+    const payload = verifyPasswordResetToken(token);
+
+    expect(payload).not.toBeNull();
+    expect(payload?.userId).toBe(USER_ID);
+    expect(payload?.type).toBe('password-reset');
+  });
+
+  test('verifyPasswordResetToken returns null for invalid token', () => {
+    expect(verifyPasswordResetToken('invalid.token.here')).toBeNull();
+  });
+
+  test('verifyPasswordResetToken returns null for email token', () => {
+    const emailToken = generateEmailToken(USER_ID);
+    expect(verifyPasswordResetToken(emailToken)).toBeNull();
+  });
+
+  test('verifyPasswordResetToken returns null for access token', () => {
+    const accessToken = generateAccessToken(USER_ID);
+    expect(verifyPasswordResetToken(accessToken)).toBeNull();
+  });
 });
 
 describe('isAccessTokenPayload', () => {
@@ -82,5 +116,19 @@ describe('isRefreshTokenPayload', () => {
 
   test('returns false for access payload', () => {
     expect(isRefreshTokenPayload({ userId: 1, type: 'access' })).toBe(false);
+  });
+});
+
+describe('isPasswordResetTokenPayload', () => {
+  test('returns true for valid password reset payload', () => {
+    expect(
+      isPasswordResetTokenPayload({ userId: 1, type: 'password-reset' }),
+    ).toBe(true);
+  });
+
+  test('returns false for email payload', () => {
+    expect(isPasswordResetTokenPayload({ userId: 1, type: 'email' })).toBe(
+      false,
+    );
   });
 });

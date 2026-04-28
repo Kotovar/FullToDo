@@ -30,13 +30,19 @@ export const changePasswordSchema = z
     oldPassword: z.string().min(1),
     newPassword: zPassword,
   })
-  .refine(
-    ({ oldPassword, newPassword }) => oldPassword !== newPassword,
-    {
-      path: ['newPassword'],
-      message: 'New password must differ from current password',
-    },
-  );
+  .refine(({ oldPassword, newPassword }) => oldPassword !== newPassword, {
+    path: ['newPassword'],
+    message: 'New password must differ from current password',
+  });
+
+export const forgotPasswordSchema = z.object({
+  email: zEmail,
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1),
+  newPassword: zPassword,
+});
 
 export const dbUserSchema = z
   .object({
@@ -97,6 +103,9 @@ export type RefreshToken = z.infer<typeof refreshTokenSchema>;
 
 export type CreateUser = z.infer<typeof createUserSchema>;
 export type PublicUser = z.infer<typeof publicUserSchema>;
+
+export type ForgotPassword = z.infer<typeof forgotPasswordSchema>;
+export type ResetPassword = z.infer<typeof resetPasswordSchema>;
 
 export type GoogleProfile = {
   googleId: string;

@@ -59,5 +59,9 @@ export const config = ConfigSchema.parse({
     'REFRESH_TOKEN_SECRET',
     'test-refresh-secret',
   ),
+  passwordResetTokenSecret: getRequiredEnv(
+    'PASSWORD_RESET_TOKEN_SECRET',
+    'test-password-reset-secret',
+  ),
   googleClientId: getRequiredEnv('GOOGLE_CLIENT_ID', 'test-google-client-id'),
 });
