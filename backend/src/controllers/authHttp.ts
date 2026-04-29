@@ -14,7 +14,7 @@ import {
   parseCookies,
   parseJsonBody,
   setRefreshCookie,
-} from './utils';
+} from './httpUtils';
 import { httpAuthMiddleware, httpRateLimit } from '@middleware';
 import { NotFoundError, UnauthorizedError } from '@errors/AppError';
 import type { ServiceHandler } from './types';

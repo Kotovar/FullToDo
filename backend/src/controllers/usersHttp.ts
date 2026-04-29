@@ -4,7 +4,7 @@ import {
   getAccountRateLimitKey,
   handleValidationError,
   parseJsonBody,
-} from './utils';
+} from './httpUtils';
 import {
   changePasswordSchema,
   deleteUserSchema,

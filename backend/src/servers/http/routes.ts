@@ -85,12 +85,12 @@ export const handleRoute = (ctx: HttpContext, url?: string): boolean => {
 
   const { req, res } = ctx;
 
-  if (url === '/api-docs' && req.method === 'GET') {
+  if (url === ROUTES.swagger.ui && req.method === 'GET') {
     handleSwaggerUI(req, res);
     return true;
   }
 
-  if (url === '/api-docs/spec.json' && req.method === 'GET') {
+  if (url === ROUTES.swagger.spec && req.method === 'GET') {
     handleSwaggerSpec(req, res);
     return true;
   }

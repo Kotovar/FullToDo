@@ -35,7 +35,7 @@ Pet проект для управления задачами (todo-прилож
 
 - Node.js + TypeScript
 - HTTP-модуль
-- Express (в разработке)
+- Express
 - Mock-база (JSON-в памяти)
 - PostgreSQL
 - Redis (rate limiting auth endpoints)
@@ -67,7 +67,7 @@ npm install
 
 ```
 DB_TYPE=mock
-SERVER_TYPE=http
+SERVER_TYPE=http # или express
 ```
 
 Запустить (из корня проекта):
@@ -82,7 +82,7 @@ npm run dev
 
 ```
 DB_TYPE=postgres
-SERVER_TYPE=http
+SERVER_TYPE=http # или express
 ```
 
 Запустить (из корня проекта):
@@ -224,7 +224,7 @@ npm run email --workspace=fulltodo_backend
 ## Планы развития
 
 - Добавление поддержки ещё одной БД (`mongo`)
-- Добавление поддержки ещё двух серверов (`express`/`nextJs`)
+- Добавление поддержки ещё одного сервера (`nextJs`)
 
 ---
 
@@ -262,7 +262,7 @@ A pet project for task management (todo app) with the ability to choose differen
 
 - Node.js + TypeScript
 - HTTP module
-- Express (in development)
+- Express
 - Mock database (in-memory JSON)
 - PostgreSQL
 - Redis (auth endpoint rate limiting)
@@ -294,7 +294,7 @@ Set in `.env`:
 
 ```
 DB_TYPE=mock
-SERVER_TYPE=http
+SERVER_TYPE=http # or express
 ```
 
 Run (from project root):
@@ -309,7 +309,7 @@ Set in `.env`:
 
 ```
 DB_TYPE=postgres
-SERVER_TYPE=http
+SERVER_TYPE=http # or express
 ```
 
 Run (from project root):
@@ -451,4 +451,4 @@ Preview opens at `http://localhost:3000`.
 ## Roadmap
 
 - Added support for one more database (`mongo`)
-- Added support for two more servers (`express`/`nextJs`)
+- Add support for one more server (`nextJs`)
