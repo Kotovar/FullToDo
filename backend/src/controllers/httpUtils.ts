@@ -3,17 +3,19 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import {
   COMMON_NOTEPAD_ID,
   emailTokenSchema,
-  taskQueryParamsSchema,
   type TaskQueryParams,
 } from '@sharedCommon/schemas';
-import { extractInvalidKeys } from '@sharedCommon/utils';
 import { AppError } from '@errors/AppError';
 import { repositoryLogger } from '@logger';
 import { ROUTES } from '@sharedCommon/routes';
 import { hashToken, REFRESH_TOKEN_EXPIRES_S } from '@utils';
+import { validateTaskQueryParams } from './taskQueryParams';
 
 /**
  * Читает тело входящего запроса и парсит его как JSON.
+ *
+ * Для express можно использовать express.json().
+ *
  * @param req — входящий HTTP-запрос.
  * @returns Promise с распарсенными данными.
  * @throws Error если тело не является валидным JSON.
@@ -39,7 +41,7 @@ export const parseJsonBody = (req: IncomingMessage): Promise<unknown> => {
 };
 
 /**
- * Централизованный обработчик ошибок. Определяет HTTP-статус по типу ошибки,
+ * Централизованный обработчик ошибок для http сервера. Определяет HTTP-статус по типу ошибки,
  * логирует серверные ошибки (5xx) и отправляет JSON-ответ клиенту.
  * @param res — объект HTTP-ответа.
  * @param error — перехваченная ошибка (AppError или произвольный объект).
@@ -113,31 +115,8 @@ export const getValidatedTaskParams = (
 
   const params = new URLSearchParams(queryString);
   const rawParams = Object.fromEntries(params.entries());
-  const validation = taskQueryParamsSchema.safeParse(rawParams);
-
-  if (validation.success) {
-    return validation.data;
-  }
-
-  const invalidKeys = extractInvalidKeys(validation.error);
-  const validParams = filterValidParams(rawParams, invalidKeys);
-
-  return taskQueryParamsSchema.parse(validParams);
+  return validateTaskQueryParams(rawParams);
 };
-
-/**
- * Фильтрует объект параметров, исключая ключи с невалидными значениями.
- * @param params — исходные query-параметры в виде строк.
- * @param badKeys — список ключей, которые нужно исключить.
- * @returns Частичный объект `TaskQueryParams` без невалидных ключей.
- */
-const filterValidParams = (
-  params: Record<string, string>,
-  badKeys: string[],
-): Partial<TaskQueryParams> =>
-  Object.fromEntries(
-    Object.entries(params).filter(([key]) => !badKeys.includes(key)),
-  );
 
 /**
  * Проверяет, что заголовок `Content-Type` запроса равен `application/json`.

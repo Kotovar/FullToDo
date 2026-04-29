@@ -36,4 +36,8 @@ export const ROUTES = {
     forgotPassword: '/auth/forgot-password',
     resetPassword: '/auth/reset-password',
   },
+  swagger: {
+    ui: '/api-docs',
+    spec: '/api-docs/spec.json',
+  },
 } as const;
