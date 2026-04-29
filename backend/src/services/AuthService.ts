@@ -2,14 +2,18 @@ import {
   comparePassword,
   generateAccessToken,
   generateEmailToken,
+  generatePasswordResetToken,
   generateRefreshToken,
   hashPassword,
   hashToken,
   verifyEmailToken,
   verifyRefreshToken,
+  verifyPasswordResetToken,
   REFRESH_TOKEN_EXPIRES_MS,
 } from '@utils';
+import { config } from '@configs';
 import { userLogger } from '@logger';
+import { ROUTES } from '@sharedCommon/routes';
 import { EmailService } from './EmailService';
 import { OAuthService } from './OAuthService';
 import { NotFoundError, UnauthorizedError } from '@errors';
@@ -209,6 +213,33 @@ export class AuthService {
     // Mock:     changePassword обновляет только пароль, токены удаляются отдельно ниже.
     await this.userRepository.changePassword(userId, newHash);
     await this.tokenRepository.deleteAllByUserId(userId);
+
+    await this.emailService.sendPasswordChanged(user.email);
+  }
+
+  async requestPasswordReset(email: string): Promise<void> {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user || !user.passwordHash) return;
+
+    const resetToken = generatePasswordResetToken(user.userId);
+    const resetUrl = `${config.corsOrigin}${ROUTES.app.resetPassword}?token=${resetToken}`;
+
+    await this.emailService.sendPasswordReset(user.email, resetUrl);
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const payload = verifyPasswordResetToken(token);
+    if (!payload) throw new UnauthorizedError('Invalid or expired token');
+
+    const user = await this.userRepository.findById(payload.userId);
+    if (!user) throw new UnauthorizedError('Invalid credentials');
+
+    if (!user.passwordHash)
+      throw new UnauthorizedError('This account uses Google login');
+
+    const newHash = await hashPassword(newPassword);
+    await this.userRepository.changePassword(user.userId, newHash);
+    await this.tokenRepository.deleteAllByUserId(user.userId);
 
     await this.emailService.sendPasswordChanged(user.email);
   }

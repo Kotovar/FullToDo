@@ -13,7 +13,9 @@ import {
   loginWithGoogleSchema,
   changePasswordSchema,
   deleteUserSchema,
+  forgotPasswordSchema,
   resendVerificationSchema,
+  resetPasswordSchema,
   publicUserSchema,
 } from '@sharedCommon/schemas';
 
@@ -104,6 +106,20 @@ const ResendVerificationSchema = registry.register(
   'ResendVerification',
   resendVerificationSchema.openapi({
     description: 'Resend verification payload',
+  }),
+);
+
+const ForgotPasswordSchema = registry.register(
+  'ForgotPassword',
+  forgotPasswordSchema.openapi({
+    description: 'Forgot password payload',
+  }),
+);
+
+const ResetPasswordSchema = registry.register(
+  'ResetPassword',
+  resetPasswordSchema.openapi({
+    description: 'Reset password payload',
   }),
 );
 
@@ -310,6 +326,54 @@ registry.registerPath({
   },
   responses: {
     200: { description: 'Password changed. All sessions invalidated.' },
+    ...unauthorizedResponse,
+    ...validationResponse,
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/auth/forgot-password',
+  tags: ['Auth'],
+  summary: 'Request password reset email',
+  description:
+    'Always returns a neutral success response to avoid account enumeration.',
+  request: {
+    body: { content: { 'application/json': { schema: ForgotPasswordSchema } } },
+  },
+  responses: {
+    200: {
+      description:
+        'Password reset instructions sent if the account exists and uses password login.',
+      content: {
+        'application/json': {
+          schema: z.object({ message: z.string() }),
+        },
+      },
+    },
+    429: { description: 'Too many password reset requests' },
+    ...validationResponse,
+  },
+});
+
+registry.registerPath({
+  method: 'post',
+  path: '/auth/reset-password',
+  tags: ['Auth'],
+  summary: 'Reset password',
+  request: {
+    body: { content: { 'application/json': { schema: ResetPasswordSchema } } },
+  },
+  responses: {
+    200: {
+      description: 'Password reset. All sessions invalidated.',
+      content: {
+        'application/json': {
+          schema: z.object({ message: z.string() }),
+        },
+      },
+    },
+    429: { description: 'Too many password reset attempts' },
     ...unauthorizedResponse,
     ...validationResponse,
   },
