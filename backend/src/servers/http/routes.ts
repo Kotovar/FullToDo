@@ -29,6 +29,8 @@ import {
   verifyEmail,
   resendVerification,
   changePassword,
+  forgotPassword,
+  resetPassword,
   deleteUser,
 } from '@controllers';
 import {
@@ -72,6 +74,9 @@ export const BASE_ROUTES: Record<string, RouteHandler> = {
     resendVerification(ctx, authService),
   [`POST ${ROUTES.auth.changePassword}`]: ctx =>
     changePassword(ctx, authService),
+  [`POST ${ROUTES.auth.forgotPassword}`]: ctx =>
+    forgotPassword(ctx, authService),
+  [`POST ${ROUTES.auth.resetPassword}`]: ctx => resetPassword(ctx, authService),
   [`POST ${ROUTES.auth.deleteUser}`]: ctx => deleteUser(ctx, authService),
 };
 

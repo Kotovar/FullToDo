@@ -49,4 +49,19 @@ describe('EmailService', () => {
       html: expect.any(String),
     });
   });
+
+  test('sends password reset email through configured provider', async () => {
+    const { emailProvider, service } = createService();
+
+    await service.sendPasswordReset(
+      'user@example.com',
+      'http://localhost:5173/reset-password?token=token',
+    );
+
+    expect(emailProvider.sendEmail).toHaveBeenCalledWith({
+      to: 'user@example.com',
+      subject: 'Сброс пароля — FullToDo',
+      html: expect.any(String),
+    });
+  });
 });

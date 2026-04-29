@@ -47,6 +47,7 @@ export const ConfigSchema = z
     emailTokenSecret: z.string().min(1),
     accessTokenSecret: z.string().min(1),
     refreshTokenSecret: z.string().min(1),
+    passwordResetTokenSecret: z.string().min(1),
     googleClientId: z.string().min(1),
   })
   .superRefine((config, ctx) => {

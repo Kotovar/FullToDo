@@ -13,6 +13,8 @@ export const authRoutes = {
   refresh: `${URL}${ROUTES.auth.refresh}`,
   me: `${URL}${ROUTES.auth.me}`,
   changePassword: `${URL}${ROUTES.auth.changePassword}`,
+  forgotPassword: `${URL}${ROUTES.auth.forgotPassword}`,
+  resetPassword: `${URL}${ROUTES.auth.resetPassword}`,
   deleteUser: `${URL}${ROUTES.auth.deleteUser}`,
   verifyEmail: (token: string) =>
     `${URL}${ROUTES.auth.verifyEmail}?token=${encodeURIComponent(token)}`,

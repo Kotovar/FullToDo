@@ -16,6 +16,7 @@ Pet проект для управления задачами (todo-прилож
   - По дате создания/выполнения
 - Поиск по задачам
 - Перенос задач из одного блокнота в другой
+- Регистрация, вход, верификация email и восстановление пароля
 - Локализация (русский/английский)
 - Темная/светлая тема
 
@@ -131,6 +132,26 @@ DEL rate-limit:auth:login:ip:::ffff:127.0.0.1
 http://localhost:5000/api-docs
 ```
 
+### Аутентификация
+
+Доступны два способа входа:
+
+- email + пароль;
+- Google OAuth.
+
+Если пользователь сначала зарегистрировался через email + пароль, а затем входит через Google с тем же подтвержденным email, аккаунт связывается с Google и дальше доступен вход обоими способами.
+
+Восстановление пароля:
+
+1. На странице входа открыть `Забыли пароль?`.
+2. Ввести email.
+3. Backend всегда возвращает нейтральный успешный ответ, чтобы не раскрывать существование аккаунта.
+4. Если email принадлежит пользователю с локальным паролем, отправляется письмо со ссылкой `/reset-password?token=...`.
+5. На странице reset password пользователь вводит новый пароль и подтверждение.
+6. После успешной смены пароля все refresh-токены пользователя удаляются, текущие сессии становятся невалидными, frontend сбрасывает auth-cache и редиректит на `/login`.
+
+Текущая реализация reset-ссылки использует stateless JWT на 30 минут. Токен не хранится в БД и пока не является одноразовым.
+
 ### Почтовый сервис
 
 Письма отправляются через выбранный email-провайдер. Провайдер переключается через `EMAIL_PROVIDER` в `.env`:
@@ -141,6 +162,7 @@ http://localhost:5000/api-docs
 Отправляются письма:
 
 - Верификация email при регистрации
+- Восстановление пароля
 - Уведомление о смене пароля
 - Уведомление об удалении аккаунта
 
@@ -179,24 +201,25 @@ npm run email --workspace=fulltodo_backend
 
 ### Переменные окружения (.env)
 
-| Переменная       | Описание                  | Значения                |
-| ---------------- | ------------------------- | ----------------------- |
-| `PORT`           | Порт backend-сервера      | `5000` (по умолчанию)   |
-| `SERVER_TYPE`    | Тип сервера               | `http` / `express`      |
-| `DB_TYPE`        | Тип базы данных           | `mock` / `postgres`     |
-| `VITE_URL`       | Базовый URL для фронтенда | `http://localhost:5000` |
-| `DB_USER`        | Пользователь PostgreSQL   | `postgres`              |
-| `DB_PASSWORD`    | Пароль PostgreSQL         | —                       |
-| `DB_HOST`        | Хост PostgreSQL           | `localhost`             |
-| `DB_PORT`        | Порт PostgreSQL           | `5432`                  |
-| `DB_NAME`        | Имя базы данных           | `fulltodo`              |
-| `REDIS_HOST`     | Хост Redis                | `localhost`             |
-| `REDIS_PORT`     | Порт Redis                | `6379`                  |
-| `EMAIL_PROVIDER` | Почтовый провайдер        | `mailtrap` / `resend`   |
-| `EMAIL_FROM`     | Адрес отправителя писем   | зависит от провайдера   |
-| `MAILTRAP_USER`  | SMTP логин Mailtrap       | —                       |
-| `MAILTRAP_PASS`  | SMTP пароль Mailtrap      | —                       |
-| `RESEND_API_KEY` | API-ключ Resend           | —                       |
+| Переменная                    | Описание                             | Значения                |
+| ----------------------------- | ------------------------------------ | ----------------------- |
+| `PORT`                        | Порт backend-сервера                 | `5000` (по умолчанию)   |
+| `SERVER_TYPE`                 | Тип сервера                          | `http` / `express`      |
+| `DB_TYPE`                     | Тип базы данных                      | `mock` / `postgres`     |
+| `VITE_URL`                    | Базовый URL для фронтенда            | `http://localhost:5000` |
+| `DB_USER`                     | Пользователь PostgreSQL              | `postgres`              |
+| `DB_PASSWORD`                 | Пароль PostgreSQL                    | —                       |
+| `DB_HOST`                     | Хост PostgreSQL                      | `localhost`             |
+| `DB_PORT`                     | Порт PostgreSQL                      | `5432`                  |
+| `DB_NAME`                     | Имя базы данных                      | `fulltodo`              |
+| `REDIS_HOST`                  | Хост Redis                           | `localhost`             |
+| `REDIS_PORT`                  | Порт Redis                           | `6379`                  |
+| `EMAIL_PROVIDER`              | Почтовый провайдер                   | `mailtrap` / `resend`   |
+| `EMAIL_FROM`                  | Адрес отправителя писем              | зависит от провайдера   |
+| `MAILTRAP_USER`               | SMTP логин Mailtrap                  | —                       |
+| `MAILTRAP_PASS`               | SMTP пароль Mailtrap                 | —                       |
+| `RESEND_API_KEY`              | API-ключ Resend                      | —                       |
+| `PASSWORD_RESET_TOKEN_SECRET` | Секрет JWT для восстановления пароля | —                       |
 
 ## Планы развития
 
@@ -220,6 +243,7 @@ A pet project for task management (todo app) with the ability to choose differen
   - By creation/due date
 - Task search
 - Transferring tasks from one notebook to another
+- Registration, login, email verification, and password recovery
 - Localization (Russian/English)
 - Dark/light theme
 
@@ -335,6 +359,26 @@ After starting the server, the API documentation is available at:
 http://localhost:5000/api-docs
 ```
 
+### Authentication
+
+Two sign-in methods are available:
+
+- email + password;
+- Google OAuth.
+
+If a user first registers with email + password and later signs in with Google using the same verified email, the account is linked to Google and can be used with both sign-in methods.
+
+Password recovery flow:
+
+1. Open `Forgot password?` from the login page.
+2. Enter an email.
+3. The backend always returns a neutral success response so account existence is not leaked.
+4. If the email belongs to a user with a local password, an email is sent with a `/reset-password?token=...` link.
+5. On the reset password page, the user enters and confirms a new password.
+6. After a successful reset, all user refresh tokens are deleted, existing sessions become invalid, the frontend clears auth cache, and the user is redirected to `/login`.
+
+The current reset link implementation uses a stateless JWT valid for 30 minutes. The token is not stored in the database and is not single-use yet.
+
 ### Email service
 
 Emails are sent through the selected email provider. The provider is selected with `EMAIL_PROVIDER` in `.env`:
@@ -345,6 +389,7 @@ Emails are sent through the selected email provider. The provider is selected wi
 Sent emails:
 
 - Email verification on registration
+- Password recovery
 - Password change notification
 - Account deletion notification
 
@@ -383,24 +428,25 @@ Preview opens at `http://localhost:3000`.
 
 ### Environment variables (.env)
 
-| Variable         | Description            | Values                  |
-| ---------------- | ---------------------- | ----------------------- |
-| `PORT`           | Backend server port    | `5000` (default)        |
-| `SERVER_TYPE`    | Server type            | `http` / `express`      |
-| `DB_TYPE`        | Database type          | `mock` / `postgres`     |
-| `VITE_URL`       | Base URL for frontend  | `http://localhost:5000` |
-| `DB_USER`        | PostgreSQL user        | `postgres`              |
-| `DB_PASSWORD`    | PostgreSQL password    | —                       |
-| `DB_HOST`        | PostgreSQL host        | `localhost`             |
-| `DB_PORT`        | PostgreSQL port        | `5432`                  |
-| `DB_NAME`        | Database name          | `fulltodo`              |
-| `REDIS_HOST`     | Redis host             | `localhost`             |
-| `REDIS_PORT`     | Redis port             | `6379`                  |
-| `EMAIL_PROVIDER` | Email provider         | `mailtrap` / `resend`   |
-| `EMAIL_FROM`     | Email sender address   | depends on provider     |
-| `MAILTRAP_USER`  | Mailtrap SMTP login    | —                       |
-| `MAILTRAP_PASS`  | Mailtrap SMTP password | —                       |
-| `RESEND_API_KEY` | Resend API key         | —                       |
+| Variable                      | Description               | Values                  |
+| ----------------------------- | ------------------------- | ----------------------- |
+| `PORT`                        | Backend server port       | `5000` (default)        |
+| `SERVER_TYPE`                 | Server type               | `http` / `express`      |
+| `DB_TYPE`                     | Database type             | `mock` / `postgres`     |
+| `VITE_URL`                    | Base URL for frontend     | `http://localhost:5000` |
+| `DB_USER`                     | PostgreSQL user           | `postgres`              |
+| `DB_PASSWORD`                 | PostgreSQL password       | —                       |
+| `DB_HOST`                     | PostgreSQL host           | `localhost`             |
+| `DB_PORT`                     | PostgreSQL port           | `5432`                  |
+| `DB_NAME`                     | Database name             | `fulltodo`              |
+| `REDIS_HOST`                  | Redis host                | `localhost`             |
+| `REDIS_PORT`                  | Redis port                | `6379`                  |
+| `EMAIL_PROVIDER`              | Email provider            | `mailtrap` / `resend`   |
+| `EMAIL_FROM`                  | Email sender address      | depends on provider     |
+| `MAILTRAP_USER`               | Mailtrap SMTP login       | —                       |
+| `MAILTRAP_PASS`               | Mailtrap SMTP password    | —                       |
+| `RESEND_API_KEY`              | Resend API key            | —                       |
+| `PASSWORD_RESET_TOKEN_SECRET` | Password reset JWT secret | —                       |
 
 ## Roadmap
 

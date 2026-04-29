@@ -11,9 +11,11 @@ import {
   AccountSkeleton,
   AuthPageSkeleton,
   AuthLayout,
+  ForgotPassword,
   Layout,
   Login,
   Register,
+  ResetPassword,
   TaskDetail,
   VerifyEmailSkeleton,
   VerifyEmail,
@@ -40,6 +42,22 @@ export const Router = () => {
               element={
                 <Suspense fallback={<AuthPageSkeleton />}>
                   <Register />
+                </Suspense>
+              }
+            />
+            <Route
+              path={ROUTES.app.forgotPassword}
+              element={
+                <Suspense fallback={<AuthPageSkeleton />}>
+                  <ForgotPassword />
+                </Suspense>
+              }
+            />
+            <Route
+              path={ROUTES.app.resetPassword}
+              element={
+                <Suspense fallback={<AuthPageSkeleton />}>
+                  <ResetPassword />
                 </Suspense>
               }
             />

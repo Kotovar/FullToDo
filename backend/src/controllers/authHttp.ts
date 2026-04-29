@@ -158,14 +158,10 @@ export const logout: ServiceHandler<AuthService> = async (
 
 export const refresh: ServiceHandler<AuthService> = async (ctx, service) => {
   const { req, res } = ctx;
+  let refreshToken: string | undefined;
 
   try {
-    await httpRateLimit(ctx, {
-      ...refreshFailureRateLimitOptions,
-      consume: false,
-    });
-
-    const { refreshToken } = parseCookies(req.headers.cookie);
+    ({ refreshToken } = parseCookies(req.headers.cookie));
 
     if (!refreshToken) {
       throw new UnauthorizedError('Refresh token missing');
@@ -181,7 +177,7 @@ export const refresh: ServiceHandler<AuthService> = async (ctx, service) => {
       }),
     );
   } catch (error) {
-    if (isRefreshAuthFailure(error)) {
+    if (refreshToken && isRefreshAuthFailure(error)) {
       try {
         await httpRateLimit(ctx, refreshFailureRateLimitOptions);
       } catch (rateLimitError) {

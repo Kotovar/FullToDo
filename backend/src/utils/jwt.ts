@@ -5,15 +5,17 @@ const JWT_ALGORITHM = 'HS256';
 const EMAIL_TOKEN_EXPIRES_IN = '24h';
 const ACCESS_TOKEN_EXPIRES_IN = '15m';
 const REFRESH_TOKEN_EXPIRES_IN = '7d';
+const PASSWORD_RESET_TOKEN_EXPIRES_IN = '30m';
 
 export const REFRESH_TOKEN_EXPIRES_S = 7 * 24 * 60 * 60;
 export const REFRESH_TOKEN_EXPIRES_MS = REFRESH_TOKEN_EXPIRES_S * 1000;
 
-type JWT = 'access' | 'refresh' | 'email';
+type JWT = 'access' | 'refresh' | 'email' | 'password-reset';
 type TokenPayload = { userId: number; type: JWT };
 type AccessTokenPayload = TokenPayload & { type: 'access' };
 type RefreshTokenPayload = TokenPayload & { type: 'refresh' };
 type EmailTokenPayload = TokenPayload & { type: 'email' };
+type PasswordResetTokenPayload = TokenPayload & { type: 'password-reset' };
 
 const isTokenPayload = (payload: unknown): payload is TokenPayload =>
   typeof payload === 'object' &&
@@ -37,6 +39,11 @@ export const isEmailTokenPayload = (
 ): payload is EmailTokenPayload =>
   isTokenPayload(payload) && payload.type === 'email';
 
+export const isPasswordResetTokenPayload = (
+  payload: unknown,
+): payload is PasswordResetTokenPayload =>
+  isTokenPayload(payload) && payload.type === 'password-reset';
+
 export const generateEmailToken = (userId: number) =>
   jsonwebtoken.sign({ userId, type: 'email' }, config.emailTokenSecret, {
     expiresIn: EMAIL_TOKEN_EXPIRES_IN,
@@ -54,6 +61,16 @@ export const generateRefreshToken = (userId: number) =>
     expiresIn: REFRESH_TOKEN_EXPIRES_IN,
     algorithm: JWT_ALGORITHM,
   });
+
+export const generatePasswordResetToken = (userId: number) =>
+  jsonwebtoken.sign(
+    { userId, type: 'password-reset' },
+    config.passwordResetTokenSecret,
+    {
+      expiresIn: PASSWORD_RESET_TOKEN_EXPIRES_IN,
+      algorithm: JWT_ALGORITHM,
+    },
+  );
 
 const verifyToken = <T>(
   token: string,
@@ -79,3 +96,10 @@ export const verifyRefreshToken = (token: string) =>
 
 export const verifyEmailToken = (token: string) =>
   verifyToken(token, config.emailTokenSecret, isEmailTokenPayload);
+
+export const verifyPasswordResetToken = (token: string) =>
+  verifyToken(
+    token,
+    config.passwordResetTokenSecret,
+    isPasswordResetTokenPayload,
+  );
