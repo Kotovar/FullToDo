@@ -28,11 +28,20 @@ export const config = ConfigSchema.parse({
   },
   db: {
     type: getRequiredEnv('DB_TYPE', 'mock'),
+  },
+  postgres: {
     user: getRequiredEnv('DB_USER', 'postgres'),
     host: getRequiredEnv('DB_HOST', 'localhost'),
     name: getRequiredEnv('DB_NAME', 'fulltodo'),
     password: getRequiredEnv('DB_PASSWORD', 'secret'),
     port: Number(getRequiredEnv('DB_PORT', '5432')),
+  },
+  mongo: {
+    user: getRequiredEnv('MONGO_USER', 'root'),
+    password: getRequiredEnv('MONGO_PASSWORD', 'root'),
+    host: getRequiredEnv('MONGO_HOST', 'localhost'),
+    port: Number(getRequiredEnv('MONGO_PORT', '27017')),
+    name: getRequiredEnv('MONGO_DB', 'fulltodo'),
   },
   redis: {
     host: getRequiredEnv('REDIS_HOST', 'localhost'),

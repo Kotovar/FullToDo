@@ -11,11 +11,11 @@ import { repositoryLogger } from '@logger/repositories';
 types.setTypeParser(20, val => parseInt(val, 10));
 
 export const pool = new Pool({
-  user: config.db.user,
-  host: config.db.host,
-  database: config.db.name,
-  password: config.db.password,
-  port: config.db.port,
+  user: config.postgres.user,
+  host: config.postgres.host,
+  database: config.postgres.name,
+  password: config.postgres.password,
+  port: config.postgres.port,
 });
 
 export const query = async <T extends object = Record<string, unknown>>(
@@ -75,3 +75,13 @@ export const DB_ERRORS = {
   DUPLICATE: '23505',
   FOREIGN_KEY: '23503',
 } as const;
+
+export async function connectPostgres() {
+  const client = await pool.connect();
+
+  try {
+    await client.query('SELECT 1');
+  } finally {
+    client.release();
+  }
+}

@@ -1,5 +1,4 @@
-export * from './interfaces';
-
+import { repositoryLogger } from '@logger/repositories';
 import { config } from '@configs';
 import { NOTEPADS, USERS } from '@db/mock';
 import {
@@ -17,6 +16,8 @@ import type {
   TaskRepository,
   UserRepository,
 } from './interfaces';
+
+export * from './interfaces';
 
 const {
   db: { type },
@@ -50,3 +51,12 @@ export const refreshTokenRepository: RefreshTokenRepository = (() => {
       return new MockRefreshTokenRepository();
   }
 })();
+
+repositoryLogger.info(
+  {
+    taskRepository: taskRepository.constructor.name,
+    userRepository: userRepository.constructor.name,
+    refreshTokenRepository: refreshTokenRepository.constructor.name,
+  },
+  'repositories initialized',
+);
