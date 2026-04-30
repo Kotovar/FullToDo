@@ -5,7 +5,7 @@ import { createHttpServer, createExpressServer } from './servers';
 import { config, ServerType } from './configs';
 import { initializePostgres } from '@db/postgres';
 import { connectRedis } from '@db/redis';
-import { connectMongo } from '@db/mongo';
+import { initializeMongo } from '@db/mongo';
 import { serverLogger } from './logger';
 import { registerGlobalErrorHandlers } from '@errors/uncaughtException';
 
@@ -34,7 +34,7 @@ const startDependencies = async () => {
   }
 
   if (dbType === 'mongo') {
-    await connectMongo();
+    await initializeMongo();
   }
 
   await connectRedis();

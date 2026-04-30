@@ -3,11 +3,6 @@ import type { RefreshToken } from '@sharedCommon/schemas';
 
 export class MockRefreshTokenRepository implements RefreshTokenRepository {
   private tokens: RefreshToken[];
-  private lastTokenId: number = 1;
-
-  private generateTokenId(): number {
-    return this.lastTokenId++;
-  }
 
   constructor() {
     this.tokens = [];
@@ -19,7 +14,6 @@ export class MockRefreshTokenRepository implements RefreshTokenRepository {
     expiresAt: Date,
   ): Promise<void> {
     const newToken = {
-      id: this.generateTokenId(),
       userId,
       tokenHash,
       expiresAt,

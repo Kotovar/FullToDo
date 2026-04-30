@@ -76,7 +76,6 @@ export const createUserSchema = z
   );
 
 export const refreshTokenSchema = z.object({
-  id: z.number(),
   userId: z.number(),
   tokenHash: z.string(),
   expiresAt: z.date(),

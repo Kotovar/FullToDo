@@ -27,7 +27,7 @@ export class PostgresRefreshTokenRepository implements RefreshTokenRepository {
 
   async findByTokenHash(tokenHash: string): Promise<RefreshToken | null> {
     const token = await query<RefreshToken>(
-      `SELECT _id as "id", user_id AS "userId", token_hash AS "tokenHash",
+      `SELECT user_id AS "userId", token_hash AS "tokenHash",
               expires_at AS "expiresAt", created_at AS "createdAt"
        FROM refresh_tokens WHERE token_hash = $1`,
       [tokenHash],
