@@ -11,7 +11,7 @@ export const initializeMongo = async () => {
     await Promise.all([
       db
         .collection(MONGO_COLLECTIONS.users)
-        .createIndex({ id: 1 }, { unique: true }),
+        .createIndex({ userId: 1 }, { unique: true }),
       db
         .collection(MONGO_COLLECTIONS.users)
         .createIndex({ email: 1 }, { unique: true }),

@@ -68,6 +68,8 @@ POSTGRES_DB
 
 - MongoDB (image: `mongo:8`)
 
+Mongo запускается как single-node replica set (`MONGO_REPLICA_SET=rs0`), потому что MongoDB-транзакции работают только в replica set или sharded cluster.
+
 ### Порт
 
 ```yaml
@@ -86,7 +88,11 @@ mongo_data:/data/db
 MONGO_INITDB_ROOT_USERNAME
 MONGO_INITDB_ROOT_PASSWORD
 MONGO_INITDB_DATABASE
+MONGO_REPLICA_SET
+MONGO_KEYFILE
 ```
+
+`MONGO_KEYFILE` используется MongoDB для internal authentication replica set. В локальном окружении это dev-only secret из `.env`.
 
 ---
 
@@ -199,6 +205,8 @@ MONGO_PORT=27017
 MONGO_USER=root
 MONGO_PASSWORD=root
 MONGO_DB=todo
+MONGO_REPLICA_SET=rs0
+MONGO_KEYFILE=fulltodoLocalReplicaSetKey1234567890
 
 REDIS_PORT=6379
 ```

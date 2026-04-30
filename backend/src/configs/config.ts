@@ -42,6 +42,7 @@ export const config = ConfigSchema.parse({
     host: getRequiredEnv('MONGO_HOST', 'localhost'),
     port: Number(getRequiredEnv('MONGO_PORT', '27017')),
     name: getRequiredEnv('MONGO_DB', 'fulltodo'),
+    replicaSet: getRequiredEnv('MONGO_REPLICA_SET', 'rs0'),
   },
   redis: {
     host: getRequiredEnv('REDIS_HOST', 'localhost'),

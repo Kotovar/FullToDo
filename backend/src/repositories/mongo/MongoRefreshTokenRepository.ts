@@ -12,7 +12,7 @@ export class MongoRefreshTokenRepository implements RefreshTokenRepository {
     const db = await connectMongo();
 
     const users = db.collection(MONGO_COLLECTIONS.users);
-    const user = await users.findOne({ id: userId });
+    const user = await users.findOne({ userId });
 
     if (!user) {
       throw new NotFoundError(`User ${userId} not found`);

@@ -23,6 +23,7 @@ export const MongoSchema = z.object({
   host: z.string().default('localhost'),
   port: z.number().min(1).max(65535).default(27017),
   name: z.string().default('fulltodo'),
+  replicaSet: z.string().default('rs0'),
 });
 
 export const SmtpSchema = z.object({
