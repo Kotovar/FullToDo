@@ -96,7 +96,7 @@ export class MockTaskRepository implements TaskRepository {
     };
   }
 
-  private generateTaskId(): string {
+  private generateId(): string {
     return globalThis.crypto.randomUUID();
   }
 
@@ -110,12 +110,16 @@ export class MockTaskRepository implements TaskRepository {
     { title }: CreateNotepad,
     userId: number,
   ): Promise<Notepad> {
-    if (this.notepads.some(notepad => notepad.title === title)) {
+    if (
+      this.notepads.some(
+        notepad => notepad.title === title && notepad.userId === userId,
+      )
+    ) {
       throw new ConflictError(`Notebook with title ${title} already exists`);
     }
 
     const newNotepad = {
-      _id: this.generateTaskId(),
+      _id: this.generateId(),
       title,
       tasks: [],
       userId,
@@ -133,19 +137,15 @@ export class MockTaskRepository implements TaskRepository {
     const { title, dueDate, description } = task;
     const isCommonNotepad = notepadId === COMMON_NOTEPAD_ID;
     const targetNotepad = this.notepads.find(
-      notepad => notepad._id === notepadId,
+      notepad => notepad._id === notepadId && notepad.userId === userId,
     );
 
     if (!isCommonNotepad && !targetNotepad) {
       throw new NotFoundError(`Notebook ${notepadId} not found`);
     }
 
-    if (!isCommonNotepad && targetNotepad?.userId !== userId) {
-      throw new ForbiddenError(`Access denied to notepad ${notepadId}`);
-    }
-
     const newTask: Task = {
-      _id: this.generateTaskId(),
+      _id: this.generateId(),
       createdDate: new Date(),
       isCompleted: false,
       subtasks: [],
@@ -194,7 +194,9 @@ export class MockTaskRepository implements TaskRepository {
     taskId: string,
     userId: number,
   ): Promise<Task> {
-    const task = this.tasks.find(task => task._id === taskId);
+    const task = this.tasks.find(
+      task => task._id === taskId && task.userId === userId,
+    );
     const suitableNotepad =
       notepadId === COMMON_NOTEPAD_ID || task?.notepadId === notepadId;
 
@@ -202,10 +204,6 @@ export class MockTaskRepository implements TaskRepository {
       throw new NotFoundError(
         `Task ${taskId} not found in notepad ${notepadId}`,
       );
-    }
-
-    if (task.userId !== userId) {
-      throw new ForbiddenError(`Access denied to task ${taskId}`);
     }
 
     return task;
@@ -216,19 +214,22 @@ export class MockTaskRepository implements TaskRepository {
     userId: number,
     params?: TaskQueryParams,
   ): Promise<PaginatedTasks> {
-    const notepad = this.notepads.find(notepad => notepad._id === notepadId);
+    const isCommonNotepad = notepadId === COMMON_NOTEPAD_ID;
 
-    if (!notepad) {
-      throw new NotFoundError(`Notepad ${notepadId} not found`);
+    if (!isCommonNotepad) {
+      const notepad = this.notepads.find(
+        notepad => notepad._id === notepadId && notepad.userId === userId,
+      );
+
+      if (!notepad) {
+        throw new NotFoundError(`Notepad ${notepadId} not found`);
+      }
     }
 
-    if (notepad.userId !== userId) {
-      throw new ForbiddenError(`Access denied to notepad ${notepadId}`);
-    }
-
-    const filteredByNotebook = this.tasks.filter(
-      task => task.notepadId === notepadId,
-    );
+    const filteredByNotebook = this.tasks.filter(task => {
+      if (task.userId !== userId) return false;
+      return isCommonNotepad || task.notepadId === notepadId;
+    });
 
     const filteredTasks = this.applyTaskFilters(filteredByNotebook, params);
     const { paginatedTasks: tasks, meta } = this.paginate(
@@ -245,21 +246,20 @@ export class MockTaskRepository implements TaskRepository {
     userId: number,
   ): Promise<Notepad> {
     const notepadIndex = this.notepads.findIndex(
-      notepad => notepad._id === notepadId,
+      notepad => notepad._id === notepadId && notepad.userId === userId,
     );
 
     if (notepadIndex === -1) {
       throw new NotFoundError(`Notepad ${notepadId} not found`);
     }
 
-    if (this.notepads[notepadIndex].userId !== userId) {
-      throw new ForbiddenError(`Access denied to notepad ${notepadId}`);
-    }
-
     if (
       updatedNotepadFields.title &&
       this.notepads.some(
-        notepad => notepad.title === updatedNotepadFields.title,
+        notepad =>
+          notepad._id !== notepadId &&
+          notepad.userId === userId &&
+          notepad.title === updatedNotepadFields.title,
       )
     ) {
       throw new ConflictError(
@@ -280,20 +280,18 @@ export class MockTaskRepository implements TaskRepository {
     updatedTaskFields: Partial<Task>,
     userId: number,
   ): Promise<Task> {
-    const taskIndex = this.tasks.findIndex(task => task._id === taskId);
+    const taskIndex = this.tasks.findIndex(
+      task => task._id === taskId && task.userId === userId,
+    );
 
     if (taskIndex === -1) {
       throw new NotFoundError('Task not found');
     }
 
-    if (this.tasks[taskIndex].userId !== userId) {
-      throw new ForbiddenError(`Access denied to task ${taskId}`);
-    }
-
     const currentTask = { ...this.tasks[taskIndex] };
     const newNotepadId = updatedTaskFields.notepadId ?? currentTask.notepadId;
     const targetNotepad = this.notepads.find(
-      notepad => notepad._id === newNotepadId,
+      notepad => notepad._id === newNotepadId && notepad.userId === userId,
     );
 
     if (!targetNotepad && newNotepadId !== COMMON_NOTEPAD_ID) {
@@ -324,7 +322,11 @@ export class MockTaskRepository implements TaskRepository {
 
     const currentNotepad =
       currentTask.notepadId !== COMMON_NOTEPAD_ID
-        ? this.notepads.find(notepad => notepad._id === currentTask.notepadId)
+        ? this.notepads.find(
+            notepad =>
+              notepad._id === currentTask.notepadId &&
+              notepad.userId === userId,
+          )
         : null;
 
     if (shouldMoveNotepad) {
@@ -353,15 +355,11 @@ export class MockTaskRepository implements TaskRepository {
     }
 
     const notepadIndex = this.notepads.findIndex(
-      notepad => notepad._id === notepadId,
+      notepad => notepad._id === notepadId && notepad.userId === userId,
     );
 
     if (notepadIndex === -1) {
       throw new NotFoundError(`Notepad ${notepadId} not found`);
-    }
-
-    if (this.notepads[notepadIndex].userId !== userId) {
-      throw new ForbiddenError(`Access denied to notepad ${notepadId}`);
     }
 
     this.notepads.splice(notepadIndex, 1);
@@ -369,14 +367,12 @@ export class MockTaskRepository implements TaskRepository {
   }
 
   async deleteTask(taskId: string, userId: number): Promise<void> {
-    const taskIndex = this.tasks.findIndex(task => task._id === taskId);
+    const taskIndex = this.tasks.findIndex(
+      task => task._id === taskId && task.userId === userId,
+    );
 
     if (taskIndex === -1) {
       throw new NotFoundError(`Task with id ${taskId} not found`);
-    }
-
-    if (this.tasks[taskIndex].userId !== userId) {
-      throw new ForbiddenError(`Access denied to task ${taskId}`);
     }
 
     const taskToDelete = this.tasks[taskIndex];
@@ -385,7 +381,8 @@ export class MockTaskRepository implements TaskRepository {
 
     if (!isCommonNotepad) {
       const notepad = this.notepads.find(
-        notepad => notepad._id === taskToDelete.notepadId,
+        notepad =>
+          notepad._id === taskToDelete.notepadId && notepad.userId === userId,
       );
 
       if (notepad) {

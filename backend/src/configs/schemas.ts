@@ -7,11 +7,23 @@ export const ServerSchema = z.object({
 
 export const DBSchema = z.object({
   type: z.enum(['mongo', 'postgres', 'mock']).default('mock'),
+});
+
+export const PostgresSchema = z.object({
   user: z.string().default('postgres'),
   host: z.string().default('localhost'),
   name: z.string().default('fulltodo'),
   password: z.string(),
   port: z.number().min(1).max(65535).default(5432),
+});
+
+export const MongoSchema = z.object({
+  user: z.string().default('root'),
+  password: z.string(),
+  host: z.string().default('localhost'),
+  port: z.number().min(1).max(65535).default(27017),
+  name: z.string().default('fulltodo'),
+  replicaSet: z.string().default('rs0'),
 });
 
 export const SmtpSchema = z.object({
@@ -39,6 +51,8 @@ export const ConfigSchema = z
   .object({
     server: ServerSchema,
     db: DBSchema,
+    postgres: PostgresSchema,
+    mongo: MongoSchema,
     email: EmailSchema,
     smtp: SmtpSchema,
     resend: ResendSchema,
@@ -74,6 +88,22 @@ export const ConfigSchema = z
         code: 'custom',
         path: ['resend', 'apiKey'],
         message: 'RESEND_API_KEY is required for resend email provider',
+      });
+    }
+
+    if (config.db.type === 'postgres' && !config.postgres.password) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['postgres', 'password'],
+        message: 'DB_PASSWORD is required when DB_TYPE=postgres',
+      });
+    }
+
+    if (config.db.type === 'mongo' && !config.mongo.password) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['mongo', 'password'],
+        message: 'MONGO_PASSWORD is required when DB_TYPE=mongo',
       });
     }
   });

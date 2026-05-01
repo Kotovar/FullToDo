@@ -13,19 +13,34 @@ import {
 } from '@sharedCommon/schemas';
 import type { TaskRepository } from '@repositories/interfaces/TaskRepository';
 import {
-  DB_ERRORS,
   isDbError,
   query,
-  TASK_COLUMNS,
   buildTaskFilterSQL,
   buildOrderSQL,
   buildPaginationSQL,
   buildTaskUpdateSQL,
   buildSubtaskInsertSQL,
+  DB_ERRORS,
+  TASK_COLUMNS,
+  type TaskUpdateSQLFields,
 } from '@db/postgres';
 import { ConflictError, ForbiddenError, NotFoundError } from '@errors/AppError';
 
 export class PostgresTaskRepository implements TaskRepository {
+  private async ensureOwnedNotepad(
+    notepadId: string,
+    userId: number,
+  ): Promise<void> {
+    const result = await query<{ _id: string }>(
+      'SELECT _id::text FROM notepads WHERE _id = $1 AND user_id = $2',
+      [notepadId, userId],
+    );
+
+    if (!result.rows[0]) {
+      throw new NotFoundError(`Notepad ${notepadId} not found`);
+    }
+  }
+
   private async queryPaginatedTasks(
     whereSQL: string,
     values: unknown[],
@@ -82,18 +97,26 @@ export class PostgresTaskRepository implements TaskRepository {
     notepadId: string,
     userId: number,
   ): Promise<Task> {
-    const { title, dueDate } = task;
+    const { title, dueDate, description } = task;
 
     const dbNotepadId = notepadId === COMMON_NOTEPAD_ID ? null : notepadId;
 
     try {
       const result = await query<Task>(
-        `INSERT INTO tasks (notepad_id, title, due_date, user_id) VALUES ($1, $2, $3, $4)
+        `INSERT INTO tasks (notepad_id, title, description, due_date, user_id)
+         SELECT $1, $2, $3, $4, $5
+         WHERE $1::bigint IS NULL
+            OR EXISTS (SELECT 1 FROM notepads WHERE _id = $1 AND user_id = $5)
          RETURNING _id::text, title, description, due_date AS "dueDate",
                    created_date AS "createdDate", is_completed AS "isCompleted",
-                   COALESCE(notepad_id::text, $5) AS "notepadId"`,
-        [dbNotepadId, title, dueDate, userId, notepadId],
+                   COALESCE(notepad_id::text, $6) AS "notepadId"`,
+        [dbNotepadId, title, description, dueDate, userId, notepadId],
       );
+
+      if (!result.rows[0]) {
+        throw new NotFoundError(`Notebook ${notepadId} not found`);
+      }
+
       return { ...result.rows[0], subtasks: [], progress: '' };
     } catch (err) {
       if (isDbError(err)) {
@@ -150,7 +173,7 @@ export class PostgresTaskRepository implements TaskRepository {
         t.description,
         t.is_completed AS "isCompleted",
         t.created_date AS "createdDate",
-        t.notepad_id::text AS "notepadId",
+        COALESCE(t.notepad_id::text, '${COMMON_NOTEPAD_ID}') AS "notepadId",
         t.due_date AS "dueDate",
         COALESCE(
           json_agg(
@@ -192,6 +215,10 @@ export class PostgresTaskRepository implements TaskRepository {
       limit = PAGINATION.DEFAULT_LIMIT,
     } = params;
 
+    if (!isCommon) {
+      await this.ensureOwnedNotepad(notepadId, userId);
+    }
+
     const { whereSQL, values } = buildTaskFilterSQL(
       params,
       userId,
@@ -207,25 +234,35 @@ export class PostgresTaskRepository implements TaskRepository {
     updatedNotepadFields: Partial<CreateNotepad>,
     userId: number,
   ): Promise<Notepad> {
-    const result = await query<Notepad>(
-      `UPDATE notepads
-        SET title = $1
-        WHERE _id = $2 AND user_id = $3
-        RETURNING _id::text, title`,
-      [updatedNotepadFields.title, notepadId, userId],
-    );
+    try {
+      const result = await query<Notepad>(
+        `UPDATE notepads
+          SET title = $1
+          WHERE _id = $2 AND user_id = $3
+          RETURNING _id::text, title`,
+        [updatedNotepadFields.title, notepadId, userId],
+      );
 
-    if (!result.rows[0]) {
-      throw new NotFoundError(`Notepad ${notepadId} not found`);
+      if (!result.rows[0]) {
+        throw new NotFoundError(`Notepad ${notepadId} not found`);
+      }
+
+      const tasks = await query<Task>(
+        `SELECT ${TASK_COLUMNS} FROM tasks
+          WHERE notepad_id = $1 AND user_id = $2`,
+        [notepadId, userId],
+      );
+
+      return { ...result.rows[0], tasks: tasks.rows };
+    } catch (err) {
+      if (isDbError(err) && err.code === DB_ERRORS.DUPLICATE) {
+        throw new ConflictError(
+          `The title ${updatedNotepadFields.title} is already in use`,
+        );
+      }
+
+      throw err;
     }
-
-    const tasks = await query<Task>(
-      `SELECT ${TASK_COLUMNS} FROM tasks
-        WHERE notepad_id = $1`,
-      [notepadId],
-    );
-
-    return { ...result.rows[0], tasks: tasks.rows };
   }
 
   async updateTask(
@@ -234,11 +271,20 @@ export class PostgresTaskRepository implements TaskRepository {
     userId: number,
   ): Promise<Task> {
     const { subtasks, ...taskFields } = fields;
+    const dbTaskFields: TaskUpdateSQLFields = { ...taskFields };
+    const targetNotepadId =
+      dbTaskFields.notepadId && dbTaskFields.notepadId !== COMMON_NOTEPAD_ID
+        ? dbTaskFields.notepadId
+        : null;
+
+    if (dbTaskFields.notepadId === COMMON_NOTEPAD_ID) {
+      dbTaskFields.notepadId = null;
+    }
 
     let task: Task;
 
-    if (Object.keys(taskFields).length > 0) {
-      const { setSQL, values } = buildTaskUpdateSQL(taskFields);
+    if (Object.keys(dbTaskFields).length > 0) {
+      const { setSQL, values } = buildTaskUpdateSQL(dbTaskFields);
 
       values.push(userId);
       const userIdIdx = values.length;
@@ -246,8 +292,15 @@ export class PostgresTaskRepository implements TaskRepository {
       values.push(taskId);
       const taskIdIdx = values.length;
 
+      let notepadGuardSQL = '';
+      if (targetNotepadId !== null) {
+        values.push(targetNotepadId);
+        const targetNotepadIdx = values.length;
+        notepadGuardSQL = ` AND EXISTS (SELECT 1 FROM notepads WHERE _id = $${targetNotepadIdx} AND user_id = $${userIdIdx})`;
+      }
+
       const result = await query<Task>(
-        `UPDATE tasks SET ${setSQL} WHERE user_id = $${userIdIdx} AND _id = $${taskIdIdx} RETURNING ${TASK_COLUMNS}`,
+        `UPDATE tasks SET ${setSQL} WHERE user_id = $${userIdIdx} AND _id = $${taskIdIdx}${notepadGuardSQL} RETURNING ${TASK_COLUMNS}`,
         values,
       );
 

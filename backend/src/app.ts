@@ -3,8 +3,9 @@ import { Server as HttpServer } from 'http';
 import type { Application } from 'express';
 import { createHttpServer, createExpressServer } from './servers';
 import { config, ServerType } from './configs';
-import { runMigrations } from '@db/postgres';
+import { initializePostgres } from '@db/postgres';
 import { connectRedis } from '@db/redis';
+import { initializeMongo } from '@db/mongo';
 import { serverLogger } from './logger';
 import { registerGlobalErrorHandlers } from '@errors/uncaughtException';
 
@@ -29,7 +30,11 @@ const exitOnStartupError = (message: string) => (err: unknown) => {
 
 const startDependencies = async () => {
   if (dbType === 'postgres') {
-    await runMigrations();
+    await initializePostgres();
+  }
+
+  if (dbType === 'mongo') {
+    await initializeMongo();
   }
 
   await connectRedis();

@@ -1,5 +1,4 @@
-export * from './interfaces';
-
+import { repositoryLogger } from '@logger/repositories';
 import { config } from '@configs';
 import { NOTEPADS, USERS } from '@db/mock';
 import {
@@ -17,6 +16,13 @@ import type {
   TaskRepository,
   UserRepository,
 } from './interfaces';
+import {
+  MongoRefreshTokenRepository,
+  MongoTaskRepository,
+  MongoUserRepository,
+} from './mongo';
+
+export * from './interfaces';
 
 const {
   db: { type },
@@ -25,7 +31,7 @@ const {
 export const taskRepository: TaskRepository = (() => {
   switch (type) {
     case 'mongo':
-      return new MockTaskRepository(NOTEPADS);
+      return new MongoTaskRepository();
     case 'postgres':
       return new PostgresTaskRepository();
     default:
@@ -35,6 +41,8 @@ export const taskRepository: TaskRepository = (() => {
 
 export const userRepository: UserRepository = (() => {
   switch (type) {
+    case 'mongo':
+      return new MongoUserRepository();
     case 'postgres':
       return new PostgresUserRepository();
     default:
@@ -44,9 +52,20 @@ export const userRepository: UserRepository = (() => {
 
 export const refreshTokenRepository: RefreshTokenRepository = (() => {
   switch (type) {
+    case 'mongo':
+      return new MongoRefreshTokenRepository();
     case 'postgres':
       return new PostgresRefreshTokenRepository();
     default:
       return new MockRefreshTokenRepository();
   }
 })();
+
+repositoryLogger.info(
+  {
+    taskRepository: taskRepository.constructor.name,
+    userRepository: userRepository.constructor.name,
+    refreshTokenRepository: refreshTokenRepository.constructor.name,
+  },
+  'repositories initialized',
+);

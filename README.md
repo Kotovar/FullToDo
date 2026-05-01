@@ -38,13 +38,13 @@ Pet проект для управления задачами (todo-прилож
 - Express
 - Mock-база (JSON-в памяти)
 - PostgreSQL
+- MongoDB
 - Redis (rate limiting auth endpoints)
 - Pino (логирование)
 - Email providers: Mailtrap Sandbox / Resend
 - React Email (шаблоны писем)
 - Swagger UI
 - Nest.js (в разработке)
-- MongoDB (в разработке)
 - Vitest
 
 ## Запуск
@@ -61,7 +61,7 @@ cp .env.example .env
 npm install
 ```
 
-### С mock-базой (без Docker)
+### С mock-базой
 
 В `.env` указать:
 
@@ -75,6 +75,8 @@ SERVER_TYPE=http # или express
 ```bash
 npm run dev
 ```
+
+Команда поднимет Redis для rate limiting, затем запустит frontend и backend одновременно. Контейнер БД для mock-режима не нужен.
 
 ### С PostgreSQL и Redis (через Docker)
 
@@ -92,6 +94,25 @@ npm run dev
 ```
 
 Команда поднимет контейнеры с PostgreSQL и Redis, затем запустит frontend и backend одновременно.
+
+### С MongoDB и Redis (через Docker)
+
+В `.env` указать:
+
+```
+DB_TYPE=mongo
+SERVER_TYPE=http # или express
+```
+
+Запустить (из корня проекта):
+
+```bash
+npm run dev
+```
+
+Команда поднимет контейнеры с MongoDB и Redis, затем запустит frontend и backend одновременно.
+
+MongoDB запускается как single-node replica set (`MONGO_REPLICA_SET=rs0`), потому что репозитории используют транзакции для операций, где нужно согласованно менять несколько коллекций.
 
 Остановить контейнеры:
 
@@ -201,29 +222,35 @@ npm run email --workspace=fulltodo_backend
 
 ### Переменные окружения (.env)
 
-| Переменная                    | Описание                             | Значения                |
-| ----------------------------- | ------------------------------------ | ----------------------- |
-| `PORT`                        | Порт backend-сервера                 | `5000` (по умолчанию)   |
-| `SERVER_TYPE`                 | Тип сервера                          | `http` / `express`      |
-| `DB_TYPE`                     | Тип базы данных                      | `mock` / `postgres`     |
-| `VITE_URL`                    | Базовый URL для фронтенда            | `http://localhost:5000` |
-| `DB_USER`                     | Пользователь PostgreSQL              | `postgres`              |
-| `DB_PASSWORD`                 | Пароль PostgreSQL                    | —                       |
-| `DB_HOST`                     | Хост PostgreSQL                      | `localhost`             |
-| `DB_PORT`                     | Порт PostgreSQL                      | `5432`                  |
-| `DB_NAME`                     | Имя базы данных                      | `fulltodo`              |
-| `REDIS_HOST`                  | Хост Redis                           | `localhost`             |
-| `REDIS_PORT`                  | Порт Redis                           | `6379`                  |
-| `EMAIL_PROVIDER`              | Почтовый провайдер                   | `mailtrap` / `resend`   |
-| `EMAIL_FROM`                  | Адрес отправителя писем              | зависит от провайдера   |
-| `MAILTRAP_USER`               | SMTP логин Mailtrap                  | —                       |
-| `MAILTRAP_PASS`               | SMTP пароль Mailtrap                 | —                       |
-| `RESEND_API_KEY`              | API-ключ Resend                      | —                       |
-| `PASSWORD_RESET_TOKEN_SECRET` | Секрет JWT для восстановления пароля | —                       |
+| Переменная                    | Описание                                       | Значения                      |
+| ----------------------------- | ---------------------------------------------- | ----------------------------- |
+| `PORT`                        | Порт backend-сервера                           | `5000` (по умолчанию)         |
+| `SERVER_TYPE`                 | Тип сервера                                    | `http` / `express`            |
+| `DB_TYPE`                     | Тип базы данных                                | `mock` / `postgres` / `mongo` |
+| `VITE_URL`                    | Базовый URL для фронтенда                      | `http://localhost:5000`       |
+| `DB_USER`                     | Пользователь PostgreSQL                        | `postgres`                    |
+| `DB_PASSWORD`                 | Пароль PostgreSQL                              | —                             |
+| `DB_HOST`                     | Хост PostgreSQL                                | `localhost`                   |
+| `DB_PORT`                     | Порт PostgreSQL                                | `5432`                        |
+| `DB_NAME`                     | Имя базы данных                                | `fulltodo`                    |
+| `MONGO_USER`                  | Пользователь MongoDB                           | `root`                        |
+| `MONGO_PASSWORD`              | Пароль MongoDB                                 | `root`                        |
+| `MONGO_HOST`                  | Хост MongoDB                                   | `localhost`                   |
+| `MONGO_PORT`                  | Порт MongoDB                                   | `27017`                       |
+| `MONGO_DB`                    | Имя MongoDB базы                               | `fulltodo`                    |
+| `MONGO_REPLICA_SET`           | Имя MongoDB replica set                        | `rs0`                         |
+| `MONGO_KEYFILE`               | Ключ replica set для локального Docker MongoDB | —                             |
+| `REDIS_HOST`                  | Хост Redis                                     | `localhost`                   |
+| `REDIS_PORT`                  | Порт Redis                                     | `6379`                        |
+| `EMAIL_PROVIDER`              | Почтовый провайдер                             | `mailtrap` / `resend`         |
+| `EMAIL_FROM`                  | Адрес отправителя писем                        | зависит от провайдера         |
+| `MAILTRAP_USER`               | SMTP логин Mailtrap                            | —                             |
+| `MAILTRAP_PASS`               | SMTP пароль Mailtrap                           | —                             |
+| `RESEND_API_KEY`              | API-ключ Resend                                | —                             |
+| `PASSWORD_RESET_TOKEN_SECRET` | Секрет JWT для восстановления пароля           | —                             |
 
 ## Планы развития
 
-- Добавление поддержки ещё одной БД (`mongo`)
 - Добавление поддержки ещё одного сервера (`nextJs`)
 
 ---
@@ -265,13 +292,13 @@ A pet project for task management (todo app) with the ability to choose differen
 - Express
 - Mock database (in-memory JSON)
 - PostgreSQL
+- MongoDB
 - Redis (auth endpoint rate limiting)
 - Pino (logging)
 - Email providers: Mailtrap Sandbox / Resend
 - React Email (email templates)
 - Swagger UI
 - Nest.js (in development)
-- MongoDB (in development)
 - Vitest
 
 ## Running
@@ -288,7 +315,7 @@ Install dependencies:
 npm install
 ```
 
-### With mock database (no Docker)
+### With mock database
 
 Set in `.env`:
 
@@ -302,6 +329,8 @@ Run (from project root):
 ```bash
 npm run dev
 ```
+
+This command starts Redis for rate limiting, then runs both frontend and backend simultaneously. Mock mode does not need a database container.
 
 ### With PostgreSQL and Redis (via Docker)
 
@@ -319,6 +348,25 @@ npm run dev
 ```
 
 This command starts PostgreSQL and Redis containers, then runs both frontend and backend simultaneously.
+
+### With MongoDB and Redis (via Docker)
+
+Set in `.env`:
+
+```
+DB_TYPE=mongo
+SERVER_TYPE=http # or express
+```
+
+Run (from project root):
+
+```bash
+npm run dev
+```
+
+This command starts MongoDB and Redis containers, then runs both frontend and backend simultaneously.
+
+MongoDB runs as a single-node replica set (`MONGO_REPLICA_SET=rs0`) because repositories use transactions for operations that must update multiple collections consistently.
 
 Stop the containers:
 
@@ -428,27 +476,33 @@ Preview opens at `http://localhost:3000`.
 
 ### Environment variables (.env)
 
-| Variable                      | Description               | Values                  |
-| ----------------------------- | ------------------------- | ----------------------- |
-| `PORT`                        | Backend server port       | `5000` (default)        |
-| `SERVER_TYPE`                 | Server type               | `http` / `express`      |
-| `DB_TYPE`                     | Database type             | `mock` / `postgres`     |
-| `VITE_URL`                    | Base URL for frontend     | `http://localhost:5000` |
-| `DB_USER`                     | PostgreSQL user           | `postgres`              |
-| `DB_PASSWORD`                 | PostgreSQL password       | —                       |
-| `DB_HOST`                     | PostgreSQL host           | `localhost`             |
-| `DB_PORT`                     | PostgreSQL port           | `5432`                  |
-| `DB_NAME`                     | Database name             | `fulltodo`              |
-| `REDIS_HOST`                  | Redis host                | `localhost`             |
-| `REDIS_PORT`                  | Redis port                | `6379`                  |
-| `EMAIL_PROVIDER`              | Email provider            | `mailtrap` / `resend`   |
-| `EMAIL_FROM`                  | Email sender address      | depends on provider     |
-| `MAILTRAP_USER`               | Mailtrap SMTP login       | —                       |
-| `MAILTRAP_PASS`               | Mailtrap SMTP password    | —                       |
-| `RESEND_API_KEY`              | Resend API key            | —                       |
-| `PASSWORD_RESET_TOKEN_SECRET` | Password reset JWT secret | —                       |
+| Variable                      | Description                          | Values                        |
+| ----------------------------- | ------------------------------------ | ----------------------------- |
+| `PORT`                        | Backend server port                  | `5000` (default)              |
+| `SERVER_TYPE`                 | Server type                          | `http` / `express`            |
+| `DB_TYPE`                     | Database type                        | `mock` / `postgres` / `mongo` |
+| `VITE_URL`                    | Base URL for frontend                | `http://localhost:5000`       |
+| `DB_USER`                     | PostgreSQL user                      | `postgres`                    |
+| `DB_PASSWORD`                 | PostgreSQL password                  | —                             |
+| `DB_HOST`                     | PostgreSQL host                      | `localhost`                   |
+| `DB_PORT`                     | PostgreSQL port                      | `5432`                        |
+| `DB_NAME`                     | Database name                        | `fulltodo`                    |
+| `MONGO_USER`                  | MongoDB user                         | `root`                        |
+| `MONGO_PASSWORD`              | MongoDB password                     | `root`                        |
+| `MONGO_HOST`                  | MongoDB host                         | `localhost`                   |
+| `MONGO_PORT`                  | MongoDB port                         | `27017`                       |
+| `MONGO_DB`                    | MongoDB database name                | `fulltodo`                    |
+| `MONGO_REPLICA_SET`           | MongoDB replica set name             | `rs0`                         |
+| `MONGO_KEYFILE`               | Local Docker MongoDB replica set key | —                             |
+| `REDIS_HOST`                  | Redis host                           | `localhost`                   |
+| `REDIS_PORT`                  | Redis port                           | `6379`                        |
+| `EMAIL_PROVIDER`              | Email provider                       | `mailtrap` / `resend`         |
+| `EMAIL_FROM`                  | Email sender address                 | depends on provider           |
+| `MAILTRAP_USER`               | Mailtrap SMTP login                  | —                             |
+| `MAILTRAP_PASS`               | Mailtrap SMTP password               | —                             |
+| `RESEND_API_KEY`              | Resend API key                       | —                             |
+| `PASSWORD_RESET_TOKEN_SECRET` | Password reset JWT secret            | —                             |
 
 ## Roadmap
 
-- Added support for one more database (`mongo`)
 - Add support for one more server (`nextJs`)

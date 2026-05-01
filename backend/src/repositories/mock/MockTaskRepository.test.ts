@@ -386,7 +386,7 @@ describe('MockTaskRepository', () => {
     });
 
     await expect(
-      repository.updateNotepad(realId, newTitleNotepad, USER_ID),
+      repository.updateNotepad('2', newTitleNotepad, USER_ID),
     ).rejects.toThrow(`The title ${newTitleNotepad.title} is already in use`);
 
     await expect(
