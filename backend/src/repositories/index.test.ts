@@ -1,4 +1,4 @@
-import { describe, test, expect, expectTypeOf, beforeEach, vi } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { loadEnvFile } from 'node:process';
 import path from 'path';
 
@@ -13,23 +13,33 @@ describe('DB_TYPE tests', () => {
     vi.resetModules();
   });
 
-  test('should return MockTaskRepository when DB_TYPE is "mongo"', async () => {
+  test('should return Mongo repositories when DB_TYPE is "mongo"', async () => {
     vi.resetModules();
     process.env.DB_TYPE = 'mongo';
     const { config } = await import('../configs');
-    const { taskRepository } = await import('./index');
+    const { refreshTokenRepository, taskRepository, userRepository } =
+      await import('./index');
 
-    expectTypeOf(taskRepository).toBeObject();
     expect(config.db.type).toBe('mongo');
+    expect(taskRepository.constructor.name).toBe('MongoTaskRepository');
+    expect(userRepository.constructor.name).toBe('MongoUserRepository');
+    expect(refreshTokenRepository.constructor.name).toBe(
+      'MongoRefreshTokenRepository',
+    );
   });
 
-  test('should return MockTaskRepository when DB_TYPE is "postgres"', async () => {
+  test('should return Postgres repositories when DB_TYPE is "postgres"', async () => {
     vi.resetModules();
     process.env.DB_TYPE = 'postgres';
     const { config } = await import('../configs');
-    const { taskRepository } = await import('./index');
+    const { refreshTokenRepository, taskRepository, userRepository } =
+      await import('./index');
 
-    expectTypeOf(taskRepository).toBeObject();
     expect(config.db.type).toBe('postgres');
+    expect(taskRepository.constructor.name).toBe('PostgresTaskRepository');
+    expect(userRepository.constructor.name).toBe('PostgresUserRepository');
+    expect(refreshTokenRepository.constructor.name).toBe(
+      'PostgresRefreshTokenRepository',
+    );
   });
 });

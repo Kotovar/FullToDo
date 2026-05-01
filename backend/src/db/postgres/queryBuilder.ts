@@ -3,6 +3,7 @@ import type {
   TaskQueryParams,
   UpdateTask,
 } from '@sharedCommon/schemas';
+import { COMMON_NOTEPAD_ID } from '@sharedCommon/schemas';
 
 /**
  * Колонки задачи для SELECT-запросов.
@@ -16,7 +17,7 @@ export const TASK_COLUMNS = `
   description,
   is_completed AS "isCompleted",
   created_date AS "createdDate",
-  notepad_id::text AS "notepadId",
+  COALESCE(notepad_id::text, '${COMMON_NOTEPAD_ID}') AS "notepadId",
   due_date AS "dueDate",
   (
     SELECT CASE WHEN COUNT(*) = 0 THEN ''
@@ -46,6 +47,10 @@ const TASK_UPDATE_FIELD_MAP: Partial<Record<keyof UpdateTask, string>> = {
   dueDate: 'due_date',
   isCompleted: 'is_completed',
   notepadId: 'notepad_id',
+};
+
+export type TaskUpdateSQLFields = Omit<Partial<UpdateTask>, 'notepadId'> & {
+  notepadId?: string | null;
 };
 
 type FilterResult = {
@@ -144,7 +149,7 @@ export function buildPaginationSQL(page: number, limit: number): string {
  *   values — массив значений в том же порядке.
  *   Индексы начинаются с $1; вызывающий код добавляет taskId последним параметром.
  */
-export function buildTaskUpdateSQL(fields: Partial<UpdateTask>): {
+export function buildTaskUpdateSQL(fields: TaskUpdateSQLFields): {
   setSQL: string;
   values: unknown[];
 } {
@@ -153,7 +158,7 @@ export function buildTaskUpdateSQL(fields: Partial<UpdateTask>): {
 
   for (const [key, column] of Object.entries(TASK_UPDATE_FIELD_MAP)) {
     if (key in fields) {
-      values.push(fields[key as keyof UpdateTask]);
+      values.push(fields[key as keyof TaskUpdateSQLFields]);
       sets.push(`${column} = $${values.length}`);
     }
   }
