@@ -45,7 +45,63 @@
         "required": "Enter your password"
       }
     },
+    "forgotPassword": "Forgot password?",
     "register": "Register"
+  },
+  "forgotPassword": {
+    "title": "Password recovery",
+    "description": "Enter your account email. If it exists and uses a password, we will send recovery instructions.",
+    "form": {
+      "email": {
+        "label": "Email",
+        "placeholder": "Enter your email"
+      },
+      "submit": "Send instructions",
+      "submitting": "Sending..."
+    },
+    "validation": {
+      "email": {
+        "invalid": "Enter a valid email"
+      }
+    },
+    "successMessage": "If the account exists, we sent password recovery instructions.",
+    "login": "Back to login"
+  },
+  "resetPassword": {
+    "title": "New password",
+    "description": "Enter a new password for your account.",
+    "form": {
+      "newPassword": {
+        "label": "New password",
+        "placeholder": "Enter your new password",
+        "hint": "At least 8 characters, one uppercase letter and one number",
+        "show": "Show new password",
+        "hide": "Hide new password"
+      },
+      "confirmPassword": {
+        "label": "Confirm new password",
+        "placeholder": "Repeat your new password",
+        "show": "Show password confirmation",
+        "hide": "Hide password confirmation"
+      },
+      "submit": "Change password",
+      "submitting": "Saving..."
+    },
+    "validation": {
+      "token": {
+        "required": "The recovery link is invalid or malformed."
+      },
+      "newPassword": {
+        "min": "Password must be at least 8 characters",
+        "uppercase": "Password must contain at least one uppercase letter",
+        "number": "Password must contain at least one number"
+      },
+      "confirmPassword": {
+        "required": "Confirm your new password",
+        "mismatch": "Passwords do not match"
+      }
+    },
+    "login": "Back to login"
   },
   "register": {
     "title": "Register",
@@ -110,6 +166,7 @@
       "notVerified": "Not verified",
       "provider": "Sign-in method",
       "passwordUser": "Email and password",
+      "passwordAndGoogleUser": "Email and password / Google",
       "googleUser": "Google"
     },
     "security": {

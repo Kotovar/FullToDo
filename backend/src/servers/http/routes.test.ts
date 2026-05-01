@@ -82,4 +82,28 @@ describe('routes', () => {
       expect.any(AuthService),
     );
   });
+
+  test('POST /auth/forgot-password dispatches to forgotPassword controller', () => {
+    const req = getReq('POST');
+    vi.spyOn(controllers, 'forgotPassword').mockResolvedValue();
+
+    handleRoute({ req, res }, '/auth/forgot-password');
+
+    expect(controllers.forgotPassword).toHaveBeenCalledWith(
+      { req, res },
+      expect.any(AuthService),
+    );
+  });
+
+  test('POST /auth/reset-password dispatches to resetPassword controller', () => {
+    const req = getReq('POST');
+    vi.spyOn(controllers, 'resetPassword').mockResolvedValue();
+
+    handleRoute({ req, res }, '/auth/reset-password');
+
+    expect(controllers.resetPassword).toHaveBeenCalledWith(
+      { req, res },
+      expect.any(AuthService),
+    );
+  });
 });

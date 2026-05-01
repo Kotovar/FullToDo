@@ -4,7 +4,7 @@ import {
   getId,
   handleValidationError,
   parseJsonBody,
-} from './utils';
+} from './httpUtils';
 import { httpAuthMiddleware } from '@middleware';
 import { createNotepadSchema } from '@sharedCommon/schemas';
 import type { NotepadService } from '@services/NotepadService';

@@ -14,10 +14,12 @@ import type {
 import type {
   ChangePassword,
   DeleteUser,
+  ForgotPassword,
   LoginWithEmail,
   LoginWithGoogle,
   PublicUser,
   RegisterWithEmail,
+  ResetPassword,
 } from '@sharedCommon';
 
 class AuthService extends BaseService {
@@ -168,6 +170,40 @@ class AuthService extends BaseService {
         method: 'POST',
         headers: HEADERS,
         body: JSON.stringify(credentials),
+      });
+
+      return this.handleResponse(response);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async forgotPassword(
+    credentials: ForgotPassword,
+  ): Promise<AuthMessageResponse> {
+    try {
+      const response = await authFetch(authRoutes.forgotPassword, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(credentials),
+        withAuth: false,
+      });
+
+      return this.handleResponse(response);
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  async resetPassword(
+    credentials: ResetPassword,
+  ): Promise<AuthMessageResponse> {
+    try {
+      const response = await authFetch(authRoutes.resetPassword, {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify(credentials),
+        withAuth: false,
       });
 
       return this.handleResponse(response);

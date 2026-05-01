@@ -1,23 +1,8 @@
 import http from 'http';
 import { handleNotFound } from '@controllers';
-import { config } from '@configs';
 import { handleRoute } from './routes';
 import { httpLogger } from '@logger/http';
-
-const setHeaders = (req: http.IncomingMessage, res: http.ServerResponse) => {
-  const origin = req.headers.origin;
-
-  if (origin === config.corsOrigin) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-  }
-
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET, POST, PATCH, DELETE, OPTIONS',
-  );
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-};
+import { setHeaders } from '..';
 
 export const extractPath = (reqUrl?: string): string | undefined => {
   const { 0: url } = reqUrl?.split('?') ?? [];

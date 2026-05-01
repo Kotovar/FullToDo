@@ -6,7 +6,7 @@ import {
   getValidatedTaskParams,
   handleValidationError,
   parseJsonBody,
-} from './utils';
+} from './httpUtils';
 import { httpAuthMiddleware } from '@middleware';
 import type { TaskService } from '@services/TaskService';
 import type { ServiceHandler } from './types';

@@ -8,7 +8,7 @@ import {
   getId,
   getValidatedTaskParams,
   setRefreshCookie,
-} from './utils';
+} from './httpUtils';
 import {
   COMMON_NOTEPAD_ID,
   PAGINATION,

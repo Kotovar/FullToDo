@@ -110,6 +110,7 @@ describe('RegisterForm', () => {
         email: 'user@example.com',
         isVerified: false,
         hasPassword: true,
+        hasGoogle: false,
       },
     });
 

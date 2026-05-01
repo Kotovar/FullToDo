@@ -5,6 +5,8 @@ export const ROUTES = {
     register: '/register',
     verifyEmail: '/verify-email',
     account: '/account',
+    forgotPassword: '/forgot-password',
+    resetPassword: '/reset-password',
   },
   notepads: {
     base: '/notepads',
@@ -31,5 +33,11 @@ export const ROUTES = {
     deleteUser: '/auth/delete-user',
     verifyEmail: '/auth/verify-email',
     resendVerification: '/auth/resend-verification',
+    forgotPassword: '/auth/forgot-password',
+    resetPassword: '/auth/reset-password',
+  },
+  swagger: {
+    ui: '/api-docs',
+    spec: '/api-docs/spec.json',
   },
 } as const;

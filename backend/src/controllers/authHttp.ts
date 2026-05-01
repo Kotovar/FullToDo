@@ -14,11 +14,20 @@ import {
   parseCookies,
   parseJsonBody,
   setRefreshCookie,
-} from './utils';
+} from './httpUtils';
 import { httpAuthMiddleware, httpRateLimit } from '@middleware';
-import { UnauthorizedError } from '@errors/AppError';
+import { NotFoundError, UnauthorizedError } from '@errors/AppError';
 import type { ServiceHandler } from './types';
 import type { AuthService } from '@services/AuthService';
+
+const refreshFailureRateLimitOptions = {
+  keyPrefix: 'auth:refresh:failed',
+  maxRequests: 5,
+  windowSeconds: 10 * 60,
+};
+
+const isRefreshAuthFailure = (error: unknown) =>
+  error instanceof UnauthorizedError || error instanceof NotFoundError;
 
 export const registerWithEmail: ServiceHandler<AuthService> = async (
   { req, res },
@@ -149,15 +158,10 @@ export const logout: ServiceHandler<AuthService> = async (
 
 export const refresh: ServiceHandler<AuthService> = async (ctx, service) => {
   const { req, res } = ctx;
+  let refreshToken: string | undefined;
 
   try {
-    await httpRateLimit(ctx, {
-      keyPrefix: 'auth:refresh',
-      maxRequests: 5,
-      windowSeconds: 10 * 60,
-    });
-
-    const { refreshToken } = parseCookies(req.headers.cookie);
+    ({ refreshToken } = parseCookies(req.headers.cookie));
 
     if (!refreshToken) {
       throw new UnauthorizedError('Refresh token missing');
@@ -173,6 +177,14 @@ export const refresh: ServiceHandler<AuthService> = async (ctx, service) => {
       }),
     );
   } catch (error) {
+    if (refreshToken && isRefreshAuthFailure(error)) {
+      try {
+        await httpRateLimit(ctx, refreshFailureRateLimitOptions);
+      } catch (rateLimitError) {
+        return errorHandler(res, rateLimitError);
+      }
+    }
+
     errorHandler(res, error);
   }
 };

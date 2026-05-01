@@ -28,19 +28,36 @@ export const config = ConfigSchema.parse({
   },
   db: {
     type: getRequiredEnv('DB_TYPE', 'mock'),
+  },
+  postgres: {
     user: getRequiredEnv('DB_USER', 'postgres'),
     host: getRequiredEnv('DB_HOST', 'localhost'),
     name: getRequiredEnv('DB_NAME', 'fulltodo'),
     password: getRequiredEnv('DB_PASSWORD', 'secret'),
     port: Number(getRequiredEnv('DB_PORT', '5432')),
   },
+  mongo: {
+    user: getRequiredEnv('MONGO_USER', 'root'),
+    password: getRequiredEnv('MONGO_PASSWORD', 'root'),
+    host: getRequiredEnv('MONGO_HOST', 'localhost'),
+    port: Number(getRequiredEnv('MONGO_PORT', '27017')),
+    name: getRequiredEnv('MONGO_DB', 'fulltodo'),
+    replicaSet: getRequiredEnv('MONGO_REPLICA_SET', 'rs0'),
+  },
   redis: {
     host: getRequiredEnv('REDIS_HOST', 'localhost'),
     port: Number(getRequiredEnv('REDIS_PORT', '6379')),
   },
+  email: {
+    provider: getRequiredEnv('EMAIL_PROVIDER', 'mailtrap'),
+    from: getRequiredEnv('EMAIL_FROM', '"FullToDo" <noreply@fulltodo.dev>'),
+  },
   smtp: {
     user: getRequiredEnv('MAILTRAP_USER', 'test-mailtrap-user'),
     pass: getRequiredEnv('MAILTRAP_PASS', 'test-mailtrap-pass'),
+  },
+  resend: {
+    apiKey: getRequiredEnv('RESEND_API_KEY', 'test-resend-api-key'),
   },
   corsOrigin: getRequiredEnv('CORS_ORIGIN', 'http://localhost:5173'),
   emailTokenSecret: getRequiredEnv('EMAIL_TOKEN_SECRET', 'test-email-secret'),
@@ -51,6 +68,10 @@ export const config = ConfigSchema.parse({
   refreshTokenSecret: getRequiredEnv(
     'REFRESH_TOKEN_SECRET',
     'test-refresh-secret',
+  ),
+  passwordResetTokenSecret: getRequiredEnv(
+    'PASSWORD_RESET_TOKEN_SECRET',
+    'test-password-reset-secret',
   ),
   googleClientId: getRequiredEnv('GOOGLE_CLIENT_ID', 'test-google-client-id'),
 });

@@ -20,6 +20,12 @@ export const Login = () => {
     <>
       <LoginForm initialEmail={prefilledEmail} redirectTo={redirectTo} />
       <Link
+        className='text-sm text-blue-700 underline-offset-4 transition hover:underline'
+        to={ROUTES.app.forgotPassword}
+      >
+        {t('login.forgotPassword')}
+      </Link>
+      <Link
         className='w-full max-w-md rounded border border-slate-300 bg-white p-2 text-slate-700 transition hover:bg-slate-50'
         to={ROUTES.app.register}
       >

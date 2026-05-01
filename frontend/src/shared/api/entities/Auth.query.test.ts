@@ -8,10 +8,12 @@ import { authService } from './Auth.query';
 import type {
   ChangePassword,
   DeleteUser,
+  ForgotPassword,
   LoginWithEmail,
   LoginWithGoogle,
   PublicUser,
   RegisterWithEmail,
+  ResetPassword,
 } from 'shared/schemas';
 
 const loginCredentials: LoginWithEmail = {
@@ -37,11 +39,21 @@ const deleteUserCredentials: DeleteUser = {
   currentPassword: 'Password1',
 };
 
+const forgotPasswordCredentials: ForgotPassword = {
+  email: 'user@example.com',
+};
+
+const resetPasswordCredentials: ResetPassword = {
+  token: 'reset-token',
+  newPassword: 'Password2',
+};
+
 const user: PublicUser = {
   userId: 1,
   email: 'user@example.com',
   isVerified: true,
   hasPassword: true,
+  hasGoogle: false,
 };
 
 const createJsonResponse = (body: unknown, status = 200) =>
@@ -205,8 +217,52 @@ describe('AuthService', () => {
     expect(headers.get('Authorization')).toBe('Bearer access-token-4');
   });
 
-  test('deleteUser handles 204 response and clears access token', async () => {
+  test('forgotPassword sends public JSON request', async () => {
     setAccessToken('access-token-5');
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      createJsonResponse({
+        message: 'If the account exists, password reset instructions were sent',
+      }),
+    );
+
+    const result = await authService.forgotPassword(forgotPasswordCredentials);
+
+    const [url, init] = fetchSpy.mock.calls[0] ?? [];
+    const headers = new Headers(init?.headers);
+
+    expect(String(url)).toContain('/auth/forgot-password');
+    expect(result.message).toBe(
+      'If the account exists, password reset instructions were sent',
+    );
+    expect(init?.credentials).toBe('include');
+    expect(init?.body).toBe(JSON.stringify(forgotPasswordCredentials));
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(headers.get('Authorization')).toBeNull();
+  });
+
+  test('resetPassword sends public JSON request', async () => {
+    setAccessToken('access-token-6');
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      createJsonResponse({
+        message: 'Password reset successful',
+      }),
+    );
+
+    const result = await authService.resetPassword(resetPasswordCredentials);
+
+    const [url, init] = fetchSpy.mock.calls[0] ?? [];
+    const headers = new Headers(init?.headers);
+
+    expect(String(url)).toContain('/auth/reset-password');
+    expect(result.message).toBe('Password reset successful');
+    expect(init?.credentials).toBe('include');
+    expect(init?.body).toBe(JSON.stringify(resetPasswordCredentials));
+    expect(headers.get('Content-Type')).toBe('application/json');
+    expect(headers.get('Authorization')).toBeNull();
+  });
+
+  test('deleteUser handles 204 response and clears access token', async () => {
+    setAccessToken('access-token-7');
     const fetchSpy = vi
       .spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce(new Response(null, { status: 204 }));
@@ -221,7 +277,7 @@ describe('AuthService', () => {
     expect(getAccessToken()).toBeNull();
     expect(init?.credentials).toBe('include');
     expect(headers.get('Content-Type')).toBe('application/json');
-    expect(headers.get('Authorization')).toBe('Bearer access-token-5');
+    expect(headers.get('Authorization')).toBe('Bearer access-token-7');
   });
 
   test('returns unauthorized error details for 401 responses', async () => {

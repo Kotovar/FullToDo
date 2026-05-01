@@ -1,12 +1,5 @@
-import { TooManyRequestsError } from '@errors';
-import { redisClient } from '@db/redis/client';
 import type { HttpContext } from '@controllers/types';
-
-type RateLimitOptions = {
-  keyPrefix: string;
-  maxRequests: number;
-  windowSeconds: number;
-};
+import { consumeRateLimit, type RateLimitOptions } from './rateLimit';
 
 /**
  * Извлекает IP-адрес клиента из HTTP-запроса.
@@ -41,22 +34,15 @@ const getClientIp = (ctx: HttpContext) => {
  * @param options.keyPrefix - логический префикс ключа, например `auth:login`.
  * @param options.maxRequests - максимальное число запросов за окно.
  * @param options.windowSeconds - длительность окна в секундах.
+ * @param options.consume - увеличивать ли счётчик. Если false, только проверяет текущий лимит.
  * @throws TooManyRequestsError если лимит запросов превышен.
  */
 export const httpRateLimit = async (
   ctx: HttpContext,
-  { keyPrefix, maxRequests, windowSeconds }: RateLimitOptions,
+  options: RateLimitOptions,
 ) => {
   const ip = getClientIp(ctx);
-  const key = `rate-limit:${keyPrefix}:${ip}`;
+  const key = `rate-limit:${options.keyPrefix}:${ip}`;
 
-  const count = await redisClient.incr(key);
-
-  if (count === 1) {
-    await redisClient.expire(key, windowSeconds);
-  }
-
-  if (count > maxRequests) {
-    throw new TooManyRequestsError(`Too many attempts. Try again later.`);
-  }
+  await consumeRateLimit(key, options);
 };

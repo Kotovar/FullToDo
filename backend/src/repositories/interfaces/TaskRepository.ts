@@ -33,7 +33,7 @@ export interface TaskRepository {
   ): Promise<PaginatedTasks>;
   updateNotepad(
     notepadId: string,
-    notepad: Partial<CreateNotepad>,
+    updatedNotepadFields: Partial<CreateNotepad>,
     userId: number,
   ): Promise<Notepad>;
   updateTask(taskId: string, task: UpdateTask, userId: number): Promise<Task>;
