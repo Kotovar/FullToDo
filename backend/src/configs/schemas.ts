@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const ServerSchema = z.object({
-  type: z.enum(['http', 'express', 'nextJs']).default('http'),
+  type: z.enum(['http', 'express', 'nestJs']).default('http'),
   port: z.number().min(1).max(65535).default(5000),
 });
 

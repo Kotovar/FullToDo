@@ -251,7 +251,7 @@ npm run email --workspace=fulltodo_backend
 
 ## Планы развития
 
-- Добавление поддержки ещё одного сервера (`nextJs`)
+- Добавление поддержки ещё одного сервера (`nestJs`)
 
 ---
 
@@ -505,4 +505,4 @@ Preview opens at `http://localhost:3000`.
 
 ## Roadmap
 
-- Add support for one more server (`nextJs`)
+- Add support for one more server (`nestJs`)
