@@ -78,7 +78,7 @@ describe('MockTaskRepository', () => {
     expect(newTaskData).toEqual(
       expect.objectContaining({
         title: newTask.title,
-        createdDate: new Date(),
+        createdDate: expect.any(Date),
         notepadId: realId,
         progress: '',
         isCompleted: false,

@@ -1,14 +1,11 @@
 import 'reflect-metadata';
 import express from 'express';
-import { Module } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { expressErrorHandler, expressNotFoundHandler } from '@controllers';
 import { expressRouter } from '../express/routes';
 import { setHeaders } from '../utils';
-
-@Module({})
-class AppModule {}
+import { AppModule } from './app.module';
 
 export const createNestServer = async () => {
   const expressApp = express();

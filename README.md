@@ -67,7 +67,7 @@ npm install
 
 ```
 DB_TYPE=mock
-SERVER_TYPE=http # или express
+SERVER_TYPE=http # или express / nestJs
 ```
 
 Запустить (из корня проекта):
@@ -84,7 +84,7 @@ npm run dev
 
 ```
 DB_TYPE=postgres
-SERVER_TYPE=http # или express
+SERVER_TYPE=http # или express / nestJs
 ```
 
 Запустить (из корня проекта):
@@ -101,7 +101,7 @@ npm run dev
 
 ```
 DB_TYPE=mongo
-SERVER_TYPE=http # или express
+SERVER_TYPE=http # или express / nestJs
 ```
 
 Запустить (из корня проекта):
@@ -113,6 +113,14 @@ npm run dev
 Команда поднимет контейнеры с MongoDB и Redis, затем запустит frontend и backend одновременно.
 
 MongoDB запускается как single-node replica set (`MONGO_REPLICA_SET=rs0`), потому что репозитории используют транзакции для операций, где нужно согласованно менять несколько коллекций.
+
+### Запуск с NestJS
+
+Для экспериментального NestJS-адаптера указать в `.env`:
+
+```
+SERVER_TYPE=nestJs
+```
 
 Остановить контейнеры:
 
@@ -225,7 +233,7 @@ npm run email --workspace=fulltodo_backend
 | Переменная                    | Описание                                       | Значения                      |
 | ----------------------------- | ---------------------------------------------- | ----------------------------- |
 | `PORT`                        | Порт backend-сервера                           | `5000` (по умолчанию)         |
-| `SERVER_TYPE`                 | Тип сервера                                    | `http` / `express`            |
+| `SERVER_TYPE`                 | Тип сервера                                    | `http` / `express` / `nestJs` |
 | `DB_TYPE`                     | Тип базы данных                                | `mock` / `postgres` / `mongo` |
 | `VITE_URL`                    | Базовый URL для фронтенда                      | `http://localhost:5000`       |
 | `DB_USER`                     | Пользователь PostgreSQL                        | `postgres`                    |
@@ -321,7 +329,7 @@ Set in `.env`:
 
 ```
 DB_TYPE=mock
-SERVER_TYPE=http # or express
+SERVER_TYPE=http # or express / nestJs
 ```
 
 Run (from project root):
@@ -338,7 +346,7 @@ Set in `.env`:
 
 ```
 DB_TYPE=postgres
-SERVER_TYPE=http # or express
+SERVER_TYPE=http # or express / nestJs
 ```
 
 Run (from project root):
@@ -355,7 +363,7 @@ Set in `.env`:
 
 ```
 DB_TYPE=mongo
-SERVER_TYPE=http # or express
+SERVER_TYPE=http # or express / nestJs
 ```
 
 Run (from project root):
@@ -367,6 +375,14 @@ npm run dev
 This command starts MongoDB and Redis containers, then runs both frontend and backend simultaneously.
 
 MongoDB runs as a single-node replica set (`MONGO_REPLICA_SET=rs0`) because repositories use transactions for operations that must update multiple collections consistently.
+
+### Running with NestJS
+
+For the experimental NestJS adapter, set in `.env`:
+
+```
+SERVER_TYPE=nestJs
+```
 
 Stop the containers:
 
@@ -479,7 +495,7 @@ Preview opens at `http://localhost:3000`.
 | Variable                      | Description                          | Values                        |
 | ----------------------------- | ------------------------------------ | ----------------------------- |
 | `PORT`                        | Backend server port                  | `5000` (default)              |
-| `SERVER_TYPE`                 | Server type                          | `http` / `express`            |
+| `SERVER_TYPE`                 | Server type                          | `http` / `express` / `nestJs` |
 | `DB_TYPE`                     | Database type                        | `mock` / `postgres` / `mongo` |
 | `VITE_URL`                    | Base URL for frontend                | `http://localhost:5000`       |
 | `DB_USER`                     | PostgreSQL user                      | `postgres`                    |
