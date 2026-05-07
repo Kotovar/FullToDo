@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { describe, expect, test } from 'vitest';
+import request from 'supertest';
 import { AuthService, NotepadService, TaskService } from '@services';
 import {
   refreshTokenRepository,
@@ -49,5 +50,21 @@ describe('nest dependency injection', () => {
     );
 
     await app.close();
+  });
+});
+
+describe('nest common middleware', () => {
+  test('should handle OPTIONS requests with shared headers', async () => {
+    const app = await createNestServer();
+
+    const response = await request(app).options('/tasks');
+
+    expect(response.status).toBe(204);
+    expect(response.headers['access-control-allow-methods']).toBe(
+      'GET, POST, PATCH, DELETE, OPTIONS',
+    );
+    expect(response.headers['access-control-allow-headers']).toBe(
+      'Content-Type, Authorization',
+    );
   });
 });
