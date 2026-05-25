@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { nestProviders } from './common/providers';
 import { NotepadsModule } from './notepads/notepads.module';
+import { TasksModule } from './tasks/tasks.module';
 
 /**
  * Корневой модуль Nest-приложения.
@@ -15,7 +16,7 @@ import { NotepadsModule } from './notepads/notepads.module';
  */
 @Global()
 @Module({
-  imports: [NotepadsModule],
+  imports: [NotepadsModule, TasksModule],
   providers: nestProviders,
   exports: nestProviders,
 })
