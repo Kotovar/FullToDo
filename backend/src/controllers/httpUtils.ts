@@ -152,23 +152,35 @@ export const handleValidationError = (res: ServerResponse, error: ZodError) => {
 };
 
 /**
- * Формирует заголовки ответа с httpOnly-куки для refresh-токена.
+ * Формирует строку httpOnly-куки для refresh-токена.
  *
  * Флаг `Secure` добавляется только в production (требует HTTPS).
  * Путь ограничен `/auth`, чтобы куки не отправлялась на остальные маршруты.
  *
  * @param token - значение refresh-токена
- * @returns объект заголовков с `Content-Type` и `Set-Cookie`
+ * @returns строка заголовка `Set-Cookie`
+ */
+export const buildRefreshCookie = (
+  token: string,
+  maxAge: number = REFRESH_TOKEN_EXPIRES_S,
+) => {
+  const secure = process.env.NODE_ENV === 'production' ? ' Secure;' : '';
+  return `refreshToken=${token}; HttpOnly;${secure} SameSite=Strict; Path=${ROUTES.auth.base}; Max-Age=${maxAge}`;
+};
+
+/**
+ * Формирует объект заголовков ответа с httpOnly-куки для refresh-токена.
+ *
+ * @param token - значение refresh-токена
+ * @returns объект с `Content-Type` и `Set-Cookie`
  */
 export const setRefreshCookie = (
   token: string,
   maxAge: number = REFRESH_TOKEN_EXPIRES_S,
 ) => {
-  const secure = process.env.NODE_ENV === 'production' ? ' Secure;' : '';
-
   return {
     'Content-Type': 'application/json',
-    'Set-Cookie': `refreshToken=${token}; HttpOnly;${secure} SameSite=Strict; Path=${ROUTES.auth.base}; Max-Age=${maxAge}`,
+    'Set-Cookie': buildRefreshCookie(token, maxAge),
   };
 };
 

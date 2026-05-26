@@ -17,6 +17,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
     "skipLibCheck": true,
     "paths": {
       "@sharedCommon/*": ["../shared/*"],

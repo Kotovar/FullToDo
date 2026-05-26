@@ -67,7 +67,7 @@ npm install
 
 ```
 DB_TYPE=mock
-SERVER_TYPE=http # или express
+SERVER_TYPE=http # или express / nestJs
 ```
 
 Запустить (из корня проекта):
@@ -84,7 +84,7 @@ npm run dev
 
 ```
 DB_TYPE=postgres
-SERVER_TYPE=http # или express
+SERVER_TYPE=http # или express / nestJs
 ```
 
 Запустить (из корня проекта):
@@ -101,7 +101,7 @@ npm run dev
 
 ```
 DB_TYPE=mongo
-SERVER_TYPE=http # или express
+SERVER_TYPE=http # или express / nestJs
 ```
 
 Запустить (из корня проекта):
@@ -113,6 +113,24 @@ npm run dev
 Команда поднимет контейнеры с MongoDB и Redis, затем запустит frontend и backend одновременно.
 
 MongoDB запускается как single-node replica set (`MONGO_REPLICA_SET=rs0`), потому что репозитории используют транзакции для операций, где нужно согласованно менять несколько коллекций.
+
+### Запуск с NestJS
+
+Для запуска с NestJS-адаптером указать в `.env`:
+
+```
+SERVER_TYPE=nestJs
+```
+
+NestJS-адаптер включает:
+- нативные Nest-контроллеры для всех API-роутов (`/auth`, `/notepads`, `/tasks`);
+- `AuthGuard`, `ZodValidationPipe`, `AppErrorFilter`;
+- Swagger UI через `@nestjs/swagger` (существующая Zod-спецификация);
+- логирование входящих запросов.
+
+```bash
+npm run dev
+```
 
 Остановить контейнеры:
 
@@ -225,7 +243,7 @@ npm run email --workspace=fulltodo_backend
 | Переменная                    | Описание                                       | Значения                      |
 | ----------------------------- | ---------------------------------------------- | ----------------------------- |
 | `PORT`                        | Порт backend-сервера                           | `5000` (по умолчанию)         |
-| `SERVER_TYPE`                 | Тип сервера                                    | `http` / `express`            |
+| `SERVER_TYPE`                 | Тип сервера                                    | `http` / `express` / `nestJs` |
 | `DB_TYPE`                     | Тип базы данных                                | `mock` / `postgres` / `mongo` |
 | `VITE_URL`                    | Базовый URL для фронтенда                      | `http://localhost:5000`       |
 | `DB_USER`                     | Пользователь PostgreSQL                        | `postgres`                    |
@@ -248,12 +266,6 @@ npm run email --workspace=fulltodo_backend
 | `MAILTRAP_PASS`               | SMTP пароль Mailtrap                           | —                             |
 | `RESEND_API_KEY`              | API-ключ Resend                                | —                             |
 | `PASSWORD_RESET_TOKEN_SECRET` | Секрет JWT для восстановления пароля           | —                             |
-
-## Планы развития
-
-- Добавление поддержки ещё одного сервера (`nextJs`)
-
----
 
 # FullToDo (English version)
 
@@ -321,7 +333,7 @@ Set in `.env`:
 
 ```
 DB_TYPE=mock
-SERVER_TYPE=http # or express
+SERVER_TYPE=http # or express / nestJs
 ```
 
 Run (from project root):
@@ -338,7 +350,7 @@ Set in `.env`:
 
 ```
 DB_TYPE=postgres
-SERVER_TYPE=http # or express
+SERVER_TYPE=http # or express / nestJs
 ```
 
 Run (from project root):
@@ -355,7 +367,7 @@ Set in `.env`:
 
 ```
 DB_TYPE=mongo
-SERVER_TYPE=http # or express
+SERVER_TYPE=http # or express / nestJs
 ```
 
 Run (from project root):
@@ -367,6 +379,24 @@ npm run dev
 This command starts MongoDB and Redis containers, then runs both frontend and backend simultaneously.
 
 MongoDB runs as a single-node replica set (`MONGO_REPLICA_SET=rs0`) because repositories use transactions for operations that must update multiple collections consistently.
+
+### Running with NestJS
+
+To run with the fully functional NestJS adapter, set in `.env`:
+
+```
+SERVER_TYPE=nestJs
+```
+
+The NestJS adapter includes:
+- native Nest controllers for all API routes (`/auth`, `/notepads`, `/tasks`);
+- `AuthGuard`, `ZodValidationPipe`, `AppErrorFilter`;
+- Swagger UI via `@nestjs/swagger` (reusing the existing Zod spec);
+- incoming request logging.
+
+```bash
+npm run dev
+```
 
 Stop the containers:
 
@@ -479,7 +509,7 @@ Preview opens at `http://localhost:3000`.
 | Variable                      | Description                          | Values                        |
 | ----------------------------- | ------------------------------------ | ----------------------------- |
 | `PORT`                        | Backend server port                  | `5000` (default)              |
-| `SERVER_TYPE`                 | Server type                          | `http` / `express`            |
+| `SERVER_TYPE`                 | Server type                          | `http` / `express` / `nestJs` |
 | `DB_TYPE`                     | Database type                        | `mock` / `postgres` / `mongo` |
 | `VITE_URL`                    | Base URL for frontend                | `http://localhost:5000`       |
 | `DB_USER`                     | PostgreSQL user                      | `postgres`                    |
@@ -502,7 +532,3 @@ Preview opens at `http://localhost:3000`.
 | `MAILTRAP_PASS`               | Mailtrap SMTP password               | —                             |
 | `RESEND_API_KEY`              | Resend API key                       | —                             |
 | `PASSWORD_RESET_TOKEN_SECRET` | Password reset JWT secret            | —                             |
-
-## Roadmap
-
-- Add support for one more server (`nextJs`)
