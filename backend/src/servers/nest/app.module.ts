@@ -1,5 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import { nestProviders } from './common/providers';
+import { AuthModule } from './auth/auth.module';
 import { NotepadsModule } from './notepads/notepads.module';
 import { TasksModule } from './tasks/tasks.module';
 
@@ -16,7 +17,7 @@ import { TasksModule } from './tasks/tasks.module';
  */
 @Global()
 @Module({
-  imports: [NotepadsModule, TasksModule],
+  imports: [AuthModule, NotepadsModule, TasksModule],
   providers: nestProviders,
   exports: nestProviders,
 })
