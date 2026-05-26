@@ -7,6 +7,7 @@ import { expressErrorHandler, expressNotFoundHandler } from '@controllers';
 import { swaggerSpec } from '@swagger/spec';
 import { AppErrorFilter } from './common/app-error.filter';
 import { nestHeadersMiddleware } from './common/headers.middleware';
+import { requestLoggerMiddleware } from './common/request-logger.middleware';
 import { AppModule } from './app.module';
 
 export const createNestServer = async () => {
@@ -22,6 +23,7 @@ export const createNestServer = async () => {
 
   app.use(nestHeadersMiddleware);
   app.use(express.json());
+  app.use(requestLoggerMiddleware);
   app.useGlobalFilters(new AppErrorFilter());
 
   SwaggerModule.setup('api-docs', app, swaggerSpec as OpenAPIObject, {

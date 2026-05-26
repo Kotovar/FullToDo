@@ -53,6 +53,17 @@ const start = async () => {
 
   const server = app.listen(port, () => {
     serverLogger.info({ port }, 'Server started');
+
+    if (process.env.NODE_ENV === 'development') {
+      const baseUrl = `http://localhost:${port}`;
+      serverLogger.info(
+        {
+          swaggerUi: `${baseUrl}/api-docs`,
+          swaggerSpec: `${baseUrl}/api-docs/spec.json`,
+        },
+        'Swagger documentation',
+      );
+    }
   });
 
   server.on('error', exitOnStartupError('Server failed to start'));
