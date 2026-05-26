@@ -5,9 +5,8 @@ import { setHeaders } from '../../utils';
 /**
  * Общие CORS/OPTIONS-заголовки для Nest adapter.
  *
- * Функция экспортируется отдельно, чтобы bootstrap мог поставить middleware до
- * временного Express router bridge. Класс пригодится позже для `MiddlewareConsumer`,
- * когда bridge будет удален.
+ * Функция экспортируется отдельно, чтобы bootstrap мог поставить middleware
+ * до регистрации Nest-роутов. Класс может пригодиться позже для `MiddlewareConsumer`.
  */
 export const nestHeadersMiddleware = (
   req: Request,

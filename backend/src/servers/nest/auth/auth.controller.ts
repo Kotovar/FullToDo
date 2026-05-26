@@ -9,6 +9,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '@services';
 import {
   changePasswordSchema,
@@ -47,6 +48,7 @@ import { ZodValidationPipe } from '../common/zod-validation.pipe';
  * Cookie с refresh-токеном управляется через {@link Res} с `passthrough: true`,
  * чтобы Nest продолжал сериализовать JSON-ответ.
  */
+@ApiTags('Auth')
 @Controller(ROUTES.auth.base)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -121,6 +123,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   async me(@UserId() userId: number) {
     const user = await this.authService.getCurrentUser(userId);
     return { user: publicUserSchema.parse(user) };
@@ -160,6 +163,7 @@ export class AuthController {
 
   @Post('change-password')
   @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @HttpCode(200)
   async changePassword(
     @UserId() userId: number,
@@ -198,6 +202,7 @@ export class AuthController {
 
   @Post('delete-user')
   @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @HttpCode(204)
   async deleteUser(
     @UserId() userId: number,

@@ -11,6 +11,7 @@ import {
 import { NotepadService } from '@services';
 import { createNotepadSchema } from '@sharedCommon/schemas';
 import { ROUTES } from '@sharedCommon/routes';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../common/auth.guard';
 import { UserId } from '../common/user-id.decorator';
 import { ZodValidationPipe } from '../common/zod-validation.pipe';
@@ -31,6 +32,8 @@ import { ZodValidationPipe } from '../common/zod-validation.pipe';
  * `@Controller(ROUTES.notepads.base)` устанавливает базовый префикс `/notepads`
  * для всех методов класса.
  */
+@ApiTags('Notepads')
+@ApiBearerAuth()
 @Controller(ROUTES.notepads.base)
 @UseGuards(AuthGuard)
 export class NotepadsController {

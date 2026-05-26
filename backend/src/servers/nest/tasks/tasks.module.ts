@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { SharedModule } from '../common/shared.module';
 import { NotepadTasksController, TasksController } from './tasks.controller';
 
 /**
@@ -8,11 +9,11 @@ import { NotepadTasksController, TasksController } from './tasks.controller';
  * - {@link TasksController} — маршруты под `/tasks`,
  * - {@link NotepadTasksController} — маршруты под `/notepads/:notepadId/tasks`.
  *
- * `TaskService` не регистрируется заново — он доступен из глобального
- * `AppModule` (через декоратор `@Global()`), поэтому контроллеры могут
- * инжектировать его через конструктор.
+ * Импортирует `SharedModule` для доступа к `TaskService` и другим
+ * общим providers через явные границы модулей Nest.
  */
 @Module({
+  imports: [SharedModule],
   controllers: [TasksController, NotepadTasksController],
 })
 export class TasksModule {}

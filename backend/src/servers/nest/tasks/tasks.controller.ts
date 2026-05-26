@@ -22,6 +22,7 @@ import type {
   TaskQueryParams,
 } from '@sharedCommon/schemas';
 import { ROUTES } from '@sharedCommon/routes';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../common/auth.guard';
 import { UserId } from '../common/user-id.decorator';
 import { ZodValidationPipe } from '../common/zod-validation.pipe';
@@ -31,6 +32,8 @@ import { ZodValidationPipe } from '../common/zod-validation.pipe';
  *
  * Задачи здесь всегда принадлежат common notepad (`COMMON_NOTEPAD_ID`).
  */
+@ApiTags('Tasks')
+@ApiBearerAuth()
 @Controller(ROUTES.tasks.base)
 @UseGuards(AuthGuard)
 export class TasksController {
@@ -111,6 +114,8 @@ export class TasksController {
  * базовым префиксом (здесь `/notepads`), поэтому коллизий
  * с {@link NotepadsController} не возникает.
  */
+@ApiTags('Notepad Tasks')
+@ApiBearerAuth()
 @Controller(ROUTES.notepads.base)
 @UseGuards(AuthGuard)
 export class NotepadTasksController {

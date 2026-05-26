@@ -2,8 +2,9 @@ import 'reflect-metadata';
 import express from 'express';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import { SwaggerModule, type OpenAPIObject } from '@nestjs/swagger';
 import { expressErrorHandler, expressNotFoundHandler } from '@controllers';
-import { expressRouter } from '../express/routes';
+import { swaggerSpec } from '@swagger/spec';
 import { AppErrorFilter } from './common/app-error.filter';
 import { nestHeadersMiddleware } from './common/headers.middleware';
 import { AppModule } from './app.module';
@@ -21,8 +22,12 @@ export const createNestServer = async () => {
 
   app.use(nestHeadersMiddleware);
   app.use(express.json());
-  app.use(expressRouter);
   app.useGlobalFilters(new AppErrorFilter());
+
+  SwaggerModule.setup('api-docs', app, swaggerSpec as OpenAPIObject, {
+    jsonDocumentUrl: '/api-docs/spec.json',
+    customSiteTitle: 'FullToDo API',
+  });
 
   await app.init();
 

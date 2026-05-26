@@ -25,6 +25,7 @@
     "@nestjs/common": "^11.1.19",
     "@nestjs/core": "^11.1.19",
     "@nestjs/platform-express": "^11.1.19",
+    "@nestjs/swagger": "^11.4.4",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.8",
     "bcrypt": "^6.0.0",
@@ -43,7 +44,8 @@
     "reflect-metadata": "^0.2.2",
     "resend": "^6.12.2",
     "rxjs": "^7.8.2",
-    "shared": "file:../shared"
+    "shared": "file:../shared",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@esbuild/linux-x64": "^0.28.0",
