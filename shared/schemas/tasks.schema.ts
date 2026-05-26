@@ -15,19 +15,9 @@ const StatusResponseEnum = z.union([
 
 export type StatusResponseEnum = z.infer<typeof StatusResponseEnum>;
 
-const zPage = () =>
-  z
-    .string()
-    .optional()
-    .transform(val => parseInt(val ?? PAGINATION.DEFAULT_PAGE.toString()))
-    .refine(val => val > 0, { message: 'Page must be positive' });
+const zPage = () => z.coerce.number().min(1).default(PAGINATION.DEFAULT_PAGE);
 
-const zLimit = () =>
-  z
-    .string()
-    .optional()
-    .transform(val => parseInt(val ?? PAGINATION.DEFAULT_LIMIT.toString()))
-    .refine(val => val > 0, { message: 'Limit must be positive' });
+const zLimit = () => z.coerce.number().min(1).default(PAGINATION.DEFAULT_LIMIT);
 
 export const createNotepadSchema = z.object({
   title: z.coerce.string().min(1, 'Title is required'),

@@ -116,10 +116,20 @@ MongoDB запускается как single-node replica set (`MONGO_REPLICA_SE
 
 ### Запуск с NestJS
 
-Для экспериментального NestJS-адаптера указать в `.env`:
+Для запуска с NestJS-адаптером указать в `.env`:
 
 ```
 SERVER_TYPE=nestJs
+```
+
+NestJS-адаптер включает:
+- нативные Nest-контроллеры для всех API-роутов (`/auth`, `/notepads`, `/tasks`);
+- `AuthGuard`, `ZodValidationPipe`, `AppErrorFilter`;
+- Swagger UI через `@nestjs/swagger` (существующая Zod-спецификация);
+- логирование входящих запросов.
+
+```bash
+npm run dev
 ```
 
 Остановить контейнеры:
@@ -257,10 +267,6 @@ npm run email --workspace=fulltodo_backend
 | `RESEND_API_KEY`              | API-ключ Resend                                | —                             |
 | `PASSWORD_RESET_TOKEN_SECRET` | Секрет JWT для восстановления пароля           | —                             |
 
-## Планы развития
-
-- Добавление поддержки ещё одного сервера (`nestJs`)
-
 ---
 
 # FullToDo (English version)
@@ -378,10 +384,20 @@ MongoDB runs as a single-node replica set (`MONGO_REPLICA_SET=rs0`) because repo
 
 ### Running with NestJS
 
-For the experimental NestJS adapter, set in `.env`:
+To run with the fully functional NestJS adapter, set in `.env`:
 
 ```
 SERVER_TYPE=nestJs
+```
+
+The NestJS adapter includes:
+- native Nest controllers for all API routes (`/auth`, `/notepads`, `/tasks`);
+- `AuthGuard`, `ZodValidationPipe`, `AppErrorFilter`;
+- Swagger UI via `@nestjs/swagger` (reusing the existing Zod spec);
+- incoming request logging.
+
+```bash
+npm run dev
 ```
 
 Stop the containers:
@@ -518,7 +534,3 @@ Preview opens at `http://localhost:3000`.
 | `MAILTRAP_PASS`               | Mailtrap SMTP password               | —                             |
 | `RESEND_API_KEY`              | Resend API key                       | —                             |
 | `PASSWORD_RESET_TOKEN_SECRET` | Password reset JWT secret            | —                             |
-
-## Roadmap
-
-- Add support for one more server (`nestJs`)
