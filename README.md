@@ -267,8 +267,6 @@ npm run email --workspace=fulltodo_backend
 | `RESEND_API_KEY`              | API-ключ Resend                                | —                             |
 | `PASSWORD_RESET_TOKEN_SECRET` | Секрет JWT для восстановления пароля           | —                             |
 
----
-
 # FullToDo (English version)
 
 A pet project for task management (todo app) with the ability to choose different backend technologies.
