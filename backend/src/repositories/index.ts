@@ -21,6 +21,11 @@ import {
   MongoTaskRepository,
   MongoUserRepository,
 } from './mongo';
+import {
+  PrismaRefreshTokenRepository,
+  PrismaTaskRepository,
+  PrismaUserRepository,
+} from './prisma';
 
 export * from './interfaces';
 
@@ -34,6 +39,8 @@ export const taskRepository: TaskRepository = (() => {
       return new MongoTaskRepository();
     case 'postgres':
       return new PostgresTaskRepository();
+    case 'prisma':
+      return new PrismaTaskRepository();
     default:
       return new MockTaskRepository(NOTEPADS);
   }
@@ -45,6 +52,8 @@ export const userRepository: UserRepository = (() => {
       return new MongoUserRepository();
     case 'postgres':
       return new PostgresUserRepository();
+    case 'prisma':
+      return new PrismaUserRepository();
     default:
       return new MockUserRepository(USERS);
   }
@@ -56,6 +65,8 @@ export const refreshTokenRepository: RefreshTokenRepository = (() => {
       return new MongoRefreshTokenRepository();
     case 'postgres':
       return new PostgresRefreshTokenRepository();
+    case 'prisma':
+      return new PrismaRefreshTokenRepository();
     default:
       return new MockRefreshTokenRepository();
   }
