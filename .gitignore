@@ -35,3 +35,5 @@ coverage
 .claude/
 .codex
 AGENTS.md
+.codebase-memory
+PRISMA_INTEGRATION_PLAN.md
