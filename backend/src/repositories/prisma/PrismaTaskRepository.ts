@@ -161,7 +161,7 @@ export class PrismaTaskRepository implements TaskRepository {
 
     return [
       { title: 'Задачи', _id: COMMON_NOTEPAD_ID, userId },
-      ...notepads.map(n => ({
+      ...notepads.map((n: { id: bigint; title: string; userId: bigint }) => ({
         _id: n.id.toString(),
         title: n.title,
         userId: Number(n.userId),
