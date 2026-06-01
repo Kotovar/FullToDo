@@ -35,7 +35,7 @@ const exitOnStartupError = (message: string) => (err: unknown) => {
 };
 
 const startDependencies = async () => {
-  if (dbType === 'postgres') {
+  if (dbType === 'postgres' || dbType === 'prisma') {
     await initializePostgres();
   }
 

@@ -65,6 +65,10 @@ jobs:
           HUSKY: 0
         run: npm ci
 
+      - name: Generate Prisma Client
+        working-directory: ./backend
+        run: npx prisma generate
+
       - name: Lint Backend
         working-directory: ./backend
         run: npm run lint
@@ -76,7 +80,7 @@ jobs:
       - name: Create test env file
         run: |
           cp .env.example .env
-          cp .env ./backend/.env  
+          cp .env ./backend/.env
 
       - name: Run Tests
         working-directory: ./backend

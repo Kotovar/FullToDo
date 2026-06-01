@@ -6,7 +6,7 @@ export const ServerSchema = z.object({
 });
 
 export const DBSchema = z.object({
-  type: z.enum(['mongo', 'postgres', 'mock']).default('mock'),
+  type: z.enum(['mongo', 'postgres', 'prisma', 'mock']).default('mock'),
 });
 
 export const PostgresSchema = z.object({

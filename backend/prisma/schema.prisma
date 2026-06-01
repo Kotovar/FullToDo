@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           BigInt   @id @default(autoincrement()) @map("_id")
+  email        String   @unique
+  passwordHash String?  @map("password_hash")
+  googleId     String?  @unique @map("google_id")
+  isVerified   Boolean  @default(false) @map("is_verified")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model Notepad {
+  id     BigInt  @id @default(autoincrement()) @map("_id")
+  title  String
+  userId BigInt  @map("user_id")
+  tasks  Task[]
+
+  @@unique([userId, title], map: "notepads_user_id_title_key")
+  @@map("notepads")
+}
+
+model Task {
+  id          BigInt    @id @default(autoincrement()) @map("_id")
+  notepadId   BigInt?   @map("notepad_id")
+  userId      BigInt    @map("user_id")
+  title       String
+  createdDate DateTime  @default(now()) @map("created_date")
+  isCompleted Boolean   @default(false) @map("is_completed")
+  description String?
+  dueDate     DateTime? @map("due_date")
+
+  notepad  Notepad?  @relation(fields: [notepadId], references: [id], onDelete: Cascade)
+  subtasks Subtask[]
+
+  @@map("tasks")
+}
+
+model Subtask {
+  id          BigInt  @id @default(autoincrement()) @map("_id")
+  taskId      BigInt  @map("task_id")
+  title       String
+  isCompleted Boolean @default(false) @map("is_completed")
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("subtasks")
+}
+
+model RefreshToken {
+  id        BigInt   @id @default(autoincrement()) @map("_id")
+  userId    BigInt   @map("user_id")
+  tokenHash String   @unique @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}

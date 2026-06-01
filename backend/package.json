@@ -1,6 +1,6 @@
 {
   "name": "fulltodo_backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "src/app.ts",
   "scripts": {
     "build": "tsc",
@@ -26,6 +26,8 @@
     "@nestjs/core": "^11.1.24",
     "@nestjs/platform-express": "^11.1.24",
     "@nestjs/swagger": "^11.4.4",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.8",
     "bcrypt": "^6.0.0",
@@ -68,6 +70,7 @@
     "eslint": "^10.4.0",
     "globals": "^17.6.0",
     "nodemon": "^3.1.14",
+    "prisma": "^7.8.0",
     "react-email": "^6.3.3",
     "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
