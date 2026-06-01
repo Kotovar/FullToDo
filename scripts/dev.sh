@@ -8,8 +8,8 @@ if [ -f "$ENV_FILE" ]; then
   DB_TYPE=$(grep -E '^DB_TYPE=' "$ENV_FILE" | cut -d'=' -f2 | cut -d'#' -f1 | tr -d ' \r')
 fi
 
-if [ "$DB_TYPE" = "postgres" ]; then
-  echo "DB_TYPE=postgres — starting Postgres..."
+if [ "$DB_TYPE" = "postgres" ] || [ "$DB_TYPE" = "prisma" ]; then
+  echo "DB_TYPE=$DB_TYPE — starting Postgres..."
   docker compose -f "$COMPOSE_FILE" up -d postgres redis
 elif [ "$DB_TYPE" = "mongo" ]; then
   echo "DB_TYPE=mongo — starting Mongo..."
@@ -20,7 +20,7 @@ elif [ "$DB_TYPE" = "mock" ]; then
 
 else
   echo "Unknown DB_TYPE: $DB_TYPE"
-  echo "Expected: postgres | mongo | mock"
+  echo "Expected: postgres | prisma | mongo | mock"
   exit 1
 fi
 

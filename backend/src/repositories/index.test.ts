@@ -42,4 +42,19 @@ describe('DB_TYPE tests', () => {
       'PostgresRefreshTokenRepository',
     );
   });
+
+  test('should return Prisma repositories when DB_TYPE is "prisma"', async () => {
+    vi.resetModules();
+    process.env.DB_TYPE = 'prisma';
+    const { config } = await import('../configs');
+    const { refreshTokenRepository, taskRepository, userRepository } =
+      await import('./index');
+
+    expect(config.db.type).toBe('prisma');
+    expect(taskRepository.constructor.name).toBe('PrismaTaskRepository');
+    expect(userRepository.constructor.name).toBe('PrismaUserRepository');
+    expect(refreshTokenRepository.constructor.name).toBe(
+      'PrismaRefreshTokenRepository',
+    );
+  });
 });

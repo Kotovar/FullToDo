@@ -1,10 +1,41 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 import { config } from '@configs';
 
-const { postgres } = config;
+let prismaInstance: PrismaClient | null = null;
 
-if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = `postgresql://${postgres.user}:${postgres.password}@${postgres.host}:${postgres.port}/${postgres.name}`;
+/**
+ * Создаёт PrismaClient с PostgreSQL-адаптером.
+ *
+ * Prisma 7 требует передачи `adapter` в конструктор.
+ * Используем `pg.Pool` (уже установлен в проекте) через `@prisma/adapter-pg`.
+ */
+function createPrismaClient(): PrismaClient {
+  const { postgres } = config;
+
+  const pool = new Pool({
+    user: postgres.user,
+    password: postgres.password,
+    host: postgres.host,
+    port: postgres.port,
+    database: postgres.name,
+  });
+
+  const adapter = new PrismaPg(pool);
+  return new PrismaClient({ adapter });
 }
 
-export const prisma = new PrismaClient();
+/**
+ * Возвращает singleton-инстанс PrismaClient.
+ *
+ * Lazy-инициализация: клиент создаётся только при первом вызове.
+ * Это позволяет импортировать модуль без side-effects
+ * (важно для тестов с другим DB_TYPE).
+ */
+export function getPrisma(): PrismaClient {
+  if (!prismaInstance) {
+    prismaInstance = createPrismaClient();
+  }
+  return prismaInstance;
+}

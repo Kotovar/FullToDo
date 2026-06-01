@@ -1,4 +1,4 @@
-import { prisma } from '@db/prisma/client';
+import { getPrisma } from '@db/prisma/client';
 import { isPrismaError } from '@db/prisma/errors';
 import { ConflictError, NotFoundError } from '@errors/AppError';
 import { UserRepository } from '@repositories/interfaces';
@@ -29,22 +29,22 @@ const prismaUserToDbUser = (user: {
 /**
  * Репозиторий пользователей на Prisma.
  *
- * Все запросы выполняются через `prisma.user`.
- * Для транзакций используется `prisma.$transaction([...])` —
+ * Все запросы выполняются через `getPrisma().user`.
+ * Для транзакций используется `getPrisma().$transaction([...])` —
  * Prisma автоматически оборачивает массив запросов в SQL-транзакцию.
  */
 export class PrismaUserRepository implements UserRepository {
   /**
    * Создаёт нового пользователя.
    *
-   * Prisma-метод: `prisma.user.create({ data })`
+   * Prisma-метод: `getPrisma().user.create({ data })`
    *
    * Если email или googleId уже заняты, Prisma выбросит ошибку с кодом `P2002`
    * (unique constraint violated) — ловим её и превращаем в `ConflictError`.
    */
   async createUser(data: CreateUser): Promise<DbUser> {
     try {
-      const user = await prisma.user.create({
+      const user = await getPrisma().user.create({
         data: {
           email: data.email,
           passwordHash: 'passwordHash' in data ? data.passwordHash : null,
@@ -67,7 +67,7 @@ export class PrismaUserRepository implements UserRepository {
   /**
    * Помечает пользователя как верифицированного.
    *
-   * Prisma-метод: `prisma.user.updateMany({ where, data })`
+   * Prisma-метод: `getPrisma().user.updateMany({ where, data })`
    *
    * `updateMany` нужен, чтобы обновить запись ТОЛЬКО если `isVerified = false`.
    * Если ни одна строка не обновилась — проверяем, существует ли пользователь вообще.
@@ -75,7 +75,7 @@ export class PrismaUserRepository implements UserRepository {
    * @returns `true` если статус изменился, `false` если уже был верифицирован.
    */
   async markVerified(userId: number): Promise<boolean> {
-    const result = await prisma.user.updateMany({
+    const result = await getPrisma().user.updateMany({
       where: { id: userId, isVerified: false },
       data: { isVerified: true },
     });
@@ -95,10 +95,10 @@ export class PrismaUserRepository implements UserRepository {
   /**
    * Ищет пользователя по ID.
    *
-   * Prisma-метод: `prisma.user.findUnique({ where: { id: userId } })`
+   * Prisma-метод: `getPrisma().user.findUnique({ where: { id: userId } })`
    */
   async findById(userId: number): Promise<DbUser | null> {
-    const user = await prisma.user.findUnique({
+    const user = await getPrisma().user.findUnique({
       where: { id: userId },
     });
 
@@ -108,10 +108,10 @@ export class PrismaUserRepository implements UserRepository {
   /**
    * Ищет пользователя по email.
    *
-   * Prisma-метод: `prisma.user.findUnique({ where: { email } })`
+   * Prisma-метод: `getPrisma().user.findUnique({ where: { email } })`
    */
   async findByEmail(email: string): Promise<DbUser | null> {
-    const user = await prisma.user.findUnique({
+    const user = await getPrisma().user.findUnique({
       where: { email },
     });
 
@@ -121,10 +121,10 @@ export class PrismaUserRepository implements UserRepository {
   /**
    * Ищет пользователя по Google ID.
    *
-   * Prisma-метод: `prisma.user.findUnique({ where: { googleId } })`
+   * Prisma-метод: `getPrisma().user.findUnique({ where: { googleId } })`
    */
   async findByGoogleId(googleId: string): Promise<DbUser | null> {
-    const user = await prisma.user.findUnique({
+    const user = await getPrisma().user.findUnique({
       where: { googleId },
     });
 
@@ -134,11 +134,11 @@ export class PrismaUserRepository implements UserRepository {
   /**
    * Привязывает Google-аккаунт к существующему пользователю.
    *
-   * Prisma-метод: `prisma.user.update({ where: { id: userId }, data: { googleId, isVerified: true } })`
+   * Prisma-метод: `getPrisma().user.update({ where: { id: userId }, data: { googleId, isVerified: true } })`
    */
   async linkGoogleAccount(userId: number, googleId: string): Promise<DbUser> {
     try {
-      const user = await prisma.user.update({
+      const user = await getPrisma().user.update({
         where: { id: userId },
         data: { googleId, isVerified: true },
       });
@@ -158,21 +158,21 @@ export class PrismaUserRepository implements UserRepository {
   /**
    * Меняет пароль и инвалидирует все refresh-токены пользователя.
    *
-   * Используем `prisma.$transaction([...])` — Prisma выполнит оба запроса
+   * Используем `getPrisma().$transaction([...])` — Prisma выполнит оба запроса
    * в рамках одной SQL-транзакции (аналог `withTransaction` в `pg`).
    *
    * Prisma-методы:
-   * - `prisma.user.update(...)`
-   * - `prisma.refreshToken.deleteMany(...)`
+   * - `getPrisma().user.update(...)`
+   * - `getPrisma().refreshToken.deleteMany(...)`
    */
   async changePassword(userId: number, passwordHash: string): Promise<void> {
     try {
-      await prisma.$transaction([
-        prisma.user.update({
+      await getPrisma().$transaction([
+        getPrisma().user.update({
           where: { id: userId },
           data: { passwordHash },
         }),
-        prisma.refreshToken.deleteMany({
+        getPrisma().refreshToken.deleteMany({
           where: { userId },
         }),
       ]);
@@ -187,7 +187,7 @@ export class PrismaUserRepository implements UserRepository {
   /**
    * Удаляет пользователя.
    *
-   * Prisma-метод: `prisma.user.delete({ where: { id: userId } })`
+   * Prisma-метод: `getPrisma().user.delete({ where: { id: userId } })`
    *
    * В физической БД настроен `ON DELETE CASCADE` для связанных таблиц
    * (`notepads`, `tasks`, `refresh_tokens`), поэтому Prisma достаточно
@@ -195,7 +195,7 @@ export class PrismaUserRepository implements UserRepository {
    */
   async deleteUser(userId: number): Promise<void> {
     try {
-      await prisma.user.delete({
+      await getPrisma().user.delete({
         where: { id: userId },
       });
     } catch (err) {

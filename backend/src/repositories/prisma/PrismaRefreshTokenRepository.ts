@@ -1,4 +1,4 @@
-import { prisma } from '@db/prisma/client';
+import { getPrisma } from '@db/prisma/client';
 import { RefreshTokenRepository } from '@repositories/interfaces';
 import type { RefreshToken } from '@sharedCommon/schemas';
 
@@ -24,7 +24,7 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
     tokenHash: string,
     expiresAt: Date,
   ): Promise<void> {
-    await prisma.refreshToken.create({
+    await getPrisma().refreshToken.create({
       data: {
         userId,
         tokenHash,
@@ -43,7 +43,7 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
    * конвертируем `bigint` → `number` через `Number()`.
    */
   async findByTokenHash(tokenHash: string): Promise<RefreshToken | null> {
-    const token = await prisma.refreshToken.findUnique({
+    const token = await getPrisma().refreshToken.findUnique({
       where: { tokenHash },
     });
 
@@ -65,7 +65,7 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
    * `deleteMany` позволяет фильтровать по любым полям (не только unique).
    */
   async deleteByTokenHash(tokenHash: string): Promise<void> {
-    await prisma.refreshToken.deleteMany({
+    await getPrisma().refreshToken.deleteMany({
       where: { tokenHash },
     });
   }
@@ -76,7 +76,7 @@ export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
    * Prisma-метод: `prisma.refreshToken.deleteMany({ where: { userId } })`
    */
   async deleteAllByUserId(userId: number): Promise<void> {
-    await prisma.refreshToken.deleteMany({
+    await getPrisma().refreshToken.deleteMany({
       where: { userId },
     });
   }

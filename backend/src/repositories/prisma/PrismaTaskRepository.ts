@@ -1,4 +1,4 @@
-import { prisma } from '@db/prisma/client';
+import { getPrisma } from '@db/prisma/client';
 import { isPrismaError } from '@db/prisma/errors';
 import { Prisma } from '@prisma/client';
 import { ConflictError, ForbiddenError, NotFoundError } from '@errors/AppError';
@@ -79,7 +79,7 @@ export class PrismaTaskRepository implements TaskRepository {
   /**
    * Создаёт новый блокнот.
    *
-   * Prisma-метод: `prisma.notepad.create({ data: { title, userId } })`
+   * Prisma-метод: `getPrisma().notepad.create({ data: { title, userId } })`
    *
    * Уникальность пары `(userId, title)` задана в схеме (`@@unique`).
    * При нарушении ловим код `P2002` и бросаем `ConflictError`.
@@ -89,7 +89,7 @@ export class PrismaTaskRepository implements TaskRepository {
     userId: number,
   ): Promise<Notepad> {
     try {
-      const notepad = await prisma.notepad.create({
+      const notepad = await getPrisma().notepad.create({
         data: { title, userId },
       });
 
@@ -110,7 +110,7 @@ export class PrismaTaskRepository implements TaskRepository {
   /**
    * Создаёт новую задачу.
    *
-   * Prisma-метод: `prisma.task.create({ data, include: { subtasks: true } })`
+   * Prisma-метод: `getPrisma().task.create({ data, include: { subtasks: true } })`
    *
    * Если `notepadId === 'all'`, в БД пишем `null` (общий блокнот).
    * Если передан конкретный `notepadId`, но блокнота нет,
@@ -125,7 +125,7 @@ export class PrismaTaskRepository implements TaskRepository {
       notepadId === COMMON_NOTEPAD_ID ? null : BigInt(notepadId);
 
     try {
-      const created = await prisma.task.create({
+      const created = await getPrisma().task.create({
         data: {
           userId,
           title: task.title,
@@ -151,10 +151,10 @@ export class PrismaTaskRepository implements TaskRepository {
   /**
    * Возвращает все блокноты пользователя + общий блокнот в начале.
    *
-   * Prisma-метод: `prisma.notepad.findMany({ where: { userId } })`
+   * Prisma-метод: `getPrisma().notepad.findMany({ where: { userId } })`
    */
   async getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]> {
-    const notepads = await prisma.notepad.findMany({
+    const notepads = await getPrisma().notepad.findMany({
       where: { userId },
       orderBy: { id: 'desc' },
     });
@@ -173,8 +173,8 @@ export class PrismaTaskRepository implements TaskRepository {
    * Возвращает все задачи пользователя с пагинацией, фильтрами и сортировкой.
    *
    * Prisma-методы:
-   * - `prisma.task.findMany({ where, orderBy, skip, take, include: { subtasks: true } })`
-   * - `prisma.task.count({ where })`
+   * - `getPrisma().task.findMany({ where, orderBy, skip, take, include: { subtasks: true } })`
+   * - `getPrisma().task.count({ where })`
    *
    * Фильтры:
    * - `search` — поиск по `title` (регистронезависимый, `mode: 'insensitive'`)
@@ -210,14 +210,14 @@ export class PrismaTaskRepository implements TaskRepository {
     }
 
     const [tasks, total] = await Promise.all([
-      prisma.task.findMany({
+      getPrisma().task.findMany({
         where,
         orderBy: { [sortBy]: order },
         skip: (page - 1) * limit,
         take: limit,
         include: { subtasks: true },
       }),
-      prisma.task.count({ where }),
+      getPrisma().task.count({ where }),
     ]);
 
     return {
@@ -234,7 +234,7 @@ export class PrismaTaskRepository implements TaskRepository {
   /**
    * Возвращает одну задачу по ID блокнота, ID задачи и ID пользователя.
    *
-   * Prisma-метод: `prisma.task.findFirst({ where, include: { subtasks: true } })`
+   * Prisma-метод: `getPrisma().task.findFirst({ where, include: { subtasks: true } })`
    *
    * Для общего блокнота (`'all'`) ищем задачу с `notepadId = null`.
    * Если задача не найдена или не принадлежит пользователю — `NotFoundError`.
@@ -246,7 +246,7 @@ export class PrismaTaskRepository implements TaskRepository {
   ): Promise<Task> {
     const isCommon = notepadId === COMMON_NOTEPAD_ID;
 
-    const task = await prisma.task.findFirst({
+    const task = await getPrisma().task.findFirst({
       where: {
         id: BigInt(taskId),
         userId,
@@ -271,9 +271,9 @@ export class PrismaTaskRepository implements TaskRepository {
    * Затем делаем `findMany` + `count` по фильтрам.
    *
    * Prisma-методы:
-   * - `prisma.notepad.findFirst(...)` — проверка ownership
-   * - `prisma.task.findMany(...)` — список задач
-   * - `prisma.task.count(...)` — общее количество
+   * - `getPrisma().notepad.findFirst(...)` — проверка ownership
+   * - `getPrisma().task.findMany(...)` — список задач
+   * - `getPrisma().task.count(...)` — общее количество
    */
   async getSingleNotepadTasks(
     notepadId: string,
@@ -283,7 +283,7 @@ export class PrismaTaskRepository implements TaskRepository {
     const isCommon = notepadId === COMMON_NOTEPAD_ID;
 
     if (!isCommon) {
-      const notepad = await prisma.notepad.findFirst({
+      const notepad = await getPrisma().notepad.findFirst({
         where: { id: BigInt(notepadId), userId },
       });
       if (!notepad) {
@@ -322,14 +322,14 @@ export class PrismaTaskRepository implements TaskRepository {
     }
 
     const [tasks, total] = await Promise.all([
-      prisma.task.findMany({
+      getPrisma().task.findMany({
         where,
         orderBy: { [sortBy]: order },
         skip: (page - 1) * limit,
         take: limit,
         include: { subtasks: true },
       }),
-      prisma.task.count({ where }),
+      getPrisma().task.count({ where }),
     ]);
 
     return {
@@ -347,9 +347,9 @@ export class PrismaTaskRepository implements TaskRepository {
    * Обновляет название блокнота.
    *
    * Prisma-методы:
-   * - `prisma.notepad.findFirst(...)` — проверка существования и ownership
-   * - `prisma.notepad.update(...)` — обновление title
-   * - `prisma.task.findMany(...)` — получение задач блокнота для ответа
+   * - `getPrisma().notepad.findFirst(...)` — проверка существования и ownership
+   * - `getPrisma().notepad.update(...)` — обновление title
+   * - `getPrisma().task.findMany(...)` — получение задач блокнота для ответа
    */
   async updateNotepad(
     notepadId: string,
@@ -357,19 +357,19 @@ export class PrismaTaskRepository implements TaskRepository {
     userId: number,
   ): Promise<Notepad> {
     try {
-      const existing = await prisma.notepad.findFirst({
+      const existing = await getPrisma().notepad.findFirst({
         where: { id: BigInt(notepadId), userId },
       });
       if (!existing) {
         throw new NotFoundError(`Notepad ${notepadId} not found`);
       }
 
-      const updated = await prisma.notepad.update({
+      const updated = await getPrisma().notepad.update({
         where: { id: BigInt(notepadId) },
         data: { title: updatedNotepadFields.title },
       });
 
-      const tasks = await prisma.task.findMany({
+      const tasks = await getPrisma().task.findMany({
         where: { notepadId: BigInt(notepadId), userId },
         include: { subtasks: true },
       });
@@ -396,10 +396,10 @@ export class PrismaTaskRepository implements TaskRepository {
    * Алгоритм:
    * 1. `findFirst` — проверяем, что задача существует и принадлежит пользователю.
    * 2. Если передан новый `notepadId` (не 'all'), проверяем его существование.
-   * 3. `prisma.task.update(...)` — обновляем поля задачи.
+   * 3. `getPrisma().task.update(...)` — обновляем поля задачи.
    * 4. Если переданы `subtasks`:
-   *    - `prisma.subtask.deleteMany({ where: { taskId } })` — удаляем старые
-   *    - `prisma.subtask.createMany(...)` — создаём новые
+   *    - `getPrisma().subtask.deleteMany({ where: { taskId } })` — удаляем старые
+   *    - `getPrisma().subtask.createMany(...)` — создаём новые
    * 5. Перечитываем задачу с подзадачами и возвращаем.
    */
   async updateTask(
@@ -410,7 +410,7 @@ export class PrismaTaskRepository implements TaskRepository {
     const { subtasks, ...taskFields } = fields;
 
     // 1. Проверка существования и ownership
-    const existing = await prisma.task.findFirst({
+    const existing = await getPrisma().task.findFirst({
       where: { id: BigInt(taskId), userId },
       include: { subtasks: true },
     });
@@ -420,7 +420,7 @@ export class PrismaTaskRepository implements TaskRepository {
 
     // 2. Проверка целевого блокнота, если меняем
     if (taskFields.notepadId && taskFields.notepadId !== COMMON_NOTEPAD_ID) {
-      const notepad = await prisma.notepad.findFirst({
+      const notepad = await getPrisma().notepad.findFirst({
         where: { id: BigInt(taskFields.notepadId), userId },
       });
       if (!notepad) {
@@ -448,7 +448,7 @@ export class PrismaTaskRepository implements TaskRepository {
     // Обновляем основные поля задачи
     let updated = existing;
     if (Object.keys(data).length > 0) {
-      updated = await prisma.task.update({
+      updated = await getPrisma().task.update({
         where: { id: BigInt(taskId) },
         data,
         include: { subtasks: true },
@@ -457,12 +457,12 @@ export class PrismaTaskRepository implements TaskRepository {
 
     // 4. Полное замещение подзадач
     if (subtasks !== undefined) {
-      await prisma.subtask.deleteMany({
+      await getPrisma().subtask.deleteMany({
         where: { taskId: BigInt(taskId) },
       });
 
       if (subtasks.length > 0) {
-        await prisma.subtask.createMany({
+        await getPrisma().subtask.createMany({
           data: subtasks.map(s => ({
             taskId: BigInt(taskId),
             title: s.title,
@@ -472,7 +472,7 @@ export class PrismaTaskRepository implements TaskRepository {
       }
 
       // Перечитываем задачу с актуальными подзадачами
-      const refreshed = await prisma.task.findFirst({
+      const refreshed = await getPrisma().task.findFirst({
         where: { id: BigInt(taskId), userId },
         include: { subtasks: true },
       });
@@ -488,7 +488,7 @@ export class PrismaTaskRepository implements TaskRepository {
   /**
    * Удаляет блокнот.
    *
-   * Prisma-метод: `prisma.notepad.deleteMany({ where: { id, userId } })`
+   * Prisma-метод: `getPrisma().notepad.deleteMany({ where: { id, userId } })`
    *
    * Общий блокнот (`'all'`) удалять запрещено — `ForbiddenError`.
    * `deleteMany` возвращает `count`; если 0 — значит, блокнота нет или
@@ -499,7 +499,7 @@ export class PrismaTaskRepository implements TaskRepository {
       throw new ForbiddenError('Cannot delete the common notepad');
     }
 
-    const result = await prisma.notepad.deleteMany({
+    const result = await getPrisma().notepad.deleteMany({
       where: { id: BigInt(notepadId), userId },
     });
 
@@ -511,12 +511,12 @@ export class PrismaTaskRepository implements TaskRepository {
   /**
    * Удаляет задачу.
    *
-   * Prisma-метод: `prisma.task.deleteMany({ where: { id, userId } })`
+   * Prisma-метод: `getPrisma().task.deleteMany({ where: { id, userId } })`
    *
    * Если задача не найдена или не принадлежит пользователю — `NotFoundError`.
    */
   async deleteTask(taskId: string, userId: number): Promise<void> {
-    const result = await prisma.task.deleteMany({
+    const result = await getPrisma().task.deleteMany({
       where: { id: BigInt(taskId), userId },
     });
 
