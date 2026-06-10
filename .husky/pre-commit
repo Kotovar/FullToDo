@@ -1,3 +1,6 @@
 #!/bin/sh
+npm run check:size
 npm run lint-staged --workspace=frontend
 npm run lint-staged --workspace=backend
+npm run type-check --workspace=frontend
+npm run fsd-check --workspace=frontend

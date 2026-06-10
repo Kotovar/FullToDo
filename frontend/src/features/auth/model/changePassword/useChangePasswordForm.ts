@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useMemo,
-  useState,
-  type ChangeEvent,
-  type SyntheticEvent,
-} from 'react';
+import { useState, type ChangeEvent, type SyntheticEvent } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { z } from 'zod';
@@ -28,6 +22,7 @@ import {
 type ChangePasswordField = 'oldPassword' | 'newPassword' | 'confirmPassword';
 type ChangePasswordFormValues = ChangePassword & { confirmPassword: string };
 type ChangePasswordFormErrors = Partial<Record<ChangePasswordField, string>>;
+
 const INITIAL_VALUES: ChangePasswordFormValues = {
   oldPassword: '',
   newPassword: '',
@@ -45,9 +40,6 @@ const VALIDATION_MESSAGE_MAP: Record<string, Translation> = {
     'account.security.validation.newPassword.sameAsCurrent',
 };
 
-const getValidationMessage = (message: string) =>
-  VALIDATION_MESSAGE_MAP[message] ?? message;
-
 const validateChangePasswordForm = (
   values: ChangePasswordFormValues,
 ): ChangePasswordFormErrors | null => {
@@ -55,22 +47,21 @@ const validateChangePasswordForm = (
     oldPassword: values.oldPassword,
     newPassword: values.newPassword,
   });
-
   const errors: ChangePasswordFormErrors = {};
 
   if (!result.success) {
-    const fieldErrors = z.treeifyError(result.error);
-
+    const { properties } = z.treeifyError(result.error);
     errors.oldPassword =
       values.oldPassword.length === 0
         ? 'account.security.validation.currentPassword.required'
         : undefined;
-    errors.newPassword = fieldErrors.properties?.newPassword?.errors?.[0]
-      ? getValidationMessage(fieldErrors.properties.newPassword.errors[0])
+    errors.newPassword = properties?.newPassword?.errors?.[0]
+      ? (VALIDATION_MESSAGE_MAP[properties.newPassword.errors[0]] ??
+        properties.newPassword.errors[0])
       : undefined;
   }
 
-  if (values.confirmPassword.length === 0) {
+  if (!values.confirmPassword) {
     errors.confirmPassword =
       'account.security.validation.confirmPassword.required';
   } else if (values.confirmPassword !== values.newPassword) {
@@ -108,62 +99,39 @@ export const useChangePasswordForm = (email: string) => {
     },
   });
 
-  const updateField = useCallback(
+  const updateField =
     (field: ChangePasswordField) => (event: ChangeEvent<HTMLInputElement>) => {
-      const nextValue = event.target.value;
+      setValues(prev => ({ ...prev, [field]: event.target.value }));
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    };
 
-      setValues(prev => ({
-        ...prev,
-        [field]: nextValue,
-      }));
-      setErrors(prev => ({
-        ...prev,
-        [field]: undefined,
-      }));
-      setSubmitError(null);
-    },
-    [],
-  );
+  const submit = async (event: SyntheticEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const validationErrors = validateChangePasswordForm(values);
 
-  const submit = useCallback(
-    async (event: SyntheticEvent<HTMLFormElement>) => {
-      event.preventDefault();
+    if (validationErrors) {
+      setErrors(validationErrors);
+      return;
+    }
 
-      const validationErrors = validateChangePasswordForm(values);
+    setSubmitError(null);
+    await mutateAsync({
+      oldPassword: values.oldPassword,
+      newPassword: values.newPassword,
+    });
+  };
 
-      if (validationErrors) {
-        setErrors(validationErrors);
-        return;
-      }
+  const isSubmitDisabled =
+    isPending ||
+    !values.oldPassword ||
+    !values.newPassword ||
+    !values.confirmPassword;
 
-      setSubmitError(null);
-      await mutateAsync({
-        oldPassword: values.oldPassword,
-        newPassword: values.newPassword,
-      });
-    },
-    [mutateAsync, values],
-  );
-
-  const isSubmitDisabled = useMemo(
-    () =>
-      isPending ||
-      values.oldPassword.length === 0 ||
-      values.newPassword.length === 0 ||
-      values.confirmPassword.length === 0,
-    [
-      isPending,
-      values.confirmPassword.length,
-      values.newPassword.length,
-      values.oldPassword.length,
-    ],
-  );
-
-  const resetForm = useCallback(() => {
+  const resetForm = () => {
     setValues(INITIAL_VALUES);
     setErrors({});
     setSubmitError(null);
-  }, []);
+  };
 
   return {
     values,

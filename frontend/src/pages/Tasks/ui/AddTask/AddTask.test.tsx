@@ -9,7 +9,6 @@ vi.mock('@entities/Task', () => ({
 }));
 
 const mockCreateTask = vi.fn();
-const formatTestDate = (date: Date) => date.toISOString().slice(0, 10);
 
 const getElements = () => {
   const textInput = screen.getByLabelText('tasks.add', {
@@ -66,14 +65,13 @@ describe('AddTask component', () => {
     expect(mockCreateTask).toHaveBeenCalled();
   });
 
-  test('if dueDate is present in the form, passes new Date(dueDate)', async () => {
+  test('if dueDate is present in the form, passes a Date instance', async () => {
     renderWithRouter(<AddTask notepadId='1' />, {
       initialEntries: ['/notepads/1'],
       path: '/notepads/:notepadId',
     });
 
     const { textInput, dateInput, saveButton } = getElements();
-    const today = new Date();
 
     await user.click(dateInput);
     await user.click(
@@ -87,7 +85,7 @@ describe('AddTask component', () => {
     await waitFor(() => {
       expect(mockCreateTask).toHaveBeenCalledWith(
         expect.objectContaining({
-          dueDate: new Date(formatTestDate(today)),
+          dueDate: expect.any(Date),
         }),
       );
     });

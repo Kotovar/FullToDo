@@ -1,4 +1,4 @@
-import { useId, type SyntheticEvent } from 'react';
+import type { SyntheticEvent } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -8,9 +8,10 @@ import {
   resetGuestSession,
 } from '@shared/api';
 import { useNotifications } from '@shared/lib';
-import { Button, Icon, Input } from '@shared/ui';
+import { Button } from '@shared/ui';
 import { ROUTES } from '@sharedCommon';
 import { useDeleteAccountDialog } from './useDeleteAccountDialog';
+import { DeleteAccountPasswordField } from './DeleteAccountPasswordField';
 
 type DeleteAccountSectionProps = {
   email: string;
@@ -25,9 +26,9 @@ export const DeleteAccountSection = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { showSuccess } = useNotifications();
-  const passwordErrorId = useId();
-  const submitErrorId = useId();
-  const popoverId = useId();
+  const passwordErrorId = 'delete-account-password-error';
+  const submitErrorId = 'delete-account-submit-error';
+  const popoverId = 'delete-account-popover';
   const {
     popoverRef,
     state,
@@ -58,10 +59,7 @@ export const DeleteAccountSection = ({
       await resetGuestSession(queryClient);
       navigate(ROUTES.app.login, { replace: true });
     },
-    onError: error => {
-      const normalizedError = handleMutationError(error);
-      setSubmitError(normalizedError.message);
-    },
+    onError: error => setSubmitError(handleMutationError(error).message),
   });
 
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
@@ -88,7 +86,6 @@ export const DeleteAccountSection = ({
           {t('account.dangerZone.warning')}
         </p>
       </div>
-
       <Button
         onClick={openConfirm}
         aria-haspopup='dialog'
@@ -100,7 +97,6 @@ export const DeleteAccountSection = ({
       >
         {t('account.dangerZone.trigger')}
       </Button>
-
       <div
         ref={popoverRef}
         id={popoverId}
@@ -126,56 +122,16 @@ export const DeleteAccountSection = ({
               {t('account.dangerZone.warning')}
             </p>
           </div>
-
           {hasPassword ? (
-            <div className='flex flex-col gap-1'>
-              <label
-                className='text-sm font-medium text-slate-900 dark:text-slate-100'
-                htmlFor='delete-account-password'
-              >
-                {t('account.dangerZone.password.label')}
-              </label>
-              <div className='relative w-full'>
-                <Input
-                  id='delete-account-password'
-                  className='w-full rounded border border-rose-300 bg-white px-3 py-2 pr-11 text-base text-slate-900 placeholder:text-slate-400 dark:border-rose-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500'
-                  type={isPasswordVisible ? 'text' : 'password'}
-                  autoComplete='current-password'
-                  value={currentPassword}
-                  onChange={event => handlePasswordChange(event.target.value)}
-                  placeholder={t('account.dangerZone.password.placeholder')}
-                  aria-invalid={Boolean(passwordError)}
-                  aria-describedby={passwordError ? passwordErrorId : undefined}
-                />
-                <button
-                  type='button'
-                  className='absolute inset-y-0 right-0 flex w-11 items-center justify-center text-slate-500 transition hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
-                  onClick={togglePasswordVisibility}
-                  aria-label={t(
-                    `account.dangerZone.password.${isPasswordVisible ? 'hide' : 'show'}`,
-                  )}
-                  aria-pressed={isPasswordVisible}
-                >
-                  <Icon
-                    name={isPasswordVisible ? 'eyeOff' : 'eye'}
-                    size={20}
-                    stroke='currentColor'
-                  />
-                </button>
-              </div>
-              <div className='min-h-5'>
-                {passwordError ? (
-                  <p
-                    id={passwordErrorId}
-                    className='text-sm text-rose-700 dark:text-rose-300'
-                  >
-                    {t(passwordError)}
-                  </p>
-                ) : null}
-              </div>
-            </div>
+            <DeleteAccountPasswordField
+              value={currentPassword}
+              onChange={handlePasswordChange}
+              visible={isPasswordVisible}
+              onToggleVisible={togglePasswordVisibility}
+              error={passwordError}
+              errorId={passwordErrorId}
+            />
           ) : null}
-
           <div className='min-h-14'>
             {submitError ? (
               <p
@@ -186,7 +142,6 @@ export const DeleteAccountSection = ({
               </p>
             ) : null}
           </div>
-
           <div className='flex flex-col gap-2 sm:flex-row sm:justify-end'>
             <Button
               onClick={closeConfirm}
