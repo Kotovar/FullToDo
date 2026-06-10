@@ -3,7 +3,9 @@
   "version": "1.1.0",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "stats": "cd .. && npm run stats",
+    "check:size": "node ../scripts/check-file-size.mts --no-exit-code"
   },
   "keywords": [],
   "author": "",

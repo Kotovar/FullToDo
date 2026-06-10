@@ -14,7 +14,9 @@
     "type-check": "tsc --noEmit --pretty false",
     "fsd-check": "npx steiger ./src",
     "preview": "vite preview",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "stats": "cd .. && npm run stats",
+    "check:size": "node ../scripts/check-file-size.mts --no-exit-code"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.8.1",

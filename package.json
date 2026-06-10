@@ -13,7 +13,9 @@
     "dev": "sh scripts/dev.sh",
     "dev:backend": "npm run dev --workspace=backend",
     "dev:frontend": "npm run dev --workspace=frontend",
-    "stop:docker": "docker compose stop"
+    "stop:docker": "docker compose stop",
+    "stats": "bash scripts/count-lines.sh",
+    "check:size": "node scripts/check-file-size.mts"
   },
   "dependencies": {
     "zod": "^4.4.3"

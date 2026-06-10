@@ -14,7 +14,9 @@
     "coverage": "vitest run --coverage",
     "debug": "node --inspect-brk -r ts-node/register -r tsconfig-paths/register src/app.ts",
     "migrate": "ts-node -r tsconfig-paths/register src/db/postgres/migrate.ts",
-    "email": "email dev --dir src/emails"
+    "email": "email dev --dir src/emails",
+    "stats": "cd .. && npm run stats",
+    "check:size": "node ../scripts/check-file-size.mts --no-exit-code"
   },
   "keywords": [],
   "author": "Kotovar",
@@ -59,6 +61,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
+    "@types/node": "^25.9.2",
     "@types/nodemailer": "^8.0.0",
     "@types/pg": "^8.20.0",
     "@types/react": "^19.2.15",
