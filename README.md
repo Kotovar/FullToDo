@@ -294,6 +294,28 @@ npm run email --workspace=fulltodo_backend
 | `RESEND_API_KEY`              | API-ключ Resend                                | —                             |
 | `PASSWORD_RESET_TOKEN_SECRET` | Секрет JWT для восстановления пароля           | —                             |
 
+### Скрипты
+
+Подсчет строк кода во всем проекте (исключая `node_modules`, `dist`, `build`):
+
+```bash
+npm run stats
+```
+
+Проверка размеров файлов на соответствие лимитам:
+
+```bash
+npm run check:size
+```
+
+Лимиты:
+- Компоненты (`.tsx`): 250 строк
+- Хуки (`use*` или `/hooks/`): 150 строк
+- Утилиты (`/utils/`, `/lib/`, `*.utils.ts`): 200 строк
+- Тесты (`.test.`, `.spec.`): 800 строк
+
+Скрипт можно запускать из корня проекта (проверит все workspaces) или из папок `backend/` / `frontend/` / `shared/` (проверит только текущий workspace). При превышении лимита выводит список файлов.
+
 # FullToDo (English version)
 
 A pet project for task management (todo app) with the ability to choose different backend technologies.
@@ -586,3 +608,25 @@ Preview opens at `http://localhost:3000`.
 | `MAILTRAP_PASS`               | Mailtrap SMTP password               | —                             |
 | `RESEND_API_KEY`              | Resend API key                       | —                             |
 | `PASSWORD_RESET_TOKEN_SECRET` | Password reset JWT secret            | —                             |
+
+### Scripts
+
+Count lines of code across the entire project (excludes `node_modules`, `dist`, `build`):
+
+```bash
+npm run stats
+```
+
+Check file sizes against limits:
+
+```bash
+npm run check:size
+```
+
+Limits:
+- Components (`.tsx`): 250 lines
+- Hooks (`use*` or `/hooks/`): 150 lines
+- Utils (`/utils/`, `/lib/`, `*.utils.ts`): 200 lines
+- Tests (`.test.`, `.spec.`): 800 lines
+
+You can run the script from the project root (checks all workspaces) or from `backend/` / `frontend/` / `shared/` (checks only the current workspace). Prints a list of files that exceed the limit.
