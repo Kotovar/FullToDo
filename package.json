@@ -8,6 +8,7 @@
     "shared"
   ],
   "scripts": {
+    "prepare": "husky",
     "install:all": "npm install",
     "build": "npm run build --workspace=backend && npm run build --workspace=frontend",
     "dev": "sh scripts/dev.sh",
