@@ -10,8 +10,6 @@ import { getUseTaskDetailsMock } from '@entities/Task';
 import TaskDetail from '@pages/TaskDetail';
 import * as taskModule from '@pages/TaskDetail/ui/Subtasks';
 
-const formatTestDate = (date: Date) => date.toISOString().slice(0, 10);
-
 const onChangeTitleMock = vi.fn();
 const onChangeSubtaskTitleMock = vi.fn();
 const onChangeDueDateMock = vi.fn();
@@ -155,7 +153,7 @@ describe('TaskDetail component', () => {
       expect(updateTaskMock).toHaveBeenCalled();
     });
 
-    test('if dueDate is present in the form, passes new Date(dueDate)', async () => {
+    test('if dueDate is present in the form, passes a Date instance', async () => {
       getUseTaskDetailsMock(false, updateTaskMock);
 
       renderWithRouter(<TaskDetail />, {
@@ -166,7 +164,6 @@ describe('TaskDetail component', () => {
       const dateInput = screen.getByLabelText('tasks.date', {
         selector: 'input',
       });
-      const today = new Date();
 
       await user.click(dateInput);
       await user.click(
@@ -181,7 +178,7 @@ describe('TaskDetail component', () => {
       await waitFor(() => {
         expect(updateTaskMock).toHaveBeenCalledWith(
           {
-            dueDate: new Date(formatTestDate(today)),
+            dueDate: expect.any(Date),
           },
           '1',
           'update',

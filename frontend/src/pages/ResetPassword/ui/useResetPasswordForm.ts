@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useMemo,
-  useReducer,
-  type ChangeEvent,
-  type SyntheticEvent,
-} from 'react';
+import { useReducer, type ChangeEvent, type SyntheticEvent } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useSearchParams } from 'react-router';
 import { z } from 'zod';
@@ -33,9 +27,6 @@ const VALIDATION_MESSAGE_MAP: Record<string, Translation> = {
     'resetPassword.validation.newPassword.number',
 };
 
-const getValidationMessage = (message: string): Translation =>
-  VALIDATION_MESSAGE_MAP[message] ?? 'resetPassword.validation.newPassword.min';
-
 const validateResetPassword = (
   values: ResetPasswordValues,
 ): ResetPasswordErrors | null => {
@@ -46,20 +37,17 @@ const validateResetPassword = (
   const errors: ResetPasswordErrors = {};
 
   if (!result.success) {
-    const fieldErrors = z.treeifyError(result.error);
-    const tokenError = fieldErrors.properties?.token?.errors?.[0];
-    const passwordError = fieldErrors.properties?.newPassword?.errors?.[0];
-
-    if (tokenError) {
+    const { properties } = z.treeifyError(result.error);
+    if (properties?.token?.errors?.[0])
       errors.token = 'resetPassword.validation.token.required';
-    }
-
-    if (passwordError) {
-      errors.newPassword = getValidationMessage(passwordError);
+    if (properties?.newPassword?.errors?.[0]) {
+      errors.newPassword =
+        VALIDATION_MESSAGE_MAP[properties.newPassword.errors[0]] ??
+        'resetPassword.validation.newPassword.min';
     }
   }
 
-  if (values.confirmPassword.length === 0) {
+  if (!values.confirmPassword) {
     errors.confirmPassword =
       'resetPassword.validation.confirmPassword.required';
   } else if (values.confirmPassword !== values.newPassword) {
@@ -93,72 +81,41 @@ export const useResetPasswordForm = () => {
       authService.resetPassword(payload),
     onSuccess: async () => {
       await resetGuestSession(queryClient);
-      await queryClient.invalidateQueries({
-        queryKey: authKeys.me(),
-      });
+      await queryClient.invalidateQueries({ queryKey: authKeys.me() });
       navigate(ROUTES.app.login, { replace: true });
     },
-    onError: error => {
-      const normalizedError = handleMutationError(error);
+    onError: error =>
       dispatch({
         type: 'set_submit_error',
-        error: normalizedError.message,
-      });
-    },
+        error: handleMutationError(error).message,
+      }),
   });
 
-  const updateField = useCallback(
+  const updateField =
     (field: Extract<ResetPasswordField, 'newPassword' | 'confirmPassword'>) =>
-      (event: ChangeEvent<HTMLInputElement>) => {
-        dispatch({
-          type: 'update_field',
-          field,
-          value: event.target.value,
-        });
-      },
-    [],
-  );
+    (event: ChangeEvent<HTMLInputElement>) =>
+      dispatch({ type: 'update_field', field, value: event.target.value });
 
-  const submit = useCallback(
-    (event: SyntheticEvent<HTMLFormElement>) => {
-      event.preventDefault();
+  const submit = (event: SyntheticEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const validationErrors = validateResetPassword(values);
+    if (validationErrors) {
+      dispatch({ type: 'set_errors', errors: validationErrors });
+      return;
+    }
+    mutate(values);
+  };
 
-      const validationErrors = validateResetPassword(values);
+  const isSubmitDisabled =
+    isPending ||
+    !values.token ||
+    !values.newPassword ||
+    !values.confirmPassword;
 
-      if (validationErrors) {
-        dispatch({
-          type: 'set_errors',
-          errors: validationErrors,
-        });
-        return;
-      }
-
-      mutate(values);
-    },
-    [mutate, values],
-  );
-
-  const isSubmitDisabled = useMemo(
-    () =>
-      isPending ||
-      values.token.length === 0 ||
-      values.newPassword.length === 0 ||
-      values.confirmPassword.length === 0,
-    [
-      isPending,
-      values.confirmPassword.length,
-      values.newPassword.length,
-      values.token.length,
-    ],
-  );
-
-  const toggleNewPasswordVisibility = useCallback(() => {
+  const toggleNewPasswordVisibility = () =>
     dispatch({ type: 'toggle_new_password_visibility' });
-  }, []);
-
-  const toggleConfirmPasswordVisibility = useCallback(() => {
+  const toggleConfirmPasswordVisibility = () =>
     dispatch({ type: 'toggle_confirm_password_visibility' });
-  }, []);
 
   return {
     values,

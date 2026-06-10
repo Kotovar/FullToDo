@@ -1,4 +1,3 @@
-import { useCallback, useMemo } from 'react';
 import {
   useInfiniteQuery,
   useMutation,
@@ -22,6 +21,16 @@ import {
 } from '@shared/api';
 import { PAGINATION, type Task } from '@sharedCommon/';
 
+const makeQueryParams = (
+  paramsObj: Record<string, string>,
+  pageParam: number,
+) => {
+  const p = new URLSearchParams(paramsObj);
+  p.set('page', pageParam.toString());
+  p.set('limit', (paramsObj.limit ?? PAGINATION.DEFAULT_LIMIT).toString());
+  return p;
+};
+
 export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const queryClient = useQueryClient();
   const { data: user } = useQuery({
@@ -32,11 +41,8 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
   const isAuthenticated = Boolean(user);
   const userScope = getUserQueryScope(user?.userId);
   const isCommon = isCommonNotepad(notepadId);
-  const queryKey = useMemo(
-    () => getTaskQueryKey(userScope, notepadId),
-    [notepadId, userScope],
-  );
-  const paramsObj = useMemo(() => Object.fromEntries(params), [params]);
+  const queryKey = getTaskQueryKey(userScope, notepadId);
+  const paramsObj = Object.fromEntries(params);
   const initialPage = Number(params.get('page') ?? PAGINATION.DEFAULT_PAGE);
 
   const {
@@ -47,15 +53,11 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     hasNextPage: hasNextPagePrivate,
   } = useInfiniteQuery({
     queryKey: ['tasks', userScope, notepadId, initialPage, paramsObj],
-    queryFn: ({ pageParam = initialPage }) => {
-      const queryParams = new URLSearchParams(paramsObj);
-      queryParams.set('page', pageParam.toString());
-      queryParams.set(
-        'limit',
-        (paramsObj.limit ?? PAGINATION.DEFAULT_LIMIT).toString(),
-      );
-      return taskService.getTasksFromNotepad(notepadId, queryParams);
-    },
+    queryFn: ({ pageParam = initialPage }) =>
+      taskService.getTasksFromNotepad(
+        notepadId,
+        makeQueryParams(paramsObj, pageParam),
+      ),
     initialPageParam: initialPage,
     getNextPageParam: lastPage =>
       lastPage.meta.page < lastPage.meta.totalPages
@@ -72,19 +74,12 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
     hasNextPage: hasNextPageCommon,
   } = useInfiniteQuery({
     queryKey: ['tasks', userScope, initialPage, paramsObj],
-    queryFn: ({ pageParam = initialPage }) => {
-      const queryParams = new URLSearchParams(paramsObj);
-      queryParams.set('page', pageParam.toString());
-      queryParams.set(
-        'limit',
-        (paramsObj.limit ?? PAGINATION.DEFAULT_LIMIT).toString(),
-      );
-      return taskService.getAllTasks(queryParams);
-    },
+    queryFn: ({ pageParam = initialPage }) =>
+      taskService.getAllTasks(makeQueryParams(paramsObj, pageParam)),
     initialPageParam: initialPage,
     getNextPageParam: lastPage =>
-      lastPage.meta?.page < lastPage.meta?.totalPages
-        ? lastPage.meta.page + 1
+      (lastPage.meta?.page ?? 0) < (lastPage.meta?.totalPages ?? 0)
+        ? (lastPage.meta?.page ?? 0) + 1
         : undefined,
     enabled: isAuthenticated && isCommon,
   });
@@ -100,85 +95,51 @@ export const useTasks = ({ notepadId, params, entity }: UseTasksProps) => {
 
   const { onSuccess, onError } = useApiNotifications(entity);
 
-  const updateTask = useCallback(
-    async (
-      updatedTask: Partial<Task>,
-      id: string,
-      subtaskActionType?: MutationMethods,
-    ) => {
-      const result = await handleMutation(
-        mutationUpdate,
-        subtaskActionType ?? 'update',
-        { updatedTask, id },
-        { queryClient, queryKey, onSuccess, onError },
-      );
-      if (updatedTask.notepadId) {
-        queryClient.invalidateQueries({
-          queryKey: getTaskQueryKey(userScope, updatedTask.notepadId),
-        });
-      }
-
-      if (result && !isCommon) {
-        await queryClient.invalidateQueries({
-          queryKey: getTaskQueryKey(userScope),
-        });
-      }
-
-      return result;
-    },
-    [
+  const updateTask = async (
+    updatedTask: Partial<Task>,
+    id: string,
+    subtaskActionType?: MutationMethods,
+  ) => {
+    const result = await handleMutation(
       mutationUpdate,
-      onError,
-      onSuccess,
-      queryClient,
-      queryKey,
-      isCommon,
-      userScope,
-    ],
-  );
-
-  const deleteTask = useCallback(
-    async (id: string) => {
-      const result = await handleMutation(mutationDelete, 'delete', id, {
-        queryClient,
-        queryKey,
-        onSuccess,
-        onError,
+      subtaskActionType ?? 'update',
+      { updatedTask, id },
+      { queryClient, queryKey, onSuccess, onError },
+    );
+    if (updatedTask.notepadId) {
+      queryClient.invalidateQueries({
+        queryKey: getTaskQueryKey(userScope, updatedTask.notepadId),
       });
+    }
+    if (result && !isCommon) {
+      await queryClient.invalidateQueries({
+        queryKey: getTaskQueryKey(userScope),
+      });
+    }
+    return result;
+  };
 
-      if (result && !isCommon) {
-        await queryClient.invalidateQueries({
-          queryKey: getTaskQueryKey(userScope),
-        });
-      }
-
-      return result;
-    },
-    [
-      mutationDelete,
+  const deleteTask = async (id: string) => {
+    const result = await handleMutation(mutationDelete, 'delete', id, {
       queryClient,
       queryKey,
-      isCommon,
       onSuccess,
       onError,
-      userScope,
-    ],
-  );
+    });
+    if (result && !isCommon) {
+      await queryClient.invalidateQueries({
+        queryKey: getTaskQueryKey(userScope),
+      });
+    }
+    return result;
+  };
 
-  const tasksPrivateResult = useMemo(
-    () => tasksPrivate?.pages.flatMap(page => page.data ?? []) ?? [],
-    [tasksPrivate],
-  );
-
-  const tasksCommonResult = useMemo(
-    () => tasksCommon?.pages.flatMap(page => page.data ?? []) ?? [],
-    [tasksCommon],
-  );
-
-  const tasksFinal = isCommon ? tasksCommonResult : tasksPrivateResult;
+  const tasks = isCommon
+    ? (tasksCommon?.pages.flatMap(page => page.data ?? []) ?? [])
+    : (tasksPrivate?.pages.flatMap(page => page.data ?? []) ?? []);
 
   return {
-    tasks: tasksFinal,
+    tasks,
     isError: isErrorPrivate || isErrorCommon,
     isLoading: isLoadingPrivate || isLoadingCommon,
     hasNextPage: isCommon ? hasNextPageCommon : hasNextPagePrivate,
