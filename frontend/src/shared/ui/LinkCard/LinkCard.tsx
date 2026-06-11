@@ -99,6 +99,7 @@ export const LinkCard = memo((props: LinkCardProps) => {
         onBlur={titleMethods.onBlur}
         onKeyDown={titleMethods.handleKeyDown}
         ref={titleInputRef}
+        aria-label={t('rename')}
         className={clsx(
           'h-full w-full rounded leading-normal focus:outline-none focus-visible:ring-2',
           linkClassName,

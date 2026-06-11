@@ -156,7 +156,7 @@ export class PrismaTaskRepository implements TaskRepository {
   async getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]> {
     const notepads = await getPrisma().notepad.findMany({
       where: { userId },
-      orderBy: { id: 'desc' },
+      orderBy: { id: 'asc' },
     });
 
     return [

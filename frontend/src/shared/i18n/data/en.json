@@ -1,5 +1,12 @@
 {
   "language": "english",
+  "aria": {
+    "nav": {
+      "mainMenu": "Main menu",
+      "notepads": "Notepads",
+      "tasks": "Tasks"
+    }
+  },
   "add": "Add",
   "back": "Back",
   "save": "Save",
