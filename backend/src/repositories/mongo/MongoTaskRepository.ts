@@ -158,14 +158,15 @@ export class MongoTaskRepository implements TaskRepository {
     userId: number,
   ): Promise<Notepad> {
     const db = await connectMongo();
-    const notepads = db.collection<NotepadWithoutTasks>(
+    const notepads = db.collection<NotepadWithoutTasks & { createdAt: Date }>(
       MONGO_COLLECTIONS.notepads,
     );
 
-    const newNotepad: NotepadWithoutTasks = {
+    const newNotepad = {
       _id: this.generateId(),
       title,
       userId,
+      createdAt: new Date(),
     };
 
     try {
@@ -223,13 +224,19 @@ export class MongoTaskRepository implements TaskRepository {
   async getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]> {
     const db = await connectMongo();
 
-    const notepads = db.collection<NotepadWithoutTasks>(
+    const notepads = db.collection<NotepadWithoutTasks & { createdAt: Date }>(
       MONGO_COLLECTIONS.notepads,
     );
 
-    const result = await notepads.find({ userId }).toArray();
+    const result = await notepads
+      .find({ userId })
+      .sort({ createdAt: 1 })
+      .toArray();
 
-    return [{ title: 'Задачи', _id: COMMON_NOTEPAD_ID, userId }, ...result];
+    return [
+      { title: 'Задачи', _id: COMMON_NOTEPAD_ID, userId },
+      ...result.map(({ createdAt: _, ...rest }) => rest),
+    ];
   }
 
   async getAllTasks(

@@ -1,6 +1,6 @@
 export const AccountSkeleton = () => {
   return (
-    <main className='flex w-full flex-col gap-6 pb-8 md:pb-10'>
+    <div className='flex w-full flex-col gap-6 pb-8 md:pb-10'>
       <header className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
         <div className='flex flex-col gap-2'>
           <div className='h-9 w-44 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-700' />
@@ -34,6 +34,6 @@ export const AccountSkeleton = () => {
         <div className='h-4 w-80 max-w-full animate-pulse rounded bg-rose-100 dark:bg-rose-900/40' />
         <div className='h-11 w-full animate-pulse rounded-xl bg-rose-100 sm:w-44 dark:bg-rose-900/40' />
       </section>
-    </main>
+    </div>
   );
 };

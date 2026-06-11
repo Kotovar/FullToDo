@@ -4,6 +4,7 @@ import App from '@app/App';
 import '@shared/i18n';
 import '@app/styles';
 import { defaultQueryOptions } from '@shared/config';
+import { initAxe } from '@shared/lib/axe';
 
 const rootElement = document.getElementById('root');
 const queryClient = new QueryClient({
@@ -20,6 +21,8 @@ if (rootElement) {
       <App />
     </QueryClientProvider>,
   );
+
+  initAxe();
 } else {
   throw new Error(
     "Root element with ID 'root' was not found in the document. Ensure there is a corresponding HTML element with the ID 'root' in your HTML file.",

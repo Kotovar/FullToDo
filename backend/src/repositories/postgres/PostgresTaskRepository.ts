@@ -133,7 +133,7 @@ export class PostgresTaskRepository implements TaskRepository {
 
   async getAllNotepads(userId: number): Promise<NotepadWithoutTasks[]> {
     const notepads = await query<NotepadWithoutTasks>(
-      'SELECT title, _id::text, user_id AS "userId" FROM notepads WHERE user_id = $1',
+      'SELECT title, _id::text, user_id AS "userId" FROM notepads WHERE user_id = $1 ORDER BY _id ASC',
       [userId],
     );
 

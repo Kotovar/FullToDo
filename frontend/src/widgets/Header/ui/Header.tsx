@@ -1,5 +1,6 @@
 import { memo, type ComponentPropsWithoutRef } from 'react';
 import { useLocation } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { ROUTES } from '@sharedCommon';
 import { SearchSection } from './SearchSection';
 import { AdditionalActions } from './AdditionalActions';
@@ -10,6 +11,7 @@ interface HeaderProps extends ComponentPropsWithoutRef<'header'> {
 }
 
 export const Header = memo(({ changeVisibility, ...rest }: HeaderProps) => {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   const isAccountPage = pathname === ROUTES.app.account;
 
@@ -17,7 +19,7 @@ export const Header = memo(({ changeVisibility, ...rest }: HeaderProps) => {
     <header {...rest}>
       {!isAccountPage ? (
         <>
-          <nav>
+          <nav aria-label={t('aria.nav.mainMenu')}>
             <MenuButton onClick={changeVisibility} />
           </nav>
           <SearchSection />

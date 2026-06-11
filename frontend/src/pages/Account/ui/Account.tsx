@@ -36,7 +36,7 @@ export const Account = () => {
   }
 
   return (
-    <main className='flex w-full flex-col gap-6 pb-8 md:pb-10'>
+    <div className='flex w-full flex-col gap-6 pb-8 md:pb-10'>
       <header className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
         <div className='flex flex-col gap-2'>
           <h1 className='text-3xl font-semibold'>{t('account.title')}</h1>
@@ -101,6 +101,6 @@ export const Account = () => {
           hasPassword={user.hasPassword}
         />
       </section>
-    </main>
+    </div>
   );
 };

@@ -21,7 +21,6 @@ coverage
 
 # Editor directories and files
 .vscode/*
-.vscode
 !.vscode/extensions.json
 .idea
 .DS_Store
@@ -31,9 +30,10 @@ coverage
 *.sln
 *.sw?
 .env
-.zed
+.zed/*
+!.zed/settings.json
 .claude/
 .codex
 AGENTS.md
 .codebase-memory
-PRISMA_INTEGRATION_PLAN.md
+.agents

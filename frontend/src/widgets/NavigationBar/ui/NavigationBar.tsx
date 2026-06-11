@@ -42,24 +42,25 @@ export const NavigationBar = ({
         : ROUTES.notepads.getPath(_id);
 
     return (
-      <LinkCard
-        className={clsx(
-          'text-dark grid grid-cols-[1fr_2rem] items-center rounded-lg hover:bg-current/10 has-[a:focus]:ring-2',
-          {
-            ['bg-grey/40']: basePath.startsWith(path),
-          },
-        )}
-        linkClassName='px-2 py-4'
-        handleLinkClick={turnOffVisibility}
-        key={_id}
-        path={path}
-        cardTitle={title}
-        handleClickDelete={() => actions.delete.onClick(_id)}
-        handleClickRename={() => actions.edit.setId(_id)}
-        onSaveTitle={newTitle => actions.edit.saveTitle(_id, newTitle, title)}
-        isEditing={editingNotepadId === _id}
-        mode='droppable'
-      />
+      <li key={_id}>
+        <LinkCard
+          className={clsx(
+            'text-dark grid grid-cols-[1fr_2rem] items-center rounded-lg hover:bg-current/10 has-[a:focus]:ring-2',
+            {
+              ['bg-grey/40']: basePath.startsWith(path),
+            },
+          )}
+          linkClassName='px-2 py-4'
+          handleLinkClick={turnOffVisibility}
+          path={path}
+          cardTitle={title}
+          handleClickDelete={() => actions.delete.onClick(_id)}
+          handleClickRename={() => actions.edit.setId(_id)}
+          onSaveTitle={newTitle => actions.edit.saveTitle(_id, newTitle, title)}
+          isEditing={editingNotepadId === _id}
+          mode='droppable'
+        />
+      </li>
     );
   });
 
@@ -68,7 +69,7 @@ export const NavigationBar = ({
   }
 
   return (
-    <nav {...rest}>
+    <nav {...rest} aria-label={t('aria.nav.notepads')}>
       <ul className='w-full'>
         {notepadList}
         <li>
